@@ -51,7 +51,9 @@ href="#x1-90005.1" id="QQ2-1-12">MCDWT butterﬂy</a></span>
 <br />    <span class="subsectionToc" >5.2 <a 
 href="#x1-100005.2" id="QQ2-1-15">MCDWT forward transform</a></span>
 <br />    <span class="subsectionToc" >5.3 <a 
-href="#x1-110005.3" id="QQ2-1-18">Scalability provided by MCDWT</a></span>
+href="#x1-110005.3" id="QQ2-1-18">(Spatial) Multiresolution procedure</a></span>
+<br />    <span class="subsectionToc" >5.4 <a 
+href="#x1-120005.4" id="QQ2-1-20">Scalability provided by MCDWT</a></span>
    </div>
 <!--l. 13--><p class="noindent" >
 </p>
@@ -68,11 +70,11 @@ the <a
 href="https://www.quora.com/What-is-spatial-domain-in-image-processing" >spatial</a> domains that produces a collection of spatially <a 
 href="https://en.wikipedia.org/wiki/Decorrelation" >uncorrelated</a> <a 
 href="https://en.wikipedia.org/wiki/Discrete_wavelet_transform" >coeﬃcients</a>,
-and (2) an <a 
-href="https://vicente-gonzalez-ruiz.github.io/symbol_compression/" >entropy encoding</a> phase which removes the statistical redundancy that can
                                                                   
 
                                                                   
+and (2) an <a 
+href="https://vicente-gonzalez-ruiz.github.io/symbol_compression/" >entropy encoding</a> phase which removes the statistical redundancy that can
 still remains after the decorrelation (transform). These coeﬃcients have two
 interesting features:
      </p><ol  class="enumerate1" >
@@ -2136,6 +2138,9 @@ display="inline" ><msup><mrow
 ><mi 
 >k</mi></mrow></msup 
 ></math>, and
+                                                                  
+
+                                                                  
 <!--l. 71--><math 
  xmlns="http://www.w3.org/1998/Math/MathML"  
 display="inline" ><mi 
@@ -2153,9 +2158,6 @@ display="inline" ><msup><mrow
 ><mi 
 >k</mi></mrow></msup 
 ></math>.
-                                                                  
-
-                                                                  
 </p><!--l. 73--><p class="noindent" >
 </p>
    <h4 class="subsectionHead"><span class="titlemark">2.1   </span> <a 
@@ -3046,15 +3048,16 @@ independently.
 </p>
    <h3 class="sectionHead"><span class="titlemark">4   </span> <a 
  id="x1-70004"></a>Video transform alternatives</h3>
-<!--l. 107--><p class="noindent" >To remove both, spatial and temporal redundancies, two diﬀerent alternatives are
-available: (1) a t+2D transform or (2) a 2D+t transform. In a t+2D transform, the
-video is ﬁrst <a 
-href="https://en.wikipedia.org/wiki/Digital_filter#Analysis_techniques" >analyzed</a> (transformed) over the time domain and next, over the space
-domain. A 2D+t transform does just the opposite.
-</p><!--l. 114--><p class="indent" >   Each choice has a number of <span 
+<!--l. 107--><p class="noindent" >To remove both, spatial and temporal redundancies, two diﬀerent alternatives
+are available: (1) t+2D transforms and (2) 2D+t transforms. In a t+2D
+transform, the video is ﬁrst <a 
+href="https://en.wikipedia.org/wiki/Digital_filter#Analysis_techniques" >analyzed</a> (transformed) over the time domain and
+next, over the space domain. A 2D+t transform does just the opposite. Each
+choice has a number of <span 
 class="ecti-1000">pros </span>and <span 
 class="ecti-1000">cons</span>. For example, in a t+2D transform we
-can apply directly any image predictor based on motion estimation because
+can apply directly any image predictor based on <a 
+href="https://en.wikipedia.org/wiki/Motion_estimation" >motion estimation</a> because
 the input is a normal video. However, if we implement a 2D+t transform,
 the input to the motion estimator is a sequence decompositions. <a 
 href="http://www.polyvalens.com/blog/wavelets/theory" >The
@@ -3091,11 +3094,11 @@ display="inline" ><mi
 class="MathClass-open">[</mo><mrow><mi 
 >t</mi></mrow><mo 
 class="MathClass-close">]</mo></mrow></math>
-along the time domain. Therefore, motion estimators which compare pixel values will
-not work on the (subband) decomposition domain. On the other hand, if we want to
-provide true spatial scalability (processing only those <a 
-href="https://en.wikipedia.org/wiki/Image_resolution#Spatial_resolution" >spatial resolutions</a> (scales)
-necessary to get a spatially scaled of our video), a t+2D transformed video is
+along one of the signal domains. Therefore, motion estimators which compare pixel
+values will not work on the (subband) decomposition domain. On the other hand, if
+we want to provide true spatial scalability (processing only those <a 
+href="https://en.wikipedia.org/wiki/Image_resolution#Spatial_resolution" >spatial resolutions</a>
+(scales) necessary to get a spatially scaled of our video), a t+2D transformed video is
 not suitable because the ﬁrst step of the forward transform (t) should be
 reversed at full resolution in the backward transform (as the forward transform
 did).
@@ -3116,8 +3119,8 @@ subbands by means of <a
 href="https://en.wikipedia.org/wiki/Motion_compensation" >Motion Compensation (MC)</a>. A special characteristic of
 MCDWT is that the motion information is not transmitted from the encoder to the
 <a 
-href="https://en.wikipedia.org/wiki/Decoder" >decoder</a>. This is possible because to estimate de motion at the encoder, it only uses
-the information that it is accesible by the decoder.
+href="https://en.wikipedia.org/wiki/Decoder" >decoder</a>. This is possible because to estimate de motion at the encoder, only the
+information that it is accesible by the decoder is used.
 </p><!--l. 145--><p class="noindent" >
 </p>
    <h4 class="subsectionHead"><span class="titlemark">5.1   </span> <a 
@@ -3253,7 +3256,7 @@ subbands.
                                                                   
 
                                                                   
-<!--l. 161--><p class="noindent" > <div style="text-align:center;"> <img width=800 src="graphics/forward_butterfly.svg" /> </div> 
+<!--l. 161--><p class="noindent" > <div style="text-align:center;"> <img width=1200 src="graphics/forward_butterfly.svg" /> </div> 
 <br /> </p><div class="caption" 
 ><span class="id">Figure 2: </span><span  
 class="content">Forward MCDWT butterﬂy.</span></div><!--tex4ht:label?: x1-90012 -->
@@ -4296,7 +4299,7 @@ of the sequence are temporally decorrelated.
                                                                   
 
                                                                   
-<!--l. 183--><p class="noindent" > <div style="text-align:center;"> <img width=800 src="graphics/temporal_decorrelation.svg" /> </div> 
+<!--l. 183--><p class="noindent" > <div style="text-align:center;"> <img width=1200 src="graphics/temporal_decorrelation.svg" /> </div> 
 <br /> </p><div class="caption" 
 ><span class="id">Figure 3: </span><span  
 class="content">MCDWT forward transform.</span></div><!--tex4ht:label?: x1-100013 -->
@@ -5989,45 +5992,10 @@ class="ectt-1000">//=2</span>
    
    </div>
    <h4 class="subsectionHead"><span class="titlemark">5.3   </span> <a 
- id="x1-110005.3"></a>Scalability provided by MCDWT</h4>
-<!--l. 189--><p class="noindent" >The decomposition generated by the MCDWT is identical to MDWT. Therefore,
-MCDWT provides the same spatial scalability than MDWT. In order to obtain
-several spatial resolutions, MCDWT should be applied to the low-frequency
-subbands, recursively. As an example, in the Figure <a 
-href="#x1-110014">4<!--tex4ht:ref: fig:multiresolution --></a>, MCDWT has been applied to
-the output of the example of the Figure <a 
-href="#x1-100013">3<!--tex4ht:ref: fig:forward_MCDWT --></a>. Notice that between two consecutive
-iterations of MCDWT, MDWT must be applied to the low-frequency subband in
-order to reduce the resolution of the analysis.
-</p><!--l. 199--><p class="indent" >   On the other hand, MCDWT decreases the temporal scalability oﬀered
-by MDWT to allowing only dyadic access (depending on required image
-and the number of MCDWT levels, more than one decomposition need to
-be inversely transformed). For example, if only one step of the backward
-transform is applied to the previous example, only the decompositions of
-<!--l. 204--><math 
- xmlns="http://www.w3.org/1998/Math/MathML"  
-display="inline" ><msub><mrow 
-><mi 
->s</mi></mrow><mrow 
-><mn>0</mn></mrow></msub 
-></math>,
-<!--l. 204--><math 
- xmlns="http://www.w3.org/1998/Math/MathML"  
-display="inline" ><msub><mrow 
-><mi 
->s</mi></mrow><mrow 
-><mn>2</mn></mrow></msub 
-></math> and
-<!--l. 204--><math 
- xmlns="http://www.w3.org/1998/Math/MathML"  
-display="inline" ><msub><mrow 
-><mi 
->s</mi></mrow><mrow 
-><mn>4</mn></mrow></msub 
-></math> will
-be reconstructed (the ﬁrst <a 
-href="https://en.wikipedia.org/wiki/Temporal_resolution" >temporal resolution</a>. If a second iteration of the backward
-transform is used, all the decompositions are rendered.
+ id="x1-110005.3"></a>(Spatial) Multiresolution procedure</h4>
+<!--l. 190--><p class="noindent" >Spatial dyadic multiresolution can be obtained by appliying a sequence of
+MDWT+MCDWT steps (see Fig. <a 
+href="#x1-110014">4<!--tex4ht:ref: fig:multiresolution --></a>).
 </p>
    <hr class="figure" /><div class="figure" 
 >
@@ -6039,7 +6007,7 @@ transform is used, all the decompositions are rendered.
                                                                   
 
                                                                   
-<!--l. 211--><p class="noindent" > <div style="text-align:center;"> <img width=800 src="graphics/multiresolution.svg" /> </div> 
+<!--l. 194--><p class="noindent" > <div style="text-align:center;"> <img width=800 src="graphics/multiresolution.svg" /> </div> 
 <br /> </p><div class="caption" 
 ><span class="id">Figure 4: </span><span  
 class="content">MDWT+MCDWT multiresolution procedure.</span></div><!--tex4ht:label?: x1-110014 -->
@@ -6047,6 +6015,47 @@ class="content">MDWT+MCDWT multiresolution procedure.</span></div><!--tex4ht:lab
 
                                                                   
    </div><hr class="endfigure" />
+   <h4 class="subsectionHead"><span class="titlemark">5.4   </span> <a 
+ id="x1-120005.4"></a>Scalability provided by MCDWT</h4>
+<!--l. 200--><p class="noindent" >The decomposition generated by the MCDWT is identical to MDWT. Therefore,
+MCDWT provides the same spatial scalability than MDWT. In order to obtain
+several spatial resolutions, MCDWT should be applied to the low-frequency
+subbands, recursively. As an example, in the Figure <a 
+href="#x1-110014">4<!--tex4ht:ref: fig:multiresolution --></a>, MCDWT has been applied to
+the output of the example of the Figure <a 
+href="#x1-100013">3<!--tex4ht:ref: fig:forward_MCDWT --></a>. Notice that between two consecutive
+iterations of MCDWT, MDWT must be applied to the low-frequency subband in
+order to reduce the resolution of the analysis.
+</p><!--l. 210--><p class="indent" >   On the other hand, MCDWT decreases the temporal scalability oﬀered
+by MDWT to allowing only dyadic access (depending on required image
+and the number of MCDWT levels, more than one decomposition need to
+be inversely transformed). For example, if only one step of the backward
+transform is applied to the previous example, only the decompositions of
+<!--l. 215--><math 
+ xmlns="http://www.w3.org/1998/Math/MathML"  
+display="inline" ><msub><mrow 
+><mi 
+>s</mi></mrow><mrow 
+><mn>0</mn></mrow></msub 
+></math>,
+<!--l. 215--><math 
+ xmlns="http://www.w3.org/1998/Math/MathML"  
+display="inline" ><msub><mrow 
+><mi 
+>s</mi></mrow><mrow 
+><mn>2</mn></mrow></msub 
+></math> and
+<!--l. 215--><math 
+ xmlns="http://www.w3.org/1998/Math/MathML"  
+display="inline" ><msub><mrow 
+><mi 
+>s</mi></mrow><mrow 
+><mn>4</mn></mrow></msub 
+></math> will
+be reconstructed (the ﬁrst <a 
+href="https://en.wikipedia.org/wiki/Temporal_resolution" >temporal resolution</a>. If a second iteration of the backward
+transform is used, all the decompositions are rendered.
+</p>
     
 </body> 
 </html>
