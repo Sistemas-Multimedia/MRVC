@@ -44,7 +44,7 @@ have two interesting features:
 \href{https://en.wikipedia.org/wiki/Discrete_wavelet_transform}{(2D-)DWT}
 is a digital transform that, applied to an image, performs spatial
 decorrelation (2D) and obtains a
-\href{https://vicente-gonzalez-ruiz.github.io/image_transformations_for_coding/indexse24.html#x34-3400024}{multiresolution
+\href{https://vicente-gonzalez-ruiz.github.io/image_transformations_for_coding/index.html#x1-3500024}{multiresolution
   dyadic representation} of such image, conforming a collection of DWT
 subbands. The forward transform converts the image into a set of
 frequency subbands with coefficients representing different spatial
@@ -73,12 +73,13 @@ HH^k\}$ as only $H^k$, and $LL^k$ as only $L^k$.
 \subsection{Scalability provided by DWT}
 Depending on the number of subbands levels (pyramid levels in the
 pyramid representation) that we use, we can reconstruct a image at
-different spatial at scales (resolutions). For example, the scale $2$
-of an image $s_1$ that has been transformed using the DWT of 2 levels
-will be represented by the subband $s_1.L^2$, the scale $1$ by the
-subband $s_1.L=\text{iDWT}(s_1.L^2, S_1.H^2)$, and the scale $0$ (the
-original resolution of the image) by the subband
-$s_1.L^0=\text{iDWT}(s_1.L, s_1.H)$.
+different spatial scales (resolutions). For example, if an image $s_1$ has been transformed using the DWT of 2 levels, we get:
+\begin{itemize}
+\item Subband $s_1.L^2$ with the scale 2.
+\item Subband $s_1.L^1=s_1.L=\text{iDWT}(s_1.L^2, S_1.H^2)$ (iDWT =
+  inverse DWT = backward DWT) with the scale 1.
+\item $s_1.L^0=\text{iDWT}(s_1.L, s_1.H)$ (the original image) with the scale 0.
+\end{itemize}
 
 \section{Motion DWT (MDWT)}
 DWT can be applied to a sequence of images by simply transforming each
@@ -89,7 +90,7 @@ exploited. All the temporal redundancy still remains in the video.
 
 \begin{figure}
 \centering
-\imgw{400}{graphics/forward_MDWT.svg}
+\imgw{800}{graphics/forward_MDWT.svg}
 \caption{Forward MDWT step.}
 \end{figure}
 
