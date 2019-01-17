@@ -14,42 +14,46 @@
 
 \href{https://en.wikipedia.org/wiki/Video}{Video} data contain high
 amounts of redundancy, spatial and temporal. For this reason, most of
-video encoders compress the input sequece of images (which are
+video encoders compress the input sequece of
+\href{https://en.wikipedia.org/wiki/Digital_image}{images} (which are
 matrices of \href{https://en.wikipedia.org/wiki/Pixel}{pixels})
 basically in two stages: (1) a transform stage in the
 \href{https://en.wikipedia.org/wiki/Time_domain}{time} and in the
 \href{https://www.quora.com/What-is-spatial-domain-in-image-processing}{spatial}
 domains that produces a collection of spatially
 \href{https://en.wikipedia.org/wiki/Decorrelation}{uncorrelated}
-\href{https://www.quora.com/What-is-spatial-domain-in-image-processing}{coefficients},
+\href{https://en.wikipedia.org/wiki/Discrete_wavelet_transform}{coefficients},
 and (2) an
 \href{https://vicente-gonzalez-ruiz.github.io/symbol_compression/}{entropy
-  encoding} phase to remove the statistical redundancy that still can
-remains after the decorrelation (transform). These coefficients have
-two interesting features:
-\begin{itemize}
-\item Usually, a \textbf{smaller entropy} than the original
-  pixels. This helps to increase the compression ratios.
+  encoding} phase which removes the statistical redundancy that can
+still remains after the decorrelation (transform). These coefficients
+have two interesting features:
+\begin{enumerate}
+\item Usually, a \textbf{smaller
+  \href{https://en.wikipedia.org/wiki/Discrete_wavelet_transform}{entropy}}
+  than the original pixels. This helps to increase the
+  \href{https://en.wikipedia.org/wiki/Data_compression_ratio}{compression
+    ratio}.
 \item The transform domain provides a
   \textbf{\href{https://en.wikipedia.org/wiki/Image_resolution}{multiresolution}
     representation} of the visual information (spatial
   \href{http://inst.eecs.berkeley.edu/~ee290t/sp04/lectures/videowavelet_UCB1-3.pdf}{scalability}).
-\end{itemize}
+\end{enumerate}
 
 \section{Distrete Wavelet Transform (DWT)}
 \href{https://en.wikipedia.org/wiki/Discrete_wavelet_transform}{(2D-)DWT}
-applied to an image is a suitable transform for obtaining a spatial
-(2D) decorrelation and, at the same time, a
+is a digital transform that, applied to an image, performs spatial
+decorrelation (2D) and obtains a
 \href{https://vicente-gonzalez-ruiz.github.io/image_transformations_for_coding/indexse24.html#x34-3400024}{multiresolution
   dyadic representation} of such image, conforming a collection of DWT
 subbands. The forward transform converts the image into a set of
 frequency subbands with coefficients representing different spatial
-areas and frequency orientations. There is a equivalence between (DWT)
-subbands (a \emph{(subband) decomposition}) and
-\href{https://en.wikipedia.org/wiki/Pyramid_(image_processing)#Laplacian_pyramid}{Lapacian
-  pyramids}, and it is quite simple to pass from a
-\href{https://vicente-gonzalez-ruiz.github.io/pyramids-and-wavelets/}{a
-  decomposition representation to a pyramid representation and
+areas and frequency orientations. There is an equivalence between
+(DWT) subbands (a \emph{(subband) decomposition}) and
+\href{https://en.wikipedia.org/wiki/Pyramid_(image_processing)#Laplacian_pyramid}{Laplacian
+  pyramids}, and it is quite simple to
+\href{https://vicente-gonzalez-ruiz.github.io/pyramids-and-wavelets/}{pass
+  from a decomposition representation to a pyramid representation and
   viceversa}.
 
 \href{https://github.com/vicente-gonzalez-ruiz/MCDWT/blob/master/src/DWT.py}{DWT.py}
