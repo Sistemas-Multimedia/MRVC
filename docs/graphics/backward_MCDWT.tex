@@ -46,13 +46,13 @@
   \draw node [draw, thick, rectangle, left of=BHC, node distance=3.5cm] (12b) {$1/2$};
   \draw node [block, below of=suma1] (BH) {$[B.H]$};
   \draw node [sum, left of=BH] (suma2) {\suma};
-  \draw node [block, below of=suma2] (B) {$B$};
+  \draw node [block, below of=suma2] (B) {$b$};
   \draw node [sum, left of=AH] (suma3) {\suma};
   \draw node [sum, left of=CH] (suma4) {\suma};
   \draw node [rectangle, minimum width = 2cm, minimum height = 2cm, node distance = 3.5cm, left of=B] (lB) {};
-  \draw node [block, left of=lB] (A) {$A$};
+  \draw node [block, left of=lB] (a) {$a$};
   \draw node [rectangle, minimum width = 2cm, minimum height = 2cm, node distance = 3.5cm, right of=B] (rB) {};
-  \draw node [block, right of=rB] (C) {$C$};
+  \draw node [block, right of=rB] (c) {$c$};
 
   \draw [->] ($(DWTA) + (-1cm,0.5cm)$) -- node[below] {iDWT} (AL);
   \draw [->] ($(DWTB) + (-1cm,0.5cm)$) -- node[below] {iDWT} (BL);
@@ -74,13 +74,13 @@
   \draw [->] (CH) -- (suma4);
   \draw [->] (AL) -- (suma3);
   \draw [->] (CL) -- (suma4);
-  \draw [->] (suma3) -- (A);
+  \draw [->] (suma3) -- (a);
   \draw [->] (suma4)
   -- ($(12b.north) + (0, 0.5cm)$)
   -- ($(12b.north) + (-1cm,0.5cm)$)
   -- ($(12b.north) + (-1cm,-1.2cm)$)
   -- ($(12b.north) + (0,-1.2cm)$)
-  -- (C);
+  -- (c);
   \draw [->] (BL)
   -- ($(12a.north) + (0, 0.5cm)$)
   -- ($(12a.north) + (-1cm,0.5cm)$)
