@@ -76,8 +76,8 @@ pyramid representation) that we use, we can reconstruct a image at
 different spatial scales (resolutions). For example, if an image $s_1$ has been transformed using the DWT of 2 levels, we get:
 \begin{itemize}
 \item Subband $s_1.L^2$ with the scale 2.
-\item Subband $s_1.L^1=s_1.L=\text{iDWT}(s_1.L^2, S_1.H^2)$ (iDWT =
-  inverse DWT = backward DWT) with the scale 1.
+\item Subband $s_1.L^1=s_1.L=\text{iDWT}(s_1.L^2, S_1.H^2)$ (``iDWT'' =
+  ``inverse DWT'' = ``backward DWT'') with the scale 1.
 \item $s_1.L^0=\text{iDWT}(s_1.L, s_1.H)$ (the original image) with the scale 0.
 \end{itemize}
 
