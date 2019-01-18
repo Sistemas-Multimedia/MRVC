@@ -13,4 +13,3 @@ Contents of proyect:
 5. `src`: source files.
 7. `tests`: test scripts.
 8. `tools`: tools.
-9. `transform`: transform.
