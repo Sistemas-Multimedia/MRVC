@@ -81,7 +81,7 @@ different spatial scales (resolutions). For example, if an image $s_1$ has been 
 \item $s_1.L^0=\text{iDWT}(s_1.L, s_1.H)$ (the original image) with the scale 0.
 \end{itemize}
 
-Example:
+\subsection{Example}
 \begin{verbatim}
 # You must be in the 'src' directory.
 
@@ -151,7 +151,7 @@ hand, it is trivial to observe that MDWT provides \emph{fully}
 temporal scalability (we can access to the images randomly) because
 each image of the input sequence is transformed independently.
 
-Example:
+\subsection{Example}
 \begin{verbatim}
 # You must be in the 'src' directory.
 
@@ -176,7 +176,7 @@ animate /tmp/*.png
 python -O MDWT.py -b -i /tmp/recons_ -d /tmp/stockholm_
 
 # Visualization of the reconstruction:
-rm /tmp/*.png; for i in /tmp/recons_*; do convert -normalize $i $i.png; done; animate /tmp/*.png
+rm -f /tmp/*.png; for i in /tmp/recons_*; do convert -normalize $i $i.png; done; animate /tmp/*.png
 \end{verbatim}
 
 \section{Video transform alternatives}
@@ -297,6 +297,44 @@ of $s_0$, $s_2$ and $s_4$ will be reconstructed (the first
 \href{https://en.wikipedia.org/wiki/Temporal_resolution}{temporal
   resolution}. If a second iteration of the backward transform is
 used, all the decompositions are rendered.
+
+\subsection{Example}
+\begin{verbatim}
+# You must be in the 'src' directory.
+
+# Motion 2D 1-levels forward DWT of the 'stockholm' sequence:
+python -O ./MDWT.py -i ../sequences/stockholm/ -d /tmp/stockholm_
+
+# Motion Compensated 1D 1-levels forward DWT:
+python -O MCDWT.py -d /tmp/stockholm_ -m /tmp/mc_stockholm_
+
+# First and last decompositions are not transformed by MCDWT:
+ls -l /tmp/stockholm_000_HH /tmp/mc_stockholm_000_HH
+ls -l /tmp/stockholm_004_HL /tmp/mc_stockholm_004_HL
+
+# The rest, are transformed:
+ls -l /tmp/stockholm_001_LH /tmp/mc_stockholm_001_LH
+ls -l /tmp/stockholm_002_HL /tmp/mc_stockholm_002_HL
+ls -l /tmp/stockholm_003_HH /tmp/mc_stockholm_003_HH
+
+# Visualization of the H-subbands
+rm -f /tmp/*.png; for i in /tmp/mc_stockholm_00?_LH; do convert -normalize $i $i.png; done; animate /tmp/*.png
+rm -f /tmp/*.png; for i in /tmp/mc_stockholm_00?_HL; do convert -normalize $i $i.png; done; animate /tmp/*.png
+rm -f /tmp/*.png; for i in /tmp/mc_stockholm_00?_HH; do convert -normalize $i $i.png; done; animate /tmp/*.png
+
+# Motion Compensated 1D 1-levels backward DWT:
+python -O ./MCDWT.py -b -m /tmp/mc_stockholm_ -d /tmp/recons_MCDWT_
+
+# Motion 2D 1-levels backward DWT:
+python -O ./MDWT.py -b -d /tmp/recons_MCDWT_ -i /tmp/recons_MDWT_
+
+# Visualization of the reconstruction:
+rm -f /tmp/*.png; for i in /tmp/recons_MDWT_*; do convert -normalize $i $i.png; done; animate /tmp/*.png
+
+# Visualize the original sequence:
+rm -f /tmp/stockholm/*.png; cp -r ../sequences/stockholm /tmp; for i in /tmp/stockholm/*; do convert -normalize $i $i.png; done; animate /tmp/stockholm/*.png
+\end{verbatim}
+
 
 \begin{comment}
 

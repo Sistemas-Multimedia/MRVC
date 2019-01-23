@@ -1,6 +1,20 @@
 import cv2
 import numpy as np
 import math
+import argparse
+
+class CustomFormatter(argparse.ArgumentDefaultsHelpFormatter, argparse.RawDescriptionHelpFormatter):
+        pass
+
+parser = argparse.ArgumentParser(description = "Displays information about an image\n\n"
+                                 "Example:\n\n"
+                                 "  python show_statistics.py -i ../sequences/stockholm/000\n",
+                                 formatter_class=CustomFormatter)
+
+parser.add_argument("-i", "--image",
+                    help="Input image", default="/tmp/stockholm/000")
+
+args = parser.parse_args()
 
 def compute_entropy(d, counter):
     for x in d:
@@ -12,8 +26,7 @@ def compute_entropy(d, counter):
 
     return -en
 
-
-image = cv2.imread('/tmp/000_LL', -1)
+image = cv2.imread(args.image, -1)
 
 width = image.shape[0]
 height = image.shape[1]
@@ -24,14 +37,14 @@ histogram = [None]*components
 for i in range(components):
     histogram[i] = {}
 
-for y in range(height):
-    for x in range(width):
+for y in range(width):
+    for x in range(height):
         for c in range(components):
-            val = image[y,x,c]
+            val = image[y][x][c]
             if val not in histogram[c]:
-                histogram[c] = 1
+                histogram[c][val] = 1
             else:
-                histogram[c] += 1
+                histogram[c][val] += 1
 
 entropy = [None]*components
 for c in range(components):
