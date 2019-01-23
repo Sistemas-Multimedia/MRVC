@@ -38,29 +38,36 @@ href="#x1-20001" id="QQ2-1-2">Intro</a></span>
 href="#x1-30002" id="QQ2-1-3">Distrete Wavelet Transform (DWT)</a></span>
 <br />    <span class="subsectionToc" >2.1 <a 
 href="#x1-40002.1" id="QQ2-1-5">Scalability provided by DWT</a></span>
+<br />    <span class="subsectionToc" >2.2 <a 
+href="#x1-50002.2" id="QQ2-1-6">Example</a></span>
 <br />   <span class="sectionToc" >3 <a 
-href="#x1-50003" id="QQ2-1-6">Motion DWT (MDWT)</a></span>
+href="#x1-60003" id="QQ2-1-7">Motion DWT (MDWT)</a></span>
 <br />    <span class="subsectionToc" >3.1 <a 
-href="#x1-60003.1" id="QQ2-1-9">Scalability provided by MDWT</a></span>
+href="#x1-70003.1" id="QQ2-1-10">Scalability provided by MDWT</a></span>
+<br />    <span class="subsectionToc" >3.2 <a 
+href="#x1-80003.2" id="QQ2-1-11">Example</a></span>
 <br />   <span class="sectionToc" >4 <a 
-href="#x1-70004" id="QQ2-1-10">Video transform alternatives</a></span>
+href="#x1-90004" id="QQ2-1-12">Video transform alternatives</a></span>
 <br />   <span class="sectionToc" >5 <a 
-href="#x1-80005" id="QQ2-1-11">Motion Compensated Discrete Wavelet Transform (MCDWT)</a></span>
+href="#x1-100005" id="QQ2-1-13">Motion Compensated Discrete Wavelet Transform (MCDWT)</a></span>
 <br />    <span class="subsectionToc" >5.1 <a 
-href="#x1-90005.1" id="QQ2-1-12">MCDWT butterﬂy</a></span>
+href="#x1-110005.1" id="QQ2-1-14">MCDWT butterﬂy</a></span>
 <br />    <span class="subsectionToc" >5.2 <a 
-href="#x1-100005.2" id="QQ2-1-15">MCDWT forward transform</a></span>
+href="#x1-120005.2" id="QQ2-1-17">MCDWT forward transform</a></span>
 <br />    <span class="subsectionToc" >5.3 <a 
-href="#x1-110005.3" id="QQ2-1-18">(Spatial) Multiresolution procedure</a></span>
+href="#x1-130005.3" id="QQ2-1-20">(Spatial) Multiresolution procedure</a></span>
 <br />    <span class="subsectionToc" >5.4 <a 
-href="#x1-120005.4" id="QQ2-1-20">Scalability provided by MCDWT</a></span>
-<br />   <span class="sectionToc" >6 <a 
-href="#x1-130006" id="QQ2-1-21">Example</a></span>
+href="#x1-140005.4" id="QQ2-1-22">Scalability provided by MCDWT</a></span>
+<br />    <span class="subsectionToc" >5.5 <a 
+href="#x1-150005.5" id="QQ2-1-23">Example</a></span>
    </div>
 <!--l. 13--><p class="noindent" >
 </p>
    <h3 class="sectionHead"><span class="titlemark">1   </span> <a 
  id="x1-20001"></a>Intro</h3>
+                                                                  
+
+                                                                  
 <!--l. 15--><p class="noindent" ><a 
 href="https://en.wikipedia.org/wiki/Video" >Video</a> data contain high amounts of redundancy, spatial and temporal. For this
 reason, most of video encoders compress the input sequece of <a 
@@ -68,9 +75,6 @@ href="https://en.wikipedia.org/wiki/Digital_image" >images</a> (which are
 matrices of <a 
 href="https://en.wikipedia.org/wiki/Pixel" >pixels</a>) basically in two stages: (1) a transform stage in the <a 
 href="https://en.wikipedia.org/wiki/Time_domain" >time</a> and in
-                                                                  
-
-                                                                  
 the <a 
 href="https://www.quora.com/What-is-spatial-domain-in-image-processing" >spatial</a> domains that produces a collection of spatially <a 
 href="https://en.wikipedia.org/wiki/Decorrelation" >uncorrelated</a> <a 
@@ -2101,6 +2105,9 @@ to the <!--l. 69--><math
 display="inline" ><mi 
 >L</mi><mi 
 >L</mi></math> subband, recursively,
+                                                                  
+
+                                                                  
 a decomposition of <!--l. 69--><math 
  xmlns="http://www.w3.org/1998/Math/MathML"  
 display="inline" ><mi 
@@ -2132,9 +2139,6 @@ class="MathClass-punc">,</mo><mi
 >k</mi></mrow></msup 
 ></mrow><mo 
 class="MathClass-close">}</mo></mrow></math> as only
-                                                                  
-
-                                                                  
 <!--l. 71--><math 
  xmlns="http://www.w3.org/1998/Math/MathML"  
 display="inline" ><msup><mrow 
@@ -2264,11 +2268,13 @@ class="MathClass-punc">.</mo><mi
 >H</mi></mrow><mo 
 class="MathClass-close">)</mo></mrow></math>
      (the original image) with the scale 0.</li></ul>
-<!--l. 84--><p class="indent" >   Example:
+<!--l. 84--><p class="noindent" >
+</p>
+   <h4 class="subsectionHead"><span class="titlemark">2.2   </span> <a 
+ id="x1-50002.2"></a>Example</h4>
                                                                   
 
                                                                   
-</p>
    <div class="verbatim" id="verbatim-1">
 # You must be in the ’src’ directory.
  <br />
@@ -2311,10 +2317,10 @@ class="MathClass-close">)</mo></mrow></math>
  <br />../tools/show_differences.sh -1 /tmp/scale1 -2 /tmp/000_LL -o /tmp/diffs.png
  <br />display -normalize /tmp/diffs.png
  <br />
+ <br /># The scale 0 is recovered using again the inverse transform:
                                                                   
 
                                                                   
- <br /># The scale 0 is recovered using again the inverse transform:
  <br />cp /tmp/scale1 /tmp/000_LL
  <br />./DWT.py -b -d /tmp/000 -i /tmp/scale0 &#x0026;&#x0026; display -normalize /tmp/scale0
 </div>
@@ -2322,7 +2328,7 @@ class="MathClass-close">)</mo></mrow></math>
 </p><!--l. 132--><p class="noindent" >
 </p>
    <h3 class="sectionHead"><span class="titlemark">3   </span> <a 
- id="x1-50003"></a>Motion DWT (MDWT)</h3>
+ id="x1-60003"></a>Motion DWT (MDWT)</h3>
 <!--l. 133--><p class="noindent" >DWT can be applied to a sequence of images by simply transforming each image of
 the sequence independently. This is done, for example, in the <a 
 href="https://en.wikipedia.org/wiki/JPEG_2000" >motion JPEG2000
@@ -2335,36 +2341,36 @@ the temporal redundancy still remains in the video.
 
                                                                   
 <a 
- id="x1-50011"></a>
+ id="x1-60011"></a>
                                                                   
 
                                                                   
 <!--l. 141--><p class="noindent" > <div style="text-align:center;"> <img width=800 src="graphics/forward_MDWT.svg" /> </div> 
 <br /> </p><div class="caption" 
 ><span class="id">Figure 1: </span><span  
-class="content">Forward MDWT step.</span></div><!--tex4ht:label?: x1-50011 -->
+class="content">Forward MDWT step.</span></div><!--tex4ht:label?: x1-60011 -->
                                                                   
 
                                                                   
    </div><hr class="endfigure" />
    <!--l. 145--><div class="lstinputlisting">
 <a 
- id="x1-5002r2"></a>
+ id="x1-6002r2"></a>
 <a 
- id="x1-5003"></a>
+ id="x1-6003"></a>
 <br /> <div class="caption" 
 ><span class="id">Listing 2: </span><span  
-class="content">MDWT.py</span></div><!--tex4ht:label?: x1-5002r3 --><span 
+class="content">MDWT.py</span></div><!--tex4ht:label?: x1-6002r3 --><span 
 class="ectt-1000"> </span><br /><span class="label"><a 
- id="x1-5004r1"></a></span><span 
+ id="x1-6004r1"></a></span><span 
 class="ectt-1000">class</span><span 
 class="ectt-1000"> </span><span 
 class="ectt-1000">MDWT</span><span 
 class="ectt-1000">:</span><span 
 class="ectt-1000"> </span><br /><span class="label"><a 
- id="x1-5005r2"></a></span><span 
+ id="x1-6005r2"></a></span><span 
 class="ectt-1000"> </span><br /><span class="label"><a 
- id="x1-5006r3"></a></span><span 
+ id="x1-6006r3"></a></span><span 
 class="ectt-1000"> </span><span 
 class="ectt-1000"> </span><span 
 class="ectt-1000"> </span><span 
@@ -2376,7 +2382,7 @@ class="ectt-1000">(</span><span
 class="ectt-1000">self</span><span 
 class="ectt-1000">):</span><span 
 class="ectt-1000"> </span><br /><span class="label"><a 
- id="x1-5007r4"></a></span><span 
+ id="x1-6007r4"></a></span><span 
 class="ectt-1000"> </span><span 
 class="ectt-1000"> </span><span 
 class="ectt-1000"> </span><span 
@@ -2394,9 +2400,9 @@ class="ectt-1000"> </span><span
 class="ectt-1000">DWT</span><span 
 class="ectt-1000">()</span><span 
 class="ectt-1000"> </span><br /><span class="label"><a 
- id="x1-5008r5"></a></span><span 
+ id="x1-6008r5"></a></span><span 
 class="ectt-1000"> </span><br /><span class="label"><a 
- id="x1-5009r6"></a></span><span 
+ id="x1-6009r6"></a></span><span 
 class="ectt-1000"> </span><span 
 class="ectt-1000"> </span><span 
 class="ectt-1000"> </span><span 
@@ -2432,7 +2438,7 @@ class="ectt-1000"> </span><span
 class="ectt-1000">N</span><span 
 class="ectt-1000">=5):</span><span 
 class="ectt-1000"> </span><br /><span class="label"><a 
- id="x1-5010r7"></a></span><span 
+ id="x1-6010r7"></a></span><span 
 class="ecit-1000"> </span><span 
 class="ecit-1000"> </span><span 
 class="ecit-1000"> </span><span 
@@ -2466,9 +2472,9 @@ class="ecit-1000"> </span><span
 class="ecit-1000">images</span><span 
 class="ecit-1000">.</span><span 
 class="ectt-1000"> </span><br /><span class="label"><a 
- id="x1-5011r8"></a></span><span 
+ id="x1-6011r8"></a></span><span 
 class="ectt-1000"> </span><br /><span class="label"><a 
- id="x1-5012r9"></a></span><span 
+ id="x1-6012r9"></a></span><span 
 class="ecit-1000"> </span><span 
 class="ecit-1000"> </span><span 
 class="ecit-1000"> </span><span 
@@ -2501,9 +2507,9 @@ class="ecit-1000"> </span><span
 class="ecit-1000">s</span><span 
 class="ecit-1000">.</span><span 
 class="ectt-1000"> </span><br /><span class="label"><a 
- id="x1-5013r10"></a></span><span 
+ id="x1-6013r10"></a></span><span 
 class="ectt-1000"> </span><br /><span class="label"><a 
- id="x1-5014r11"></a></span><span 
+ id="x1-6014r11"></a></span><span 
 class="ecit-1000"> </span><span 
 class="ecit-1000"> </span><span 
 class="ecit-1000"> </span><span 
@@ -2515,7 +2521,7 @@ class="ecit-1000"> </span><span
 class="ecit-1000">Input</span><span 
 class="ecit-1000">:</span><span 
 class="ectt-1000"> </span><br /><span class="label"><a 
- id="x1-5015r12"></a></span><span 
+ id="x1-6015r12"></a></span><span 
 class="ecit-1000"> </span><span 
 class="ecit-1000"> </span><span 
 class="ecit-1000"> </span><span 
@@ -2526,9 +2532,9 @@ class="ecit-1000"> </span><span
 class="ecit-1000"> </span><span 
 class="ecit-1000">-----</span><span 
 class="ectt-1000"> </span><br /><span class="label"><a 
- id="x1-5016r13"></a></span><span 
+ id="x1-6016r13"></a></span><span 
 class="ectt-1000"> </span><br /><span class="label"><a 
- id="x1-5017r14"></a></span><span 
+ id="x1-6017r14"></a></span><span 
 class="ecit-1000"> </span><span 
 class="ecit-1000"> </span><span 
 class="ecit-1000"> </span><span 
@@ -2559,9 +2565,9 @@ class="ecit-1000"> </span><span
 class="ecit-1000">transformed</span><span 
 class="ecit-1000">.</span><span 
 class="ectt-1000"> </span><br /><span class="label"><a 
- id="x1-5018r15"></a></span><span 
+ id="x1-6018r15"></a></span><span 
 class="ectt-1000"> </span><br /><span class="label"><a 
- id="x1-5019r16"></a></span><span 
+ id="x1-6019r16"></a></span><span 
 class="ecit-1000"> </span><span 
 class="ecit-1000"> </span><span 
 class="ecit-1000"> </span><span 
@@ -2573,7 +2579,7 @@ class="ecit-1000"> </span><span
 class="ecit-1000">Output</span><span 
 class="ecit-1000">:</span><span 
 class="ectt-1000"> </span><br /><span class="label"><a 
- id="x1-5020r17"></a></span><span 
+ id="x1-6020r17"></a></span><span 
 class="ecit-1000"> </span><span 
 class="ecit-1000"> </span><span 
 class="ecit-1000"> </span><span 
@@ -2584,9 +2590,9 @@ class="ecit-1000"> </span><span
 class="ecit-1000"> </span><span 
 class="ecit-1000">------</span><span 
 class="ectt-1000"> </span><br /><span class="label"><a 
- id="x1-5021r18"></a></span><span 
+ id="x1-6021r18"></a></span><span 
 class="ectt-1000"> </span><br /><span class="label"><a 
- id="x1-5022r19"></a></span><span 
+ id="x1-6022r19"></a></span><span 
 class="ecit-1000"> </span><span 
 class="ecit-1000"> </span><span 
 class="ecit-1000"> </span><span 
@@ -2616,9 +2622,9 @@ class="ecit-1000"> </span><span
 class="ecit-1000">images</span><span 
 class="ecit-1000">).</span><span 
 class="ectt-1000"> </span><br /><span class="label"><a 
- id="x1-5023r20"></a></span><span 
+ id="x1-6023r20"></a></span><span 
 class="ectt-1000"> </span><br /><span class="label"><a 
- id="x1-5024r21"></a></span><span 
+ id="x1-6024r21"></a></span><span 
 class="ecit-1000"> </span><span 
 class="ecit-1000"> </span><span 
 class="ecit-1000"> </span><span 
@@ -2629,7 +2635,7 @@ class="ecit-1000"> </span><span
 class="ecit-1000"> </span><span 
 class="ecit-1000">’’’</span><span 
 class="ectt-1000"> </span><br /><span class="label"><a 
- id="x1-5025r22"></a></span><span 
+ id="x1-6025r22"></a></span><span 
 class="ectt-1000"> </span><span 
 class="ectt-1000"> </span><span 
 class="ectt-1000"> </span><span 
@@ -2649,7 +2655,7 @@ class="ectt-1000">(</span><span
 class="ectt-1000">N</span><span 
 class="ectt-1000">):</span><span 
 class="ectt-1000"> </span><br /><span class="label"><a 
- id="x1-5026r23"></a></span><span 
+ id="x1-6026r23"></a></span><span 
 class="ectt-1000"> </span><span 
 class="ectt-1000"> </span><span 
 class="ectt-1000"> </span><span 
@@ -2684,7 +2690,7 @@ class="ectt-1000"> </span><span
 class="ectt-1000">i</span><span 
 class="ectt-1000">))</span><span 
 class="ectt-1000"> </span><br /><span class="label"><a 
- id="x1-5027r24"></a></span><span 
+ id="x1-6027r24"></a></span><span 
 class="ectt-1000"> </span><span 
 class="ectt-1000"> </span><span 
 class="ectt-1000"> </span><span 
@@ -2710,7 +2716,7 @@ class="ectt-1000">(</span><span
 class="ectt-1000">img</span><span 
 class="ectt-1000">)</span><span 
 class="ectt-1000"> </span><br /><span class="label"><a 
- id="x1-5028r25"></a></span><span 
+ id="x1-6028r25"></a></span><span 
 class="ectt-1000"> </span><span 
 class="ectt-1000"> </span><span 
 class="ectt-1000"> </span><span 
@@ -2744,9 +2750,9 @@ class="ectt-1000"> </span><span
 class="ectt-1000">i</span><span 
 class="ectt-1000">))</span><span 
 class="ectt-1000"> </span><br /><span class="label"><a 
- id="x1-5029r26"></a></span><span 
+ id="x1-6029r26"></a></span><span 
 class="ectt-1000"> </span><br /><span class="label"><a 
- id="x1-5030r27"></a></span><span 
+ id="x1-6030r27"></a></span><span 
 class="ectt-1000"> </span><span 
 class="ectt-1000"> </span><span 
 class="ectt-1000"> </span><span 
@@ -2781,7 +2787,7 @@ class="ectt-1000"> </span><span
 class="ectt-1000">N</span><span 
 class="ectt-1000">=5):</span><span 
 class="ectt-1000"> </span><br /><span class="label"><a 
- id="x1-5031r28"></a></span><span 
+ id="x1-6031r28"></a></span><span 
 class="ecit-1000"> </span><span 
 class="ecit-1000"> </span><span 
 class="ecit-1000"> </span><span 
@@ -2815,9 +2821,9 @@ class="ecit-1000"> </span><span
 class="ecit-1000">decompositions</span><span 
 class="ecit-1000">.</span><span 
 class="ectt-1000"> </span><br /><span class="label"><a 
- id="x1-5032r29"></a></span><span 
+ id="x1-6032r29"></a></span><span 
 class="ectt-1000"> </span><br /><span class="label"><a 
- id="x1-5033r30"></a></span><span 
+ id="x1-6033r30"></a></span><span 
 class="ecit-1000"> </span><span 
 class="ecit-1000"> </span><span 
 class="ecit-1000"> </span><span 
@@ -2852,9 +2858,9 @@ class="ecit-1000"> </span><span
 class="ecit-1000">S</span><span 
 class="ecit-1000">.</span><span 
 class="ectt-1000"> </span><br /><span class="label"><a 
- id="x1-5034r31"></a></span><span 
+ id="x1-6034r31"></a></span><span 
 class="ectt-1000"> </span><br /><span class="label"><a 
- id="x1-5035r32"></a></span><span 
+ id="x1-6035r32"></a></span><span 
 class="ecit-1000"> </span><span 
 class="ecit-1000"> </span><span 
 class="ecit-1000"> </span><span 
@@ -2866,7 +2872,7 @@ class="ecit-1000"> </span><span
 class="ecit-1000">Input</span><span 
 class="ecit-1000">:</span><span 
 class="ectt-1000"> </span><br /><span class="label"><a 
- id="x1-5036r33"></a></span><span 
+ id="x1-6036r33"></a></span><span 
 class="ecit-1000"> </span><span 
 class="ecit-1000"> </span><span 
 class="ecit-1000"> </span><span 
@@ -2877,9 +2883,9 @@ class="ecit-1000"> </span><span
 class="ecit-1000"> </span><span 
 class="ecit-1000">-----</span><span 
 class="ectt-1000"> </span><br /><span class="label"><a 
- id="x1-5037r34"></a></span><span 
+ id="x1-6037r34"></a></span><span 
 class="ectt-1000"> </span><br /><span class="label"><a 
- id="x1-5038r35"></a></span><span 
+ id="x1-6038r35"></a></span><span 
 class="ecit-1000"> </span><span 
 class="ecit-1000"> </span><span 
 class="ecit-1000"> </span><span 
@@ -2910,9 +2916,9 @@ class="ecit-1000"> </span><span
 class="ecit-1000">transformed</span><span 
 class="ecit-1000">.</span><span 
 class="ectt-1000"> </span><br /><span class="label"><a 
- id="x1-5039r36"></a></span><span 
+ id="x1-6039r36"></a></span><span 
 class="ectt-1000"> </span><br /><span class="label"><a 
- id="x1-5040r37"></a></span><span 
+ id="x1-6040r37"></a></span><span 
 class="ecit-1000"> </span><span 
 class="ecit-1000"> </span><span 
 class="ecit-1000"> </span><span 
@@ -2924,7 +2930,7 @@ class="ecit-1000"> </span><span
 class="ecit-1000">Output</span><span 
 class="ecit-1000">:</span><span 
 class="ectt-1000"> </span><br /><span class="label"><a 
- id="x1-5041r38"></a></span><span 
+ id="x1-6041r38"></a></span><span 
 class="ecit-1000"> </span><span 
 class="ecit-1000"> </span><span 
 class="ecit-1000"> </span><span 
@@ -2935,9 +2941,9 @@ class="ecit-1000"> </span><span
 class="ecit-1000"> </span><span 
 class="ecit-1000">------</span><span 
 class="ectt-1000"> </span><br /><span class="label"><a 
- id="x1-5042r39"></a></span><span 
+ id="x1-6042r39"></a></span><span 
 class="ectt-1000"> </span><br /><span class="label"><a 
- id="x1-5043r40"></a></span><span 
+ id="x1-6043r40"></a></span><span 
 class="ecit-1000"> </span><span 
 class="ecit-1000"> </span><span 
 class="ecit-1000"> </span><span 
@@ -2962,9 +2968,9 @@ class="ecit-1000"> </span><span
 class="ecit-1000">images</span><span 
 class="ecit-1000">.</span><span 
 class="ectt-1000"> </span><br /><span class="label"><a 
- id="x1-5044r41"></a></span><span 
+ id="x1-6044r41"></a></span><span 
 class="ectt-1000"> </span><br /><span class="label"><a 
- id="x1-5045r42"></a></span><span 
+ id="x1-6045r42"></a></span><span 
 class="ecit-1000"> </span><span 
 class="ecit-1000"> </span><span 
 class="ecit-1000"> </span><span 
@@ -2975,9 +2981,9 @@ class="ecit-1000"> </span><span
 class="ecit-1000"> </span><span 
 class="ecit-1000">’’’</span><span 
 class="ectt-1000"> </span><br /><span class="label"><a 
- id="x1-5046r43"></a></span><span 
+ id="x1-6046r43"></a></span><span 
 class="ectt-1000"> </span><br /><span class="label"><a 
- id="x1-5047r44"></a></span><span 
+ id="x1-6047r44"></a></span><span 
 class="ectt-1000"> </span><span 
 class="ectt-1000"> </span><span 
 class="ectt-1000"> </span><span 
@@ -2997,7 +3003,7 @@ class="ectt-1000">(</span><span
 class="ectt-1000">N</span><span 
 class="ectt-1000">):</span><span 
 class="ectt-1000"> </span><br /><span class="label"><a 
- id="x1-5048r45"></a></span><span 
+ id="x1-6048r45"></a></span><span 
 class="ectt-1000"> </span><span 
 class="ectt-1000"> </span><span 
 class="ectt-1000"> </span><span 
@@ -3032,7 +3038,7 @@ class="ectt-1000"> </span><span
 class="ectt-1000">i</span><span 
 class="ectt-1000">))</span><span 
 class="ectt-1000"> </span><br /><span class="label"><a 
- id="x1-5049r46"></a></span><span 
+ id="x1-6049r46"></a></span><span 
 class="ectt-1000"> </span><span 
 class="ectt-1000"> </span><span 
 class="ectt-1000"> </span><span 
@@ -3058,7 +3064,7 @@ class="ectt-1000">(</span><span
 class="ectt-1000">pyr</span><span 
 class="ectt-1000">)</span><span 
 class="ectt-1000"> </span><br /><span class="label"><a 
- id="x1-5050r47"></a></span><span 
+ id="x1-6050r47"></a></span><span 
 class="ectt-1000"> </span><span 
 class="ectt-1000"> </span><span 
 class="ectt-1000"> </span><span 
@@ -3094,18 +3100,20 @@ class="ectt-1000">))</span>
    
    </div>
    <h4 class="subsectionHead"><span class="titlemark">3.1   </span> <a 
- id="x1-60003.1"></a>Scalability provided by MDWT</h4>
+ id="x1-70003.1"></a>Scalability provided by MDWT</h4>
 <!--l. 148--><p class="noindent" >MDWT sequences (of (subband) decompositions) are scalable in space and in time.
 Spatial scalability is a direct consequence of DWT. On the other hand, it is trivial to
 observe that MDWT provides <span 
 class="ecti-1000">fully </span>temporal scalability (we can access to the
 images randomly) because each image of the input sequence is transformed
 independently.
-</p><!--l. 154--><p class="indent" >   Example:
+</p><!--l. 154--><p class="noindent" >
+</p>
+   <h4 class="subsectionHead"><span class="titlemark">3.2   </span> <a 
+ id="x1-80003.2"></a>Example</h4>
                                                                   
 
                                                                   
-</p>
    <div class="verbatim" id="verbatim-2">
 # You must be in the ’src’ directory.
  <br />
@@ -3136,7 +3144,7 @@ independently.
 </p><!--l. 182--><p class="noindent" >
 </p>
    <h3 class="sectionHead"><span class="titlemark">4   </span> <a 
- id="x1-70004"></a>Video transform alternatives</h3>
+ id="x1-90004"></a>Video transform alternatives</h3>
 <!--l. 183--><p class="noindent" >To remove both, spatial and temporal redundancies, two diﬀerent alternatives
 are available: (1) t+2D transforms and (2) 2D+t transforms. In a t+2D
 transform, the video is ﬁrst <a 
@@ -3172,13 +3180,13 @@ class="MathClass-bin">+</mo> <mi
 >x</mi></mrow><mo 
 class="MathClass-close">]</mo></mrow></mrow><mo 
 class="MathClass-close">)</mo></mrow></math>, where
-                                                                  
-
-                                                                  
 <!--l. 199--><math 
  xmlns="http://www.w3.org/1998/Math/MathML"  
 display="inline" ><mi 
 >x</mi></math> is a
+                                                                  
+
+                                                                  
 displacement of <!--l. 199--><math 
  xmlns="http://www.w3.org/1998/Math/MathML"  
 display="inline" ><mi 
@@ -3197,7 +3205,7 @@ did).
 </p><!--l. 210--><p class="noindent" >
 </p>
    <h3 class="sectionHead"><span class="titlemark">5   </span> <a 
- id="x1-80005"></a>Motion Compensated Discrete Wavelet Transform (MCDWT)</h3>
+ id="x1-100005"></a>Motion Compensated Discrete Wavelet Transform (MCDWT)</h3>
 <!--l. 211--><p class="noindent" >MCDWT is a 2D+t transform. The 2D stage is MDWT. The t stage is a
 1D-DWT, which removes the temporal redundancy between adjacent
 <!--l. 212--><math 
@@ -3214,7 +3222,7 @@ information that it is accesible by the decoder is used.
 </p><!--l. 222--><p class="noindent" >
 </p>
    <h4 class="subsectionHead"><span class="titlemark">5.1   </span> <a 
- id="x1-90005.1"></a>MCDWT butterﬂy</h4>
+ id="x1-110005.1"></a>MCDWT butterﬂy</h4>
 <!--l. 224--><p class="noindent" >MCDWT butterly inputs three decompositions
 <!--l. 224--><math 
  xmlns="http://www.w3.org/1998/Math/MathML"  
@@ -3344,28 +3352,28 @@ subbands.
 
                                                                   
 <a 
- id="x1-90012"></a>
+ id="x1-110012"></a>
                                                                   
 
                                                                   
 <!--l. 241--><p class="noindent" > <div style="text-align:center;"> <img width=1200 src="graphics/forward_butterfly.svg" /> </div> 
 <br /> </p><div class="caption" 
 ><span class="id">Figure 2: </span><span  
-class="content">Forward MCDWT butterﬂy.</span></div><!--tex4ht:label?: x1-90012 -->
+class="content">Forward MCDWT butterﬂy.</span></div><!--tex4ht:label?: x1-110012 -->
                                                                   
 
                                                                   
    </div><hr class="endfigure" />
    <!--l. 244--><div class="lstinputlisting">
 <a 
- id="x1-9002r3"></a>
+ id="x1-11002r3"></a>
 <a 
- id="x1-9003"></a>
+ id="x1-11003"></a>
 <br /> <div class="caption" 
 ><span class="id">Listing 3: </span><span  
-class="content">MCDWT.py (extract)</span></div><!--tex4ht:label?: x1-9002r5 --><span 
+class="content">MCDWT.py (extract)</span></div><!--tex4ht:label?: x1-11002r5 --><span 
 class="ectt-1000"> </span><br /><span class="label"><a 
- id="x1-9004r1"></a></span><span 
+ id="x1-11004r1"></a></span><span 
 class="ectt-1000"> </span><span 
 class="ectt-1000"> </span><span 
 class="ectt-1000"> </span><span 
@@ -3380,7 +3388,7 @@ class="ectt-1000"> </span><span
 class="ectt-1000">shape</span><span 
 class="ectt-1000">):</span><span 
 class="ectt-1000"> </span><br /><span class="label"><a 
- id="x1-9005r2"></a></span><span 
+ id="x1-11005r2"></a></span><span 
 class="ectt-1000"> </span><span 
 class="ectt-1000"> </span><span 
 class="ectt-1000"> </span><span 
@@ -3407,7 +3415,7 @@ class="ectt-1000">.</span><span
 class="ectt-1000">float64</span><span 
 class="ectt-1000">)</span><span 
 class="ectt-1000"> </span><br /><span class="label"><a 
- id="x1-9006r3"></a></span><span 
+ id="x1-11006r3"></a></span><span 
 class="ectt-1000"> </span><span 
 class="ectt-1000"> </span><span 
 class="ectt-1000"> </span><span 
@@ -3438,7 +3446,7 @@ class="ectt-1000">.</span><span
 class="ectt-1000">zero_L</span><span 
 class="ectt-1000">)</span><span 
 class="ectt-1000"> </span><br /><span class="label"><a 
- id="x1-9007r4"></a></span><span 
+ id="x1-11007r4"></a></span><span 
 class="ectt-1000"> </span><span 
 class="ectt-1000"> </span><span 
 class="ectt-1000"> </span><span 
@@ -3456,9 +3464,9 @@ class="ectt-1000"> </span><span
 class="ectt-1000">DWT</span><span 
 class="ectt-1000">()</span><span 
 class="ectt-1000"> </span><br /><span class="label"><a 
- id="x1-9008r5"></a></span><span 
+ id="x1-11008r5"></a></span><span 
 class="ectt-1000"> </span><br /><span class="label"><a 
- id="x1-9009r6"></a></span><span 
+ id="x1-11009r6"></a></span><span 
 class="ectt-1000"> </span><span 
 class="ectt-1000"> </span><span 
 class="ectt-1000"> </span><span 
@@ -3488,7 +3496,7 @@ class="ectt-1000"> </span><span
 class="ectt-1000">cH</span><span 
 class="ectt-1000">):</span><span 
 class="ectt-1000"> </span><br /><span class="label"><a 
- id="x1-9010r7"></a></span><span 
+ id="x1-11010r7"></a></span><span 
 class="ecit-1000"> </span><span 
 class="ecit-1000"> </span><span 
 class="ecit-1000"> </span><span 
@@ -3509,9 +3517,9 @@ class="ecit-1000"> </span><span
 class="ecit-1000">butterfly</span><span 
 class="ecit-1000">.</span><span 
 class="ectt-1000"> </span><br /><span class="label"><a 
- id="x1-9011r8"></a></span><span 
+ id="x1-11011r8"></a></span><span 
 class="ectt-1000"> </span><br /><span class="label"><a 
- id="x1-9012r9"></a></span><span 
+ id="x1-11012r9"></a></span><span 
 class="ecit-1000"> </span><span 
 class="ecit-1000"> </span><span 
 class="ecit-1000"> </span><span 
@@ -3523,7 +3531,7 @@ class="ecit-1000"> </span><span
 class="ecit-1000">Input</span><span 
 class="ecit-1000">:</span><span 
 class="ectt-1000"> </span><br /><span class="label"><a 
- id="x1-9013r10"></a></span><span 
+ id="x1-11013r10"></a></span><span 
 class="ecit-1000"> </span><span 
 class="ecit-1000"> </span><span 
 class="ecit-1000"> </span><span 
@@ -3534,9 +3542,9 @@ class="ecit-1000"> </span><span
 class="ecit-1000"> </span><span 
 class="ecit-1000">-----</span><span 
 class="ectt-1000"> </span><br /><span class="label"><a 
- id="x1-9014r11"></a></span><span 
+ id="x1-11014r11"></a></span><span 
 class="ectt-1000"> </span><br /><span class="label"><a 
- id="x1-9015r12"></a></span><span 
+ id="x1-11015r12"></a></span><span 
 class="ecit-1000"> </span><span 
 class="ecit-1000"> </span><span 
 class="ecit-1000"> </span><span 
@@ -3580,7 +3588,7 @@ class="ecit-1000">decomposition</span><span
 class="ecit-1000"> </span><span 
 class="ecit-1000">of</span><span 
 class="ectt-1000"> </span><br /><span class="label"><a 
- id="x1-9016r13"></a></span><span 
+ id="x1-11016r13"></a></span><span 
 class="ecit-1000"> </span><span 
 class="ecit-1000"> </span><span 
 class="ecit-1000"> </span><span 
@@ -3603,9 +3611,9 @@ class="ecit-1000"> </span><span
 class="ecit-1000">c</span><span 
 class="ecit-1000">.</span><span 
 class="ectt-1000"> </span><br /><span class="label"><a 
- id="x1-9017r14"></a></span><span 
+ id="x1-11017r14"></a></span><span 
 class="ectt-1000"> </span><br /><span class="label"><a 
- id="x1-9018r15"></a></span><span 
+ id="x1-11018r15"></a></span><span 
 class="ecit-1000"> </span><span 
 class="ecit-1000"> </span><span 
 class="ecit-1000"> </span><span 
@@ -3617,7 +3625,7 @@ class="ecit-1000"> </span><span
 class="ecit-1000">Output</span><span 
 class="ecit-1000">:</span><span 
 class="ectt-1000"> </span><br /><span class="label"><a 
- id="x1-9019r16"></a></span><span 
+ id="x1-11019r16"></a></span><span 
 class="ecit-1000"> </span><span 
 class="ecit-1000"> </span><span 
 class="ecit-1000"> </span><span 
@@ -3628,9 +3636,9 @@ class="ecit-1000"> </span><span
 class="ecit-1000"> </span><span 
 class="ecit-1000">------</span><span 
 class="ectt-1000"> </span><br /><span class="label"><a 
- id="x1-9020r17"></a></span><span 
+ id="x1-11020r17"></a></span><span 
 class="ectt-1000"> </span><br /><span class="label"><a 
- id="x1-9021r18"></a></span><span 
+ id="x1-11021r18"></a></span><span 
 class="ecit-1000"> </span><span 
 class="ecit-1000"> </span><span 
 class="ecit-1000"> </span><span 
@@ -3665,7 +3673,7 @@ class="ecit-1000">decomposition</span><span
 class="ecit-1000"> </span><span 
 class="ecit-1000">of</span><span 
 class="ectt-1000"> </span><br /><span class="label"><a 
- id="x1-9022r19"></a></span><span 
+ id="x1-11022r19"></a></span><span 
 class="ecit-1000"> </span><span 
 class="ecit-1000"> </span><span 
 class="ecit-1000"> </span><span 
@@ -3687,9 +3695,9 @@ class="ecit-1000"> </span><span
 class="ecit-1000">b</span><span 
 class="ecit-1000">.</span><span 
 class="ectt-1000"> </span><br /><span class="label"><a 
- id="x1-9023r20"></a></span><span 
+ id="x1-11023r20"></a></span><span 
 class="ectt-1000"> </span><br /><span class="label"><a 
- id="x1-9024r21"></a></span><span 
+ id="x1-11024r21"></a></span><span 
 class="ecit-1000"> </span><span 
 class="ecit-1000"> </span><span 
 class="ecit-1000"> </span><span 
@@ -3700,9 +3708,9 @@ class="ecit-1000"> </span><span
 class="ecit-1000"> </span><span 
 class="ecit-1000">’’’</span><span 
 class="ectt-1000"> </span><br /><span class="label"><a 
- id="x1-9025r22"></a></span><span 
+ id="x1-11025r22"></a></span><span 
 class="ectt-1000"> </span><br /><span class="label"><a 
- id="x1-9026r23"></a></span><span 
+ id="x1-11026r23"></a></span><span 
 class="ectt-1000"> </span><span 
 class="ectt-1000"> </span><span 
 class="ectt-1000"> </span><span 
@@ -3729,7 +3737,7 @@ class="ectt-1000">.</span><span
 class="ectt-1000">zero_H</span><span 
 class="ectt-1000">))</span><span 
 class="ectt-1000"> </span><br /><span class="label"><a 
- id="x1-9027r24"></a></span><span 
+ id="x1-11027r24"></a></span><span 
 class="ectt-1000"> </span><span 
 class="ectt-1000"> </span><span 
 class="ectt-1000"> </span><span 
@@ -3756,7 +3764,7 @@ class="ectt-1000">.</span><span
 class="ectt-1000">zero_H</span><span 
 class="ectt-1000">))</span><span 
 class="ectt-1000"> </span><br /><span class="label"><a 
- id="x1-9028r25"></a></span><span 
+ id="x1-11028r25"></a></span><span 
 class="ectt-1000"> </span><span 
 class="ectt-1000"> </span><span 
 class="ectt-1000"> </span><span 
@@ -3783,7 +3791,7 @@ class="ectt-1000">.</span><span
 class="ectt-1000">zero_H</span><span 
 class="ectt-1000">))</span><span 
 class="ectt-1000"> </span><br /><span class="label"><a 
- id="x1-9029r26"></a></span><span 
+ id="x1-11029r26"></a></span><span 
 class="ectt-1000"> </span><span 
 class="ectt-1000"> </span><span 
 class="ectt-1000"> </span><span 
@@ -3810,7 +3818,7 @@ class="ectt-1000"> </span><span
 class="ectt-1000">aH</span><span 
 class="ectt-1000">))</span><span 
 class="ectt-1000"> </span><br /><span class="label"><a 
- id="x1-9030r27"></a></span><span 
+ id="x1-11030r27"></a></span><span 
 class="ectt-1000"> </span><span 
 class="ectt-1000"> </span><span 
 class="ectt-1000"> </span><span 
@@ -3837,7 +3845,7 @@ class="ectt-1000"> </span><span
 class="ectt-1000">bH</span><span 
 class="ectt-1000">))</span><span 
 class="ectt-1000"> </span><br /><span class="label"><a 
- id="x1-9031r28"></a></span><span 
+ id="x1-11031r28"></a></span><span 
 class="ectt-1000"> </span><span 
 class="ectt-1000"> </span><span 
 class="ectt-1000"> </span><span 
@@ -3864,7 +3872,7 @@ class="ectt-1000"> </span><span
 class="ectt-1000">cH</span><span 
 class="ectt-1000">))</span><span 
 class="ectt-1000"> </span><br /><span class="label"><a 
- id="x1-9032r29"></a></span><span 
+ id="x1-11032r29"></a></span><span 
 class="ectt-1000"> </span><span 
 class="ectt-1000"> </span><span 
 class="ectt-1000"> </span><span 
@@ -3888,7 +3896,7 @@ class="ectt-1000"> </span><span
 class="ectt-1000">AH</span><span 
 class="ectt-1000">)</span><span 
 class="ectt-1000"> </span><br /><span class="label"><a 
- id="x1-9033r30"></a></span><span 
+ id="x1-11033r30"></a></span><span 
 class="ectt-1000"> </span><span 
 class="ectt-1000"> </span><span 
 class="ectt-1000"> </span><span 
@@ -3912,7 +3920,7 @@ class="ectt-1000"> </span><span
 class="ectt-1000">CH</span><span 
 class="ectt-1000">)</span><span 
 class="ectt-1000"> </span><br /><span class="label"><a 
- id="x1-9034r31"></a></span><span 
+ id="x1-11034r31"></a></span><span 
 class="ectt-1000"> </span><span 
 class="ectt-1000"> </span><span 
 class="ectt-1000"> </span><span 
@@ -3937,7 +3945,7 @@ class="ectt-1000">/</span><span
 class="ectt-1000"> </span><span 
 class="ectt-1000">2</span><span 
 class="ectt-1000"> </span><br /><span class="label"><a 
- id="x1-9035r32"></a></span><span 
+ id="x1-11035r32"></a></span><span 
 class="ectt-1000"> </span><span 
 class="ectt-1000"> </span><span 
 class="ectt-1000"> </span><span 
@@ -3956,7 +3964,7 @@ class="ectt-1000">-</span><span
 class="ectt-1000"> </span><span 
 class="ectt-1000">prediction_BH</span><span 
 class="ectt-1000"> </span><br /><span class="label"><a 
- id="x1-9036r33"></a></span><span 
+ id="x1-11036r33"></a></span><span 
 class="ectt-1000"> </span><span 
 class="ectt-1000"> </span><span 
 class="ectt-1000"> </span><span 
@@ -3978,7 +3986,7 @@ class="ectt-1000">(</span><span
 class="ectt-1000">residue_BH</span><span 
 class="ectt-1000">)</span><span 
 class="ectt-1000"> </span><br /><span class="label"><a 
- id="x1-9037r34"></a></span><span 
+ id="x1-11037r34"></a></span><span 
 class="ectt-1000"> </span><span 
 class="ectt-1000"> </span><span 
 class="ectt-1000"> </span><span 
@@ -3992,9 +4000,9 @@ class="ectt-1000"> </span><span
 class="ectt-1000">residue_bH</span><span 
 class="ectt-1000">[1]</span><span 
 class="ectt-1000"> </span><br /><span class="label"><a 
- id="x1-9038r35"></a></span><span 
+ id="x1-11038r35"></a></span><span 
 class="ectt-1000"> </span><br /><span class="label"><a 
- id="x1-9039r36"></a></span><span 
+ id="x1-11039r36"></a></span><span 
 class="ectt-1000"> </span><span 
 class="ectt-1000"> </span><span 
 class="ectt-1000"> </span><span 
@@ -4024,7 +4032,7 @@ class="ectt-1000"> </span><span
 class="ectt-1000">cH</span><span 
 class="ectt-1000">):</span><span 
 class="ectt-1000"> </span><br /><span class="label"><a 
- id="x1-9040r37"></a></span><span 
+ id="x1-11040r37"></a></span><span 
 class="ectt-1000"> </span><span 
 class="ectt-1000"> </span><span 
 class="ectt-1000"> </span><span 
@@ -4051,7 +4059,7 @@ class="ectt-1000">.</span><span
 class="ectt-1000">zero_H</span><span 
 class="ectt-1000">))</span><span 
 class="ectt-1000"> </span><br /><span class="label"><a 
- id="x1-9041r38"></a></span><span 
+ id="x1-11041r38"></a></span><span 
 class="ectt-1000"> </span><span 
 class="ectt-1000"> </span><span 
 class="ectt-1000"> </span><span 
@@ -4078,7 +4086,7 @@ class="ectt-1000">.</span><span
 class="ectt-1000">zero_H</span><span 
 class="ectt-1000">))</span><span 
 class="ectt-1000"> </span><br /><span class="label"><a 
- id="x1-9042r39"></a></span><span 
+ id="x1-11042r39"></a></span><span 
 class="ectt-1000"> </span><span 
 class="ectt-1000"> </span><span 
 class="ectt-1000"> </span><span 
@@ -4105,7 +4113,7 @@ class="ectt-1000">.</span><span
 class="ectt-1000">zero_H</span><span 
 class="ectt-1000">))</span><span 
 class="ectt-1000"> </span><br /><span class="label"><a 
- id="x1-9043r40"></a></span><span 
+ id="x1-11043r40"></a></span><span 
 class="ectt-1000"> </span><span 
 class="ectt-1000"> </span><span 
 class="ectt-1000"> </span><span 
@@ -4132,7 +4140,7 @@ class="ectt-1000"> </span><span
 class="ectt-1000">aH</span><span 
 class="ectt-1000">))</span><span 
 class="ectt-1000"> </span><br /><span class="label"><a 
- id="x1-9044r41"></a></span><span 
+ id="x1-11044r41"></a></span><span 
 class="ectt-1000"> </span><span 
 class="ectt-1000"> </span><span 
 class="ectt-1000"> </span><span 
@@ -4159,7 +4167,7 @@ class="ectt-1000"> </span><span
 class="ectt-1000">residue_bH</span><span 
 class="ectt-1000">))</span><span 
 class="ectt-1000"> </span><br /><span class="label"><a 
- id="x1-9045r42"></a></span><span 
+ id="x1-11045r42"></a></span><span 
 class="ectt-1000"> </span><span 
 class="ectt-1000"> </span><span 
 class="ectt-1000"> </span><span 
@@ -4186,7 +4194,7 @@ class="ectt-1000"> </span><span
 class="ectt-1000">cH</span><span 
 class="ectt-1000">))</span><span 
 class="ectt-1000"> </span><br /><span class="label"><a 
- id="x1-9046r43"></a></span><span 
+ id="x1-11046r43"></a></span><span 
 class="ectt-1000"> </span><span 
 class="ectt-1000"> </span><span 
 class="ectt-1000"> </span><span 
@@ -4210,7 +4218,7 @@ class="ectt-1000"> </span><span
 class="ectt-1000">AH</span><span 
 class="ectt-1000">)</span><span 
 class="ectt-1000"> </span><br /><span class="label"><a 
- id="x1-9047r44"></a></span><span 
+ id="x1-11047r44"></a></span><span 
 class="ectt-1000"> </span><span 
 class="ectt-1000"> </span><span 
 class="ectt-1000"> </span><span 
@@ -4234,7 +4242,7 @@ class="ectt-1000"> </span><span
 class="ectt-1000">CH</span><span 
 class="ectt-1000">)</span><span 
 class="ectt-1000"> </span><br /><span class="label"><a 
- id="x1-9048r45"></a></span><span 
+ id="x1-11048r45"></a></span><span 
 class="ectt-1000"> </span><span 
 class="ectt-1000"> </span><span 
 class="ectt-1000"> </span><span 
@@ -4259,7 +4267,7 @@ class="ectt-1000">/</span><span
 class="ectt-1000"> </span><span 
 class="ectt-1000">2</span><span 
 class="ectt-1000"> </span><br /><span class="label"><a 
- id="x1-9049r46"></a></span><span 
+ id="x1-11049r46"></a></span><span 
 class="ectt-1000"> </span><span 
 class="ectt-1000"> </span><span 
 class="ectt-1000"> </span><span 
@@ -4278,7 +4286,7 @@ class="ectt-1000">+</span><span
 class="ectt-1000"> </span><span 
 class="ectt-1000">prediction_BH</span><span 
 class="ectt-1000"> </span><br /><span class="label"><a 
- id="x1-9050r47"></a></span><span 
+ id="x1-11050r47"></a></span><span 
 class="ectt-1000"> </span><span 
 class="ectt-1000"> </span><span 
 class="ectt-1000"> </span><span 
@@ -4300,7 +4308,7 @@ class="ectt-1000">(</span><span
 class="ectt-1000">BH</span><span 
 class="ectt-1000">)</span><span 
 class="ectt-1000"> </span><br /><span class="label"><a 
- id="x1-9051r48"></a></span><span 
+ id="x1-11051r48"></a></span><span 
 class="ectt-1000"> </span><span 
 class="ectt-1000"> </span><span 
 class="ectt-1000"> </span><span 
@@ -4371,7 +4379,7 @@ class="MathClass-punc">.</mo><mi
 >L</mi></math>.
 </p>
    <h4 class="subsectionHead"><span class="titlemark">5.2   </span> <a 
- id="x1-100005.2"></a>MCDWT forward transform</h4>
+ id="x1-120005.2"></a>MCDWT forward transform</h4>
 <!--l. 256--><p class="noindent" >The MCDWT forward transform is the result of appliying the MCDWT butterﬂy to
 all the input sequence of decompositions with diﬀerent distances between them. As a
 consequence, except for the ﬁrst and the last image of the sequence, all the
@@ -4387,28 +4395,28 @@ are temporally decorrelated.
 
                                                                   
 <a 
- id="x1-100013"></a>
+ id="x1-120013"></a>
                                                                   
 
                                                                   
 <!--l. 264--><p class="noindent" > <div style="text-align:center;"> <img width=1200 src="graphics/temporal_decorrelation.svg" /> </div> 
 <br /> </p><div class="caption" 
 ><span class="id">Figure 3: </span><span  
-class="content">MCDWT forward transform.</span></div><!--tex4ht:label?: x1-100013 -->
+class="content">MCDWT forward transform.</span></div><!--tex4ht:label?: x1-120013 -->
                                                                   
 
                                                                   
    </div><hr class="endfigure" />
    <!--l. 267--><div class="lstinputlisting">
 <a 
- id="x1-10002r4"></a>
+ id="x1-12002r4"></a>
 <a 
- id="x1-10003"></a>
+ id="x1-12003"></a>
 <br /> <div class="caption" 
 ><span class="id">Listing 4: </span><span  
-class="content">MCDWT.py (extract)</span></div><!--tex4ht:label?: x1-10002r5 --><span 
+class="content">MCDWT.py (extract)</span></div><!--tex4ht:label?: x1-12002r5 --><span 
 class="ectt-1000"> </span><br /><span class="label"><a 
- id="x1-10004r1"></a></span><span 
+ id="x1-12004r1"></a></span><span 
 class="ectt-1000"> </span><span 
 class="ectt-1000"> </span><span 
 class="ectt-1000"> </span><span 
@@ -4446,7 +4454,7 @@ class="ectt-1000"> </span><span
 class="ectt-1000">T</span><span 
 class="ectt-1000">=2):</span><span 
 class="ectt-1000"> </span><br /><span class="label"><a 
- id="x1-10005r2"></a></span><span 
+ id="x1-12005r2"></a></span><span 
 class="ecit-1000"> </span><span 
 class="ecit-1000"> </span><span 
 class="ecit-1000"> </span><span 
@@ -4469,9 +4477,9 @@ class="ecit-1000"> </span><span
 class="ecit-1000">Transform</span><span 
 class="ecit-1000">.</span><span 
 class="ectt-1000"> </span><br /><span class="label"><a 
- id="x1-10006r3"></a></span><span 
+ id="x1-12006r3"></a></span><span 
 class="ectt-1000"> </span><br /><span class="label"><a 
- id="x1-10007r4"></a></span><span 
+ id="x1-12007r4"></a></span><span 
 class="ecit-1000"> </span><span 
 class="ecit-1000"> </span><span 
 class="ecit-1000"> </span><span 
@@ -4509,7 +4517,7 @@ class="ecit-1000">sequence</span><span
 class="ecit-1000"> </span><span 
 class="ecit-1000">of</span><span 
 class="ectt-1000"> </span><br /><span class="label"><a 
- id="x1-10008r5"></a></span><span 
+ id="x1-12008r5"></a></span><span 
 class="ecit-1000"> </span><span 
 class="ecit-1000"> </span><span 
 class="ecit-1000"> </span><span 
@@ -4545,7 +4553,7 @@ class="ecit-1000">as</span><span
 class="ecit-1000"> </span><span 
 class="ecit-1000">a</span><span 
 class="ectt-1000"> </span><br /><span class="label"><a 
- id="x1-10009r6"></a></span><span 
+ id="x1-12009r6"></a></span><span 
 class="ecit-1000"> </span><span 
 class="ecit-1000"> </span><span 
 class="ecit-1000"> </span><span 
@@ -4573,9 +4581,9 @@ class="ecit-1000"> </span><span
 class="ecit-1000">S</span><span 
 class="ecit-1000">.</span><span 
 class="ectt-1000"> </span><br /><span class="label"><a 
- id="x1-10010r7"></a></span><span 
+ id="x1-12010r7"></a></span><span 
 class="ectt-1000"> </span><br /><span class="label"><a 
- id="x1-10011r8"></a></span><span 
+ id="x1-12011r8"></a></span><span 
 class="ecit-1000"> </span><span 
 class="ecit-1000"> </span><span 
 class="ecit-1000"> </span><span 
@@ -4587,7 +4595,7 @@ class="ecit-1000"> </span><span
 class="ecit-1000">Imput</span><span 
 class="ecit-1000">:</span><span 
 class="ectt-1000"> </span><br /><span class="label"><a 
- id="x1-10012r9"></a></span><span 
+ id="x1-12012r9"></a></span><span 
 class="ecit-1000"> </span><span 
 class="ecit-1000"> </span><span 
 class="ecit-1000"> </span><span 
@@ -4598,9 +4606,9 @@ class="ecit-1000"> </span><span
 class="ecit-1000"> </span><span 
 class="ecit-1000">-----</span><span 
 class="ectt-1000"> </span><br /><span class="label"><a 
- id="x1-10013r10"></a></span><span 
+ id="x1-12013r10"></a></span><span 
 class="ectt-1000"> </span><br /><span class="label"><a 
- id="x1-10014r11"></a></span><span 
+ id="x1-12014r11"></a></span><span 
 class="ecit-1000"> </span><span 
 class="ecit-1000"> </span><span 
 class="ecit-1000"> </span><span 
@@ -4619,9 +4627,9 @@ class="ecit-1000">:</span><span
 class="ecit-1000"> </span><span 
 class="ecit-1000">s</span><span 
 class="ectt-1000"> </span><br /><span class="label"><a 
- id="x1-10015r12"></a></span><span 
+ id="x1-12015r12"></a></span><span 
 class="ectt-1000"> </span><br /><span class="label"><a 
- id="x1-10016r13"></a></span><span 
+ id="x1-12016r13"></a></span><span 
 class="ecit-1000"> </span><span 
 class="ecit-1000"> </span><span 
 class="ecit-1000"> </span><span 
@@ -4658,9 +4666,9 @@ class="ecit-1000">/</span><span
 class="ecit-1000">stockholm_</span><span 
 class="ecit-1000">&#x0022;.</span><span 
 class="ectt-1000"> </span><br /><span class="label"><a 
- id="x1-10017r14"></a></span><span 
+ id="x1-12017r14"></a></span><span 
 class="ectt-1000"> </span><br /><span class="label"><a 
- id="x1-10018r15"></a></span><span 
+ id="x1-12018r15"></a></span><span 
 class="ecit-1000"> </span><span 
 class="ecit-1000"> </span><span 
 class="ecit-1000"> </span><span 
@@ -4680,9 +4688,9 @@ class="ecit-1000">:</span><span
 class="ecit-1000"> </span><span 
 class="ecit-1000">int</span><span 
 class="ectt-1000"> </span><br /><span class="label"><a 
- id="x1-10019r16"></a></span><span 
+ id="x1-12019r16"></a></span><span 
 class="ectt-1000"> </span><br /><span class="label"><a 
- id="x1-10020r17"></a></span><span 
+ id="x1-12020r17"></a></span><span 
 class="ecit-1000"> </span><span 
 class="ecit-1000"> </span><span 
 class="ecit-1000"> </span><span 
@@ -4710,9 +4718,9 @@ class="ecit-1000"> </span><span
 class="ecit-1000">process</span><span 
 class="ecit-1000">.</span><span 
 class="ectt-1000"> </span><br /><span class="label"><a 
- id="x1-10021r18"></a></span><span 
+ id="x1-12021r18"></a></span><span 
 class="ectt-1000"> </span><br /><span class="label"><a 
- id="x1-10022r19"></a></span><span 
+ id="x1-12022r19"></a></span><span 
 class="ecit-1000"> </span><span 
 class="ecit-1000"> </span><span 
 class="ecit-1000"> </span><span 
@@ -4732,9 +4740,9 @@ class="ecit-1000">:</span><span
 class="ecit-1000"> </span><span 
 class="ecit-1000">int</span><span 
 class="ectt-1000"> </span><br /><span class="label"><a 
- id="x1-10023r20"></a></span><span 
+ id="x1-12023r20"></a></span><span 
 class="ectt-1000"> </span><br /><span class="label"><a 
- id="x1-10024r21"></a></span><span 
+ id="x1-12024r21"></a></span><span 
 class="ecit-1000"> </span><span 
 class="ecit-1000"> </span><span 
 class="ecit-1000"> </span><span 
@@ -4771,7 +4779,7 @@ class="ecit-1000">).</span><span
 class="ecit-1000"> </span><span 
 class="ecit-1000">Controls</span><span 
 class="ectt-1000"> </span><br /><span class="label"><a 
- id="x1-10025r22"></a></span><span 
+ id="x1-12025r22"></a></span><span 
 class="ecit-1000"> </span><span 
 class="ecit-1000"> </span><span 
 class="ecit-1000"> </span><span 
@@ -4795,9 +4803,9 @@ class="ecit-1000"> </span><span
 class="ecit-1000">size</span><span 
 class="ecit-1000">.</span><span 
 class="ectt-1000"> </span><br /><span class="label"><a 
- id="x1-10026r23"></a></span><span 
+ id="x1-12026r23"></a></span><span 
 class="ectt-1000"> </span><br /><span class="label"><a 
- id="x1-10027r24"></a></span><span 
+ id="x1-12027r24"></a></span><span 
 class="ecit-1000"> </span><span 
 class="ecit-1000"> </span><span 
 class="ecit-1000"> </span><span 
@@ -4822,7 +4830,7 @@ class="ecit-1000">|</span><span
 class="ecit-1000"> </span><span 
 class="ecit-1000">GOP_size</span><span 
 class="ectt-1000"> </span><br /><span class="label"><a 
- id="x1-10028r25"></a></span><span 
+ id="x1-12028r25"></a></span><span 
 class="ecit-1000"> </span><span 
 class="ecit-1000"> </span><span 
 class="ecit-1000"> </span><span 
@@ -4841,7 +4849,7 @@ class="ecit-1000"> </span><span
 class="ecit-1000"> </span><span 
 class="ecit-1000">----+-----------</span><span 
 class="ectt-1000"> </span><br /><span class="label"><a 
- id="x1-10029r26"></a></span><span 
+ id="x1-12029r26"></a></span><span 
 class="ecit-1000"> </span><span 
 class="ecit-1000"> </span><span 
 class="ecit-1000"> </span><span 
@@ -4873,7 +4881,7 @@ class="ecit-1000"> </span><span
 class="ecit-1000"> </span><span 
 class="ecit-1000">1</span><span 
 class="ectt-1000"> </span><br /><span class="label"><a 
- id="x1-10030r27"></a></span><span 
+ id="x1-12030r27"></a></span><span 
 class="ecit-1000"> </span><span 
 class="ecit-1000"> </span><span 
 class="ecit-1000"> </span><span 
@@ -4905,7 +4913,7 @@ class="ecit-1000"> </span><span
 class="ecit-1000"> </span><span 
 class="ecit-1000">2</span><span 
 class="ectt-1000"> </span><br /><span class="label"><a 
- id="x1-10031r28"></a></span><span 
+ id="x1-12031r28"></a></span><span 
 class="ecit-1000"> </span><span 
 class="ecit-1000"> </span><span 
 class="ecit-1000"> </span><span 
@@ -4937,7 +4945,7 @@ class="ecit-1000"> </span><span
 class="ecit-1000"> </span><span 
 class="ecit-1000">4</span><span 
 class="ectt-1000"> </span><br /><span class="label"><a 
- id="x1-10032r29"></a></span><span 
+ id="x1-12032r29"></a></span><span 
 class="ecit-1000"> </span><span 
 class="ecit-1000"> </span><span 
 class="ecit-1000"> </span><span 
@@ -4969,7 +4977,7 @@ class="ecit-1000"> </span><span
 class="ecit-1000"> </span><span 
 class="ecit-1000">8</span><span 
 class="ectt-1000"> </span><br /><span class="label"><a 
- id="x1-10033r30"></a></span><span 
+ id="x1-12033r30"></a></span><span 
 class="ecit-1000"> </span><span 
 class="ecit-1000"> </span><span 
 class="ecit-1000"> </span><span 
@@ -5000,7 +5008,7 @@ class="ecit-1000"> </span><span
 class="ecit-1000"> </span><span 
 class="ecit-1000">16</span><span 
 class="ectt-1000"> </span><br /><span class="label"><a 
- id="x1-10034r31"></a></span><span 
+ id="x1-12034r31"></a></span><span 
 class="ecit-1000"> </span><span 
 class="ecit-1000"> </span><span 
 class="ecit-1000"> </span><span 
@@ -5031,7 +5039,7 @@ class="ecit-1000"> </span><span
 class="ecit-1000"> </span><span 
 class="ecit-1000">32</span><span 
 class="ectt-1000"> </span><br /><span class="label"><a 
- id="x1-10035r32"></a></span><span 
+ id="x1-12035r32"></a></span><span 
 class="ecit-1000"> </span><span 
 class="ecit-1000"> </span><span 
 class="ecit-1000"> </span><span 
@@ -5063,9 +5071,9 @@ class="ecit-1000"> </span><span
 class="ecit-1000"> </span><span 
 class="ecit-1000">:</span><span 
 class="ectt-1000"> </span><br /><span class="label"><a 
- id="x1-10036r33"></a></span><span 
+ id="x1-12036r33"></a></span><span 
 class="ectt-1000"> </span><br /><span class="label"><a 
- id="x1-10037r34"></a></span><span 
+ id="x1-12037r34"></a></span><span 
 class="ecit-1000"> </span><span 
 class="ecit-1000"> </span><span 
 class="ecit-1000"> </span><span 
@@ -5076,7 +5084,7 @@ class="ecit-1000"> </span><span
 class="ecit-1000"> </span><span 
 class="ecit-1000">Returns</span><span 
 class="ectt-1000"> </span><br /><span class="label"><a 
- id="x1-10038r35"></a></span><span 
+ id="x1-12038r35"></a></span><span 
 class="ecit-1000"> </span><span 
 class="ecit-1000"> </span><span 
 class="ecit-1000"> </span><span 
@@ -5087,9 +5095,9 @@ class="ecit-1000"> </span><span
 class="ecit-1000"> </span><span 
 class="ecit-1000">-------</span><span 
 class="ectt-1000"> </span><br /><span class="label"><a 
- id="x1-10039r36"></a></span><span 
+ id="x1-12039r36"></a></span><span 
 class="ectt-1000"> </span><br /><span class="label"><a 
- id="x1-10040r37"></a></span><span 
+ id="x1-12040r37"></a></span><span 
 class="ecit-1000"> </span><span 
 class="ecit-1000"> </span><span 
 class="ecit-1000"> </span><span 
@@ -5108,9 +5116,9 @@ class="ecit-1000">:</span><span
 class="ecit-1000"> </span><span 
 class="ecit-1000">S</span><span 
 class="ectt-1000"> </span><br /><span class="label"><a 
- id="x1-10041r38"></a></span><span 
+ id="x1-12041r38"></a></span><span 
 class="ectt-1000"> </span><br /><span class="label"><a 
- id="x1-10042r39"></a></span><span 
+ id="x1-12042r39"></a></span><span 
 class="ecit-1000"> </span><span 
 class="ecit-1000"> </span><span 
 class="ecit-1000"> </span><span 
@@ -5143,7 +5151,7 @@ class="ecit-1000"> </span><span
 class="ecit-1000">example</span><span 
 class="ecit-1000">:</span><span 
 class="ectt-1000"> </span><br /><span class="label"><a 
- id="x1-10043r40"></a></span><span 
+ id="x1-12043r40"></a></span><span 
 class="ecit-1000"> </span><span 
 class="ecit-1000"> </span><span 
 class="ecit-1000"> </span><span 
@@ -5166,9 +5174,9 @@ class="ecit-1000">/</span><span
 class="ecit-1000">mc_stockholm_</span><span 
 class="ecit-1000">&#x0022;.</span><span 
 class="ectt-1000"> </span><br /><span class="label"><a 
- id="x1-10044r41"></a></span><span 
+ id="x1-12044r41"></a></span><span 
 class="ectt-1000"> </span><br /><span class="label"><a 
- id="x1-10045r42"></a></span><span 
+ id="x1-12045r42"></a></span><span 
 class="ecit-1000"> </span><span 
 class="ecit-1000"> </span><span 
 class="ecit-1000"> </span><span 
@@ -5179,7 +5187,7 @@ class="ecit-1000"> </span><span
 class="ecit-1000"> </span><span 
 class="ecit-1000">’’’</span><span 
 class="ectt-1000"> </span><br /><span class="label"><a 
- id="x1-10046r43"></a></span><span 
+ id="x1-12046r43"></a></span><span 
 class="ectt-1000"> </span><span 
 class="ectt-1000"> </span><span 
 class="ectt-1000"> </span><span 
@@ -5194,7 +5202,7 @@ class="ectt-1000">=</span><span
 class="ectt-1000"> </span><span 
 class="ectt-1000">2</span><span 
 class="ectt-1000"> </span><br /><span class="label"><a 
- id="x1-10047r44"></a></span><span 
+ id="x1-12047r44"></a></span><span 
 class="ectt-1000"> </span><span 
 class="ectt-1000"> </span><span 
 class="ectt-1000"> </span><span 
@@ -5220,7 +5228,7 @@ class="ecit-1000">Temporal</span><span
 class="ecit-1000"> </span><span 
 class="ecit-1000">scale</span><span 
 class="ectt-1000"> </span><br /><span class="label"><a 
- id="x1-10048r45"></a></span><span 
+ id="x1-12048r45"></a></span><span 
 class="ectt-1000"> </span><span 
 class="ectt-1000"> </span><span 
 class="ectt-1000"> </span><span 
@@ -5239,7 +5247,7 @@ class="ectt-1000">=</span><span
 class="ectt-1000"> </span><span 
 class="ectt-1000">0</span><span 
 class="ectt-1000"> </span><br /><span class="label"><a 
- id="x1-10049r46"></a></span><span 
+ id="x1-12049r46"></a></span><span 
 class="ectt-1000"> </span><span 
 class="ectt-1000"> </span><span 
 class="ectt-1000"> </span><span 
@@ -5276,7 +5284,7 @@ class="ectt-1000">,</span><span
 class="ectt-1000"> </span><span 
 class="ectt-1000">0))</span><span 
 class="ectt-1000"> </span><br /><span class="label"><a 
- id="x1-10050r47"></a></span><span 
+ id="x1-12050r47"></a></span><span 
 class="ectt-1000"> </span><span 
 class="ectt-1000"> </span><span 
 class="ectt-1000"> </span><span 
@@ -5312,7 +5320,7 @@ class="ectt-1000">,</span><span
 class="ectt-1000"> </span><span 
 class="ectt-1000">0))</span><span 
 class="ectt-1000"> </span><br /><span class="label"><a 
- id="x1-10051r48"></a></span><span 
+ id="x1-12051r48"></a></span><span 
 class="ectt-1000"> </span><span 
 class="ectt-1000"> </span><span 
 class="ectt-1000"> </span><span 
@@ -5337,7 +5345,7 @@ class="ectt-1000">//</span><span
 class="ectt-1000">x</span><span 
 class="ectt-1000">):</span><span 
 class="ectt-1000"> </span><br /><span class="label"><a 
- id="x1-10052r49"></a></span><span 
+ id="x1-12052r49"></a></span><span 
 class="ectt-1000"> </span><span 
 class="ectt-1000"> </span><span 
 class="ectt-1000"> </span><span 
@@ -5383,7 +5391,7 @@ class="ectt-1000">+</span><span
 class="ectt-1000">x</span><span 
 class="ectt-1000">//2))</span><span 
 class="ectt-1000"> </span><br /><span class="label"><a 
- id="x1-10053r50"></a></span><span 
+ id="x1-12053r50"></a></span><span 
 class="ectt-1000"> </span><span 
 class="ectt-1000"> </span><span 
 class="ectt-1000"> </span><span 
@@ -5429,7 +5437,7 @@ class="ectt-1000">+</span><span
 class="ectt-1000">x</span><span 
 class="ectt-1000">))</span><span 
 class="ectt-1000"> </span><br /><span class="label"><a 
- id="x1-10054r51"></a></span><span 
+ id="x1-12054r51"></a></span><span 
 class="ectt-1000"> </span><span 
 class="ectt-1000"> </span><span 
 class="ectt-1000"> </span><span 
@@ -5472,7 +5480,7 @@ class="ectt-1000"> </span><span
 class="ectt-1000">cH</span><span 
 class="ectt-1000">)</span><span 
 class="ectt-1000"> </span><br /><span class="label"><a 
- id="x1-10055r52"></a></span><span 
+ id="x1-12055r52"></a></span><span 
 class="ectt-1000"> </span><span 
 class="ectt-1000"> </span><span 
 class="ectt-1000"> </span><span 
@@ -5517,7 +5525,7 @@ class="ectt-1000">+</span><span
 class="ectt-1000">x</span><span 
 class="ectt-1000">//2))</span><span 
 class="ectt-1000"> </span><br /><span class="label"><a 
- id="x1-10056r53"></a></span><span 
+ id="x1-12056r53"></a></span><span 
 class="ectt-1000"> </span><span 
 class="ectt-1000"> </span><span 
 class="ectt-1000"> </span><span 
@@ -5562,7 +5570,7 @@ class="ectt-1000">+</span><span
 class="ectt-1000">x</span><span 
 class="ectt-1000">))</span><span 
 class="ectt-1000"> </span><br /><span class="label"><a 
- id="x1-10057r54"></a></span><span 
+ id="x1-12057r54"></a></span><span 
 class="ectt-1000"> </span><span 
 class="ectt-1000"> </span><span 
 class="ectt-1000"> </span><span 
@@ -5591,7 +5599,7 @@ class="ectt-1000">,</span><span
 class="ectt-1000"> </span><span 
 class="ectt-1000">cH</span><span 
 class="ectt-1000"> </span><br /><span class="label"><a 
- id="x1-10058r55"></a></span><span 
+ id="x1-12058r55"></a></span><span 
 class="ectt-1000"> </span><span 
 class="ectt-1000"> </span><span 
 class="ectt-1000"> </span><span 
@@ -5614,7 +5622,7 @@ class="ectt-1000">+=</span><span
 class="ectt-1000"> </span><span 
 class="ectt-1000">1</span><span 
 class="ectt-1000"> </span><br /><span class="label"><a 
- id="x1-10059r56"></a></span><span 
+ id="x1-12059r56"></a></span><span 
 class="ectt-1000"> </span><span 
 class="ectt-1000"> </span><span 
 class="ectt-1000"> </span><span 
@@ -5633,9 +5641,9 @@ class="ectt-1000">*=</span><span
 class="ectt-1000"> </span><span 
 class="ectt-1000">2</span><span 
 class="ectt-1000"> </span><br /><span class="label"><a 
- id="x1-10060r57"></a></span><span 
+ id="x1-12060r57"></a></span><span 
 class="ectt-1000"> </span><br /><span class="label"><a 
- id="x1-10061r58"></a></span><span 
+ id="x1-12061r58"></a></span><span 
 class="ectt-1000"> </span><span 
 class="ectt-1000"> </span><span 
 class="ectt-1000"> </span><span 
@@ -5673,7 +5681,7 @@ class="ectt-1000"> </span><span
 class="ectt-1000">T</span><span 
 class="ectt-1000">=2):</span><span 
 class="ectt-1000"> </span><br /><span class="label"><a 
- id="x1-10062r59"></a></span><span 
+ id="x1-12062r59"></a></span><span 
 class="ectt-1000"> </span><span 
 class="ectt-1000"> </span><span 
 class="ectt-1000"> </span><span 
@@ -5689,7 +5697,7 @@ class="ectt-1000"> </span><span
 class="ectt-1000">2**</span><span 
 class="ectt-1000">T</span><span 
 class="ectt-1000"> </span><br /><span class="label"><a 
- id="x1-10063r60"></a></span><span 
+ id="x1-12063r60"></a></span><span 
 class="ectt-1000"> </span><span 
 class="ectt-1000"> </span><span 
 class="ectt-1000"> </span><span 
@@ -5715,7 +5723,7 @@ class="ecit-1000">Temporal</span><span
 class="ecit-1000"> </span><span 
 class="ecit-1000">scale</span><span 
 class="ectt-1000"> </span><br /><span class="label"><a 
- id="x1-10064r61"></a></span><span 
+ id="x1-12064r61"></a></span><span 
 class="ectt-1000"> </span><span 
 class="ectt-1000"> </span><span 
 class="ectt-1000"> </span><span 
@@ -5734,7 +5742,7 @@ class="ectt-1000">=</span><span
 class="ectt-1000"> </span><span 
 class="ectt-1000">0</span><span 
 class="ectt-1000"> </span><br /><span class="label"><a 
- id="x1-10065r62"></a></span><span 
+ id="x1-12065r62"></a></span><span 
 class="ectt-1000"> </span><span 
 class="ectt-1000"> </span><span 
 class="ectt-1000"> </span><span 
@@ -5771,7 +5779,7 @@ class="ectt-1000">,</span><span
 class="ectt-1000"> </span><span 
 class="ectt-1000">0))</span><span 
 class="ectt-1000"> </span><br /><span class="label"><a 
- id="x1-10066r63"></a></span><span 
+ id="x1-12066r63"></a></span><span 
 class="ectt-1000"> </span><span 
 class="ectt-1000"> </span><span 
 class="ectt-1000"> </span><span 
@@ -5807,7 +5815,7 @@ class="ectt-1000">,</span><span
 class="ectt-1000"> </span><span 
 class="ectt-1000">0))</span><span 
 class="ectt-1000"> </span><br /><span class="label"><a 
- id="x1-10067r64"></a></span><span 
+ id="x1-12067r64"></a></span><span 
 class="ectt-1000"> </span><span 
 class="ectt-1000"> </span><span 
 class="ectt-1000"> </span><span 
@@ -5832,7 +5840,7 @@ class="ectt-1000">//</span><span
 class="ectt-1000">x</span><span 
 class="ectt-1000">):</span><span 
 class="ectt-1000"> </span><br /><span class="label"><a 
- id="x1-10068r65"></a></span><span 
+ id="x1-12068r65"></a></span><span 
 class="ectt-1000"> </span><span 
 class="ectt-1000"> </span><span 
 class="ectt-1000"> </span><span 
@@ -5878,7 +5886,7 @@ class="ectt-1000">+</span><span
 class="ectt-1000">x</span><span 
 class="ectt-1000">//2))</span><span 
 class="ectt-1000"> </span><br /><span class="label"><a 
- id="x1-10069r66"></a></span><span 
+ id="x1-12069r66"></a></span><span 
 class="ectt-1000"> </span><span 
 class="ectt-1000"> </span><span 
 class="ectt-1000"> </span><span 
@@ -5924,7 +5932,7 @@ class="ectt-1000">+</span><span
 class="ectt-1000">x</span><span 
 class="ectt-1000">))</span><span 
 class="ectt-1000"> </span><br /><span class="label"><a 
- id="x1-10070r67"></a></span><span 
+ id="x1-12070r67"></a></span><span 
 class="ectt-1000"> </span><span 
 class="ectt-1000"> </span><span 
 class="ectt-1000"> </span><span 
@@ -5967,7 +5975,7 @@ class="ectt-1000"> </span><span
 class="ectt-1000">cH</span><span 
 class="ectt-1000">)</span><span 
 class="ectt-1000"> </span><br /><span class="label"><a 
- id="x1-10071r68"></a></span><span 
+ id="x1-12071r68"></a></span><span 
 class="ectt-1000"> </span><span 
 class="ectt-1000"> </span><span 
 class="ectt-1000"> </span><span 
@@ -6012,7 +6020,7 @@ class="ectt-1000">+</span><span
 class="ectt-1000">x</span><span 
 class="ectt-1000">//2))</span><span 
 class="ectt-1000"> </span><br /><span class="label"><a 
- id="x1-10072r69"></a></span><span 
+ id="x1-12072r69"></a></span><span 
 class="ectt-1000"> </span><span 
 class="ectt-1000"> </span><span 
 class="ectt-1000"> </span><span 
@@ -6057,7 +6065,7 @@ class="ectt-1000">+</span><span
 class="ectt-1000">x</span><span 
 class="ectt-1000">))</span><span 
 class="ectt-1000"> </span><br /><span class="label"><a 
- id="x1-10073r70"></a></span><span 
+ id="x1-12073r70"></a></span><span 
 class="ectt-1000"> </span><span 
 class="ectt-1000"> </span><span 
 class="ectt-1000"> </span><span 
@@ -6088,10 +6096,10 @@ class="ectt-1000">cH</span>
    
    </div>
    <h4 class="subsectionHead"><span class="titlemark">5.3   </span> <a 
- id="x1-110005.3"></a>(Spatial) Multiresolution procedure</h4>
+ id="x1-130005.3"></a>(Spatial) Multiresolution procedure</h4>
 <!--l. 271--><p class="noindent" >Spatial dyadic multiresolution can be obtained by appliying a sequence of
 MDWT+MCDWT steps (see Fig. <a 
-href="#x1-110014">4<!--tex4ht:ref: fig:multiresolution --></a>).
+href="#x1-130014">4<!--tex4ht:ref: fig:multiresolution --></a>).
 </p>
    <hr class="figure" /><div class="figure" 
 >
@@ -6099,27 +6107,27 @@ href="#x1-110014">4<!--tex4ht:ref: fig:multiresolution --></a>).
 
                                                                   
 <a 
- id="x1-110014"></a>
+ id="x1-130014"></a>
                                                                   
 
                                                                   
 <!--l. 275--><p class="noindent" > <div style="text-align:center;"> <img width=1200 src="graphics/multiresolution.svg" /> </div> 
 <br /> </p><div class="caption" 
 ><span class="id">Figure 4: </span><span  
-class="content">MDWT+MCDWT multiresolution procedure.</span></div><!--tex4ht:label?: x1-110014 -->
+class="content">MDWT+MCDWT multiresolution procedure.</span></div><!--tex4ht:label?: x1-130014 -->
                                                                   
 
                                                                   
    </div><hr class="endfigure" />
    <h4 class="subsectionHead"><span class="titlemark">5.4   </span> <a 
- id="x1-120005.4"></a>Scalability provided by MCDWT</h4>
+ id="x1-140005.4"></a>Scalability provided by MCDWT</h4>
 <!--l. 281--><p class="noindent" >The decomposition generated by the MCDWT is identical to MDWT. Therefore,
 MCDWT provides the same spatial scalability than MDWT. In order to obtain
 several spatial resolutions, MCDWT should be applied to the low-frequency
 subbands, recursively. As an example, in the Figure <a 
-href="#x1-110014">4<!--tex4ht:ref: fig:multiresolution --></a>, MCDWT has been applied to
+href="#x1-130014">4<!--tex4ht:ref: fig:multiresolution --></a>, MCDWT has been applied to
 the output of the example of the Figure <a 
-href="#x1-100013">3<!--tex4ht:ref: fig:forward_MCDWT --></a>. Notice that between two consecutive
+href="#x1-120013">3<!--tex4ht:ref: fig:forward_MCDWT --></a>. Notice that between two consecutive
 iterations of MCDWT, MDWT must be applied to the low-frequency subband in
 order to reduce the resolution of the analysis.
 </p><!--l. 291--><p class="indent" >   On the other hand, MCDWT decreases the temporal scalability oﬀered
@@ -6153,8 +6161,8 @@ href="https://en.wikipedia.org/wiki/Temporal_resolution" >temporal resolution</a
 transform is used, all the decompositions are rendered.
 </p><!--l. 301--><p class="noindent" >
 </p>
-   <h3 class="sectionHead"><span class="titlemark">6   </span> <a 
- id="x1-130006"></a>Example</h3>
+   <h4 class="subsectionHead"><span class="titlemark">5.5   </span> <a 
+ id="x1-150005.5"></a>Example</h4>
                                                                   
 
                                                                   
@@ -6176,6 +6184,14 @@ transform is used, all the decompositions are rendered.
  <br />ls -l /tmp/stockholm_002_HL /tmp/mc_stockholm_002_HL
  <br />ls -l /tmp/stockholm_003_HH /tmp/mc_stockholm_003_HH
  <br />
+ <br /># Showing statistics:
+ <br />python ../tools/show_statistics.py -i /tmp/stockholm_001_LH
+ <br />python ../tools/show_statistics.py -i /tmp/mc_stockholm_001_LH
+ <br />python ../tools/show_statistics.py -i /tmp/stockholm_001_HL
+ <br />python ../tools/show_statistics.py -i /tmp/mc_stockholm_001_HL
+ <br />python ../tools/show_statistics.py -i /tmp/stockholm_001_HH
+ <br />python ../tools/show_statistics.py -i /tmp/mc_stockholm_001_HH
+ <br />
  <br /># Visualization of the H-subbands
  <br />rm -f /tmp/*.png; for i in /tmp/mc_stockholm_00?_LH; do convert -normalize $i $i.png; done; animate /tmp/*.png
  <br />rm -f /tmp/*.png; for i in /tmp/mc_stockholm_00?_HL; do convert -normalize $i $i.png; done; animate /tmp/*.png
@@ -6193,7 +6209,10 @@ transform is used, all the decompositions are rendered.
  <br /># Visualize the original sequence:
  <br />rm -f /tmp/stockholm/*.png; cp -r ../sequences/stockholm /tmp; for i in /tmp/stockholm/*; do convert -normalize $i $i.png; done; animate /tmp/stockholm/*.png
 </div>
-<!--l. 336--><p class="nopar" >
+<!--l. 344--><p class="nopar" >
+                                                                  
+
+                                                                  
 </p>
     
 </body> 

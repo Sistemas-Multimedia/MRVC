@@ -317,6 +317,14 @@ ls -l /tmp/stockholm_001_LH /tmp/mc_stockholm_001_LH
 ls -l /tmp/stockholm_002_HL /tmp/mc_stockholm_002_HL
 ls -l /tmp/stockholm_003_HH /tmp/mc_stockholm_003_HH
 
+# Showing statistics:
+python ../tools/show_statistics.py -i /tmp/stockholm_001_LH
+python ../tools/show_statistics.py -i /tmp/mc_stockholm_001_LH
+python ../tools/show_statistics.py -i /tmp/stockholm_001_HL
+python ../tools/show_statistics.py -i /tmp/mc_stockholm_001_HL
+python ../tools/show_statistics.py -i /tmp/stockholm_001_HH
+python ../tools/show_statistics.py -i /tmp/mc_stockholm_001_HH
+
 # Visualization of the H-subbands
 rm -f /tmp/*.png; for i in /tmp/mc_stockholm_00?_LH; do convert -normalize $i $i.png; done; animate /tmp/*.png
 rm -f /tmp/*.png; for i in /tmp/mc_stockholm_00?_HL; do convert -normalize $i $i.png; done; animate /tmp/*.png
