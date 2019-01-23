@@ -27,7 +27,7 @@ class="ecrm-1200">Vicente Gonz</span><span
 class="ecrm-1200">á</span><span 
 class="ecrm-1200">lez Ruiz</span></div><br />
 <div class="date" ><span 
-class="ecrm-1200">January 18, 2019</span></div>
+class="ecrm-1200">January 23, 2019</span></div>
    </div>
    <h3 class="likesectionHead"><a 
  id="x1-1000"></a>Contents</h3>
@@ -74,16 +74,15 @@ href="https://en.wikipedia.org/wiki/Discrete_wavelet_transform" >coeﬃcients</a
 
                                                                   
 and (2) an <a 
-href="https://vicente-gonzalez-ruiz.github.io/symbol_compression/" >entropy encoding</a> phase which removes the statistical redundancy that can
+href="https://en.wikipedia.org/wiki/Entropy_encoding" >entropy encoding</a> phase which removes the statistical redundancy that can
 still remains after the decorrelation (transform). These coeﬃcients have two
 interesting features:
      </p><ol  class="enumerate1" >
      <li 
-  class="enumerate" id="x1-2002x1">Usually, a <span 
-class="ecbx-1000">smaller </span><a 
-href="https://en.wikipedia.org/wiki/Discrete_wavelet_transform" ><span 
-class="ecbx-1000">entropy</span></a> than the original pixels. This helps to increase
-     the <a 
+  class="enumerate" id="x1-2002x1">Usually,  a   <a 
+href="https://vicente-gonzalez-ruiz.github.io/symbol_compression/" ><span 
+class="ecbx-1000">smaller  entropy</span></a> than  the  original  pixels.  This  helps  to
+     increase the <a 
 href="https://en.wikipedia.org/wiki/Data_compression_ratio" >compression ratio</a>.
      </li>
      <li 
@@ -2263,11 +2262,66 @@ class="MathClass-punc">.</mo><mi
 >H</mi></mrow><mo 
 class="MathClass-close">)</mo></mrow></math>
      (the original image) with the scale 0.</li></ul>
-<!--l. 84--><p class="noindent" >
+<!--l. 84--><p class="indent" >   Example:
+                                                                  
+
+                                                                  
+</p>
+   <div class="verbatim" id="verbatim-1">
+# You must be in the ’src’ directory.
+ <br />
+ <br /># 2D 1-levels forward DWT of the first image of the ’stockholm’ sequence:
+ <br />./DWT.py -i ../sequences/stockholm/000 -d /tmp/000
+ <br />
+ <br /># Visualize the subbands:
+ <br />display -normalize /tmp/000_LL # &#x003C;- LL1
+ <br />display -normalize /tmp/000_LH # &#x003C;- LH1
+ <br />display -normalize /tmp/000_HL # &#x003C;- HL1
+ <br />display -normalize /tmp/000_HH # &#x003C;- HH1
+ <br />
+ <br /># 2D 1-levels forward DWT of the LL subband:
+ <br />./DWT.py -i /tmp/000_LL
+ <br />-d /tmp/000_LL
+ <br />
+ <br /># Visualize the subbands:
+ <br />display -normalize /tmp/000_LL_LL # &#x003C;- LL2
+ <br />display -normalize /tmp/000_LL_LH # &#x003C;- LH2
+ <br />display -normalize /tmp/000_LL_HL # &#x003C;- HL2
+ <br />display -normalize /tmp/000_LL_HH # &#x003C;- HH2
+ <br />
+ <br /># The result of the 2D 2-levels forward DWT are the subbands: LL2,
+ <br /># LH2, HL2, HH2, LH1, HL1, HH1
+ <br />
+ <br /># The scale 2 of the image is represented by LL2.
+ <br />
+ <br /># The scale 1 can be reconstructed using the 2D 1-levels backward DWT
+ <br /># on the 000_LL_{LL, LH, HL, HH} subbands:
+ <br />./DWT.py -b -d /tmp/000_LL -i /tmp/scale1 &#x0026;&#x0026; display -normalize /tmp/scale1
+ <br />
+ <br /># The reconstruction ’/tmp/scale1’ and the original scale 1
+ <br /># ’/tmp/000_LL’ have the same resolution:
+ <br />file /tmp/scale1 /tmp/000_LL
+ <br />
+ <br /># Floating-point arithmetic of DWT introduces minimal distortions:
+ <br />cmp /tmp/scale1 /tmp/000_LL
+ <br />
+ <br /># Basically, distortion is white noise:
+ <br />../tools/show_differences.sh -1 /tmp/scale1 -2 /tmp/000_LL -o /tmp/diffs.png
+ <br />display -normalize /tmp/diffs.png
+ <br />
+                                                                  
+
+                                                                  
+ <br /># The scale 0 is recovered using again the inverse transform:
+ <br />cp /tmp/scale1 /tmp/000_LL
+ <br />./DWT.py -b -d /tmp/000 -i /tmp/scale0 &#x0026;&#x0026; display -normalize /tmp/scale0
+</div>
+<!--l. 130--><p class="nopar" >
+</p><!--l. 132--><p class="noindent" >
 </p>
    <h3 class="sectionHead"><span class="titlemark">3   </span> <a 
  id="x1-50003"></a>Motion DWT (MDWT)</h3>
-<!--l. 85--><p class="noindent" >DWT can be applied to a sequence of images by simply transforming each image of
+<!--l. 133--><p class="noindent" >DWT can be applied to a sequence of images by simply transforming each image of
 the sequence independently. This is done, for example, in the <a 
 href="https://en.wikipedia.org/wiki/JPEG_2000" >motion JPEG2000
 video compression standard</a>. Notice that only the spatial redundancy is exploited. All
@@ -2283,7 +2337,7 @@ the temporal redundancy still remains in the video.
                                                                   
 
                                                                   
-<!--l. 93--><p class="noindent" > <div style="text-align:center;"> <img width=800 src="graphics/forward_MDWT.svg" /> </div> 
+<!--l. 141--><p class="noindent" > <div style="text-align:center;"> <img width=800 src="graphics/forward_MDWT.svg" /> </div> 
 <br /> </p><div class="caption" 
 ><span class="id">Figure 1: </span><span  
 class="content">Forward MDWT step.</span></div><!--tex4ht:label?: x1-50011 -->
@@ -2291,7 +2345,7 @@ class="content">Forward MDWT step.</span></div><!--tex4ht:label?: x1-50011 -->
 
                                                                   
    </div><hr class="endfigure" />
-   <!--l. 97--><div class="lstinputlisting">
+   <!--l. 145--><div class="lstinputlisting">
 <a 
  id="x1-5002r2"></a>
 <a 
@@ -3039,17 +3093,49 @@ class="ectt-1000">))</span>
    </div>
    <h4 class="subsectionHead"><span class="titlemark">3.1   </span> <a 
  id="x1-60003.1"></a>Scalability provided by MDWT</h4>
-<!--l. 100--><p class="noindent" >MDWT sequences (of (subband) decompositions) are scalable in space and in time.
+<!--l. 148--><p class="noindent" >MDWT sequences (of (subband) decompositions) are scalable in space and in time.
 Spatial scalability is a direct consequence of DWT. On the other hand, it is trivial to
 observe that MDWT provides <span 
 class="ecti-1000">fully </span>temporal scalability (we can access to the
 images randomly) because each image of the input sequence is transformed
 independently.
-</p><!--l. 106--><p class="noindent" >
+</p><!--l. 154--><p class="indent" >   Example:
+                                                                  
+
+                                                                  
+</p>
+   <div class="verbatim" id="verbatim-2">
+# You must be in the ’src’ directory.
+ <br />
+ <br /># Motion 2D 1-levels forward DWT of the ’stockholm’ sequence:
+ <br />python -O ./MDWT.py -i ../sequences/stockholm/ -d /tmp/stockholm_
+ <br />
+ <br /># Visualize the subbands:
+ <br />rm /tmp/*.png
+ <br />for i in /tmp/stockholm_00?_LL; do convert -normalize $i $i.png; done
+ <br />animate /tmp/*.png
+ <br />rm /tmp/*.png
+ <br />for i in /tmp/stockholm_00?_LH; do convert -normalize $i $i.png; done
+ <br />animate /tmp/*.png
+ <br />rm /tmp/*.png
+ <br />for i in /tmp/stockholm_00?_HL; do convert -normalize $i $i.png; done
+ <br />animate /tmp/*.png
+ <br />rm /tmp/*.png
+ <br />for i in /tmp/stockholm_00?_HH; do convert -normalize $i $i.png; done
+ <br />animate /tmp/*.png
+ <br />
+ <br /># Motion 2D 1-levels backward DWT:
+ <br />python -O MDWT.py -b -i /tmp/recons_ -d /tmp/stockholm_
+ <br />
+ <br /># Visualization of the reconstruction:
+ <br />rm /tmp/*.png; for i in /tmp/recons_*; do convert -normalize $i $i.png; done; animate /tmp/*.png
+</div>
+<!--l. 180--><p class="nopar" >
+</p><!--l. 182--><p class="noindent" >
 </p>
    <h3 class="sectionHead"><span class="titlemark">4   </span> <a 
  id="x1-70004"></a>Video transform alternatives</h3>
-<!--l. 107--><p class="noindent" >To remove both, spatial and temporal redundancies, two diﬀerent alternatives
+<!--l. 183--><p class="noindent" >To remove both, spatial and temporal redundancies, two diﬀerent alternatives
 are available: (1) t+2D transforms and (2) 2D+t transforms. In a t+2D
 transform, the video is ﬁrst <a 
 href="https://en.wikipedia.org/wiki/Digital_filter#Analysis_techniques" >analyzed</a> (transformed) over the time domain and
@@ -3064,7 +3150,7 @@ the input to the motion estimator is a sequence decompositions. <a
 href="http://www.polyvalens.com/blog/wavelets/theory" >The
 overwhelming majority of DWT’s</a> are not <a 
 href="http://www.polyvalens.com/blog/wavelets/theory" >shift invariant</a>, which basically means
-<!--l. 122--><math 
+<!--l. 198--><math 
  xmlns="http://www.w3.org/1998/Math/MathML"  
 display="inline" ><mstyle 
 class="text"><mtext  >DWT</mtext></mstyle><mrow ><mo 
@@ -3084,11 +3170,14 @@ class="MathClass-bin">+</mo> <mi
 >x</mi></mrow><mo 
 class="MathClass-close">]</mo></mrow></mrow><mo 
 class="MathClass-close">)</mo></mrow></math>, where
-<!--l. 123--><math 
+                                                                  
+
+                                                                  
+<!--l. 199--><math 
  xmlns="http://www.w3.org/1998/Math/MathML"  
 display="inline" ><mi 
 >x</mi></math> is a
-displacement of <!--l. 123--><math 
+displacement of <!--l. 199--><math 
  xmlns="http://www.w3.org/1998/Math/MathML"  
 display="inline" ><mi 
 >s</mi><mrow ><mo 
@@ -3098,36 +3187,34 @@ class="MathClass-close">]</mo></mrow></math>
 along one of the signal domains. Therefore, motion estimators which compare pixel
 values will not work on the (subband) decomposition domain. On the other hand, if
 we want to provide true spatial scalability (processing only those <a 
-href="https://en.wikipedia.org/wiki/Image_resolution#Spatial_resolution" >spatial resolutions</a>
+href="https://www.tutorialspoint.com/dip/spatial_resolution.htm" >spatial resolutions</a>
 (scales) necessary to get a spatially scaled of our video), a t+2D transformed video is
 not suitable because the ﬁrst step of the forward transform (t) should be
 reversed at full resolution in the backward transform (as the forward transform
 did).
-</p><!--l. 134--><p class="noindent" >
+</p><!--l. 210--><p class="noindent" >
 </p>
-                                                                  
-
-                                                                  
    <h3 class="sectionHead"><span class="titlemark">5   </span> <a 
  id="x1-80005"></a>Motion Compensated Discrete Wavelet Transform (MCDWT)</h3>
-<!--l. 135--><p class="noindent" >MCDWT is a 2D+t transform. The 2D stage is MDWT. The t stage is a
+<!--l. 211--><p class="noindent" >MCDWT is a 2D+t transform. The 2D stage is MDWT. The t stage is a
 1D-DWT, which removes the temporal redundancy between adjacent
-<!--l. 136--><math 
+<!--l. 212--><math 
  xmlns="http://www.w3.org/1998/Math/MathML"  
 display="inline" ><mi 
 >H</mi></math>
 subbands by means of <a 
 href="https://en.wikipedia.org/wiki/Motion_compensation" >Motion Compensation (MC)</a>. A special characteristic of
-MCDWT is that the motion information is not transmitted from the encoder to the
+MCDWT is that the motion information is not transmitted from the <a 
+href="https://en.wikipedia.org/wiki/Encoder" >encoder</a> to the
 <a 
 href="https://en.wikipedia.org/wiki/Decoder" >decoder</a>. This is possible because to estimate de motion at the encoder, only the
 information that it is accesible by the decoder is used.
-</p><!--l. 145--><p class="noindent" >
+</p><!--l. 222--><p class="noindent" >
 </p>
    <h4 class="subsectionHead"><span class="titlemark">5.1   </span> <a 
  id="x1-90005.1"></a>MCDWT butterﬂy</h4>
-<!--l. 147--><p class="noindent" >MCDWT butterly inputs three decompositions
-<!--l. 147--><math 
+<!--l. 224--><p class="noindent" >MCDWT butterly inputs three decompositions
+<!--l. 224--><math 
  xmlns="http://www.w3.org/1998/Math/MathML"  
 display="inline" ><mi 
 >a</mi> <mo 
@@ -3141,7 +3228,7 @@ class="MathClass-punc">,</mo><mi
 class="MathClass-punc">.</mo><mi 
 >H</mi></mrow><mo 
 class="MathClass-close">}</mo></mrow></math>,
-<!--l. 147--><math 
+<!--l. 224--><math 
  xmlns="http://www.w3.org/1998/Math/MathML"  
 display="inline" ><mi 
 >b</mi> <mo 
@@ -3155,7 +3242,7 @@ class="MathClass-punc">,</mo><mi
 class="MathClass-punc">.</mo><mi 
 >H</mi></mrow><mo 
 class="MathClass-close">}</mo></mrow></math> and
-<!--l. 148--><math 
+<!--l. 225--><math 
  xmlns="http://www.w3.org/1998/Math/MathML"  
 display="inline" ><mi 
 >c</mi> <mo 
@@ -3169,7 +3256,7 @@ class="MathClass-punc">,</mo><mi
 class="MathClass-punc">.</mo><mi 
 >H</mi></mrow><mo 
 class="MathClass-close">}</mo></mrow></math>, and outputs a
-residue subband <!--l. 149--><math 
+residue subband <!--l. 226--><math 
  xmlns="http://www.w3.org/1998/Math/MathML"  
 display="inline" ><mover 
 accent="true"><mrow 
@@ -3178,18 +3265,18 @@ accent="true"><mrow
 class="MathClass-op">̃</mo></mover><mo 
 class="MathClass-punc">.</mo><mi 
 >H</mi></math>,
-which replaces to <!--l. 149--><math 
+which replaces to <!--l. 226--><math 
  xmlns="http://www.w3.org/1998/Math/MathML"  
 display="inline" ><mi 
 >b</mi><mo 
 class="MathClass-punc">.</mo><mi 
 >H</mi></math>
-in the original <!--l. 149--><math 
+in the original <!--l. 226--><math 
  xmlns="http://www.w3.org/1998/Math/MathML"  
 display="inline" ><mi 
 >b</mi></math>
 decomposition. So, after the use of the buﬀerﬂy, we get
-<!--l. 150--><math 
+<!--l. 227--><math 
  xmlns="http://www.w3.org/1998/Math/MathML"  
 display="inline" ><mi 
 >a</mi> <mo 
@@ -3202,8 +3289,9 @@ class="MathClass-punc">,</mo><mi
 >a</mi><mo 
 class="MathClass-punc">.</mo><mi 
 >H</mi></mrow><mo 
-class="MathClass-close">}</mo></mrow></math> (an intra-coded “I”
-image), <!--l. 151--><math 
+class="MathClass-close">}</mo></mrow></math> (an <a 
+href="https://en.wikipedia.org/wiki/Video_compression_picture_types" >intra-coded “I”
+image</a>), <!--l. 230--><math 
  xmlns="http://www.w3.org/1998/Math/MathML"  
 display="inline" ><mover 
 accent="true"><mrow 
@@ -3222,8 +3310,9 @@ accent="true"><mrow
 class="MathClass-op">̃</mo></mover><mo 
 class="MathClass-punc">.</mo><mi 
 >H</mi></mrow><mo 
-class="MathClass-close">}</mo></mrow></math> (a bidirectionally
-predicted “B” image) and <!--l. 152--><math 
+class="MathClass-close">}</mo></mrow></math> (a <a 
+href="https://en.wikipedia.org/wiki/Video_compression_picture_types" >bidirectionally
+predicted “B” image</a>) and <!--l. 232--><math 
  xmlns="http://www.w3.org/1998/Math/MathML"  
 display="inline" ><mi 
 >c</mi> <mo 
@@ -3241,7 +3330,7 @@ class="MathClass-close">}</mo></mrow></math>
 reversible. Notice that the <a 
 href="http://www.vtvt.ece.vt.edu/research/references/video/DCT_Video_Compression/Zhang92a.pdf" >pyramid domain</a> (which is invariant to the
 pixels displacements) has been used to estimate and compensate the
-<!--l. 157--><math 
+<!--l. 237--><math 
  xmlns="http://www.w3.org/1998/Math/MathML"  
 display="inline" ><mi 
 >H</mi></math>
@@ -3257,7 +3346,7 @@ subbands.
                                                                   
 
                                                                   
-<!--l. 161--><p class="noindent" > <div style="text-align:center;"> <img width=1200 src="graphics/forward_butterfly.svg" /> </div> 
+<!--l. 241--><p class="noindent" > <div style="text-align:center;"> <img width=1200 src="graphics/forward_butterfly.svg" /> </div> 
 <br /> </p><div class="caption" 
 ><span class="id">Figure 2: </span><span  
 class="content">Forward MCDWT butterﬂy.</span></div><!--tex4ht:label?: x1-90012 -->
@@ -3265,14 +3354,14 @@ class="content">Forward MCDWT butterﬂy.</span></div><!--tex4ht:label?: x1-9001
 
                                                                   
    </div><hr class="endfigure" />
-   <!--l. 164--><div class="lstinputlisting">
+   <!--l. 244--><div class="lstinputlisting">
 <a 
  id="x1-9002r3"></a>
 <a 
  id="x1-9003"></a>
 <br /> <div class="caption" 
 ><span class="id">Listing 3: </span><span  
-class="content">MCDWT.py</span></div><!--tex4ht:label?: x1-9002r5 --><span 
+class="content">MCDWT.py (extract)</span></div><!--tex4ht:label?: x1-9002r5 --><span 
 class="ectt-1000"> </span><br /><span class="label"><a 
  id="x1-9004r1"></a></span><span 
 class="ectt-1000"> </span><span 
@@ -4224,55 +4313,55 @@ class="ectt-1000">bH</span><span
 class="ectt-1000">[1]</span>
    
    </div>
-<!--l. 166--><p class="indent" >   Notice that, even if <!--l. 166--><math 
+<!--l. 246--><p class="indent" >   Notice that, even if <!--l. 246--><math 
  xmlns="http://www.w3.org/1998/Math/MathML"  
 display="inline" ><mi 
 >a</mi></math>
-and <!--l. 166--><math 
+and <!--l. 246--><math 
  xmlns="http://www.w3.org/1998/Math/MathML"  
 display="inline" ><mi 
 >c</mi></math>
 (at full resolution) are available at the decoder, only
-<!--l. 167--><math 
+<!--l. 247--><math 
  xmlns="http://www.w3.org/1998/Math/MathML"  
 display="inline" ><mi 
 >b</mi><mo 
 class="MathClass-punc">.</mo><mi 
 >L</mi></math> is.
 So, it does not make sense to search the low resolution structures of
-<!--l. 168--><math 
+<!--l. 248--><math 
  xmlns="http://www.w3.org/1998/Math/MathML"  
 display="inline" ><mi 
 >b</mi><mo 
 class="MathClass-punc">.</mo><mi 
 >L</mi></math> in the high
-resolution images <!--l. 168--><math 
+resolution images <!--l. 248--><math 
  xmlns="http://www.w3.org/1998/Math/MathML"  
 display="inline" ><mi 
 >a</mi></math>
-and <!--l. 169--><math 
+and <!--l. 249--><math 
  xmlns="http://www.w3.org/1998/Math/MathML"  
 display="inline" ><mi 
 >c</mi></math>,
 because even if a perfect match is achieved (think about the tree images
-<!--l. 170--><math 
+<!--l. 250--><math 
  xmlns="http://www.w3.org/1998/Math/MathML"  
 display="inline" ><mi 
 >a</mi></math>,
-<!--l. 170--><math 
+<!--l. 250--><math 
  xmlns="http://www.w3.org/1998/Math/MathML"  
 display="inline" ><mi 
 >b</mi></math> and
-<!--l. 170--><math 
+<!--l. 250--><math 
  xmlns="http://www.w3.org/1998/Math/MathML"  
 display="inline" ><mi 
 >c</mi></math>
 are identical), the prediction error would be diﬀerent than
-<!--l. 171--><math 
+<!--l. 251--><math 
  xmlns="http://www.w3.org/1998/Math/MathML"  
 display="inline" ><mn>0</mn></math>
 as a consequence of that the high resolution information is missing in
-<!--l. 172--><math 
+<!--l. 252--><math 
  xmlns="http://www.w3.org/1998/Math/MathML"  
 display="inline" ><mi 
 >b</mi><mo 
@@ -4281,14 +4370,14 @@ class="MathClass-punc">.</mo><mi
 </p>
    <h4 class="subsectionHead"><span class="titlemark">5.2   </span> <a 
  id="x1-100005.2"></a>MCDWT forward transform</h4>
-<!--l. 176--><p class="noindent" >The MCDWT forward transform is the result of appliying the MCDWT
-butterﬂy to all the input sequence of decompositions with diﬀerent
-distances between them. As a consequence, except the ﬁrst and the last
-<!--l. 179--><math 
+<!--l. 256--><p class="noindent" >The MCDWT forward transform is the result of appliying the MCDWT butterﬂy to
+all the input sequence of decompositions with diﬀerent distances between them. As a
+consequence, except for the ﬁrst and the last image of the sequence, all the
+<!--l. 259--><math 
  xmlns="http://www.w3.org/1998/Math/MathML"  
 display="inline" ><mi 
->H</mi></math>-subband
-of the sequence are temporally decorrelated.
+>H</mi></math>-subbands
+are temporally decorrelated.
 </p>
    <hr class="figure" /><div class="figure" 
 >
@@ -4300,7 +4389,7 @@ of the sequence are temporally decorrelated.
                                                                   
 
                                                                   
-<!--l. 183--><p class="noindent" > <div style="text-align:center;"> <img width=1200 src="graphics/temporal_decorrelation.svg" /> </div> 
+<!--l. 264--><p class="noindent" > <div style="text-align:center;"> <img width=1200 src="graphics/temporal_decorrelation.svg" /> </div> 
 <br /> </p><div class="caption" 
 ><span class="id">Figure 3: </span><span  
 class="content">MCDWT forward transform.</span></div><!--tex4ht:label?: x1-100013 -->
@@ -4308,14 +4397,14 @@ class="content">MCDWT forward transform.</span></div><!--tex4ht:label?: x1-10001
 
                                                                   
    </div><hr class="endfigure" />
-   <!--l. 186--><div class="lstinputlisting">
+   <!--l. 267--><div class="lstinputlisting">
 <a 
  id="x1-10002r4"></a>
 <a 
  id="x1-10003"></a>
 <br /> <div class="caption" 
 ><span class="id">Listing 4: </span><span  
-class="content">MCDWT.py</span></div><!--tex4ht:label?: x1-10002r5 --><span 
+class="content">”MCDWT.py (extract)”</span></div><!--tex4ht:label?: x1-10002r5 --><span 
 class="ectt-1000"> </span><br /><span class="label"><a 
  id="x1-10004r1"></a></span><span 
 class="ectt-1000"> </span><span 
@@ -5994,7 +6083,7 @@ class="ectt-1000">//=2</span>
    </div>
    <h4 class="subsectionHead"><span class="titlemark">5.3   </span> <a 
  id="x1-110005.3"></a>(Spatial) Multiresolution procedure</h4>
-<!--l. 190--><p class="noindent" >Spatial dyadic multiresolution can be obtained by appliying a sequence of
+<!--l. 271--><p class="noindent" >Spatial dyadic multiresolution can be obtained by appliying a sequence of
 MDWT+MCDWT steps (see Fig. <a 
 href="#x1-110014">4<!--tex4ht:ref: fig:multiresolution --></a>).
 </p>
@@ -6008,7 +6097,7 @@ href="#x1-110014">4<!--tex4ht:ref: fig:multiresolution --></a>).
                                                                   
 
                                                                   
-<!--l. 194--><p class="noindent" > <div style="text-align:center;"> <img width=1200 src="graphics/multiresolution.svg" /> </div> 
+<!--l. 275--><p class="noindent" > <div style="text-align:center;"> <img width=1200 src="graphics/multiresolution.svg" /> </div> 
 <br /> </p><div class="caption" 
 ><span class="id">Figure 4: </span><span  
 class="content">MDWT+MCDWT multiresolution procedure.</span></div><!--tex4ht:label?: x1-110014 -->
@@ -6018,7 +6107,7 @@ class="content">MDWT+MCDWT multiresolution procedure.</span></div><!--tex4ht:lab
    </div><hr class="endfigure" />
    <h4 class="subsectionHead"><span class="titlemark">5.4   </span> <a 
  id="x1-120005.4"></a>Scalability provided by MCDWT</h4>
-<!--l. 200--><p class="noindent" >The decomposition generated by the MCDWT is identical to MDWT. Therefore,
+<!--l. 281--><p class="noindent" >The decomposition generated by the MCDWT is identical to MDWT. Therefore,
 MCDWT provides the same spatial scalability than MDWT. In order to obtain
 several spatial resolutions, MCDWT should be applied to the low-frequency
 subbands, recursively. As an example, in the Figure <a 
@@ -6027,26 +6116,26 @@ the output of the example of the Figure <a
 href="#x1-100013">3<!--tex4ht:ref: fig:forward_MCDWT --></a>. Notice that between two consecutive
 iterations of MCDWT, MDWT must be applied to the low-frequency subband in
 order to reduce the resolution of the analysis.
-</p><!--l. 210--><p class="indent" >   On the other hand, MCDWT decreases the temporal scalability oﬀered
+</p><!--l. 291--><p class="indent" >   On the other hand, MCDWT decreases the temporal scalability oﬀered
 by MDWT to allowing only dyadic access (depending on required image
 and the number of MCDWT levels, more than one decomposition need to
 be inversely transformed). For example, if only one step of the backward
 transform is applied to the previous example, only the decompositions of
-<!--l. 215--><math 
+<!--l. 296--><math 
  xmlns="http://www.w3.org/1998/Math/MathML"  
 display="inline" ><msub><mrow 
 ><mi 
 >s</mi></mrow><mrow 
 ><mn>0</mn></mrow></msub 
 ></math>,
-<!--l. 215--><math 
+<!--l. 296--><math 
  xmlns="http://www.w3.org/1998/Math/MathML"  
 display="inline" ><msub><mrow 
 ><mi 
 >s</mi></mrow><mrow 
 ><mn>2</mn></mrow></msub 
 ></math> and
-<!--l. 215--><math 
+<!--l. 296--><math 
  xmlns="http://www.w3.org/1998/Math/MathML"  
 display="inline" ><msub><mrow 
 ><mi 
