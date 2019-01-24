@@ -203,9 +203,35 @@ hand, if we want to provide true spatial scalability (processing only
 those
 \href{https://www.tutorialspoint.com/dip/spatial_resolution.htm}{spatial
   resolutions} (scales) necessary to get a spatially scaled of our
-video), a t+2D transformed video is not suitable because the first
-step of the forward transform (t) should be reversed at full
-resolution in the backward transform (as the forward transform did).
+video), a t+2D transformed video presents some drawbacks:
+
+\begin{itemize}
+\item In order to implement a lossless system, the t stage must be
+  carried out at full (scale 0) resolution.
+\item We can restrict the perfect reconstruction only to the scale 0
+  case, but in this case, a spatial resolution representation of the
+  motion information should be available at the decoder. This can be
+  done, but in general, scalabilitity decreases the compression ratio.
+\item We can use the full (scale 0) resolution version of the motion
+  information for reconstructing all the scales of the texture
+  (interpolating it for all those scales greater that 0), but in this
+  case the memory and computing requirements at the decoders will
+  increase. Depending on the resolution of the scale 0 and the
+  computational resources, this can be affordable or not.
+\item As an alternative to this last problem, we can decrease the
+  accuracy of the motion information in order to make it suitable for
+  the spatial resolution. However, this will increase the distortion
+  of the reconstruction compared to the previous solution.
+\end{itemize}
+
+Finally, it is important to realize that the presence of the motion
+data in the code-stream introduces also complexity to the decoding
+process because, in a quality scalable scenario, it is not trivial
+(specially when non-linear systems such as those based on ME are
+involved) to decide how to interleave the motion and the texture
+information in a code-stream that can be decoded following different
+orders, depending on the type of used scalability and the avaliable
+bandwidth.
 
 \section{Motion Compensated Discrete Wavelet Transform (MCDWT)}
 MCDWT is a 2D+t transform. The 2D stage is MDWT. The t stage is a
@@ -229,9 +255,10 @@ a.H\}$ (an
 \href{https://en.wikipedia.org/wiki/Video_compression_picture_types}{intra-coded
   ``I'' image}), $\tilde{b}=\{b.L, \tilde{b}.H\}$ (a
 \href{https://en.wikipedia.org/wiki/Video_compression_picture_types}{bidirectionally
-  predicted ``B'' image}) and $c=\{c.L, c.H\}$ (an intra-coded ``I''
-image). Obviously, this replacement is fully reversible. Notice that
-the
+  predicted ``B'' image}) and $c=\{c.L, c.H\}$ (another intra-coded
+``I'' image). This replacement is fully reversible because the forward
+transform will use only the information that the backward transform
+has access to. Notice that the
 \href{http://www.vtvt.ece.vt.edu/research/references/video/DCT_Video_Compression/Zhang92a.pdf}{pyramid
   domain} (which is invariant to the pixels displacements) has been
 used to estimate and compensate the $H$ subbands.
@@ -247,7 +274,7 @@ Notice that, even if $a$ and $c$ (at full resolution) are available at
 the decoder, only $b.L$ is. So, it does not make sense to search the
 low resolution structures of $b.L$ in the high resolution images $a$
 and $c$, because even if a perfect match is achieved (think about the
-tree images $a$, $b$ and $c$ are identical), the prediction error
+three images $a$, $b$ and $c$ are identical), the prediction error
 would be different than $0$ as a consequence of that the high
 resolution information is missing in $b.L$.
 
@@ -255,8 +282,8 @@ resolution information is missing in $b.L$.
 
 The MCDWT forward transform is the result of appliying the MCDWT
 butterfly to all the input sequence of decompositions with different
-distances between them. As a consequence, except for the first and the
-last image of the sequence, all the $H$-subbands are temporally
+distances between them. As a result, except for the first and the last
+image of the sequence, all the $H$-subbands are temporally
 decorrelated.
 
 \begin{figure}
@@ -266,14 +293,17 @@ decorrelated.
 \end{figure}
 \lstinputlisting[firstline=69, lastline=138, language=python, caption={MCDWT.py (extract)}]{../src/MCDWT.py}
 
-\subsection{(Spatial) Multiresolution procedure}
+\subsection{(Spatial) Multiresolution}
 
 Spatial dyadic multiresolution can be obtained by appliying a sequence of MDWT+MCDWT steps (see Fig.~\ref{fig:multiresolution}).
 
 \begin{figure}
 \centering
 \imgw{1200}{graphics/multiresolution.svg}
-\caption{MDWT+MCDWT multiresolution procedure.\label{fig:multiresolution}}
+\caption{MDWT+MCDWT multiresolution procedure. The input to the second
+  iteration of the MDWT+MCDWT transform is the output of a previous
+  (first) iteration MDWT+MCDWT transform. The second iteration is only
+  applied to the scale 1.\label{fig:multiresolution}}
 \end{figure}
 
 
@@ -290,12 +320,13 @@ analysis.
 
 On the other hand, MCDWT decreases the temporal scalability offered by
 MDWT to allowing only dyadic access (depending on required image and
-the number of MCDWT levels, more than one decomposition need to be
+the number of MCDWT levels, more than one decomposition needs to be
 inversely transformed). For example, if only one step of the backward
-transform is applied to the previous example, only the decompositions
-of $s_0$, $s_2$ and $s_4$ will be reconstructed (the first
+transform is applied to the example of the
+Figure~\ref{fig:forward_MCDWT}, only the decompositions of $s_0$,
+$s_2$ and $s_4$ will be reconstructed (the second
 \href{https://en.wikipedia.org/wiki/Temporal_resolution}{temporal
-  resolution}. If a second iteration of the backward transform is
+  resolution}). If a second iteration of the backward transform is
 used, all the decompositions are rendered.
 
 \subsection{Example}
