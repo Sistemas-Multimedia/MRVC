@@ -27,7 +27,7 @@ class="ecrm-1200">Vicente Gonz</span><span
 class="ecrm-1200">á</span><span 
 class="ecrm-1200">lez Ruiz</span></div><br />
 <div class="date" ><span 
-class="ecrm-1200">January 23, 2019</span></div>
+class="ecrm-1200">January 24, 2019</span></div>
    </div>
    <h3 class="likesectionHead"><a 
  id="x1-1000"></a>Contents</h3>
@@ -6204,10 +6204,10 @@ transform is used, all the decompositions are rendered.
  <br />python -O ./MDWT.py -b -d /tmp/recons_MCDWT_ -i /tmp/recons_MDWT_
  <br />
  <br /># Visualization of the reconstruction:
- <br />rm -f /tmp/*.png; for i in /tmp/recons_MDWT_*; do convert -normalize $i $i.png; done; animate /tmp/*.png
+ <br />rm -f /tmp/*.png; for i in /tmp/recons_MDWT_*; do ../tools/sub_32768_128.py $i $i.png; done; animate /tmp/recons_MDWT_*.png
  <br />
  <br /># Visualize the original sequence:
- <br />rm -f /tmp/stockholm/*.png; cp -r ../sequences/stockholm /tmp; for i in /tmp/stockholm/*; do convert -normalize $i $i.png; done; animate /tmp/stockholm/*.png
+ <br />rm -f /tmp/stockholm/*.png; cp -r ../sequences/stockholm /tmp; for i in /tmp/stockholm/*; do ../tools/sub_32768_128.py $i $i.png; done; animate /tmp/stockholm/*.png
 </div>
 <!--l. 344--><p class="nopar" >
                                                                   
