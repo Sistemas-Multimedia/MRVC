@@ -1,2 +1,5 @@
-wget http://www.hpca.ual.es/~vruiz/videos/stockholm_1280x768x50x420x578.avi
-ffmpeg -i stockholm_1280x768x50x420x578.avi -vframes 7 %03d.png
+#!/bin/env bash
+wget http://www.hpca.ual.es/~vruiz/videos/un_heliostato.mp4
+mkdir images
+ffmpeg -i un_heliostato.mp4 -vframes 7 un_heliostato_%03d.png
+mv *.png images
