@@ -211,13 +211,14 @@ video), a t+2D transformed video presents some drawbacks:
 \item We can restrict the perfect reconstruction only to the scale 0
   case, but in this case, a spatial resolution representation of the
   motion information should be available at the decoder. This can be
-  done, but in general, scalabilitity decreases the compression ratio.
+  done, but in general, scalabilitity decreases the compression ratio
+  (on the motion data in this case).
 \item We can use the full (scale 0) resolution version of the motion
   information for reconstructing all the scales of the texture
   (interpolating it for all those scales greater that 0), but in this
   case the memory and computing requirements at the decoders will
-  increase. Depending on the resolution of the scale 0 and the
-  computational resources, this can be affordable or not.
+  increase. Therefore, depending on the resolution of the scale 0 and the
+  computational resources, this could be affordable or not.
 \item As an alternative to this last problem, we can decrease the
   accuracy of the motion information in order to make it suitable for
   the spatial resolution. However, this will increase the distortion
@@ -225,7 +226,7 @@ video), a t+2D transformed video presents some drawbacks:
 \end{itemize}
 
 Finally, it is important to realize that the presence of the motion
-data in the code-stream introduces also complexity to the decoding
+data in the code-stream introduces also complexity into the decoding
 process because, in a quality scalable scenario, it is not trivial
 (specially when non-linear systems such as those based on ME are
 involved) to decide how to interleave the motion and the texture
@@ -274,14 +275,14 @@ Notice that, even if $a$ and $c$ (at full resolution) are available at
 the decoder, only $b.L$ is. So, it does not make sense to search the
 low resolution structures of $b.L$ in the high resolution images $a$
 and $c$, because even if a perfect match is achieved (think about the
-three images $a$, $b$ and $c$ are identical), the prediction error
+three decompositions $a$, $b$ and $c$ are identical), the prediction error
 would be different than $0$ as a consequence of that the high
 resolution information is missing in $b.L$.
 
 \subsection{MCDWT forward transform}
 
 The MCDWT forward transform is the result of appliying the MCDWT
-butterfly to all the input sequence of decompositions with different
+butterfly to the full input sequence of decompositions with different
 distances between them. As a result, except for the first and the last
 image of the sequence, all the $H$-subbands are temporally
 decorrelated.
