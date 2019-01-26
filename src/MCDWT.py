@@ -76,21 +76,20 @@ class MCDWT:
         Imput:
         -----
 
-            prefix : str
+            prefix : s
 
-                Localization of the input/output images. Example:
-                "/tmp/".
+                Localization of the input images. Example: "/tmp/stockholm_".
 
              N : int
 
                 Number of images to process.
 
-             K : int
+             T : int
 
                 Number of levels of the MCDWT (temporal scales). Controls
                 the GOP size.
 
-                  K | GOP_size
+                  T | GOP_size
                 ----+-----------
                   0 |        1
                   1 |        2
@@ -103,7 +102,10 @@ class MCDWT:
         Returns
         -------
 
-            None.
+            prefix : S
+
+                Localization of the output decompositions. For example:
+                "/tmp/mc_stockholm_".
 
         '''
         x = 2
@@ -136,7 +138,8 @@ class MCDWT:
                 aL, aH = cL, cH
                 i += 1
             x //=2
-        
+
+    # Ignore
     def forward_(prefix = "/tmp/", N = 5, K = 2):
         '''A Motion Compensated Discrete Wavelet Transform.
 
@@ -238,6 +241,7 @@ class MCDWT:
                     i += 1
                 x *= 2
 
+    # Ignore
     def backward_(input = '/tmp/', output='/tmp/', N=5, S=2):
         '''A (Inverse) Motion Compensated Discrete Wavelet Transform.
 
