@@ -5,10 +5,10 @@ fi
     mkdir /tmp/issues02 
     echo "mkdir"
 if [ -d /tmp/dwt ]; then
-    mkdir /tmp/issues02 
-    echo "mkdir"
- fi
-
+    rm -rf   /tmp/dwt 
+    echo "mkdir dwt"
+fi
+    mkdir /tmp/dwt
 
 #wget http://www.hpca.ual.es/~vruiz/videos/stockholm_1280x768x50x420x578.avi --output-document=/tmp/stockholm.avi
 wget http://www.hpca.ual.es/~vruiz/videos/flowergarden_352x288x30x420x250.avi --output-document=/tmp/stockholm.avi
