@@ -1,4 +1,4 @@
-rm -rf /tmp/stockholm
+#rm -rf /tmp/stockholm
 if [ -d /tmp/issues02 ]; then
     rm -rf /tmp/issues02 
 fi
