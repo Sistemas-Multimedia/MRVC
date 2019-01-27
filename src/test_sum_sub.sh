@@ -18,6 +18,11 @@ for f in /tmp/issues02/*.png; do
     echo $f
     base=${f%.*} 
     echo $base
+    IFS=’/’ read -ra basearr <<< "$base"
+    filex="$((${basearr[3]}-1))"
+    echo $filex
+    #basep=$basearr[0]%"/"%$basearr[1]%"/"%basearr[2]
+    echo $basep
     mv $f $base
 done
 #for f in /tmp/issues02/*; do
