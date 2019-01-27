@@ -13,17 +13,18 @@ if [ -d /tmp/dwt ]; then
 #wget http://www.hpca.ual.es/~vruiz/videos/stockholm_1280x768x50x420x578.avi --output-document=/tmp/stockholm.avi
 wget http://www.hpca.ual.es/~vruiz/videos/flowergarden_352x288x30x420x250.avi --output-document=/tmp/stockholm.avi
 ffmpeg -i /tmp/stockholm.avi -vframes $1 /tmp/issues02/%03d.png
-#for file in *.png; do mv "$file" "${file/_h.png/_half.png}"; done
-for f in /tmp/issues02/*.png; do
-    echo $f
+
+cd /tmp/issues02/
+for f in *.png; do
+    #echo $f
     base=${f%.*} 
-    echo $base
-    IFS=’/’ read -ra basearr <<< "$base"
-    filex="$((${basearr[3]}-1))"
-    echo $filex
-    #basep=$basearr[0]%"/"%$basearr[1]%"/"%basearr[2]
-    echo $basep
-    mv $f $base
+    #echo $base
+    filex="$((10#$base-1))"
+    #echo $filex
+    filen=$( printf '%04d' $filex )
+    echo $filen
+    #mv $f $base
+    mv $f $filen
 done
 #for f in /tmp/issues02/*; do
 #./DWT.py -i $f -d /tmp/000  
