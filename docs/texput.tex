@@ -369,10 +369,39 @@ python -O ./MCDWT.py -b -m /tmp/mc_stockholm_ -d /tmp/recons_MCDWT_
 python -O ./MDWT.py -b -d /tmp/recons_MCDWT_ -i /tmp/recons_MDWT_
 
 # Visualization of the reconstruction:
-rm -f /tmp/*.png; for i in /tmp/recons_MDWT_*; do ../tools/sub_32768_128.py $i $i.png; done; animate /tmp/recons_MDWT_*.png
+rm -f /tmp/*.png; for i in /tmp/recons_MDWT_*; do python ../tools/substract_offset.py -i $i -o $i.png; done; animate /tmp/recons_MDWT_*.png
 
 # Visualize the original sequence:
-rm -f /tmp/stockholm/*.png; cp -r ../sequences/stockholm /tmp; for i in /tmp/stockholm/*; do ../tools/sub_32768_128.py $i $i.png; done; animate /tmp/stockholm/*.png
+rm -f /tmp/stockholm/*.png; cp -r ../sequences/stockholm /tmp; for i in /tmp/stockholm/*; do python ../tools/substract_offset.py -i $i -o $i.png; done; animate /tmp/stockholm/*.png
+
+# Let's clear the motion compensated subbands and reconstruct the sequence ...
+
+# Create a zero subband:
+bash ../tools/create_black_image.sh; python ../tools/add_offset.py -i /tmp/zero.png -o /tmp/zero16.png -f 32768
+python ../tools/show_statistics.py -i /tmp/zero16.png
+
+# "Delete" the motion compensated subbands:
+cp /tmp/zero16.png /tmp/mc_stockholm_001_LH
+cp /tmp/zero16.png /tmp/mc_stockholm_001_HL
+cp /tmp/zero16.png /tmp/mc_stockholm_001_HH
+cp /tmp/zero16.png /tmp/mc_stockholm_002_LH
+cp /tmp/zero16.png /tmp/mc_stockholm_002_HL
+cp /tmp/zero16.png /tmp/mc_stockholm_002_HH
+cp /tmp/zero16.png /tmp/mc_stockholm_003_LH
+cp /tmp/zero16.png /tmp/mc_stockholm_003_HL
+cp /tmp/zero16.png /tmp/mc_stockholm_003_HH
+
+# Motion Compensated 1D 1-levels backward DWT:
+python -O ./MCDWT.py -b -m /tmp/mc_stockholm_ -d /tmp/recons2_MCDWT_
+
+# Motion 2D 1-levels backward DWT:
+python -O ./MDWT.py -b -d /tmp/recons2_MCDWT_ -i /tmp/recons2_MDWT_
+
+# Visualization of the reconstruction:
+rm -f tmp/recons2_MDWT_*.png; for i in /tmp/recons2_MDWT_*; do python ../tools/substract_offset.py -i $i -o $i.png; done; animate /tmp/recons2_MDWT_*.png
+
+# Visualization of the differences:
+rm -f /tmp/diff*.png; for i in {0..4}; do ii=$(printf "%03d" $i); bash ../tools/show_differences.sh -1 /tmp/recons_MDWT_$ii -2 /tmp/recons2_MDWT_$ii -o /tmp/diff_$i.png; done; animate /tmp/diff*.png
 \end{verbatim}
 
 \begin{comment}
