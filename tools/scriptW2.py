@@ -14,9 +14,13 @@ import subprocess
 import argparse
 import cv2
 import numpy
+sys.path.insert(0, "..")
+from src.MC.optical.motion import generate_prediction
+import src.DWT
+import src.IO
+import src.MC
 
 def main():
-    
     # Creates the command line arguments 
     parser = argparse.ArgumentParser("Script for Issue Week 2")
     parser.add_argument("-vpath", help="Path to the video to download")
@@ -58,49 +62,47 @@ def main():
     else:
         nGOP = 10
 
-    #source = os.listdir("/mnt/hgfs/Sistemas Multimedia/Exercise Git/MCDWT/tools/")
-    #destination = "/tmp/"
-
-
     # Downloads the video
     print("Atempting to download video ...\n\n")
-    subprocess.run("wget {} ".format(videoPath) , shell=True, check=True)
+    subprocess.run("wget /tmp/{} ".format(videoPath) , shell=True, check=True)
     ##### Renames the video ####
     if videoName != "un_heliostato":
-        subprocess.run("mv *.mp4 {}.mp4".format(videoName), shell=True, check=True)  
+        subprocess.run("mv *.mp4 /tmp/{}.mp4".format(videoName), shell=True, check=True)  
     print("\n\nVideo Downloaded!\n\n")
     
     # Creates directories for the generated files
-    subprocess.run("mkdir {}".format(videoName), shell=True) # root directory
-    subprocess.run("mkdir -p {}/extracted".format(videoName), shell=True) # extracted frames from video
-    subprocess.run("mkdir -p {}/16bit".format(videoName), shell=True) # for the 16 bit transformed images
-    subprocess.run("mkdir -p {}/reconstructed".format(videoName), shell=True) # for the reconstructed images
+    subprocess.run("mkdir /tmp/{}".format(videoName), shell=True) # root directory
+    subprocess.run("mkdir -p /tmp/{}/extracted".format(videoName), shell=True) # extracted frames from video
+    subprocess.run("mkdir -p /tmp/{}/16bit".format(videoName), shell=True) # for the 16 bit transformed images
+    subprocess.run("mkdir -p /tmp/{}/reconstructed".format(videoName), shell=True) # for the reconstructed images
 
     # Extracts the frames from video
     print("\n\nExtracting images ...\n\n")
-    subprocess.run("ffmpeg -i {}.mp4 -vframes {} {}_%03d.png".format(videoName,nFrames, videoName), shell=True, check=True)
-    subprocess.run("mv *.mp4 {}".format(videoName), shell=True, check=True)
-    subprocess.run("cp *.png {}/extracted".format(videoName), shell=True, check=True)
+    subprocess.run("ffmpeg -i /tmp/{}.mp4 -vframes {} /tmp/{}_%03d.png".format(videoName, nFrames, videoName), shell=True, check=True)
+    subprocess.run("mv *.mp4 /tmp/{}".format(videoName), shell=True, check=True)
+    subprocess.run("cp *.png /tmp/{}/extracted".format(videoName), shell=True, check=True)
 
     print("\n\n Done! ready to transform \n\n")
 
     # Convert the images to 16 bit
     for image in range(int(nFrames)):
-        inputImg = ("{}_{:03d}.png".format(videoName ,image+1))
-        outputImg = ("{:03d}.png".format(image+1))
+        inputImg = ("/tmp/{}_{:03d}.png".format(videoName ,image+1))
+        outputImg = ("/tmp/{:03d}.png".format(image+1))
         imgTo16(inputImg , outputImg)
 
     # Moves 16 bits images to the specific folder
     subprocess.run("cp 0* {}/16bit".format(videoName), shell=True, check=True)
-
+    #subprocess.run("mkdir -p /tmp/{}".format(videoName), shell=True)
+    #subprocess.run("cp 0* /tmp/{}".format(videoName), shell=True, check=True)
+    
 
     ##########################################################
 
     ########## ADD Here the Convertion MCDWT #################
 
+    # Motion 2D 1-levels forward DWT of the ’stockholm’ sequence:  
+    subprocess.run("python3 -O ../src/MDWT.py -i /tmp/{}/ -d /tmp/heliostato/".format(videoName), shell=True, check=True)
     ##########################################################
-
-
 
     # Reconstruct 16bit images back to normal
     for image in range(int(nFrames)):
@@ -115,10 +117,6 @@ def main():
     subprocess.run("rm *.png", shell=True, check=True)
 
 
-    """ for files in source:
-        if files.endswith(".mp4") or files.endswith(".png"):
-            shutil.move(files,destination)
-            print ("Moved to tmp") """
 
 
 def imgTo16(input, output):
@@ -136,7 +134,33 @@ def imgReconstruct(input, output):
     cv2.imwrite(output, image.astype(np.uint8))
     
 
+def forward_butterfly(self, aL, aH, bL, bH, cL, cH): 
+    AL = self.dwt.backward((aL, self.zero_H)) 
+    BL = self.dwt.backward((bL, self.zero_H)) 
+    CL = self.dwt.backward((cL, self.zero_H)) 
+    AH = self.dwt.backward((self.zero_L, aH)) 
+    BH = self.dwt.backward((self.zero_L, bH)) 
+    CH = self.dwt.backward((self.zero_L, cH)) 
+    BHA = self.dwt.generate_prediction(AL, BL, AH) 
+    BHC = self.generate_prediction(CL, BL, CH) 
+    prediction_BH = (BHA + BHC) / 2 
+    residue_BH = BH - prediction_BH 
+    residue_bH = self.dwt.forward(residue_BH) 
+    return residue_bH[1]
 
+def backward_butterfly(self, aL, aH, bL, residue_bH, cL, cH): 
+    AL = self.dwt.backward((aL, self.zero_H)) 
+    BL = self.dwt.backward((bL, self.zero_H)) 
+    CL = self.dwt.backward((cL, self.zero_H)) 
+    AH = self.dwt.backward((self.zero_L, aH)) 
+    residue_BH = self.dwt.backward((self.zero_L, residue_bH)) 
+    CH = self.dwt.backward((self.zero_L, cH)) 
+    BHA = generate_prediction(AL, BL, AH) 
+    BHC = generate_prediction(CL, BL, CH) 
+    prediction_BH = (BHA + BHC) / 2 
+    BH = residue_BH + prediction_BH 
+    bH = self.dwt.forward(BH) 
+    return bH[1]
 
 
 

@@ -4,9 +4,9 @@
 
 [![Build Status](https://travis-ci.org/joemccann/dillinger.svg?branch=master)](https://travis-ci.org/joemccann/dillinger)
 
-The python script allows to download a video, extract a specified number of frames, convert those frames to 16 bits and Reconstruct the frames.
+The python script allows to download a video (mp4 format), extract a specified number of frames, convert those frames to 16 bits and Reconstruct the frames.
 
-Onced the scriped is executed, all the generated files are stored (same as vname argument).
+Onced the scriped is executed, all the generated files are stored in a single folder (same as vname argument). Make sure to pass the name of the video downloaded as argument.
 
 # Output Directory Structure!
 -  /VideoName:
@@ -46,6 +46,13 @@ If you want to extract more frames add the -frames argumtent
 ```sh
 $ ./scriptW2.py -frames 15
 ```
+
+
+### Issues to be solved
+
+  - Still needs to add a base path to tmp folder so everyone is capable of reading and writing. But you can move the script to the temp folder.
+  - Right now only supports MP4 video format
+
 
 
    [dill]: <https://github.com/joemccann/dillinger>
