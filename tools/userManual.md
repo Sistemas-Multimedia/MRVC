@@ -14,12 +14,16 @@ Onced the scriped is executed, all the generated files are stored in a single fo
   - - /16bit
   - - /16bitreconstructed (16 bit from video normalized)
   - - /MDWT
-  - - - /MCDWT (Level 1)
+  - - - /MCDWT
+  - - - - /1 (Level 1 by default)
   - - - - /2 (Level 2)
-  - - - - - /3 (Level 3)
-  - - - - - - ... (Level n)
-  - - /_reconMDWT (Secuence reconstructed from MCDWT and MDWT)
+  - - - - /n...
   - - /_reconMCDWT
+  - - - /1 (Reconstruction from MCDWT level 1 by default)
+  - - - /2 (Reconstruction from MCDWT level 2)
+  - - - /n...
+  - - /_reconMDWT (Secuence reconstructed)
+
 
 # Arguments supported!
 
