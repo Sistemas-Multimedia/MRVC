@@ -1,0 +1,429 @@
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: "<none>"
+%%% End:
+
+\title{Motion Compensated Discrete Wavelet Transform (MCDWT)}
+
+\author{Vicente González Ruiz}
+
+\maketitle
+\tableofcontents
+
+\section{Intro}
+
+\href{https://en.wikipedia.org/wiki/Video}{Video} data contain high
+amounts of redundancy, spatial and temporal. For this reason, most of
+video encoders compress the input sequece of
+\href{https://en.wikipedia.org/wiki/Digital_image}{images} (which are
+matrices of \href{https://en.wikipedia.org/wiki/Pixel}{pixels})
+basically in two stages: (1) a transform stage in the
+\href{https://en.wikipedia.org/wiki/Time_domain}{time} and in the
+\href{https://www.quora.com/What-is-spatial-domain-in-image-processing}{spatial}
+domains that produces a collection of spatially
+\href{https://en.wikipedia.org/wiki/Decorrelation}{uncorrelated}
+\href{https://en.wikipedia.org/wiki/Discrete_wavelet_transform}{coefficients},
+and (2) an
+\href{https://en.wikipedia.org/wiki/Entropy_encoding}{entropy
+  encoding} phase which removes the statistical redundancy that can
+still remains after the decorrelation (transform). These coefficients
+have two interesting features:
+\begin{enumerate}
+\item Usually, a \textbf{
+  \href{https://vicente-gonzalez-ruiz.github.io/symbol_compression/}{smaller
+  entropy}} than the original pixels. This helps to increase
+  the \href{https://en.wikipedia.org/wiki/Data_compression_ratio}{compression
+  ratio}.
+\item The transform domain provides a
+  \textbf{\href{https://en.wikipedia.org/wiki/Image_resolution}{multiresolution}
+    representation (spatial and temporal)} of the visual information (spatial
+  \href{http://inst.eecs.berkeley.edu/~ee290t/sp04/lectures/videowavelet_UCB1-3.pdf}{scalability}).
+\end{enumerate}
+
+\section{Distrete Wavelet Transform (DWT)}
+\href{https://en.wikipedia.org/wiki/Discrete_wavelet_transform}{(2D-)DWT}
+is a digital transform that, applied to an image, performs spatial
+decorrelation (2D) and obtains a
+\href{https://vicente-gonzalez-ruiz.github.io/image_transformations_for_coding/index.html#x1-3500024}{multiresolution
+  dyadic representation} of such image, conforming a collection of DWT
+subbands. The forward transform converts the image into a set of
+frequency subbands with coefficients representing different spatial
+areas and frequency orientations. There is an equivalence between
+(DWT) subbands (a \emph{(subband) decomposition}) and
+\href{http://fourier.eng.hmc.edu/e161/lectures/canny/node3.html}{Laplacian
+  pyramids}, and it is quite simple to
+\href{https://vicente-gonzalez-ruiz.github.io/pyramids-and-wavelets/}{pass
+  from a decomposition representation to a pyramid representation and
+  viceversa}.
+
+\href{https://github.com/vicente-gonzalez-ruiz/MCDWT/blob/master/src/DWT.py}{DWT.py}
+implements the forward and backward (2D-)DWT for color images. $L$ and
+$H$ stands for \emph{low-pass filtered} and \emph{high-pass filtered},
+respectively.  More information about the implementation can be found at
+\href{https://pywavelets.readthedocs.io/en/latest/index.html}{PyWavelets}.
+
+\lstinputlisting[firstline=9, lastline=105, language=python, caption=DWT.py]{../src/DWT.py}
+
+The multilevel DWT is a recursive use of the (1-level) DWT applied to
+the $LL$ subband. For example, if the DWT is applied $k$-times to the
+$LL$ subband, recursively, a decomposition of $k+1$-levels is generated. For
+the sake of simplicity, we will denote the subbands $\{LH^k, HL^k,
+HH^k\}$ as only $H^k$, and $LL^k$ as only $L^k$.
+
+\subsection{Scalability provided by DWT}
+Depending on the number of subbands levels (pyramid levels in the
+pyramid representation) that we use, we can reconstruct a image at
+different spatial scales (resolutions). For example, if an image $s_1$ has been transformed using the DWT of 2 levels, we get:
+\begin{itemize}
+\item Subband $s_1.L^2$ with the scale 2.
+\item Subband $s_1.L^1=s_1.L=\text{iDWT}(s_1.L^2, S_1.H^2)$ (``iDWT'' =
+  ``inverse DWT'' = ``backward DWT'') with the scale 1.
+\item $s_1.L^0=\text{iDWT}(s_1.L, s_1.H)$ (the original image) with the scale 0.
+\end{itemize}
+
+\subsection{Example}
+\begin{verbatim}
+# You must be in the 'src' directory.
+
+# 2D 1-levels forward DWT of the first image of the 'stockholm' sequence:
+./DWT.py -i ../sequences/stockholm/000 -d /tmp/000
+
+# Visualize the subbands:
+display -normalize /tmp/000_LL # <- LL1
+display -normalize /tmp/000_LH # <- LH1
+display -normalize /tmp/000_HL # <- HL1
+display -normalize /tmp/000_HH # <- HH1
+
+# 2D 1-levels forward DWT of the LL subband:
+./DWT.py -i /tmp/000_LL
+-d /tmp/000_LL
+
+# Visualize the subbands:
+display -normalize /tmp/000_LL_LL # <- LL2
+display -normalize /tmp/000_LL_LH # <- LH2
+display -normalize /tmp/000_LL_HL # <- HL2
+display -normalize /tmp/000_LL_HH # <- HH2
+
+# The result of the 2D 2-levels forward DWT are the subbands: LL2,
+# LH2, HL2, HH2, LH1, HL1, HH1
+
+# The scale 2 of the image is represented by LL2.
+
+# The scale 1 can be reconstructed using the 2D 1-levels backward DWT
+# on the 000_LL_{LL, LH, HL, HH} subbands:
+./DWT.py -b -d /tmp/000_LL -i /tmp/scale1 && display -normalize /tmp/scale1
+
+# The reconstruction '/tmp/scale1' and the original scale 1
+# '/tmp/000_LL' have the same resolution:
+file /tmp/scale1 /tmp/000_LL
+
+# Floating-point arithmetic of DWT introduces minimal distortions:
+cmp /tmp/scale1 /tmp/000_LL
+
+# Basically, distortion is white noise:
+../tools/show_differences.sh -1 /tmp/scale1 -2 /tmp/000_LL -o /tmp/diffs.png
+display -normalize /tmp/diffs.png
+
+# The scale 0 is recovered using again the inverse transform:
+cp /tmp/scale1 /tmp/000_LL
+./DWT.py -b -d /tmp/000 -i /tmp/scale0 && display -normalize /tmp/scale0
+\end{verbatim}
+
+\section{Motion DWT (MDWT)}
+DWT can be applied to a sequence of images by simply transforming each
+image of the sequence independently. This is done, for example, in the
+\href{https://en.wikipedia.org/wiki/JPEG_2000}{motion JPEG2000 video
+  compression standard}. Notice that only the spatial redundancy is
+exploited. All the temporal redundancy still remains in the video.
+
+\begin{figure}
+\centering
+\imgw{800}{graphics/forward_MDWT.svg}
+\caption{Forward MDWT step.}
+\end{figure}
+
+\lstinputlisting[firstline=16, lastline=62, language=python, caption=MDWT.py]{../src/MDWT.py}
+
+\subsection{Scalability provided by MDWT}
+MDWT sequences (of (subband) decompositions) are scalable in space and
+in time. Spatial scalability is a direct consequence of DWT. On the other
+hand, it is trivial to observe that MDWT provides \emph{fully}
+temporal scalability (we can access to the images randomly) because
+each image of the input sequence is transformed independently.
+
+\subsection{Example}
+\begin{verbatim}
+# You must be in the 'src' directory.
+
+# Motion 2D 1-levels forward DWT of the 'stockholm' sequence:
+python -O ./MDWT.py -i ../sequences/stockholm/ -d /tmp/stockholm_
+
+# Visualize the subbands:
+rm /tmp/*.png
+for i in /tmp/stockholm_00?_LL; do convert -normalize $i $i.png; done
+animate /tmp/*.png
+rm /tmp/*.png
+for i in /tmp/stockholm_00?_LH; do convert -normalize $i $i.png; done
+animate /tmp/*.png
+rm /tmp/*.png
+for i in /tmp/stockholm_00?_HL; do convert -normalize $i $i.png; done
+animate /tmp/*.png
+rm /tmp/*.png
+for i in /tmp/stockholm_00?_HH; do convert -normalize $i $i.png; done
+animate /tmp/*.png
+
+# Motion 2D 1-levels backward DWT:
+python -O MDWT.py -b -i /tmp/recons_ -d /tmp/stockholm_
+
+# Visualization of the reconstruction:
+rm -f /tmp/*.png; for i in /tmp/recons_*; do convert -normalize $i $i.png; done; animate /tmp/*.png
+\end{verbatim}
+
+\section{Video transform alternatives}
+To remove both, spatial and temporal redundancies, two different
+alternatives are available: (1) t+2D transforms and (2) 2D+t
+transforms. In a t+2D transform, the video is first
+\href{https://en.wikipedia.org/wiki/Digital_filter\#Analysis_techniques}{analyzed}
+(transformed) over the time domain and next, over the space domain. A
+2D+t transform does just the opposite. Each choice has a number of
+\emph{pros} and \emph{cons}. For example, in a t+2D transform we can
+apply directly any image predictor based on
+\href{https://en.wikipedia.org/wiki/Motion_estimation}{motion
+  estimation} because the input is a normal video. However, if we
+implement a 2D+t transform, the input to the motion estimator is a
+sequence decompositions.
+\href{http://www.polyvalens.com/blog/wavelets/theory}{The overwhelming
+  majority of DWT's} are not
+\href{http://www.polyvalens.com/blog/wavelets/theory}{shift
+  invariant}, which basically means $\text{DWT}(s[t]) \neq
+\text{DWT}(s[t+x])$, where $x$ is a displacement of $s[t]$ along one of the
+signal domains.  Therefore, motion estimators which compare pixel values
+will not work on the (subband) decomposition domain. On the other
+hand, if we want to provide true spatial scalability (processing only
+those
+\href{https://www.tutorialspoint.com/dip/spatial_resolution.htm}{spatial
+  resolutions} (scales) necessary to get a spatially scaled of our
+video), a t+2D transformed video presents some drawbacks:
+
+\begin{itemize}
+\item In order to implement a lossless system, the t stage must be
+  carried out at full (scale 0) resolution.
+\item We can restrict the perfect reconstruction only to the scale 0
+  case, but in this case, a spatial resolution representation of the
+  motion information should be available at the decoder. This can be
+  done, but in general, scalabilitity decreases the compression ratio
+  (on the motion data in this case).
+\item We can use the full (scale 0) resolution version of the motion
+  information for reconstructing all the scales of the texture
+  (interpolating it for all those scales greater that 0), but in this
+  case the memory and computing requirements at the decoders will
+  increase. Therefore, depending on the resolution of the scale 0 and the
+  computational resources, this could be affordable or not.
+\item As an alternative to this last problem, we can decrease the
+  accuracy of the motion information in order to make it suitable for
+  the spatial resolution. However, this will increase the distortion
+  of the reconstruction compared to the previous solution.
+\end{itemize}
+
+Finally, it is important to realize that the presence of the motion
+data in the code-stream introduces also complexity into the decoding
+process because, in a quality scalable scenario, it is not trivial
+(specially when non-linear systems such as those based on ME are
+involved) to decide how to interleave the motion and the texture
+information in a code-stream that can be decoded following different
+orders, depending on the type of used scalability and the avaliable
+bandwidth.
+
+\section{Motion Compensated Discrete Wavelet Transform (MCDWT)}
+MCDWT is a 2D+t transform. The 2D stage is MDWT. The t stage is a
+1D-DWT, which removes the temporal redundancy between adjacent $H$
+subbands by means of
+\href{https://en.wikipedia.org/wiki/Motion_compensation}{Motion
+  Compensation (MC)}. A special characteristic of MCDWT is that the
+motion information is not transmitted from the
+\href{https://en.wikipedia.org/wiki/Encoder}{encoder} to the
+\href{https://en.wikipedia.org/wiki/Decoder}{decoder}. This is
+possible because to estimate de motion at the encoder, only the
+information that it is accesible by the decoder is used.
+
+\subsection{MCDWT butterfly}
+
+MCDWT butterly inputs three decompositions $a=\{a.L, a.H\}$, $b=\{b.L,
+b.H\}$ and $c=\{c.L, c.H\}$, and outputs a residue subband
+$\tilde{b}.H$, which replaces to $b.H$ in the original $b$
+decomposition. So, after the use of the bufferfly, we get $a=\{a.L,
+a.H\}$ (an
+\href{https://en.wikipedia.org/wiki/Video_compression_picture_types}{intra-coded
+  ``I'' image}), $\tilde{b}=\{b.L, \tilde{b}.H\}$ (a
+\href{https://en.wikipedia.org/wiki/Video_compression_picture_types}{bidirectionally
+  predicted ``B'' image}) and $c=\{c.L, c.H\}$ (another intra-coded
+``I'' image). This replacement is fully reversible because the forward
+transform will use only the information that the backward transform
+has access to. Notice that the
+\href{http://www.vtvt.ece.vt.edu/research/references/video/DCT_Video_Compression/Zhang92a.pdf}{pyramid
+  domain} (which is invariant to the pixels displacements) has been
+used to estimate and compensate the $H$ subbands.
+
+\begin{figure}
+\centering
+\imgw{1200}{graphics/forward_butterfly.svg}
+\caption{Forward MCDWT butterfly.}
+\end{figure}
+\lstinputlisting[firstline=20, lastline=67, language=python, caption={MCDWT.py (extract)}]{../src/MCDWT.py}
+
+Notice that, even if $a$ and $c$ (at full resolution) are available at
+the decoder, only $b.L$ is. So, it does not make sense to search the
+low resolution structures of $b.L$ in the high resolution images $a$
+and $c$, because even if a perfect match is achieved (think about the
+three decompositions $a$, $b$ and $c$ are identical), the prediction error
+would be different than $0$ as a consequence of that the high
+resolution information is missing in $b.L$.
+
+\subsection{MCDWT forward transform}
+
+The MCDWT forward transform is the result of appliying the MCDWT
+butterfly to the full input sequence of decompositions with different
+distances between them. As a result, except for the first and the last
+image of the sequence, all the $H$-subbands are temporally
+decorrelated.
+
+\begin{figure}
+\centering
+\imgw{1200}{graphics/temporal_decorrelation.svg}
+\caption{MCDWT forward transform.\label{fig:forward_MCDWT}}
+\end{figure}
+\lstinputlisting[firstline=69, lastline=138, language=python, caption={MCDWT.py (extract)}]{../src/MCDWT.py}
+
+\subsection{(Spatial) Multiresolution}
+
+Spatial dyadic multiresolution can be obtained by appliying a sequence of MDWT+MCDWT steps (see Fig.~\ref{fig:multiresolution}).
+
+\begin{figure}
+\centering
+\imgw{1200}{graphics/multiresolution.svg}
+\caption{MDWT+MCDWT multiresolution procedure. The input to the second
+  iteration of the MDWT+MCDWT transform is the output of a previous
+  (first) iteration MDWT+MCDWT transform. The second iteration is only
+  applied to the scale 1.\label{fig:multiresolution}}
+\end{figure}
+
+
+\subsection{Scalability provided by MCDWT}
+The decomposition generated by the MCDWT is identical to
+MDWT. Therefore, MCDWT provides the same spatial scalability than
+MDWT. In order to obtain several spatial resolutions, MCDWT should be
+applied to the low-frequency subbands, recursively. As an example, in
+the Figure~\ref{fig:multiresolution}, MCDWT has been applied to the
+output of the example of the Figure~\ref{fig:forward_MCDWT}. Notice
+that between two consecutive iterations of MCDWT, MDWT must be applied
+to the low-frequency subband in order to reduce the resolution of the
+analysis.
+
+On the other hand, MCDWT decreases the temporal scalability offered by
+MDWT to allowing only dyadic access (depending on required image and
+the number of MCDWT levels, more than one decomposition needs to be
+inversely transformed). For example, if only one step of the backward
+transform is applied to the example of the
+Figure~\ref{fig:forward_MCDWT}, only the decompositions of $s_0$,
+$s_2$ and $s_4$ will be reconstructed (the second
+\href{https://en.wikipedia.org/wiki/Temporal_resolution}{temporal
+  resolution}). If a second iteration of the backward transform is
+used, all the decompositions are rendered.
+
+\subsection{Example}
+\begin{verbatim}
+# You must be in the 'src' directory.
+
+# Motion 2D 1-levels forward DWT of the 'stockholm' sequence:
+python -O ./MDWT.py -i ../sequences/stockholm/ -d /tmp/stockholm_
+
+# Motion Compensated 1D 1-levels forward DWT:
+python -O MCDWT.py -d /tmp/stockholm_ -m /tmp/mc_stockholm_
+
+# First and last decompositions are not transformed by MCDWT:
+ls -l /tmp/stockholm_000_HH /tmp/mc_stockholm_000_HH
+ls -l /tmp/stockholm_004_HL /tmp/mc_stockholm_004_HL
+
+# The rest, are transformed:
+ls -l /tmp/stockholm_001_LH /tmp/mc_stockholm_001_LH
+ls -l /tmp/stockholm_002_HL /tmp/mc_stockholm_002_HL
+ls -l /tmp/stockholm_003_HH /tmp/mc_stockholm_003_HH
+
+# Showing statistics:
+python ../tools/show_statistics.py -i /tmp/stockholm_001_LH
+python ../tools/show_statistics.py -i /tmp/mc_stockholm_001_LH
+python ../tools/show_statistics.py -i /tmp/stockholm_001_HL
+python ../tools/show_statistics.py -i /tmp/mc_stockholm_001_HL
+python ../tools/show_statistics.py -i /tmp/stockholm_001_HH
+python ../tools/show_statistics.py -i /tmp/mc_stockholm_001_HH
+
+# Visualization of the H-subbands
+rm -f /tmp/*.png; for i in /tmp/mc_stockholm_00?_LH; do convert -normalize $i $i.png; done; animate /tmp/*.png
+rm -f /tmp/*.png; for i in /tmp/mc_stockholm_00?_HL; do convert -normalize $i $i.png; done; animate /tmp/*.png
+rm -f /tmp/*.png; for i in /tmp/mc_stockholm_00?_HH; do convert -normalize $i $i.png; done; animate /tmp/*.png
+
+# Motion Compensated 1D 1-levels backward DWT:
+python -O ./MCDWT.py -b -m /tmp/mc_stockholm_ -d /tmp/recons_MCDWT_
+
+# Motion 2D 1-levels backward DWT:
+python -O ./MDWT.py -b -d /tmp/recons_MCDWT_ -i /tmp/recons_MDWT_
+
+# Visualization of the reconstruction:
+rm -f /tmp/*.png; for i in /tmp/recons_MDWT_*; do python ../tools/substract_offset.py -i $i -o $i.png; done; animate /tmp/recons_MDWT_*.png
+
+# Visualize the original sequence:
+rm -f /tmp/stockholm/*.png; cp -r ../sequences/stockholm /tmp; for i in /tmp/stockholm/*; do python ../tools/substract_offset.py -i $i -o $i.png; done; animate /tmp/stockholm/*.png
+
+# Let's clear the motion compensated subbands and reconstruct the sequence ...
+
+# Create a zero subband:
+bash ../tools/create_black_image.sh; python ../tools/add_offset.py -i /tmp/zero.png -o /tmp/zero16.png -f 32768
+python ../tools/show_statistics.py -i /tmp/zero16.png
+
+# "Delete" the motion compensated subbands:
+cp /tmp/zero16.png /tmp/mc_stockholm_001_LH
+cp /tmp/zero16.png /tmp/mc_stockholm_001_HL
+cp /tmp/zero16.png /tmp/mc_stockholm_001_HH
+cp /tmp/zero16.png /tmp/mc_stockholm_002_LH
+cp /tmp/zero16.png /tmp/mc_stockholm_002_HL
+cp /tmp/zero16.png /tmp/mc_stockholm_002_HH
+cp /tmp/zero16.png /tmp/mc_stockholm_003_LH
+cp /tmp/zero16.png /tmp/mc_stockholm_003_HL
+cp /tmp/zero16.png /tmp/mc_stockholm_003_HH
+
+# Motion Compensated 1D 1-levels backward DWT:
+python -O ./MCDWT.py -b -m /tmp/mc_stockholm_ -d /tmp/recons2_MCDWT_
+
+# Motion 2D 1-levels backward DWT:
+python -O ./MDWT.py -b -d /tmp/recons2_MCDWT_ -i /tmp/recons2_MDWT_
+
+# Visualization of the reconstruction:
+rm -f tmp/recons2_MDWT_*.png; for i in /tmp/recons2_MDWT_*; do python ../tools/substract_offset.py -i $i -o $i.png; done; animate /tmp/recons2_MDWT_*.png
+
+# Visualization of the differences:
+rm -f /tmp/diff*.png; for i in {0..4}; do ii=$(printf "%03d" $i); bash ../tools/show_differences.sh -1 /tmp/recons_MDWT_$ii -2 /tmp/recons2_MDWT_$ii -o /tmp/diff_$i.png; done; animate /tmp/diff*.png
+\end{verbatim}
+
+\begin{comment}
+
+\section{Video \href{http://inst.eecs.berkeley.edu/~ee290t/sp04/lectures/videowavelet_UCB1-3.pdf}{scalability}}
+MCDWT inputs a \href{https://en.wikipedia.org/wiki/Video}{video} (a
+sequence of images) and outputs a video (a sequece of pyramids), in
+such a way that when only a portion of the data of the transformed
+video is used, a video with a lower
+\href{https://en.wikipedia.org/wiki/Temporal_resolution}{temporal
+resolution}, lower
+\href{https://en.wikipedia.org/wiki/Image_resolution\#Spatial_resolution}{spatial
+resolution} or/and lower
+\href{https://en.wikipedia.org/wiki/Compression_artifact}{quality} can
+be generated.
+
+If all the transformed data is used, then the original video is
+restored (MCDWT is a lossless transform). The forward transform's
+output has exactly the same number of pyramids than images are in the
+input video (for example, no extra motion fields are produced). At
+this time, we will focuse only on spatial
+\href{http://inst.eecs.berkeley.edu/~ee290t/sp04/lectures/videowavelet_UCB1-3.pdf}{scalability}. Window
+Of Interest (WOI) and quality scabilities will be addressed later.
+
+\end{comment}
