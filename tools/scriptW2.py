@@ -50,7 +50,7 @@ def main():
     if args.vname != None:
         videoName = args.vname
     else:
-        videoName = "videoTransformed"
+        videoName = "videot_ransformed"
     
     # Number of frames to be extracted
     if args.frames != None:
@@ -68,7 +68,7 @@ def main():
     subprocess.run("mkdir /tmp/{}".format(videoName), shell=True) # root directory
     subprocess.run("mkdir -p /tmp/{}/extracted".format(videoName), shell=True) # extracted frames from video
     subprocess.run("mkdir -p /tmp/{}/16bit".format(videoName), shell=True) # for the 16 bit transformed images
-    subprocess.run("mkdir -p /tmp/{}/reconstructed".format(videoName), shell=True) # for the reconstructed images
+    subprocess.run("mkdir -p /tmp/{}/16bitreconstructed".format(videoName), shell=True) # for the reconstructed 16 bit original images
     subprocess.run("mkdir -p /tmp/{}/MDWT".format(videoName), shell=True) # images after MDWT
     subprocess.run("mkdir -p /tmp/{}/MDWT/MCDWT".format(videoName), shell=True) # images after MCDWT
     subprocess.run("mkdir -p /tmp/{}/_reconMCDWT".format(videoName), shell=True) # Recons backwards from MCDWT
@@ -146,17 +146,18 @@ def main():
         print("\nReconstructed from MCDWT done!")
 
     # Motion 2D 1-levels backward DWT:  
-    subprocess.run("python3 -O ../src/MDWT.py -b -d /tmp/{}/_reconMCDWT/ -i /tmp/{}/_reconMDWT/  -N {}".format(videoName, videoName, nFrames-1), shell=True, check=True)
+    subprocess.run("python3 -O ../src/MDWT.py -b -d /tmp/{}/_reconMCDWT/ -i /tmp/{}/_reconMDWT/  -N {}".format(videoName, videoName, nFrames), shell=True, check=True)
     print("\nReconstructed from MDWT done!")
+    print("\nCheck reconstruction sequence in: /tmp/{}/_reconMDWTcon".format(videoName))
     
-    # Reconstruct 16bit images back to normal
+    # Reconstruct 16bit original images back to normal
     for image in range(int(nFrames)):
         inputImg = ("/tmp/{}/16bit/{:03d}".format(videoName, image))
-        outputImg = ("/tmp/{}/reconstructed/reconstructed_{:03d}.png".format(videoName ,image))
+        outputImg = ("/tmp/{}/16bitreconstructed/16bitreconstructed_{:03d}.png".format(videoName ,image))
         imgReconstruct(inputImg , outputImg)
 
-    print("\nCheck results on tmp/{} folder".format(videoName))
-    print("\n\n Script Finished!")
+    print("\nCheck results on /tmp/{} folder".format(videoName))
+    print("\n\nScript Finished!")
 
 
 

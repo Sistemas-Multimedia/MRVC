@@ -12,13 +12,13 @@ Onced the scriped is executed, all the generated files are stored in a single fo
 -  /VideoName:
   - - /extracted
   - - /16bit
-  - - /reconstructed
+  - - /16bitreconstructed (16 bit from video normalized)
   - - /MDWT
   - - - /MCDWT (Level 1)
   - - - - /2 (Level 2)
   - - - - - /3 (Level 3)
   - - - - - - ... (Level n)
-  - - /_reconMDWT
+  - - /_reconMDWT (Secuence reconstructed from MCDWT and MDWT)
   - - /_reconMCDWT
 
 # Arguments supported!
