@@ -6,7 +6,7 @@
 
 The python script allows to download a video (mp4 format), extract a specified number of frames, convert those frames to 16 bits, apply a DDWT and MCDWT transforms.
 
-Onced the scriped is executed, all the generated files are stored in a single folder (same as vname argument in the tmp folder). Make sure to pass the name of the video downloaded as argument.
+Onced the scriped is executed, all the generated files are stored in a single folder (same as vname argument in the tmp folder). vname will be used to export the generated files and folders in tmp.
 
 # Output Directory Structure!
 -  /VideoName:
@@ -21,7 +21,8 @@ Onced the scriped is executed, all the generated files are stored in a single fo
 # Arguments supported!
 
   - -h Shows help
-  - -vpath path to the video
+  - -vpath path to the local video
+  - -vurl video URL to download
   - -level Number of spatial resolutions (levels in the Laplacian Pyramid
   - -gop Number of temporal resolutions (GOP size)
   - -vname To change the video name to the output forlder
@@ -51,12 +52,21 @@ If you want to extract more frames add the -frames argumtent
 $ ./scriptW2.py -frames 15
 ```
 
+If you want to download a video
+```sh
+$ ./scriptW2.py -vurl http://www.hpca.ual.es/~vruiz/videos/un_heliostato.mp4
+```
+
+Working with a local video, MANDATORY .MP4 VIDEO EXTENSION
+```sh
+$ ./scriptW2.py -vpath un_heliostato.mp4 -frames 20 -vname un_heliostato
+```
+
 
 ### Issues to be solved
 
-  - If video other than default, you MUST use the vname argument for the name of the video downloaded.
   - Right now only supports MP4 video format
-  - Still needs support for local video.
+  - Still tranforming only one level.
 
 
 

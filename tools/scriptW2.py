@@ -23,26 +23,35 @@ import src.MC
 def main():
     # Creates the command line arguments 
     parser = argparse.ArgumentParser("Script for Issue Week 2")
-    parser.add_argument("-vpath", help="Path to the video to download")
+    parser.add_argument("-vpath", help="Path to the local video, with .mp4 extension")
+    parser.add_argument("-vurl", help="URL to the video to download")
     parser.add_argument("-level", help="Number of spatial resolutions (levels in the Laplacian Pyramid)" ,default=1)
-    parser.add_argument("-gop", help="number of temporal resolutions (GOP size)", default= 10)
-    parser.add_argument("-vname", help="Name of the video")
     parser.add_argument("-frames", help="Number of frames to extract from video to transform")
+    parser.add_argument("-gop", help="number of temporal resolutions (GOP size)", default= 10)
+    parser.add_argument("-vname", help="Name of the folder and video to export in tmp folder")
+    
 
     # Pareses all the arguments
     args = parser.parse_args()
 
-    # Path to the video
+    # URL to the video
+    if args.vurl != None:
+        videoURL = args.vurl
+    else:
+        videoURL = "http://www.hpca.ual.es/~vruiz/videos/un_heliostato.mp4"
+
+    # Path to the video in local
     if args.vpath != None:
         videoPath = args.vpath
+        localVideo = True
     else:
-        videoPath = "http://www.hpca.ual.es/~vruiz/videos/un_heliostato.mp4"
+        localVideo = False
 
     # Name of the video
     if args.vname != None:
         videoName = args.vname
     else:
-        videoName = "un_heliostato"
+        videoName = "videoTransformed"
     
     # Number of frames to be extracted
     if args.frames != None:
@@ -72,15 +81,18 @@ def main():
     subprocess.run("mkdir -p /tmp/{}/_reconMCDWT".format(videoName), shell=True) # Recons backwards from MCDWT
     subprocess.run("mkdir -p /tmp/{}/_reconMDWT".format(videoName), shell=True) # Reconstruct backwards from MCWT
 
+    # Working with videos from the web
+    if localVideo != True:
+        # Downloads the video
+        print("Atempting to download video ...\n\n")
+        subprocess.run("wget {} -O /tmp/{}/{}.mp4 ".format(videoURL, videoName, videoName) , shell=True, check=True)
+        print("\n\nVideo Downloaded!\n\n")
+    
+    # Working with local video
+    if localVideo:
+        subprocess.run("mv {} /tmp/{}/{}.mp4".format(videoPath,videoName, videoName), shell=True, check=True)  
 
-    # Downloads the video
-    print("Atempting to download video ...\n\n")
-    subprocess.run("wget {} -O /tmp/{}/{}.mp4 ".format(videoPath, videoName, videoName) , shell=True, check=True)
-    ##### Renames the video ####
-    if videoName != "un_heliostato":
-        subprocess.run("mv *.mp4 /tmp/{}/{}.mp4".format(videoName, videoName), shell=True, check=True)  
-    print("\n\nVideo Downloaded!\n\n")
-   
+
     # Extracts the frames from video
     print("\n\nExtracting images ...\n\n")
     subprocess.run("ffmpeg -i /tmp/{}/{}.mp4 -vframes {} /tmp/{}/extracted/{}_%03d.png".format(videoName, videoName,  nFrames,videoName,  videoName), shell=True, check=True)
@@ -98,9 +110,7 @@ def main():
     print("\n Removed extensions from 16 bit images...\n")
     print("\nDone! ready to transform \n")
 
-    ##########################################################
-
-
+    ########## MDWT Transform #################
     # Motion 2D 1-levels forward DWT of the frames from the video:  
     subprocess.run("python3 -O ../src/MDWT.py -i /tmp/{}/16bit/ -d /tmp/{}/MDWT/ -N {}".format(videoName, videoName, nFrames), shell=True, check=True)
     print("\nFirst transform MDWT done!")
@@ -110,10 +120,9 @@ def main():
     # Motion Compensated 1D 1-levels forward DWT:
     subprocess.run("python3 -O ../src/MCDWT.py -d /tmp/{}/MDWT/ -m /tmp/{}/MDWT/MCDWT/ -N {}".format(videoName, videoName, nFrames-1), shell=True, check=True)
     print("\nTransform MCDWT done!")
-    ##########################################################
 
 
-    ########## Reconstructs from the MCDWT Transform #################
+    ##### Reconstructs from the MCDWT Transform ######
     # Motion Compensated 1D 1-levels backward DWT:
     subprocess.run("python3 -O ../src/MCDWT.py -b -m /tmp/{}/MDWT/MCDWT/ -d /tmp/{}/_reconMCDWT/ -N {}".format(videoName, videoName, nFrames-1), shell=True, check=True)
     print("\nReconstructed from MCDWT done!")
@@ -122,8 +131,9 @@ def main():
     subprocess.run("python3 -O ../src/MDWT.py -b -d /tmp/{}/_reconMCDWT/ -i /tmp/{}/_reconMDWT/  -N {}".format(videoName, videoName, nFrames-1), shell=True, check=True)
     print("\nReconstructed from MDWT done!")
 
-
-
+    
+    if nLevel > 1:
+        print("Trabajando con transformaciones multi-nivel")
 
     
     # Reconstruct 16bit images back to normal
@@ -181,6 +191,7 @@ def backward_butterfly(self, aL, aH, bL, residue_bH, cL, cH):
     return bH[1]
 
 def MDWTtoFolders():
+    # if called, all the MDWT images are moved to specific folders
     subprocess.run("mkdir -p /tmp/{}/MDWT/LL".format(videoName), shell=True) # for LL Band images
     subprocess.run("mkdir -p /tmp/{}/MDWT/LH".format(videoName), shell=True) # for LH Band images
     subprocess.run("mkdir -p /tmp/{}/MDWT/HL".format(videoName), shell=True) # for HL Band images
