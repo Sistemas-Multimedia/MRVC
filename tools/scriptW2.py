@@ -62,60 +62,78 @@ def main():
     else:
         nGOP = 10
 
-    # Downloads the video
-    print("Atempting to download video ...\n\n")
-    subprocess.run("wget /tmp/{} ".format(videoPath) , shell=True, check=True)
-    ##### Renames the video ####
-    if videoName != "un_heliostato":
-        subprocess.run("mv *.mp4 /tmp/{}.mp4".format(videoName), shell=True, check=True)  
-    print("\n\nVideo Downloaded!\n\n")
-    
     # Creates directories for the generated files
     subprocess.run("mkdir /tmp/{}".format(videoName), shell=True) # root directory
     subprocess.run("mkdir -p /tmp/{}/extracted".format(videoName), shell=True) # extracted frames from video
     subprocess.run("mkdir -p /tmp/{}/16bit".format(videoName), shell=True) # for the 16 bit transformed images
     subprocess.run("mkdir -p /tmp/{}/reconstructed".format(videoName), shell=True) # for the reconstructed images
+    subprocess.run("mkdir -p /tmp/{}/MDWT".format(videoName), shell=True) # images after MDWT
+    subprocess.run("mkdir -p /tmp/{}/MDWT/MCDWT".format(videoName), shell=True) # images after MCDWT
+    subprocess.run("mkdir -p /tmp/{}/_reconMCDWT".format(videoName), shell=True) # Recons backwards from MCDWT
+    subprocess.run("mkdir -p /tmp/{}/_reconMDWT".format(videoName), shell=True) # Reconstruct backwards from MCWT
 
+
+    # Downloads the video
+    print("Atempting to download video ...\n\n")
+    subprocess.run("wget {} -O /tmp/{}/{}.mp4 ".format(videoPath, videoName, videoName) , shell=True, check=True)
+    ##### Renames the video ####
+    if videoName != "un_heliostato":
+        subprocess.run("mv *.mp4 /tmp/{}/{}.mp4".format(videoName, videoName), shell=True, check=True)  
+    print("\n\nVideo Downloaded!\n\n")
+   
     # Extracts the frames from video
     print("\n\nExtracting images ...\n\n")
-    subprocess.run("ffmpeg -i /tmp/{}.mp4 -vframes {} /tmp/{}_%03d.png".format(videoName, nFrames, videoName), shell=True, check=True)
-    subprocess.run("mv *.mp4 /tmp/{}".format(videoName), shell=True, check=True)
-    subprocess.run("cp *.png /tmp/{}/extracted".format(videoName), shell=True, check=True)
-
-    print("\n\n Done! ready to transform \n\n")
+    subprocess.run("ffmpeg -i /tmp/{}/{}.mp4 -vframes {} /tmp/{}/extracted/{}_%03d.png".format(videoName, videoName,  nFrames,videoName,  videoName), shell=True, check=True)
 
     # Convert the images to 16 bit
     for image in range(int(nFrames)):
-        inputImg = ("/tmp/{}_{:03d}.png".format(videoName ,image+1))
-        outputImg = ("/tmp/{:03d}.png".format(image+1))
+        inputImg = ("/tmp/{}/extracted/{}_{:03d}.png".format(videoName, videoName ,image+1))
+        outputImg = ("/tmp/{}/16bit/{:03d}.png".format(videoName, image))
         imgTo16(inputImg , outputImg)
-
-    # Moves 16 bits images to the specific folder
-    subprocess.run("cp 0* {}/16bit".format(videoName), shell=True, check=True)
-    #subprocess.run("mkdir -p /tmp/{}".format(videoName), shell=True)
-    #subprocess.run("cp 0* /tmp/{}".format(videoName), shell=True, check=True)
     
+    # delete extensions from 16 bit images
+    for image in range(int(nFrames)):
+        subprocess.run("mv /tmp/{}/16bit/{:03d}.png /tmp/{}/16bit/{:03d}".format(videoName, image, videoName, image), shell=True, check=True)
+    
+    print("\n Removed extensions from 16 bit images...\n")
+    print("\nDone! ready to transform \n")
 
     ##########################################################
 
-    ########## ADD Here the Convertion MCDWT #################
 
-    # Motion 2D 1-levels forward DWT of the ’stockholm’ sequence:  
-    subprocess.run("python3 -O ../src/MDWT.py -i /tmp/{}/ -d /tmp/heliostato/".format(videoName), shell=True, check=True)
+    # Motion 2D 1-levels forward DWT of the frames from the video:  
+    subprocess.run("python3 -O ../src/MDWT.py -i /tmp/{}/16bit/ -d /tmp/{}/MDWT/ -N {}".format(videoName, videoName, nFrames), shell=True, check=True)
+    print("\nFirst transform MDWT done!")
+
+    
+    ########## MCDWT Transform #################
+    # Motion Compensated 1D 1-levels forward DWT:
+    subprocess.run("python3 -O ../src/MCDWT.py -d /tmp/{}/MDWT/ -m /tmp/{}/MDWT/MCDWT/ -N {}".format(videoName, videoName, nFrames-1), shell=True, check=True)
+    print("\nTransform MCDWT done!")
     ##########################################################
 
+
+    ########## Reconstructs from the MCDWT Transform #################
+    # Motion Compensated 1D 1-levels backward DWT:
+    subprocess.run("python3 -O ../src/MCDWT.py -b -m /tmp/{}/MDWT/MCDWT/ -d /tmp/{}/_reconMCDWT/ -N {}".format(videoName, videoName, nFrames-1), shell=True, check=True)
+    print("\nReconstructed from MCDWT done!")
+
+    # Motion 2D 1-levels backward DWT:  
+    subprocess.run("python3 -O ../src/MDWT.py -b -d /tmp/{}/_reconMCDWT/ -i /tmp/{}/_reconMDWT/  -N {}".format(videoName, videoName, nFrames-1), shell=True, check=True)
+    print("\nReconstructed from MDWT done!")
+
+
+
+
+    
     # Reconstruct 16bit images back to normal
     for image in range(int(nFrames)):
-        inputImg = ("{:03d}.png".format(image+1))
-        outputImg = ("reconstructed_{:03d}.png".format(image+1))
+        inputImg = ("/tmp/{}/16bit/{:03d}".format(videoName, image))
+        outputImg = ("/tmp/{}/reconstructed/reconstructed_{:03d}.png".format(videoName ,image))
         imgReconstruct(inputImg , outputImg)
 
-    # Moves reconstructed images to the specific folder
-    subprocess.run("mv reconstructed* {}/reconstructed".format(videoName), shell=True, check=True)
-
-    # Removes the generated files from the root folder
-    subprocess.run("rm *.png", shell=True, check=True)
-
+    print("\nCheck results on tmp/{} folder".format(videoName))
+    print("\n\n Script Finished!")
 
 
 
@@ -161,6 +179,18 @@ def backward_butterfly(self, aL, aH, bL, residue_bH, cL, cH):
     BH = residue_BH + prediction_BH 
     bH = self.dwt.forward(BH) 
     return bH[1]
+
+def MDWTtoFolders():
+    subprocess.run("mkdir -p /tmp/{}/MDWT/LL".format(videoName), shell=True) # for LL Band images
+    subprocess.run("mkdir -p /tmp/{}/MDWT/LH".format(videoName), shell=True) # for LH Band images
+    subprocess.run("mkdir -p /tmp/{}/MDWT/HL".format(videoName), shell=True) # for HL Band images
+    subprocess.run("mkdir -p /tmp/{}/MDWT/HH".format(videoName), shell=True) # for HH Band images
+
+    subprocess.run("mv /tmp/{}/MDWT/*_LL /tmp/{}/MDWT/LL/".format(videoName, videoName ), shell=True, check=True)
+    subprocess.run("mv /tmp/{}/MDWT/*_LH /tmp/{}/MDWT/LH/".format(videoName, videoName ), shell=True, check=True)
+    subprocess.run("mv /tmp/{}/MDWT/*_HL /tmp/{}/MDWT/HL/".format(videoName, videoName ), shell=True, check=True)
+    subprocess.run("mv /tmp/{}/MDWT/*_HH /tmp/{}/MDWT/HH/".format(videoName, videoName ), shell=True, check=True)
+
 
 
 
