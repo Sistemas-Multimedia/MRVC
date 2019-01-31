@@ -8,6 +8,8 @@ The python script allows to download a video (mp4 format), extract a specified n
 
 Onced the scriped is executed, all the generated files are stored in a single folder (same as vname argument in the tmp folder). vname will be used to export the generated files and folders in tmp.
 
+The most important parameter is -transform, if True the script will apply the direct transform. If False, the backwards transform is applied. Default is True.
+
 # Output Directory Structure!
 -  /VideoName:
   - - /extracted
@@ -33,6 +35,7 @@ Onced the scriped is executed, all the generated files are stored in a single fo
   - -level Number of spatial resolutions to MCDWT transform (levels in the Laplacian Pyramid)
   - -vname To change the video name to the output forlder
   - -frames to select the number of images to transform
+  - -transform To specified the direct transform or reconstruction
 
 ### Dependencies
 

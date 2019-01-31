@@ -29,7 +29,7 @@ def main():
     parser.add_argument("-frames", help="Number of frames to extract from video to transform")
     parser.add_argument("-T", help="Number of levels of the MCDWT (temporal scales)")
     parser.add_argument("-vname", help="Name of the folder and video to export in tmp folder")
-    parser.add_argument("-transform", help="True direct transform / False to reconstruct")
+    parser.add_argument("-transform", help="True direct transform / False to reconstruct", default="True")
 
     # Pareses all the arguments
     args = parser.parse_args()
@@ -74,7 +74,7 @@ def main():
     # Check the flag to direct transform
     if args.transform != None:
         transform = str(args.transform)
-        print("Recieved: "+args.transform)
+        print("Received: "+args.transform)
     else:
         transform = str(True)
         print("Else: "+args.transform)
@@ -101,7 +101,6 @@ def main():
         # Working with local video
         if localVideo:
             subprocess.run("mv {} /tmp/{}/{}.mp4".format(videoPath,videoName, videoName), shell=True, check=True)  
-
 
         # Extracts the frames from video
         print("\n\nExtracting images ...\n\n")
