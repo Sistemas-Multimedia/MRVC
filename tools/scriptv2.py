@@ -31,7 +31,7 @@ def main():
     parser.add_argument("-vname", help="Name of the folder and video to export in tmp folder")
     parser.add_argument("-transform", help="True direct transform / False to reconstruct", default="True")
 
-    # Pareses all the arguments
+    # Parses all the arguments
     args = parser.parse_args()
 
     # URL to the video
@@ -51,7 +51,7 @@ def main():
     if args.vname != None:
         videoName = args.vname
     else:
-        videoName = "video_ransformed"
+        videoName = "video_transformed"
     
     # Number of frames to be extracted
     if args.frames != None:
@@ -74,10 +74,8 @@ def main():
     # Check the flag to direct transform
     if args.transform != None:
         transform = str(args.transform)
-        print("Received: "+args.transform)
     else:
         transform = str(True)
-        print("Else: "+args.transform)
 
     if transform == "True":
         # Creates directories for the generated files
@@ -110,8 +108,8 @@ def main():
         for image in range(int(nFrames)):
             inputImg = ("/tmp/{}/extracted/{}_{:03d}.png".format(videoName, videoName ,image+1))
             outputImg = ("/tmp/{}/16bit/{:03d}.png".format(videoName, image))
-            imgTo16(inputImg , outputImg)
-        
+            subprocess.run("python3 add_offset.py -i {} -o {}".format(inputImg, outputImg), shell=True, check=True)
+
         # delete extensions from 16 bit images
         for image in range(int(nFrames)):
             subprocess.run("mv /tmp/{}/16bit/{:03d}.png /tmp/{}/16bit/{:03d}".format(videoName, image, videoName, image), shell=True, check=True)
@@ -141,7 +139,6 @@ def main():
                 subprocess.run("mkdir -p {}".format(newLevel), shell=True) # creates next level MCDWT dir
                 # Works on the last MCDWT and transform to the new level
                 subprocess.run("python3 -O ../src/MCDWT.py -d {}{}/ -m {}{}/ -N {} -T {}".format(mlevelpath, i+1 , mlevelpath, i+2 , nFrames, t_scale), shell=True, check=True)
-                #mlevelpath = ("{}{}/".format(mlevelpath, str(i+2)))
             
             print("Last level of MCDWT located in:  {}".format(newLevel))
     
@@ -174,25 +171,10 @@ def main():
         for image in range(int(nFrames)):
             inputImg = ("/tmp/{}/16bit/{:03d}".format(videoName, image))
             outputImg = ("/tmp/{}/16bitreconstructed/16bitreconstructed_{:03d}.png".format(videoName ,image))
-            imgReconstruct(inputImg , outputImg)
+            subprocess.run("python3 substract_offset.py -i {} -o {}".format(inputImg, outputImg), shell=True, check=True)
 
         print("Check results on /tmp/{} folder".format(videoName))
         print("\n\nScript Finished!")
-
-
-def imgTo16(input, output):
-    image = cv2.imread(input, -1).astype(np.uint16)
-    print(np.amax(image), np.amin(image))
-    image += (32768-128)
-    print(np.amax(image), np.amin(image))
-    cv2.imwrite(output, image.astype(np.uint16))
-
-
-def imgReconstruct(input, output):
-    image = cv2.imread(input, -1)
-    image = np.clip(image, 32768-128, 32768-128+255)
-    image -= (32768-128)
-    cv2.imwrite(output, image.astype(np.uint8))
     
 if __name__ == "__main__":
     main()

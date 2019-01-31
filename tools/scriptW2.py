@@ -50,7 +50,7 @@ def main():
     if args.vname != None:
         videoName = args.vname
     else:
-        videoName = "videot_ransformed"
+        videoName = "videoTransformed"
     
     # Number of frames to be extracted
     if args.frames != None:
@@ -95,6 +95,7 @@ def main():
         inputImg = ("/tmp/{}/extracted/{}_{:03d}.png".format(videoName, videoName ,image+1))
         outputImg = ("/tmp/{}/16bit/{:03d}.png".format(videoName, image))
         imgTo16(inputImg , outputImg)
+ 
     
     # delete extensions from 16 bit images
     for image in range(int(nFrames)):
@@ -146,7 +147,7 @@ def main():
         print("\nReconstructed from MCDWT done!")
 
     # Motion 2D 1-levels backward DWT:  
-    subprocess.run("python3 -O ../src/MDWT.py -b -d /tmp/{}/_reconMCDWT/ -i /tmp/{}/_reconMDWT/  -N {}".format(videoName, videoName, nFrames), shell=True, check=True)
+    subprocess.run("python3 -O ../src/MDWT.py -b -d /tmp/{}/_reconMCDWT/ -i /tmp/{}/_reconMDWT/  -N {}".format(videoName, videoName, nFrames-1), shell=True, check=True)
     print("\nReconstructed from MDWT done!")
     print("\nCheck reconstruction sequence in: /tmp/{}/_reconMDWTcon".format(videoName))
     
