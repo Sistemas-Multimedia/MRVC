@@ -15,7 +15,7 @@ import argparse
 import cv2
 import numpy
 sys.path.insert(0, "..")
-from src.MC.optical.motion import generate_prediction
+#from src.MC.optical.motion import generate_prediction
 import src.DWT
 import src.IO
 import src.MC
@@ -27,7 +27,6 @@ def main():
     parser.add_argument("-vurl", help="URL to the video to download")
     parser.add_argument("-level", help="Number of spatial resolutions (levels in the Laplacian Pyramid)" ,default=1)
     parser.add_argument("-frames", help="Number of frames to extract from video to transform")
-    parser.add_argument("-gop", help="number of temporal resolutions (GOP size)", default= 10)
     parser.add_argument("-vname", help="Name of the folder and video to export in tmp folder")
     
 
@@ -64,12 +63,6 @@ def main():
         nLevel = int(args.level)
     else:
         nLevel = 1
-
-    # GOP size
-    if args.gop != None:
-        nGOP = args.gop
-    else:
-        nGOP = 10
 
     # Creates directories for the generated files
     subprocess.run("mkdir /tmp/{}".format(videoName), shell=True) # root directory
@@ -117,24 +110,44 @@ def main():
 
     
     ########## MCDWT Transform #################
-    # Motion Compensated 1D 1-levels forward DWT:
+    # Motion Compensated 1D 1-levels forward MCDWT:
     subprocess.run("python3 -O ../src/MCDWT.py -d /tmp/{}/MDWT/ -m /tmp/{}/MDWT/MCDWT/ -N {}".format(videoName, videoName, nFrames-1), shell=True, check=True)
     print("\nTransform MCDWT done!")
 
+    newLevel = "" # Stores the last level of the MCDWT
 
-    ##### Reconstructs from the MCDWT Transform ######
-    # Motion Compensated 1D 1-levels backward DWT:
-    subprocess.run("python3 -O ../src/MCDWT.py -b -m /tmp/{}/MDWT/MCDWT/ -d /tmp/{}/_reconMCDWT/ -N {}".format(videoName, videoName, nFrames-1), shell=True, check=True)
-    print("\nReconstructed from MCDWT done!")
+    # Support for multi-level forwards MCDWT
+    if nLevel > 1:
+        print("\nWorking on multi-level MCDWT...")
+        mlevelpath = "/tmp/{}/MDWT/MCDWT/".format(videoName)
+        for i in range(nLevel-1):
+            print("Nivel {}".format(i+2))
+            newLevel = ("{}{}".format(mlevelpath, str(i+2)))
+            subprocess.run("mkdir -p {}".format(newLevel), shell=True) # creates next level MCDWT dir
+            # Works on the last MCDWT and transform to the new level
+            subprocess.run("python3 -O ../src/MCDWT.py -d {}/ -m {}/ -N {}".format(mlevelpath, newLevel, nFrames-1), shell=True, check=True)
+            mlevelpath = ("{}{}/".format(mlevelpath, str(i+2)))
+
+
+    print("Last level of MCDWT located in:  {}".format(newLevel))
+
+    ######## Reconstruction #########
+    # Support for multi-level backwards reconstruction MCDWT
+    if nLevel > 1:
+        print("\nReconstructing multi-level MCDWT...")
+        # Reconstructs form the last MCDWT level
+        subprocess.run("python3 -O ../src/MCDWT.py -b -m {}/ -d /tmp/{}/_reconMCDWT/ -N {} -T {}".format(newLevel, videoName, nFrames-1, nLevel), shell=True, check=True)
+        print("\nReconstructed from MCDWT done!")
+        print("\nMulti-levels reconstructed...\n")
+    else:
+        ##### Reconstructs from the MCDWT Transform ######
+        # Motion Compensated 1D 1-levels backward DWT:
+        subprocess.run("python3 -O ../src/MCDWT.py -b -m /tmp/{}/MDWT/MCDWT/ -d /tmp/{}/_reconMCDWT/ -N {}".format(videoName, videoName, nFrames-1), shell=True, check=True)
+        print("\nReconstructed from MCDWT done!")
 
     # Motion 2D 1-levels backward DWT:  
     subprocess.run("python3 -O ../src/MDWT.py -b -d /tmp/{}/_reconMCDWT/ -i /tmp/{}/_reconMDWT/  -N {}".format(videoName, videoName, nFrames-1), shell=True, check=True)
     print("\nReconstructed from MDWT done!")
-
-    
-    if nLevel > 1:
-        print("Trabajando con transformaciones multi-nivel")
-
     
     # Reconstruct 16bit images back to normal
     for image in range(int(nFrames)):
@@ -161,34 +174,6 @@ def imgReconstruct(input, output):
     image -= (32768-128)
     cv2.imwrite(output, image.astype(np.uint8))
     
-
-def forward_butterfly(self, aL, aH, bL, bH, cL, cH): 
-    AL = self.dwt.backward((aL, self.zero_H)) 
-    BL = self.dwt.backward((bL, self.zero_H)) 
-    CL = self.dwt.backward((cL, self.zero_H)) 
-    AH = self.dwt.backward((self.zero_L, aH)) 
-    BH = self.dwt.backward((self.zero_L, bH)) 
-    CH = self.dwt.backward((self.zero_L, cH)) 
-    BHA = self.dwt.generate_prediction(AL, BL, AH) 
-    BHC = self.generate_prediction(CL, BL, CH) 
-    prediction_BH = (BHA + BHC) / 2 
-    residue_BH = BH - prediction_BH 
-    residue_bH = self.dwt.forward(residue_BH) 
-    return residue_bH[1]
-
-def backward_butterfly(self, aL, aH, bL, residue_bH, cL, cH): 
-    AL = self.dwt.backward((aL, self.zero_H)) 
-    BL = self.dwt.backward((bL, self.zero_H)) 
-    CL = self.dwt.backward((cL, self.zero_H)) 
-    AH = self.dwt.backward((self.zero_L, aH)) 
-    residue_BH = self.dwt.backward((self.zero_L, residue_bH)) 
-    CH = self.dwt.backward((self.zero_L, cH)) 
-    BHA = generate_prediction(AL, BL, AH) 
-    BHC = generate_prediction(CL, BL, CH) 
-    prediction_BH = (BHA + BHC) / 2 
-    BH = residue_BH + prediction_BH 
-    bH = self.dwt.forward(BH) 
-    return bH[1]
 
 def MDWTtoFolders():
     # if called, all the MDWT images are moved to specific folders

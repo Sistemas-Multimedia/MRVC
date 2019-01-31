@@ -4,7 +4,7 @@
 
 [![Build Status](https://travis-ci.org/joemccann/dillinger.svg?branch=master)](https://travis-ci.org/joemccann/dillinger)
 
-The python script allows to download a video (mp4 format), extract a specified number of frames, convert those frames to 16 bits, apply a DDWT and MCDWT transforms.
+The python script allows to download a video (mp4 format), extract a specified number of frames, convert those frames to 16 bits, apply a DDWT and MCDWT transforms. Supports multi-level MCDWT and reconstruction from MCDWT and DWT.
 
 Onced the scriped is executed, all the generated files are stored in a single folder (same as vname argument in the tmp folder). vname will be used to export the generated files and folders in tmp.
 
@@ -14,7 +14,10 @@ Onced the scriped is executed, all the generated files are stored in a single fo
   - - /16bit
   - - /reconstructed
   - - /MDWT
-  - - - /MCDWT
+  - - - /MCDWT (Level 1)
+  - - - - /2 (Level 2)
+  - - - - - /3 (Level 3)
+  - - - - - - ... (Level n)
   - - /_reconMDWT
   - - /_reconMCDWT
 
@@ -23,8 +26,7 @@ Onced the scriped is executed, all the generated files are stored in a single fo
   - -h Shows help
   - -vpath path to the local video
   - -vurl video URL to download
-  - -level Number of spatial resolutions (levels in the Laplacian Pyramid
-  - -gop Number of temporal resolutions (GOP size)
+  - -level Number of spatial resolutions to MCDWT transform (levels in the Laplacian Pyramid)
   - -vname To change the video name to the output forlder
   - -frames to select the number of images to transform
 
@@ -62,11 +64,15 @@ Working with a local video, MANDATORY .MP4 VIDEO EXTENSION
 $ ./scriptW2.py -vpath un_heliostato.mp4 -frames 20 -vname un_heliostato
 ```
 
+Multi-level MCDWT is also posible
+```sh
+$ ./scriptW2.py -level 4 -frames 10
+```
+
 
 ### Issues to be solved
 
   - Right now only supports MP4 video format
-  - Still tranforming only one level.
 
 
 
