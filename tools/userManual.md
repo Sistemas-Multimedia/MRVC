@@ -6,9 +6,11 @@
 
 The python script allows to download a video (mp4 format), extract a specified number of frames, convert those frames to 16 bits, apply a DDWT and MCDWT transforms. Supports multi-level MCDWT and reconstruction from MCDWT and DWT.
 
-Onced the scriped is executed, all the generated files are stored in a single folder (same as vname argument in the tmp folder). vname will be used to export the generated files and folders in tmp.
+Once the script is executed, all the generated files are stored in a single folder (same as vname argument in the tmp folder). vname will be used to export the generated files and folders in tmp.
 
 The most important parameter is -transform, if True the script will apply the direct transform. If False, the backwards transform is applied. Default is True.
+
+To reconstruct, make sure to pass the same parameters (frames, vname, T) as the direct transform.
 
 # Output Directory Structure!
 -  /VideoName:
@@ -24,7 +26,7 @@ The most important parameter is -transform, if True the script will apply the di
   - - - /1 (Reconstruction from MCDWT level 1 by default)
   - - - /2 (Reconstruction from MCDWT level 2)
   - - - /n...
-  - - /_reconMDWT (Secuence reconstructed)
+  - - /_reconMDWT (Sequence reconstructed)
 
 
 # Arguments supported!
@@ -32,10 +34,11 @@ The most important parameter is -transform, if True the script will apply the di
   - -h Shows help
   - -vpath path to the local video
   - -vurl video URL to download
-  - -level Number of spatial resolutions to MCDWT transform (levels in the Laplacian Pyramid)
-  - -vname To change the video name to the output forlder
-  - -frames to select the number of images to transform
-  - -transform To specified the direct transform or reconstruction
+  - -level Number of spatial resolutions to MCDWT transform (levels in the Laplacian Pyramid) default 1
+  - -T Number of levels of the MCDWT (temporal scales) 2 by default.
+  - -vname To change the video name to the output folder.
+  - -frames to select the number of images to transform, 5 by default.
+  - -transform To specified the direct transform or reconstruction, True by default.
 
 ### Dependencies
 
@@ -50,30 +53,36 @@ $ sudo apt install ffmpeg
 
 ### Example
 
-By default the script allows to download a video and extract 5 frames:
+By default the script allows to download a video and extract 5 frames to the direct transform:
 
 ```sh
-$ ./scriptW2.py
+$ ./scriptv2.py
 ```
 
-If you want to extract more frames add the -frames argumtent
+To reconstruct the images from the video, activate the -transform False flag.
+
 ```sh
-$ ./scriptW2.py -frames 15
+$ ./scriptv2.py -transform False
 ```
 
-If you want to download a video
+If you want to extract more frames add the -frames argument.
 ```sh
-$ ./scriptW2.py -vurl http://www.hpca.ual.es/~vruiz/videos/un_heliostato.mp4
+$ ./scriptv2.py -frames 15
+```
+
+If you want to download a video to transform from the web
+```sh
+$ ./scriptv2.py -vurl http://www.hpca.ual.es/~vruiz/videos/un_heliostato.mp4
 ```
 
 Working with a local video, MANDATORY .MP4 VIDEO EXTENSION
 ```sh
-$ ./scriptW2.py -vpath un_heliostato.mp4 -frames 20 -vname un_heliostato
+$ ./scriptv2.py -vpath un_heliostato.mp4 -frames 20 -vname un_heliostato
 ```
 
-Multi-level MCDWT is also posible
+Multi-level MCDWT is also possible with T temporal spaces.
 ```sh
-$ ./scriptW2.py -level 4 -frames 10
+$ ./scriptv2.py -level 4 -frames 10 -T 3
 ```
 
 

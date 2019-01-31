@@ -6,6 +6,15 @@
 #!/bin/sh
 ''''exec python3 -O -- "$0" ${1+"$@"} # '''
 
+"""scriptv2.py: video DMCWT multi-level transform and reconstruction utility."""
+
+# course: Multimedia Systems
+# Issue: 1
+# date: 2019
+# username: dbc770
+# name: David Béjar Cáceres
+# description: video DMCWT multi-level direct transform and reconstruction utility.
+
 import numpy as np
 import pywt
 import math
@@ -15,13 +24,12 @@ import argparse
 import cv2
 import numpy
 sys.path.insert(0, "..")
-#from src.MC.optical.motion import generate_prediction
 import src.DWT
 import src.IO
 import src.MC
 
 def main():
-    # Creates the command line arguments 
+    # Creates the command line arguments
     parser = argparse.ArgumentParser("Script for Issue Week 2")
     parser.add_argument("-vpath", help="Path to the local video, with .mp4 extension")
     parser.add_argument("-vurl", help="URL to the video to download")
@@ -52,7 +60,7 @@ def main():
         videoName = args.vname
     else:
         videoName = "video_transformed"
-    
+
     # Number of frames to be extracted
     if args.frames != None:
         nFrames = int(args.frames)
@@ -95,10 +103,10 @@ def main():
             print("Atempting to download video ...\n\n")
             subprocess.run("wget {} -O /tmp/{}/{}.mp4 ".format(videoURL, videoName, videoName) , shell=True, check=True)
             print("\n\nVideo Downloaded!\n\n")
-        
+
         # Working with local video
         if localVideo:
-            subprocess.run("mv {} /tmp/{}/{}.mp4".format(videoPath,videoName, videoName), shell=True, check=True)  
+            subprocess.run("mv {} /tmp/{}/{}.mp4".format(videoPath,videoName, videoName), shell=True, check=True)
 
         # Extracts the frames from video
         print("\n\nExtracting images ...\n\n")
@@ -113,12 +121,12 @@ def main():
         # delete extensions from 16 bit images
         for image in range(int(nFrames)):
             subprocess.run("mv /tmp/{}/16bit/{:03d}.png /tmp/{}/16bit/{:03d}".format(videoName, image, videoName, image), shell=True, check=True)
-        
+
         print("\n Removed extensions from 16 bit images...\n")
         print("\nDone! ready to transform \n")
 
         ########## MDWT Transform #################
-        # Motion 2D 1-levels forward DWT of the frames from the video:  
+        # Motion 2D 1-levels forward DWT of the frames from the video:
         subprocess.run("python3 -O ../src/MDWT.py -i /tmp/{}/16bit/ -d /tmp/{}/MDWT/ -N {}".format(videoName, videoName, nFrames), shell=True, check=True)
         print("\nFirst transform MDWT done!")
 
@@ -139,9 +147,9 @@ def main():
                 subprocess.run("mkdir -p {}".format(newLevel), shell=True) # creates next level MCDWT dir
                 # Works on the last MCDWT and transform to the new level
                 subprocess.run("python3 -O ../src/MCDWT.py -d {}{}/ -m {}{}/ -N {} -T {}".format(mlevelpath, i+1 , mlevelpath, i+2 , nFrames, t_scale), shell=True, check=True)
-            
+
             print("Last level of MCDWT located in:  {}".format(newLevel))
-    
+
     if transform == "False":
         ######## Reconstruction #########
         # Support for multi-level backwards reconstruction MCDWT
@@ -154,7 +162,7 @@ def main():
                 # Reconstructs form the last MCDWT level
                 subprocess.run("python3 -O ../src/MCDWT.py -b -m {}{}/ -d {}{}/ -N {} -T {}".format(mlevelMCDWT, i+2 , mlevelrecons, i+1, nFrames-1, t_scale), shell=True, check=True)
                 print("Reconstructed from MCDWT level {} done!".format(i+2))
-            
+
             print("\nMulti-levels reconstructed...\n")
         else:
             # Reconstructs form the last MCDWT level
@@ -162,11 +170,11 @@ def main():
                 subprocess.run("mkdir -p /tmp/{}/_reconMCDWT/1".format(videoName), shell=True)
                 subprocess.run("python3 -O ../src/MCDWT.py -b -m /tmp/{}/MDWT/MCDWT/1/ -d /tmp/{}/_reconMCDWT/1/ -N {} -T {}".format(videoName, videoName, nFrames-1, t_scale), shell=True, check=True)
 
-        # Motion 2D 1-levels backward DWT:  
+        # Motion 2D 1-levels backward DWT:
         subprocess.run("python3 -O ../src/MDWT.py -b -d /tmp/{}/_reconMCDWT/1/ -i /tmp/{}/_reconMDWT/  -N {}".format(videoName, videoName, nFrames), shell=True, check=True)
         print("\nReconstructed from MDWT done!")
         print("\nCheck reconstructed sequence in: /tmp/{}/_reconMDWTcon".format(videoName))
-        
+
         # Reconstruct 16bit original images back to normal
         for image in range(int(nFrames)):
             inputImg = ("/tmp/{}/16bit/{:03d}".format(videoName, image))
@@ -175,6 +183,6 @@ def main():
 
         print("Check results on /tmp/{} folder".format(videoName))
         print("\n\nScript Finished!")
-    
+
 if __name__ == "__main__":
     main()
