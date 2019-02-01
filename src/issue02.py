@@ -11,10 +11,10 @@ if len(sys.argv) == 2:
     print(fimg)
 else:
     print("Error - Introduce los argumentos correctamente")
-    print('Ejemplo: issue02.py  5')
+    print('Ejemplo: ./issue02.py  5')
 
  
-scriptextr = './test_sum_sub.sh '+ fimg
+scriptextr = './extraerimg.sh '+ fimg
  
 subprocess.call(scriptextr, shell=True)
 
