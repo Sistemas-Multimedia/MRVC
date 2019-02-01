@@ -27,7 +27,7 @@ class="ecrm-1200">Vicente Gonz</span><span
 class="ecrm-1200">á</span><span 
 class="ecrm-1200">lez Ruiz</span></div><br />
 <div class="date" ><span 
-class="ecrm-1200">January 31, 2019</span></div>
+class="ecrm-1200">February 1, 2019</span></div>
    </div>
    <h3 class="likesectionHead"><a 
  id="x1-1000"></a>Contents</h3>
@@ -6309,16 +6309,15 @@ class="MathClass-open">[</mo><mrow><msub><mrow
 class="MathClass-punc">.</mo><mi 
 >H</mi></mrow><mo 
 class="MathClass-close">]</mo></mrow></math> have
-the same weight to build the ﬁnal coeﬃcient prediction </p><table class="equation"><tr><td> <a 
+the same weight to build the prediction </p><table class="equation"><tr><td> <a 
  id="x1-16001r1"></a>
                                                                   
 
                                                                   
 <!--l. 411--><math 
  xmlns="http://www.w3.org/1998/Math/MathML"  
-display="block" class="equation"><msub><mrow 
->
-                  <mover 
+display="block" class="equation">
+                      <mover 
 accent="true"><mrow 
 ><mrow ><mo 
 class="MathClass-open">[</mo><mrow><msub><mrow 
@@ -6330,14 +6329,8 @@ class="MathClass-open">[</mo><mrow><msub><mrow
 class="MathClass-punc">.</mo><mi 
 >H</mi></mrow><mo 
 class="MathClass-close">]</mo></mrow></mrow><mo 
-class="MathClass-op">̂</mo></mover></mrow><mrow 
-><mi 
->x</mi><mo 
-class="MathClass-punc">,</mo><mi 
->y</mi></mrow></msub 
-> <mo 
+class="MathClass-op">̂</mo></mover> <mo 
 class="MathClass-rel">=</mo> <mfrac><mrow 
-><msub><mrow 
 ><mrow ><mo 
 class="MathClass-open">[</mo><mrow><msub><mrow 
 ><mi 
@@ -6347,14 +6340,8 @@ class="MathClass-open">[</mo><mrow><msub><mrow
 ><mo 
 class="MathClass-punc">.</mo><mi 
 >H</mi></mrow><mo 
-class="MathClass-close">]</mo></mrow></mrow><mrow 
-><mi 
->x</mi><mo 
-class="MathClass-punc">,</mo><mi 
->y</mi></mrow></msub 
-> <mo 
-class="MathClass-bin">+</mo> <msub><mrow 
-><mrow ><mo 
+class="MathClass-close">]</mo></mrow> <mo 
+class="MathClass-bin">+</mo> <mrow ><mo 
 class="MathClass-open">[</mo><mrow><msub><mrow 
 ><mi 
 >b</mi></mrow><mrow 
@@ -6363,29 +6350,18 @@ class="MathClass-open">[</mo><mrow><msub><mrow
 ><mo 
 class="MathClass-punc">.</mo><mi 
 >H</mi></mrow><mo 
-class="MathClass-close">]</mo></mrow></mrow><mrow 
-><mi 
->x</mi><mo 
-class="MathClass-punc">,</mo><mi 
->y</mi></mrow></msub 
-></mrow> 
-             <mrow 
-><mn>2</mn></mrow></mfrac>             <mo 
-class="MathClass-punc">,</mo>
+class="MathClass-close">]</mo></mrow></mrow> 
+         <mrow 
+><mn>2</mn></mrow></mfrac>         <mo 
+class="MathClass-punc">.</mo>
 </math></td><td class="eq-no">(1)</td></tr></table>
-<!--l. 414--><p class="indent" >   being <!--l. 414--><math 
- xmlns="http://www.w3.org/1998/Math/MathML"  
-display="inline" ><mi 
->x</mi><mo 
-class="MathClass-punc">,</mo><mi 
->y</mi></math>
-the coordinate of the coeﬃcient in the prediction pyramid level. This simple
-computation, that can have very eﬀective for example in <a 
-href="https://biteable.com/blog/tips/video-transitions-effects-examples/" >dissolves</a> video transitions,
-can be counterproductive when objects appear only in one of the reference images.
-For this reason, in this section a diﬀerent predictor is proposed, based on the
-prediction error generated during the ME process.
-</p><!--l. 423--><p class="indent" >   Let <!--l. 423--><math 
+<!--l. 414--><p class="indent" >   This simple computation, that can have very eﬀective for example in <a 
+href="https://biteable.com/blog/tips/video-transitions-effects-examples/" >dissolves</a>
+video transitions, can also be counterproductive when objects appear only
+in one of the reference images. For this reason, in this section a diﬀerent
+predictor is proposed, based on the prediction error generated during the ME
+process.
+</p><!--l. 421--><p class="indent" >   Let <!--l. 421--><math 
  xmlns="http://www.w3.org/1998/Math/MathML"  
 display="inline" ><mrow ><mo 
 class="MathClass-open">[</mo><mrow><msub><mrow 
@@ -6397,7 +6373,7 @@ class="MathClass-open">[</mo><mrow><msub><mrow
 class="MathClass-punc">.</mo><mi 
 >L</mi></mrow><mo 
 class="MathClass-close">]</mo></mrow></math> the prediction
-generated for the subband <!--l. 423--><math 
+generated for the subband <!--l. 421--><math 
  xmlns="http://www.w3.org/1998/Math/MathML"  
 display="inline" ><mrow ><mo 
 class="MathClass-open">[</mo><mrow><mi 
@@ -6405,7 +6381,7 @@ class="MathClass-open">[</mo><mrow><mi
 class="MathClass-punc">.</mo><mi 
 >L</mi></mrow><mo 
 class="MathClass-close">]</mo></mrow></math>
-using <!--l. 424--><math 
+using <!--l. 422--><math 
  xmlns="http://www.w3.org/1998/Math/MathML"  
 display="inline" ><mrow ><mo 
 class="MathClass-open">[</mo><mrow><mi 
@@ -6413,7 +6389,7 @@ class="MathClass-open">[</mo><mrow><mi
 class="MathClass-punc">.</mo><mi 
 >L</mi></mrow><mo 
 class="MathClass-close">]</mo></mrow></math> as reference
-and <!--l. 424--><math 
+and <!--l. 422--><math 
  xmlns="http://www.w3.org/1998/Math/MathML"  
 display="inline" ><mrow ><mo 
 class="MathClass-open">[</mo><mrow><mi 
@@ -6427,7 +6403,7 @@ class="MathClass-open">[</mo><mrow><mi
 class="MathClass-punc">.</mo><mi 
 >L</mi></mrow><mo 
 class="MathClass-close">]</mo></mrow></math> as motion, and
-let <!--l. 425--><math 
+let <!--l. 423--><math 
  xmlns="http://www.w3.org/1998/Math/MathML"  
 display="inline" ><mrow ><mo 
 class="MathClass-open">[</mo><mrow><msub><mrow 
@@ -6439,7 +6415,7 @@ class="MathClass-open">[</mo><mrow><msub><mrow
 class="MathClass-punc">.</mo><mi 
 >L</mi></mrow><mo 
 class="MathClass-close">]</mo></mrow></math> the prediction
-generated for <!--l. 425--><math 
+generated for <!--l. 423--><math 
  xmlns="http://www.w3.org/1998/Math/MathML"  
 display="inline" ><mrow ><mo 
 class="MathClass-open">[</mo><mrow><mi 
@@ -6447,7 +6423,7 @@ class="MathClass-open">[</mo><mrow><mi
 class="MathClass-punc">.</mo><mi 
 >L</mi></mrow><mo 
 class="MathClass-close">]</mo></mrow></math>
-using <!--l. 425--><math 
+using <!--l. 423--><math 
  xmlns="http://www.w3.org/1998/Math/MathML"  
 display="inline" ><mrow ><mo 
 class="MathClass-open">[</mo><mrow><mi 
@@ -6455,7 +6431,7 @@ class="MathClass-open">[</mo><mrow><mi
 class="MathClass-punc">.</mo><mi 
 >L</mi></mrow><mo 
 class="MathClass-close">]</mo></mrow></math> as
-reference and <!--l. 426--><math 
+reference and <!--l. 424--><math 
  xmlns="http://www.w3.org/1998/Math/MathML"  
 display="inline" ><mrow ><mo 
 class="MathClass-open">[</mo><mrow><mi 
@@ -6471,7 +6447,7 @@ class="MathClass-punc">.</mo><mi
 class="MathClass-close">]</mo></mrow></math>
 as motion. We now compute the prediction errors </p><table class="equation"><tr><td> <a 
  id="x1-16002r2"></a>
-<!--l. 428--><math 
+<!--l. 426--><math 
  xmlns="http://www.w3.org/1998/Math/MathML"  
 display="block" class="equation">
  <mtable  align="axis" style=""  
@@ -6501,7 +6477,7 @@ class="MathClass-open">[</mo><mrow><msub><mrow
 ><mo 
 class="MathClass-punc">.</mo><mi 
 >L</mi></mrow><mo 
-class="MathClass-close">]</mo></mrow> </mtd>
+class="MathClass-close">]</mo></mrow>  </mtd>
 </mtr>  <mtr><mtd 
 class="array"  columnalign="left">  <mrow ><mo 
 class="MathClass-open">[</mo><mrow><msub><mrow 
@@ -6528,135 +6504,72 @@ class="MathClass-open">[</mo><mrow><msub><mrow
 ><mo 
 class="MathClass-punc">.</mo><mi 
 >L</mi></mrow><mo 
-class="MathClass-close">]</mo></mrow>  </mtd></mtr><!--l--></mtable>
+class="MathClass-close">]</mo></mrow><mo 
+class="MathClass-punc">.</mo> </mtd></mtr><!--l--></mtable>
 </math></td><td class="eq-no">(2)</td></tr></table>
-<!--l. 434--><p class="indent" >   With this information, the improved coeﬃcient prediction is deﬁne as </p><table class="equation"><tr><td>
-<a 
+<!--l. 433--><p class="indent" >   Now, we deﬁne the similarity maps as </p><table class="equation"><tr><td> <a 
  id="x1-16003r3"></a>
+<!--l. 434--><math 
+ xmlns="http://www.w3.org/1998/Math/MathML"  
+display="block" class="equation">
+ <mtable  align="axis" style=""  
+equalrows="false" equalcolumns="false" class="array"> <mtr><mtd 
+class="array"  columnalign="left">  <mrow ><mo 
+class="MathClass-open">[</mo><mrow><msub><mrow 
+><mi 
+>s</mi></mrow><mrow 
+><mi 
+>a</mi></mrow></msub 
+><mo 
+class="MathClass-punc">.</mo><mi 
+>L</mi></mrow><mo 
+class="MathClass-close">]</mo></mrow> <mo 
+class="MathClass-rel">=</mo>     <mfrac><mrow 
+><mn>1</mn></mrow> 
+<mrow 
+><mn>1</mn><mo 
+class="MathClass-bin">+</mo><mrow ><mo 
+class="MathClass-open">[</mo><mrow><msub><mrow 
+><mi 
+>e</mi></mrow><mrow 
+><mi 
+>a</mi></mrow></msub 
+><mo 
+class="MathClass-punc">.</mo><mi 
+>L</mi></mrow><mo 
+class="MathClass-close">]</mo></mrow></mrow></mfrac>   </mtd>
+</mtr>  <mtr><mtd 
+class="array"  columnalign="left">  <mrow ><mo 
+class="MathClass-open">[</mo><mrow><msub><mrow 
+><mi 
+>s</mi></mrow><mrow 
+><mi 
+>c</mi></mrow></msub 
+><mo 
+class="MathClass-punc">.</mo><mi 
+>L</mi></mrow><mo 
+class="MathClass-close">]</mo></mrow> <mo 
+class="MathClass-rel">=</mo>     <mfrac><mrow 
+><mn>1</mn></mrow> 
+<mrow 
+><mn>1</mn><mo 
+class="MathClass-bin">+</mo><mrow ><mo 
+class="MathClass-open">[</mo><mrow><msub><mrow 
+><mi 
+>e</mi></mrow><mrow 
+><mi 
+>c</mi></mrow></msub 
+><mo 
+class="MathClass-punc">.</mo><mi 
+>L</mi></mrow><mo 
+class="MathClass-close">]</mo></mrow></mrow></mfrac><mo 
+class="MathClass-punc">.</mo> </mtd></mtr><!--l--></mtable>
+</math></td><td class="eq-no">(3)</td></tr></table>
                                                                   
 
                                                                   
-<!--l. 435--><math 
- xmlns="http://www.w3.org/1998/Math/MathML"  
-display="block" class="equation"><msub><mrow 
->
-            <mover 
-accent="true"><mrow 
-><mrow ><mo 
-class="MathClass-open">[</mo><mrow><msub><mrow 
-><mi 
->b</mi></mrow><mrow 
-><mi 
->b</mi></mrow></msub 
-><mo 
-class="MathClass-punc">.</mo><mi 
->H</mi></mrow><mo 
-class="MathClass-close">]</mo></mrow></mrow><mo 
-class="MathClass-op">̂</mo></mover></mrow><mrow 
-><mi 
->x</mi><mo 
-class="MathClass-punc">,</mo><mi 
->y</mi></mrow></msub 
-> <mo 
-class="MathClass-rel">=</mo> <mfrac><mrow 
-><msub><mrow 
-><mrow ><mo 
-class="MathClass-open">[</mo><mrow><msub><mrow 
-><mi 
->b</mi></mrow><mrow 
-><mi 
->a</mi></mrow></msub 
-><mo 
-class="MathClass-punc">.</mo><mi 
->H</mi></mrow><mo 
-class="MathClass-close">]</mo></mrow></mrow><mrow 
-><mi 
->x</mi><mo 
-class="MathClass-punc">,</mo><mi 
->y</mi></mrow></msub 
-><msub><mrow 
-><mrow ><mo 
-class="MathClass-open">[</mo><mrow><msub><mrow 
-><mi 
->e</mi></mrow><mrow 
-><mi 
->c</mi></mrow></msub 
-><mo 
-class="MathClass-punc">.</mo><mi 
->L</mi></mrow><mo 
-class="MathClass-close">]</mo></mrow></mrow><mrow 
-><mi 
->x</mi><mo 
-class="MathClass-punc">,</mo><mi 
->y</mi></mrow></msub 
-> <mo 
-class="MathClass-bin">+</mo> <msub><mrow 
-><mrow ><mo 
-class="MathClass-open">[</mo><mrow><msub><mrow 
-><mi 
->b</mi></mrow><mrow 
-><mi 
->c</mi></mrow></msub 
-><mo 
-class="MathClass-punc">.</mo><mi 
->H</mi></mrow><mo 
-class="MathClass-close">]</mo></mrow></mrow><mrow 
-><mi 
->x</mi><mo 
-class="MathClass-punc">,</mo><mi 
->y</mi></mrow></msub 
-><msub><mrow 
-><mrow ><mo 
-class="MathClass-open">[</mo><mrow><msub><mrow 
-><mi 
->e</mi></mrow><mrow 
-><mi 
->a</mi></mrow></msub 
-><mo 
-class="MathClass-punc">.</mo><mi 
->L</mi></mrow><mo 
-class="MathClass-close">]</mo></mrow></mrow><mrow 
-><mi 
->x</mi><mo 
-class="MathClass-punc">,</mo><mi 
->y</mi></mrow></msub 
-></mrow> 
-            <mrow 
-><msub><mrow 
-><mrow ><mo 
-class="MathClass-open">[</mo><mrow><msub><mrow 
-><mi 
->e</mi></mrow><mrow 
-><mi 
->a</mi></mrow></msub 
-><mo 
-class="MathClass-punc">.</mo><mi 
->L</mi></mrow><mo 
-class="MathClass-close">]</mo></mrow></mrow><mrow 
-><mi 
->x</mi><mo 
-class="MathClass-punc">,</mo><mi 
->y</mi></mrow></msub 
-> <mo 
-class="MathClass-bin">+</mo> <msub><mrow 
-><mrow ><mo 
-class="MathClass-open">[</mo><mrow><msub><mrow 
-><mi 
->e</mi></mrow><mrow 
-><mi 
->c</mi></mrow></msub 
-><mo 
-class="MathClass-punc">.</mo><mi 
->L</mi></mrow><mo 
-class="MathClass-close">]</mo></mrow></mrow><mrow 
-><mi 
->x</mi><mo 
-class="MathClass-punc">,</mo><mi 
->y</mi></mrow></msub 
-></mrow></mfrac>            <mo 
-class="MathClass-punc">.</mo>
-</math></td><td class="eq-no">(3)</td></tr></table>
-<!--l. 440--><p class="indent" >   Notice that, if (for example) <!--l. 440--><math 
+<!--l. 440--><p class="indent" >   Notice that, if (for example) the error
+<!--l. 440--><math 
  xmlns="http://www.w3.org/1998/Math/MathML"  
 display="inline" ><msub><mrow 
 ><mrow ><mo 
@@ -6674,8 +6587,150 @@ class="MathClass-close">]</mo></mrow></mrow><mrow
 class="MathClass-punc">,</mo><mi 
 >y</mi></mrow></msub 
 > <mo 
-class="MathClass-rel">=</mo> <mn>0</mn></math>
-then <!--l. 441--><math 
+class="MathClass-rel">=</mo> <mn>0</mn></math>, the
+similarity is <!--l. 441--><math 
+ xmlns="http://www.w3.org/1998/Math/MathML"  
+display="inline" ><msub><mrow 
+><mrow ><mo 
+class="MathClass-open">[</mo><mrow><msub><mrow 
+><mi 
+>s</mi></mrow><mrow 
+><mi 
+>a</mi></mrow></msub 
+><mo 
+class="MathClass-punc">.</mo><mi 
+>L</mi></mrow><mo 
+class="MathClass-close">]</mo></mrow></mrow><mrow 
+><mi 
+>x</mi><mo 
+class="MathClass-punc">,</mo><mi 
+>y</mi></mrow></msub 
+> <mo 
+class="MathClass-rel">=</mo> <mn>1</mn></math>
+(the maximum similarity), and if the error is high, the similarity tends to be
+<!--l. 442--><math 
+ xmlns="http://www.w3.org/1998/Math/MathML"  
+display="inline" ><mn>0</mn></math>.
+</p><!--l. 444--><p class="indent" >   With this information, that can be recovered by the decoder, the improved
+prediction is deﬁne as </p><table class="equation"><tr><td> <a 
+ id="x1-16004r4"></a>
+<!--l. 446--><math 
+ xmlns="http://www.w3.org/1998/Math/MathML"  
+display="block" class="equation">
+                 <mover 
+accent="true"><mrow 
+><mrow ><mo 
+class="MathClass-open">[</mo><mrow><msub><mrow 
+><mi 
+>b</mi></mrow><mrow 
+><mi 
+>b</mi></mrow></msub 
+><mo 
+class="MathClass-punc">.</mo><mi 
+>H</mi></mrow><mo 
+class="MathClass-close">]</mo></mrow></mrow><mo 
+class="MathClass-op">̂</mo></mover> <mo 
+class="MathClass-rel">=</mo> <mfrac><mrow 
+><mrow ><mo 
+class="MathClass-open">[</mo><mrow><msub><mrow 
+><mi 
+>b</mi></mrow><mrow 
+><mi 
+>a</mi></mrow></msub 
+><mo 
+class="MathClass-punc">.</mo><mi 
+>H</mi></mrow><mo 
+class="MathClass-close">]</mo></mrow><mrow ><mo 
+class="MathClass-open">[</mo><mrow><msub><mrow 
+><mi 
+>s</mi></mrow><mrow 
+><mi 
+>a</mi></mrow></msub 
+><mo 
+class="MathClass-punc">.</mo><mi 
+>L</mi></mrow><mo 
+class="MathClass-close">]</mo></mrow> <mo 
+class="MathClass-bin">+</mo> <mrow ><mo 
+class="MathClass-open">[</mo><mrow><msub><mrow 
+><mi 
+>b</mi></mrow><mrow 
+><mi 
+>c</mi></mrow></msub 
+><mo 
+class="MathClass-punc">.</mo><mi 
+>H</mi></mrow><mo 
+class="MathClass-close">]</mo></mrow><mrow ><mo 
+class="MathClass-open">[</mo><mrow><msub><mrow 
+><mi 
+>s</mi></mrow><mrow 
+><mi 
+>c</mi></mrow></msub 
+><mo 
+class="MathClass-punc">.</mo><mi 
+>L</mi></mrow><mo 
+class="MathClass-close">]</mo></mrow></mrow> 
+        <mrow 
+><mrow ><mo 
+class="MathClass-open">[</mo><mrow><msub><mrow 
+><mi 
+>s</mi></mrow><mrow 
+><mi 
+>a</mi></mrow></msub 
+><mo 
+class="MathClass-punc">.</mo><mi 
+>L</mi></mrow><mo 
+class="MathClass-close">]</mo></mrow> <mo 
+class="MathClass-bin">+</mo> <mrow ><mo 
+class="MathClass-open">[</mo><mrow><msub><mrow 
+><mi 
+>s</mi></mrow><mrow 
+><mi 
+>c</mi></mrow></msub 
+><mo 
+class="MathClass-punc">.</mo><mi 
+>L</mi></mrow><mo 
+class="MathClass-close">]</mo></mrow></mrow></mfrac>        <mo 
+class="MathClass-punc">.</mo>
+</math></td><td class="eq-no">(4)</td></tr></table>
+<!--l. 450--><p class="indent" >   Notice that, if (for example) <!--l. 450--><math 
+ xmlns="http://www.w3.org/1998/Math/MathML"  
+display="inline" ><msub><mrow 
+><mrow ><mo 
+class="MathClass-open">[</mo><mrow><msub><mrow 
+><mi 
+>s</mi></mrow><mrow 
+><mi 
+>a</mi></mrow></msub 
+><mo 
+class="MathClass-punc">.</mo><mi 
+>L</mi></mrow><mo 
+class="MathClass-close">]</mo></mrow></mrow><mrow 
+><mi 
+>x</mi><mo 
+class="MathClass-punc">,</mo><mi 
+>y</mi></mrow></msub 
+> <mo 
+class="MathClass-rel">=</mo> <mn>1</mn></math>
+and <!--l. 451--><math 
+ xmlns="http://www.w3.org/1998/Math/MathML"  
+display="inline" ><msub><mrow 
+><mrow ><mo 
+class="MathClass-open">[</mo><mrow><msub><mrow 
+><mi 
+>s</mi></mrow><mrow 
+><mi 
+>c</mi></mrow></msub 
+><mo 
+class="MathClass-punc">.</mo><mi 
+>L</mi></mrow><mo 
+class="MathClass-close">]</mo></mrow></mrow><mrow 
+><mi 
+>x</mi><mo 
+class="MathClass-punc">,</mo><mi 
+>y</mi></mrow></msub 
+> <mo 
+class="MathClass-rel">→</mo> <mn>0</mn></math>, then
+<!--l. 452--><math 
  xmlns="http://www.w3.org/1998/Math/MathML"  
 display="inline" ><msub><mrow 
 ><mover 
@@ -6696,7 +6751,7 @@ class="MathClass-op">̂</mo></mover></mrow><mrow
 class="MathClass-punc">,</mo><mi 
 >y</mi></mrow></msub 
 > <mo 
-class="MathClass-rel">=</mo> <msub><mrow 
+class="MathClass-rel">≈</mo> <msub><mrow 
 ><mrow ><mo 
 class="MathClass-open">[</mo><mrow><msub><mrow 
 ><mi 
@@ -6711,8 +6766,86 @@ class="MathClass-close">]</mo></mrow></mrow><mrow
 >x</mi><mo 
 class="MathClass-punc">,</mo><mi 
 >y</mi></mrow></msub 
-></math>
-and viceversa.
+></math>, and
+viceversa. If <!--l. 453--><math 
+ xmlns="http://www.w3.org/1998/Math/MathML"  
+display="inline" ><msub><mrow 
+><mrow ><mo 
+class="MathClass-open">[</mo><mrow><msub><mrow 
+><mi 
+>s</mi></mrow><mrow 
+><mi 
+>a</mi></mrow></msub 
+><mo 
+class="MathClass-punc">.</mo><mi 
+>L</mi></mrow><mo 
+class="MathClass-close">]</mo></mrow></mrow><mrow 
+><mi 
+>x</mi><mo 
+class="MathClass-punc">,</mo><mi 
+>y</mi></mrow></msub 
+> <mo 
+class="MathClass-rel">=</mo> <msub><mrow 
+><mrow ><mo 
+class="MathClass-open">[</mo><mrow><msub><mrow 
+><mi 
+>s</mi></mrow><mrow 
+><mi 
+>c</mi></mrow></msub 
+><mo 
+class="MathClass-punc">.</mo><mi 
+>L</mi></mrow><mo 
+class="MathClass-close">]</mo></mrow></mrow><mrow 
+><mi 
+>x</mi><mo 
+class="MathClass-punc">,</mo><mi 
+>y</mi></mrow></msub 
+></math>,
+then <!--l. 454--><math 
+ xmlns="http://www.w3.org/1998/Math/MathML"  
+display="inline" ><msub><mrow 
+><mover 
+accent="true"><mrow 
+><mrow ><mo 
+class="MathClass-open">[</mo><mrow><msub><mrow 
+><mi 
+>b</mi></mrow><mrow 
+><mi 
+>b</mi></mrow></msub 
+><mo 
+class="MathClass-punc">.</mo><mi 
+>H</mi></mrow><mo 
+class="MathClass-close">]</mo></mrow></mrow><mo 
+class="MathClass-op">̂</mo></mover></mrow><mrow 
+><mi 
+>x</mi><mo 
+class="MathClass-punc">,</mo><mi 
+>y</mi></mrow></msub 
+> <mo 
+class="MathClass-rel">=</mo> <mfrac><mrow 
+><mrow ><mo 
+class="MathClass-open">[</mo><mrow><msub><mrow 
+><mi 
+>b</mi></mrow><mrow 
+><mi 
+>a</mi></mrow></msub 
+><mo 
+class="MathClass-punc">.</mo><mi 
+>H</mi></mrow><mo 
+class="MathClass-close">]</mo></mrow><mo 
+class="MathClass-bin">+</mo><mrow ><mo 
+class="MathClass-open">[</mo><mrow><msub><mrow 
+><mi 
+>b</mi></mrow><mrow 
+><mi 
+>c</mi></mrow></msub 
+><mo 
+class="MathClass-punc">.</mo><mi 
+>H</mi></mrow><mo 
+class="MathClass-close">]</mo></mrow></mrow> 
+        <mrow 
+><mn>2</mn></mrow></mfrac>         </math>
+(even if both similarities are small).
 </p>
     
 </body> 

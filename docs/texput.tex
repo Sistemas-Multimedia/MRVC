@@ -407,17 +407,15 @@ rm -f /tmp/diff*.png; for i in {0..4}; do ii=$(printf "%03d" $i); bash ../tools/
 \section{Adaptive motion compensation based on the distortion of the prediction error}
 In the previous implementation of the MCDWT bufferfly, both
 predictions $[b_a.H]$ and $[b_c.H]$ have the same weight to build the
-final coefficient prediction
+prediction
 \begin{equation}
-  \hat{[b_b.H]}_{x,y} = \frac{[b_a.H]_{x,y}+[b_c.H]_{x,y}}{2},
+  \hat{[b_b.H]} = \frac{[b_a.H] + [b_c.H]}{2}.
 \end{equation}
-being $x,y$ the coordinate of the coefficient in the prediction
-pyramid level. This simple computation, that can have very effective
-for example in
+This simple computation, that can have very effective for example in
 \href{https://biteable.com/blog/tips/video-transitions-effects-examples/}{dissolves}
-video transitions, can be counterproductive when objects appear only
-in one of the reference images. For this reason, in this section a
-different predictor is proposed, based on the prediction error
+video transitions, can also be counterproductive when objects appear
+only in one of the reference images. For this reason, in this section
+a different predictor is proposed, based on the prediction error
 generated during the ME process.
 
 Let $[b_a.L]$ the prediction generated for the subband $[b.L]$ using
@@ -428,17 +426,33 @@ prediction errors
 \begin{equation}
   \begin{array}{l}
     {[e_a.L]} = [b.L] - [b_a.L]\\
-    {[e_c.L]} = [b.L] - [b_c.L]
+    {[e_c.L]} = [b.L] - [b_c.L].
   \end{array}
 \end{equation}
-With this information, the improved coefficient prediction is define as
+
+Now, we define the similarity maps as
 \begin{equation}
-  \hat{[b_b.H]}_{x,y} = \frac{[b_a.H]_{x,y}[e_c.L]_{x,y}+[b_c.H]_{x,y}[e_a.L]_{x,y}}
-      {[e_a.L]_{x,y}+[e_c.L]_{x,y}}.
+  \begin{array}{l}
+    {[s_a.L]} = \frac{1}{1+{[e_a.L]}}\\
+    {[s_c.L]} = \frac{1}{1+{[e_c.L]}}.    
+  \end{array}
+\end{equation}
+Notice that, if (for example) the error $[e_a.L]_{x,y}=0$, the
+similarity is $[s_a.L]_{x,y}=1$ (the maximum similarity), and if the
+error is high, the similarity tends to be $0$.
+
+With this information, that can be recovered by the decoder, the
+improved prediction is define as
+\begin{equation}
+  \hat{[b_b.H]} = \frac{[b_a.H][s_a.L]+[b_c.H][s_c.L]}{[s_a.L]+[s_c.L]}.
 \end{equation}
 
-Notice that, if (for example) $[e_a.L]_{x,y}=0$ then
-$\hat{[b_b.H]}_{x,y}=[b_a.H]_{x,y}$ and viceversa.
+Notice that, if (for example) $[s_a.L]_{x,y}=1$ and
+$[s_c.L]_{x,y}\rightarrow 0$, then
+$\hat{[b_b.H]}_{x,y}\approx[b_a.H]_{x,y}$, and viceversa. If
+$[s_a.L]_{x,y}=[s_c.L]_{x,y}$, then
+$\hat{[b_b.H]}_{x,y}=\frac{[b_a.H]+[b_c.H]}{2}$ (even if both similarities are small).
+
 \begin{comment}
 
 \section{Video \href{http://inst.eecs.berkeley.edu/~ee290t/sp04/lectures/videowavelet_UCB1-3.pdf}{scalability}}
