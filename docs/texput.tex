@@ -404,6 +404,41 @@ rm -f tmp/recons2_MDWT_*.png; for i in /tmp/recons2_MDWT_*; do python ../tools/s
 rm -f /tmp/diff*.png; for i in {0..4}; do ii=$(printf "%03d" $i); bash ../tools/show_differences.sh -1 /tmp/recons_MDWT_$ii -2 /tmp/recons2_MDWT_$ii -o /tmp/diff_$i.png; done; animate /tmp/diff*.png
 \end{verbatim}
 
+\section{Adaptive motion compensation based on the distortion of the prediction error}
+In the previous implementation of the MCDWT bufferfly, both
+predictions $[b_a.H]$ and $[b_c.H]$ have the same weight to build the
+final coefficient prediction
+\begin{equation}
+  \hat{[b_b.H]}_{x,y} = \frac{[b_a.H]_{x,y}+[b_c.H]_{x,y}}{2},
+\end{equation}
+being $x,y$ the coordinate of the coefficient in the prediction
+pyramid level. This simple computation, that can have very effective
+for example in
+\href{https://biteable.com/blog/tips/video-transitions-effects-examples/}{dissolves}
+video transitions, can be counterproductive when objects appear only
+in one of the reference images. For this reason, in this section a
+different predictor is proposed, based on the prediction error
+generated during the ME process.
+
+Let $[b_a.L]$ the prediction generated for the subband $[b.L]$ using
+$[a.L]$ as reference and $[a.L]\rightarrow [b.L]$ as motion, and let
+$[b_c.L]$ the prediction generated for $[b.L]$ using $[c.L]$ as
+reference and $[c.L]\rightarrow [b.L]$ as motion. We now compute the
+prediction errors
+\begin{equation}
+  \begin{array}{l}
+    {[e_a.L]} = [b.L] - [b_a.L]\\
+    {[e_c.L]} = [b.L] - [b_c.L]
+  \end{array}
+\end{equation}
+With this information, the improved coefficient prediction is define as
+\begin{equation}
+  \hat{[b_b.H]}_{x,y} = \frac{[b_a.H]_{x,y}[e_c.L]_{x,y}+[b_c.H]_{x,y}[e_a.L]_{x,y}}
+      {[e_a.L]_{x,y}+[e_c.L]_{x,y}}.
+\end{equation}
+
+Notice that, if (for example) $[e_a.L]_{x,y}=0$ then
+$\hat{[b_b.H]}_{x,y}=[b_a.H]_{x,y}$ and viceversa.
 \begin{comment}
 
 \section{Video \href{http://inst.eecs.berkeley.edu/~ee290t/sp04/lectures/videowavelet_UCB1-3.pdf}{scalability}}
