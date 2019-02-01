@@ -433,8 +433,8 @@ prediction errors
 Now, we define the similarity maps as
 \begin{equation}
   \begin{array}{l}
-    {[s_a.L]} = \frac{1}{1+{[e_a.L]}}\\
-    {[s_c.L]} = \frac{1}{1+{[e_c.L]}}.    
+    {[s_a.L]} = \frac{\displaystyle 1}{\displaystyle 1+{[e_a.L]}}\\
+    {[s_c.L]} = \frac{\displaystyle 1}{\displaystyle 1+{[e_c.L]}}.    
   \end{array}
 \end{equation}
 Notice that, if (for example) the error $[e_a.L]_{x,y}=0$, the
@@ -442,7 +442,7 @@ similarity is $[s_a.L]_{x,y}=1$ (the maximum similarity), and if the
 error is high, the similarity tends to be $0$.
 
 With this information, that can be recovered by the decoder, the
-improved prediction is define as
+improved prediction is defined as
 \begin{equation}
   \hat{[b_b.H]} = \frac{[b_a.H][s_a.L]+[b_c.H][s_c.L]}{[s_a.L]+[s_c.L]}.
 \end{equation}
