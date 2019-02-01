@@ -6,11 +6,16 @@ fi
     mkdir /tmp/issues02
  
     echo "mkdir"
-if [ -d /tmp/dwt ]; then
-    rm -rf   /tmp/dwt
-    echo "mkdir dwt"
+if [ -d /tmp/mdwt ]; then
+    rm -rf   /tmp/mdwt
+    echo "mkdir mdwt"
 fi
-    mkdir /tmp/dwt
+    mkdir /tmp/mdwt    
+if [ -d /tmp/mcdwt ]; then
+    rm -rf   /tmp/mcdwt
+    echo "mkdir mcdwt"
+fi
+    mkdir /tmp/mcdwt
 pathscript=$PWD
 #wget http://www.hpca.ual.es/~vruiz/videos/stockholm_1280x768x50x420x578.avi --output-document=/tmp/stockholm.avi
 wget http://www.hpca.ual.es/~vruiz/videos/flowergarden_352x288x30x420x250.avi --output-document=/tmp/stockholm.avi
@@ -35,9 +40,11 @@ cd $pathscript
 #echo "./DWT.py -i $f -d /tmp/dwt"
 #done
 
-echo " transformada MDWT.py"
-#./MDWT.py -i /tmp/issues02/ -d /tmp/mdwt/  
- python -O ./MDWT.py -i /tmp/issues02/ -d /tmp/mdwt/  
- ls -al /tmp/mdwt/ 
-echo " transformada MDWT.py"
+echo " transformada mdwt.py"
+python -O ./MDWT.py -i /tmp/issues02/ -d /tmp/mdwt/  
+# python -O 
+echo " transformada ---"
+echo python -O ./MCDWT.py -d /tmp/mdwt/ -m /tmp/mcdwt/  
+ ls -al /tmp/mcdwt/ 
+echo " transformada MCDWT.py"
 

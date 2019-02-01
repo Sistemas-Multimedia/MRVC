@@ -13,7 +13,7 @@ fi
 
 #wget http://www.hpca.ual.es/~vruiz/videos/stockholm_1280x768x50x420x578.avi --output-document=/tmp/stockholm.avi
 wget http://www.hpca.ual.es/~vruiz/videos/flowergarden_352x288x30x420x250.avi --output-document=/tmp/stockholm.avi
-ffmpeg -i /tmp/stockholm.avi -vframes $1 /tmp/issues02/%03d.png
+ffmpeg -i /tmp/stockholm.avi -vframes 36 /tmp/issues02/%03d.png
 
 cd /tmp/issues02/
 for f in *.png; do
@@ -27,6 +27,7 @@ for f in *.png; do
     #mv $f $base
     mv $f $filenx
 done
+<<<<<<< HEAD
 cd $pathscript
 for f in /tmp/issues02/*; do
     echo    python ./DWT.py -i $f -d   $f
@@ -34,5 +35,12 @@ done
 echo " transformada MDWT.py"
 echo python -O ./MDWT.py -i /tmp/issues02/ -d /tmp/mdwt/
 echo " transformada MDWT.py"
+=======
+for f in /tmp/issues02/*; do
+# ./DWT.py -i $f -d /tmp/000  
+echo "./DWT.py -i $f -d $f"
+#echo "./DWT.py -i $f -d /tmp/dwt"
+done
+>>>>>>> 5c59961440788c854864bd500f64055e423fad4e
 #./add_32768_128.py /tmp/issues02/003.png /tmp/issues02/003_offset.png
 #./sub_32768_128.py /tmp/issues02/003_offset.png /tmp/issues02/003_original.png
