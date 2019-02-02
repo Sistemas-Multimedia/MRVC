@@ -430,11 +430,11 @@ prediction errors
   \end{array}
 \end{equation}
 
-Now, we define the similarity maps as
+Now, we define the similarity matrices as
 \begin{equation}
   \begin{array}{l}
-    {[s_a.L]} = \frac{\displaystyle 1}{\displaystyle 1+{[e_a.L]}}\\
-    {[s_c.L]} = \frac{\displaystyle 1}{\displaystyle 1+{[e_c.L]}}.    
+    {[s_a.L]} = \frac{1}{1+{[e_a.L]}}\\
+    {[s_c.L]} = \frac{1}{1+{[e_c.L]}}.    
   \end{array}
 \end{equation}
 Notice that, if (for example) the error $[e_a.L]_{x,y}=0$, the
@@ -448,8 +448,8 @@ improved prediction is defined as
 \end{equation}
 
 Notice that, if (for example) $[s_a.L]_{x,y}=1$ and
-$[s_c.L]_{x,y}\rightarrow 0$, then
-$\hat{[b_b.H]}_{x,y}\approx[b_a.H]_{x,y}$, and viceversa. If
+$[s_c.L]_{x,y}\approx 0$, then
+$\hat{[b_b.H]}_{x,y}\approx [b_a.H]_{x,y}$, and viceversa. If
 $[s_a.L]_{x,y}=[s_c.L]_{x,y}$, then
 $\hat{[b_b.H]}_{x,y}=\frac{[b_a.H]+[b_c.H]}{2}$ (even if both similarities are small).
 
