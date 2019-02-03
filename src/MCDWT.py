@@ -22,21 +22,16 @@ class MCDWT:
         self.zero_H = (self.zero_L, self.zero_L, self.zero_L)
         self.dwt = DWT()
 
-    def __forward_butterfly(self, aL, aH, bL, bH, cL, cH):
+    def __forward_butterfly(self, aL, aH, bL, bH, cL, cH, P):
         '''Motion compensated forward MCDWT butterfly.
-
         Input:
         -----
-
         aL, aH, bL, bH, cL, cH: array[y, x, component], the decomposition of
         the images a, b and c.
-
         Output:
         ------
-
         residue_bH: array[y, x, component], the base of the decomposition of
         the residue fot the image b.
-
         '''
 
         AL = self.dwt.backward((aL, self.zero_H))
@@ -47,12 +42,23 @@ class MCDWT:
         CH = self.dwt.backward((self.zero_L, cH))
         BHA = generate_prediction(AL, BL, AH)
         BHC = generate_prediction(CL, BL, CH)
-        prediction_BH = (BHA + BHC) / 2
+
+        if P == 1:
+            prediction_BH = (BHA + BHC) / 2
+        else:
+            BLA = generate_prediction(AL, BL, AL)
+            BLC = generate_prediction(CL, BL, CL)
+            ELA = BL - BLA
+            ELC = BL - BLC
+            SLA = 1/(1+ELA)
+            SLC = 1/(1+ELC)
+            prediction_BH = (BHA * SLA + BHC * SLC) / (SLA+SLC)
+
         residue_BH = BH - prediction_BH
         residue_bH = self.dwt.forward(residue_BH)
         return residue_bH[1]
 
-    def __backward_butterfly(self, aL, aH, bL, residue_bH, cL, cH):
+    def __backward_butterfly(self, aL, aH, bL, residue_bH, cL, cH, P):
         AL = self.dwt.backward((aL, self.zero_H))
         BL = self.dwt.backward((bL, self.zero_H))
         CL = self.dwt.backward((cL, self.zero_H))
@@ -61,110 +67,35 @@ class MCDWT:
         CH = self.dwt.backward((self.zero_L, cH))
         BHA = generate_prediction(AL, BL, AH)
         BHC = generate_prediction(CL, BL, CH)
-        prediction_BH = (BHA + BHC) / 2
+        if P == 1:
+            prediction_BH = (BHA + BHC) / 2
+        else:
+            BLA = generate_prediction(AL, BL, AL)
+            BLC = generate_prediction(CL, BL, CL)
+            ELA = BL - BLA
+            ELC = BL - BLC
+            SLA = 1/(1+ELA)
+            SLC = 1/(1+ELC)
+            prediction_BH = (BHA * SLA + BHC * SLC) / (SLA+SLC)
         BH = residue_BH + prediction_BH
         bH = self.dwt.forward(BH)
         return bH[1]
 
-    def forward(self, s="/tmp/stockholm_", S="/tmp/mc_stockholm_", N=5, T=2):
+    def forward(self, s="/tmp/stockholm_", S="/tmp/mc_stockholm_", N=5, T=2, P = 1):
         '''A Motion Compensated Discrete Wavelet Transform.
-
         Compute the MC 1D-DWT. The input video s (as a sequence of
         1-levels decompositions) must be stored in disk and the output (as a
         1-levels MC decompositions) will be stored in S.
-
         Imput:
         -----
-
-            prefix : s
-
-                Localization of the input images. Example: "/tmp/stockholm_".
-
-             N : int
-
-                Number of images to process.
-
-             T : int
-
-                Number of levels of the MCDWT (temporal scales). Controls
-                the GOP size.
-
-                  T | GOP_size
-                ----+-----------
-                  0 |        1
-                  1 |        2
-                  2 |        4
-                  3 |        8
-                  4 |       16
-                  5 |       32
-                  : |        :
-
-        Returns
-        -------
-
-            prefix : S
-
-                Localization of the output decompositions. For example:
-                "/tmp/mc_stockholm_".
-
-        '''
-        x = 2
-        for t in range(T): # Temporal scale
-            i = 0
-            aL, aH = decomposition.read("{}{:03d}".format(s, 0))
-            decomposition.write((aL, aH), "{}{:03d}".format(S, 0))
-            while i < (N//x):
-                bL, bH = decomposition.read("{}{:03d}".format(s, x*i+x//2))
-                cL, cH = decomposition.read("{}{:03d}".format(s, x*i+x))
-                bH = self.__forward_butterfly(aL, aH, bL, bH, cL, cH)
-                decomposition.write((bL, bH), "{}{:03d}".format(S, x*i+x//2))
-                decomposition.write((cL, cH), "{}{:03d}".format(S, x*i+x))
-                aL, aH = cL, cH
-                i += 1
-            x *= 2
-
-    def backward(self, S="/tmp/mc_stockholm_", s="/tmp/stockholm_", N=5, T=2):
-        x = 2**T
-        for t in range(T): # Temporal scale
-            i = 0
-            aL, aH = decomposition.read("{}{:03d}".format(S, 0))
-            decomposition.write((aL, aH), "{}{:03d}".format(s, 0))
-            while i < (N//x):
-                bL, bH = decomposition.read("{}{:03d}".format(S, x*i+x//2))
-                cL, cH = decomposition.read("{}{:03d}".format(S, x*i+x))
-                bH = self.__backward_butterfly(aL, aH, bL, bH, cL, cH)
-                decomposition.write((bL, bH), "{}{:03d}".format(s, x*i+x//2))
-                decomposition.write((cL, cH), "{}{:03d}".format(s, x*i+x))
-                aL, aH = cL, cH
-                i += 1
-            x //=2
-
-    # Ignore
-    def forward_(prefix = "/tmp/", N = 5, K = 2):
-        '''A Motion Compensated Discrete Wavelet Transform.
-
-        Compute the MC 1D-DWT. The input video (as a sequence of images)
-        must be stored in disk (<input> directory) and the output (as a
-        sequence of DWT coefficients that are called decompositions) will be
-        stored in disk (<output> directory).
-
-        Arguments
-        ---------
-
             prefix : str
-
                 Localization of the input/output images. Example:
                 "/tmp/".
-
              N : int
-
                 Number of images to process.
-
              K : int
-
                 Number of levels of the MCDWT (temporal scales). Controls
-                the GOP size. 
-
+                the GOP size.
                   K | GOP_size
                 ----+-----------
                   0 |        1
@@ -174,12 +105,73 @@ class MCDWT:
                   4 |       16
                   5 |       32
                   : |        :
-
+             P : int
+                Predictor to use.
+                 1 --> Simple Average Predictor.
+                 2 --> Weighted Average Predictor.
         Returns
         -------
-
             None.
+        '''
+        x = 2
+        for t in range(T): # Temporal scale
+            i = 0
+            aL, aH = decomposition.read("{}{:03d}".format(s, 0))
+            decomposition.write((aL, aH), "{}{:03d}".format(S, 0))
+            while i < (N//x):
+                bL, bH = decomposition.read("{}{:03d}".format(s, x*i+x//2))
+                cL, cH = decomposition.read("{}{:03d}".format(s, x*i+x))
+                bH = self.__forward_butterfly(aL, aH, bL, bH, cL, cH, P)
+                decomposition.write((bL, bH), "{}{:03d}".format(S, x*i+x//2))
+                decomposition.write((cL, cH), "{}{:03d}".format(S, x*i+x))
+                aL, aH = cL, cH
+                i += 1
+            x *= 2
 
+    def backward(self, S="/tmp/mc_stockholm_", s="/tmp/stockholm_", N=5, T=2, P = 1):
+        x = 2**T
+        for t in range(T): # Temporal scale
+            i = 0
+            aL, aH = decomposition.read("{}{:03d}".format(S, 0))
+            decomposition.write((aL, aH), "{}{:03d}".format(s, 0))
+            while i < (N//x):
+                bL, bH = decomposition.read("{}{:03d}".format(S, x*i+x//2))
+                cL, cH = decomposition.read("{}{:03d}".format(S, x*i+x))
+                bH = self.__backward_butterfly(aL, aH, bL, bH, cL, cH, P)
+                decomposition.write((bL, bH), "{}{:03d}".format(s, x*i+x//2))
+                decomposition.write((cL, cH), "{}{:03d}".format(s, x*i+x))
+                aL, aH = cL, cH
+                i += 1
+            x //=2
+        
+    def forward_(prefix = "/tmp/", N = 5, K = 2):
+        '''A Motion Compensated Discrete Wavelet Transform.
+        Compute the MC 1D-DWT. The input video (as a sequence of images)
+        must be stored in disk (<input> directory) and the output (as a
+        sequence of DWT coefficients that are called decompositions) will be
+        stored in disk (<output> directory).
+        Arguments
+        ---------
+            prefix : str
+                Localization of the input/output images. Example:
+                "/tmp/".
+             N : int
+                Number of images to process.
+             K : int
+                Number of levels of the MCDWT (temporal scales). Controls
+                the GOP size. 
+                  K | GOP_size
+                ----+-----------
+                  0 |        1
+                  1 |        2
+                  2 |        4
+                  3 |        8
+                  4 |       16
+                  5 |       32
+                  : |        :
+        Returns
+        -------
+            None.
         '''
 
         # import ipdb; ipdb.set_trace()
@@ -241,41 +233,27 @@ class MCDWT:
                     i += 1
                 x *= 2
 
-    # Ignore
     def backward_(input = '/tmp/', output='/tmp/', N=5, S=2):
         '''A (Inverse) Motion Compensated Discrete Wavelet Transform.
-
         iMCDWT is the inverse transform of MCDWT. Inputs a sequence of
         decompositions and outputs a sequence of images.
-
         Arguments
         ---------
-
             input : str
-
                 Path where the input decompositions are. Example:
                 "../input/image".
-
             output : str
-
                 Path where the (inversely transformed) images will
                 be. Example: "../output/decomposition".
-
              N : int
-
                 Number of decompositions to process.
-
              S : int
-
                 Number of leves of the MCDWT (temporal scales). Controls
                 the GOP size. Examples: `l`=0 -> GOP_size = 1, `l`=1 ->
                 GOP_size = 2, `l`=2 -> GOP_size = 4. etc.
-
         Returns
         -------
-
             None.
-
         '''
 
         #import ipdb; ipdb.set_trace()
@@ -347,6 +325,9 @@ if __name__ == "__main__":
     parser.add_argument("-T",
                         help="Number of temporal levels", default=2, type=int)
 
+    parser.add_argument("-p",
+                        help="Predictor to use", default=1, type=int)
+
     args = parser.parse_args()
 
     if args.backward:
@@ -356,7 +337,7 @@ if __name__ == "__main__":
         p = decomposition.readL("{}000".format(args.mc_decompositions))
         d = MCDWT(p.shape)
 
-        d.backward(args.mc_decompositions, args.decompositions, args.N, args.T)
+        d.backward(args.mc_decompositions, args.decompositions, args.N, args.T, args.p)
     else:
         if __debug__:
             print("Forward transform")
@@ -364,4 +345,4 @@ if __name__ == "__main__":
         p = decomposition.readL("{}000".format(args.decompositions))
         d = MCDWT(p.shape)
 
-        p = d.forward(args.decompositions, args.mc_decompositions, args.N, args.T)
+p = d.forward(args.decompositions, args.mc_decompositions, args.N, args.T, args.p)
