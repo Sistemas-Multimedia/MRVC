@@ -50,8 +50,8 @@ class MCDWT:
             BLC = generate_prediction(CL, BL, CL)
             ELA = BL - BLA
             ELC = BL - BLC
-            SLA = 1/(1+ELA)
-            SLC = 1/(1+ELC)
+            SLA = 1/(1+abs(ELA))
+            SLC = 1/(1+abs(ELC))
             prediction_BH = (BHA * SLA + BHC * SLC) / (SLA+SLC)
 
         residue_BH = BH - prediction_BH
@@ -74,8 +74,8 @@ class MCDWT:
             BLC = generate_prediction(CL, BL, CL)
             ELA = BL - BLA
             ELC = BL - BLC
-            SLA = 1/(1+ELA)
-            SLC = 1/(1+ELC)
+            SLA = 1/(1+abs(ELA))
+            SLC = 1/(1+abs(ELC))
             prediction_BH = (BHA * SLA + BHC * SLC) / (SLA+SLC)
         BH = residue_BH + prediction_BH
         bH = self.dwt.forward(BH)
