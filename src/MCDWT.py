@@ -47,24 +47,29 @@ class MCDWT:
         CH = self.dwt.backward((self.zero_L, cH))
         BHA = generate_prediction(AL, BL, AH)
         BHC = generate_prediction(CL, BL, CH)
-        BLA = generate_prediction(AL, BL, AL)
-        BLC = generate_prediction(CL, BL, CL)
-        errorAL = BL - BLA
-        errorCL = BL - BLC
-        similarityAL = (1 / (1 + abs(errorAL))) 
-        similarityCL = (1 / (1 + abs(errorCL)))
-        # Prints the similarity from 0 to 1, 1 more similar similar , 0 very different, just for experiment
-        print("\nTotal similarity with AL = {}".format(np.divide(np.sum(similarityAL), similarityAL.size)))
-        print("Total similarity with CL = {}".format(np.divide(np.sum(similarityCL), similarityCL.size)))
 
-        prediction_BH = (( BHA*similarityAL + BHC*similarityCL) / (similarityAL+similarityCL))
+        if P == "False":
+            prediction_BH = (BHA + BHC)/2
 
-        if (np.divide(np.sum(similarityAL), similarityAL.size))>(np.divide(np.sum(similarityCL), similarityCL.size)):
-            print("Frame B is more similar to A")
-        else:
-            print("Frame B is more similar to C")
+        if P == "True":
+            BLA = generate_prediction(AL, BL, AL)
+            BLC = generate_prediction(CL, BL, CL)
+            errorAL = BL - BLA
+            errorCL = BL - BLC
+            similarityAL = (1 / (1 + abs(errorAL))) 
+            similarityCL = (1 / (1 + abs(errorCL)))
+            prediction_BH = ((BHA*similarityAL + BHC*similarityCL) / (similarityAL+similarityCL))
 
-
+            # Prints the similarity from 0 to 1, 1 more similar, 0 very different, just for experiment
+            if __debug__:
+                print("\nTotal similarity with AL = {}".format(np.divide(np.sum(similarityAL), similarityAL.size)))
+                print("Total similarity with CL = {}".format(np.divide(np.sum(similarityCL), similarityCL.size)))
+                
+                if (np.divide(np.sum(similarityAL), similarityAL.size))>(np.divide(np.sum(similarityCL), similarityCL.size)):
+                    print("Frame B is more similar to A")
+                else:
+                    print("Frame B is more similar to C")
+                
         residue_BH = BH - prediction_BH
         residue_bH = self.dwt.forward(residue_BH)
         return residue_bH[1]
@@ -78,13 +83,19 @@ class MCDWT:
         CH = self.dwt.backward((self.zero_L, cH))
         BHA = generate_prediction(AL, BL, AH)
         BHC = generate_prediction(CL, BL, CH)
-        BLA = generate_prediction(AL, BL, AL)
-        BLC = generate_prediction(CL, BL, CL)
-        errorAL = BL - BLA
-        errorCL = BL - BLC
-        similarityAL = (1 / (1 + abs(errorAL))) 
-        similarityCL = (1 / (1 + abs(errorCL)))
-        prediction_BH = (( BHA*similarityAL + BHC*similarityCL) / (similarityAL+similarityCL))
+
+        if P == "False":
+            prediction_BH = (BHA + BHC)/2
+
+        if P == "True":
+            BLA = generate_prediction(AL, BL, AL)
+            BLC = generate_prediction(CL, BL, CL)
+            errorAL = BL - BLA
+            errorCL = BL - BLC
+            similarityAL = (1 / (1 + abs(errorAL))) 
+            similarityCL = (1 / (1 + abs(errorCL)))
+            prediction_BH = (( BHA*similarityAL + BHC*similarityCL) / (similarityAL+similarityCL))
+
         BH = residue_BH + prediction_BH
         bH = self.dwt.forward(BH)
         return bH[1]
@@ -370,7 +381,15 @@ if __name__ == "__main__":
     parser.add_argument("-T",
                         help="Number of temporal levels", default=2, type=int)
 
+    parser.add_argument("-P",
+                        help="Improve prediction", default="False")
+
     args = parser.parse_args()
+
+    if args.P != None:
+        P = str(args.P)
+    else:
+        P = str(False)
 
     if args.backward:
         if __debug__:
