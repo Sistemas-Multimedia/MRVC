@@ -32,4 +32,7 @@ To check the entropy of the output generated, the show_statistics code is called
 
 2. for i in /tmp/mc_prediction_stockholm_*;do python3 ../tools/show_statistics.py  -i $i ;done; 
 
+The output of this commands are located in docs/issue3_stats_average.txt and issue3_stats_prediction.txt
+
+With the sequences of images used there isn't many differences in the entropy value. 
 
