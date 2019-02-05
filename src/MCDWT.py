@@ -46,46 +46,20 @@ class MCDWT:
         BH = self.dwt.backward((self.zero_L, bH))
         CH = self.dwt.backward((self.zero_L, cH))
         BHA = generate_prediction(AL, BL, AH)
-        #print("\n\nBanda BHA: shape: {}\n {}".format(BHA.shape,BHA))
         BHC = generate_prediction(CL, BL, CH)
-        #print("\n\nBanda BHC: Shape: {}\n {}".format(BHC.shape,BHC))
         BLA = generate_prediction(AL, BL, AL)
-        #print("\n\nBanda BLC: Shape: {}\n {}".format(BLA.shape,BLA))
         BLC = generate_prediction(CL, BL, CL)
-        #print("\n\nBanda BLC: Shape: {}\n {}".format(BLC.shape,BLC))
-
-        # Calculates the error
         errorAL = BL - BLA
-        #print("\nErrorAL:\n{}".format(errorAL))
         errorCL = BL - BLC
-        #print("\nErrorCL:\n{}".format(errorCL))
-        
-
-        # Calculates the similarity with frame A pixel by pixel
-        # for i in range(len(errorAL)):
-        #     for j in range (len(errorAL[i])):
-        #         for k in range(len(errorAL[i][j])):
-        #             similarityAL[i][j][k] = 1 / (1 + abs(errorAL[i][j][k]))
-        
-        # Similarity matrix
-        similarityAL = (1 / (abs(errorAL+1)))
-        similarityCL = (1 / (abs(errorCL+1)))
-        
-        
-        # Prints the similarity from 0 to 1, 1 more similar similar , 0 very different
-        print("\nTotal sum of Simliarity AL = {}".format(np.sum(similarityAL)))
-        print("Total similarity with AL = {}".format(np.divide(np.sum(similarityAL), similarityAL.size)))
-        print("\nTotal sum of Simliarity CL = {}".format(np.sum(similarityCL)))
+        similarityAL = (1 / (1 + abs(errorAL))) 
+        similarityCL = (1 / (1 + abs(errorCL)))
+        # Prints the similarity from 0 to 1, 1 more similar similar , 0 very different, just for experiment
+        print("\nTotal similarity with AL = {}".format(np.divide(np.sum(similarityAL), similarityAL.size)))
         print("Total similarity with CL = {}".format(np.divide(np.sum(similarityCL), similarityCL.size)))
 
-        # Modify here with a new prediction
-        #prediction_BH = (BHA + BHC) / 2
-        #prediction_BH = (( np.dot(BHA,similarityAL) + np.dot(BHC,similarityCL)) / (similarityAL+similarityCL))
         prediction_BH = (( BHA*similarityAL + BHC*similarityCL) / (similarityAL+similarityCL))
 
-        
-        #print("\nPrediction_BH:\n{}".format(prediction_BH))
-        if similarityAL.all()>similarityCL.all():
+        if (np.divide(np.sum(similarityAL), similarityAL.size))>(np.divide(np.sum(similarityCL), similarityCL.size)):
             print("Frame B is more similar to A")
         else:
             print("Frame B is more similar to C")
@@ -104,7 +78,13 @@ class MCDWT:
         CH = self.dwt.backward((self.zero_L, cH))
         BHA = generate_prediction(AL, BL, AH)
         BHC = generate_prediction(CL, BL, CH)
-        prediction_BH = (BHA + BHC) / 2
+        BLA = generate_prediction(AL, BL, AL)
+        BLC = generate_prediction(CL, BL, CL)
+        errorAL = BL - BLA
+        errorCL = BL - BLC
+        similarityAL = (1 / (1 + abs(errorAL))) 
+        similarityCL = (1 / (1 + abs(errorCL)))
+        prediction_BH = (( BHA*similarityAL + BHC*similarityCL) / (similarityAL+similarityCL))
         BH = residue_BH + prediction_BH
         bH = self.dwt.forward(BH)
         return bH[1]
