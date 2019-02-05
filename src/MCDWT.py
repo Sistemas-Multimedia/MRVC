@@ -382,7 +382,7 @@ if __name__ == "__main__":
                         help="Number of temporal levels", default=2, type=int)
 
     parser.add_argument("-P",
-                        help="Improve prediction", default="False")
+                        help="Improve prediction", default="True")
 
     args = parser.parse_args()
 
