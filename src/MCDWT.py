@@ -8,7 +8,7 @@
 #import cv2
 import numpy as np
 import sys
-
+import math  
 from DWT import DWT
 sys.path.insert(0, "..")
 from src.IO import image
@@ -47,9 +47,33 @@ class MCDWT:
         CH = self.dwt.backward((self.zero_L, cH))
         BHA = generate_prediction(AL, BL, AH)
         BHC = generate_prediction(CL, BL, CH)
-        prediction_BH = (BHA + BHC) / 2
+        
+        ########
+        BLA = generate_prediction(AL, BL, AL)
+        BLC = generate_prediction(CL, BL, CL)
+        ELA = BL - BLA
+        ELC = BL - BLC
+        try:
+           prediction_BH = ((BHA * ELC) + (BHC * ELA)) / (ELA + ELC)
+        except ZeroDivisionError:
+           prediction_BH = (BHA + BHC) / 2
+        #log (prediction_BH,10) = log(((BHA * ELC) + (BHC * ELA)) - log(ELA + ELC),10)
+        # prediction_BHL10 = math.log(((BHA * ELC) + (BHC * ELA)),
+        #                             10) - math.log((ELA + ELC), 10)
+        # prediction_BH=10 ** (prediction_BHL10)
         residue_BH = BH - prediction_BH
         residue_bH = self.dwt.forward(residue_BH)
+        ########
+
+        ### prediction_BH = (BHA + BHC) / 2
+        ### residue_BH = BH - prediction_BH
+        ### residue_bH = self.dwt.forward(residue_BH)
+
+
+
+        
+
+
         return residue_bH[1]
 
     def __backward_butterfly(self, aL, aH, bL, residue_bH, cL, cH):
