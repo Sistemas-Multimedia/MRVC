@@ -45,9 +45,14 @@ class MCDWT:
         AH = self.dwt.backward((self.zero_L, aH))
         BH = self.dwt.backward((self.zero_L, bH))
         CH = self.dwt.backward((self.zero_L, cH))
-        BHA = generate_prediction(AL, BL, AH)
+        EAL = BL - AL #BAL # ecuacion 2 necesaria para calcular EAL de la ecuacion 3
+        ECL = BL - CL #BCL # ecuacion 2 necesaria para calcular ECL de la ecuacion 3
+        BHA = generate_prediction(AL, BL, AL) # la ultima AH la he reemplazado por AL
         BHC = generate_prediction(CL, BL, CH)
-        prediction_BH = (BHA + BHC) / 2
+        # prediction_BH = (BHA + BHC) / 2 esta ecuacion la he reemplazado por las dos siguientes, es decir, SAL y SCL (ecuacion 3)
+        SAL = 1 / (1+(np.absolute(EAL)))
+        SCL = 1 / (1+(np.absolute(ECL)))
+        prediction_BH = (BHA*SAL+BHC*SCL) / (SAL+SCL) # ecuacion 4
         residue_BH = BH - prediction_BH
         residue_bH = self.dwt.forward(residue_BH)
         return residue_bH[1]
@@ -336,7 +341,7 @@ if __name__ == "__main__":
                         help="Performs backward transform")
 
     parser.add_argument("-d", "--decompositions",
-                        help="Sequence of decompositions", default="/tmp/stockholm_")
+                        help="Sequence of decompositions", default="/tmp/dwt/") # antes ponia: "/tmp/stockholm_"
 
     parser.add_argument("-m", "--mc_decompositions",
                         help="Sequence of motion compensated decompositions", default="/tmp/mc_stockholm_")
