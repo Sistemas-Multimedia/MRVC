@@ -47,39 +47,32 @@ class MCDWT:
         AH = self.dwt.backward((self.zero_L, aH))
         BH = self.dwt.backward((self.zero_L, bH))
         CH = self.dwt.backward((self.zero_L, cH))
+
         '''
         Cálculo BHA, BLA, BHC, BLC optimizado
         '''
-
         flow = motion_estimation(AL, BL)
         BHA = estimate_frame(AH, flow)
         BLA = estimate_frame(AL, flow)
         flow = motion_estimation(CL, BL)
         BHC = estimate_frame(CH, flow)
         BLC = estimate_frame(CL, flow)
-        '''
-        BHA = generate_prediction(AL, BL, AH)
-        BHC = generate_prediction(CL, BL, CH)
-        '''
-        '''prediction_BH = (BHA + BHC) / 2'''
-        '''
-        Nueva Predicción BH
-        '''
-        '''
-        BLA = generate_prediction(AL, BL, AL)
-        BLC = generate_prediction(CL, BL, CL)
-        '''
+     
+        if args.predictionerror == 2: 
+            ELA = BL - BLA
+            ELC = BL - BLC
+            '''Modificación para corregir la división por 0'''
+            SLA = 1 / (1+abs(ELA))
+            SLC = 1 / (1+abs(ELC))
+         
+            prediction_BH = (BHA*SLA + BHC*SLC)/(SLA + SLC)
 
-        ELA = BL - BLA
-        ELC = BL - BLC
-        if ((ELA + ELC).all == 0):
-            prediction_BH = BHA
+            '''
+            Fin Nueva Predicción BH
+            '''
         else:
-            prediction_BH = (BHA*ELC + BHC*ELA)/(ELA + ELC)
+            prediction_BH = (BHA + BHC) / 2
 
-        '''
-        Fin Nueva Predicción BH
-        '''
         residue_BH = BH - prediction_BH
         residue_bH = self.dwt.forward(residue_BH)
         return residue_bH[1]
@@ -91,9 +84,31 @@ class MCDWT:
         AH = self.dwt.backward((self.zero_L, aH))
         residue_BH = self.dwt.backward((self.zero_L, residue_bH))
         CH = self.dwt.backward((self.zero_L, cH))
-        BHA = generate_prediction(AL, BL, AH)
-        BHC = generate_prediction(CL, BL, CH)
-        prediction_BH = (BHA + BHC) / 2
+        
+        '''
+        Cálculo BHA, BLA, BHC, BLC optimizado
+        '''
+        flow = motion_estimation(AL, BL)
+        BHA = estimate_frame(AH, flow)
+        BLA = estimate_frame(AL, flow)
+        flow = motion_estimation(CL, BL)
+        BHC = estimate_frame(CH, flow)
+        BLC = estimate_frame(CL, flow)
+
+        if args.predictionerror == 2: 
+            ELA = BL - BLA
+            ELC = BL - BLC
+            '''Modificación corregir la división por 0'''
+            SLA = 1 / (1+abs(ELA))
+            SLC = 1 / (1+abs(ELC))
+         
+            prediction_BH = (BHA*SLA + BHC*SLC)/(SLA + SLC)
+
+            '''
+            Fin Nueva Predicción BH
+            '''
+        else:
+            prediction_BH = (BHA + BHC) / 2
         BH = residue_BH + prediction_BH
         bH = self.dwt.forward(BH)
         return bH[1]
@@ -379,7 +394,11 @@ if __name__ == "__main__":
     parser.add_argument("-T",
                         help="Number of temporal levels", default=2, type=int)
 
+    parser.add_argument("-e", "--predictionerror", default=1, type=int)  
+
     args = parser.parse_args()
+
+    
 
     if args.backward:
         if __debug__:
