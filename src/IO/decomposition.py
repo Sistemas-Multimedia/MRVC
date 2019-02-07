@@ -29,7 +29,7 @@ def readL(file_name):
             A color image, where each component is in the range [-32768, 32767].
 
     '''
-    fn = file_name + "_LL"
+    fn = os.path.dirname(file_name) + '/LL/' + os.path.basename(file_name)
     LL = cv2.imread(fn, -1)
     if LL is None:
         raise InputFileException('IO::decomposition:readL: {} not found'.format(fn))
@@ -50,7 +50,7 @@ def readL(file_name):
     return LL
 
 def readH(file_name):
-    fn = file_name + "_LH"
+    fn = os.path.dirname(file_name) + '/LH/' + os.path.basename(file_name)
     LH = cv2.imread(fn, -1)
     if LH is None:
         raise InputFileException('IO::decomposition:readH: {} not found'.format(fn))
@@ -64,7 +64,7 @@ def readH(file_name):
     if __debug__:
         cv2.imshow("IO::decomposition:readH: LH subband", normalize(LH))
 
-    fn = file_name + "_HL"
+    fn = os.path.dirname(file_name) + '/HL/' + os.path.basename(file_name)
     HL = cv2.imread(fn, -1)
     if HL is None:
         raise InputFileException('IO::decomposition:readH: {} not found'.format(fn))
@@ -78,7 +78,7 @@ def readH(file_name):
     if __debug__:
         cv2.imshow("IO::decomposition:readH: HL subband", normalize(HL))
 
-    fn = file_name + "_HH"
+    fn = os.path.dirname(file_name) + '/HH/' + os.path.basename(file_name)
     HH = cv2.imread(fn, -1)
     if HH is None:
         raise InputFileException('IO::decomposition:readH: {} not found'.format(fn))
@@ -149,10 +149,16 @@ def writeL(LL, file_name):
     LL = LL.astype(np.uint16)
     if __debug__:
         cv2.imshow("IO::decomposition:writeL: LL subband", normalize(LL))
-    cv2.imwrite(file_name + "_LL.png", LL)
-    os.rename(file_name + "_LL.png", file_name + "_LL")
+    path = os.path.dirname(file_name)
     if __debug__:
-        print("IO::decomposition:writeL: written {}".format(file_name + "_LL"))
+        print("File Path: {}".format(path))
+    path += '/LL/'
+    if not os.path.exists(path):
+        os.mkdir(path)
+    cv2.imwrite(path + os.path.basename(file_name) + ".png", LL)
+    os.rename(path + os.path.basename(file_name) + ".png", path + os.path.basename(file_name))
+    if __debug__:
+        print("IO::decomposition:writeL: written {}".format(path + os.path.basename(file_name)))
 
     if __debug__:
         while cv2.waitKey(1) & 0xFF != ord('q'):
@@ -179,30 +185,44 @@ def writeH(H, file_name):
     LH = LH.astype(np.uint16)
     if __debug__:
         cv2.imshow("IO::decomposition:writeH: LH subband", normalize(LH))
-    cv2.imwrite(file_name + "_LH.png", LH)
-    os.rename(file_name + "_LH.png", file_name + "_LH")
+    path = os.path.dirname(file_name)
     if __debug__:
-        print("IO::decomposition:writeH: written {}".format(file_name + "_LH"))
+        print("File Path: {}".format(path))
+    path += '/LH/'
+    if not os.path.exists(path):
+        os.mkdir(path)
+    cv2.imwrite(path + os.path.basename(file_name) + ".png", LH)
+    os.rename(path + os.path.basename(file_name) + ".png", path + os.path.basename(file_name))
+    if __debug__:
+        print("IO::decomposition:writeH: written {}".format(file_name))
 
     HL = H[1].astype(np.float32)
     HL += 32768.0
     HL = HL.astype(np.uint16)
     if __debug__:
         cv2.imshow("IO::decomposition:writeH: HL subband", normalize(HL))
-    cv2.imwrite(file_name + "_HL.png", HL)
-    os.rename(file_name + "_HL.png", file_name + "_HL")
+    path = os.path.dirname(file_name)
+    path += '/HL/'
+    if not os.path.exists(path):
+        os.mkdir(path)
+    cv2.imwrite(path + os.path.basename(file_name) + ".png", HL)
+    os.rename(path + os.path.basename(file_name) + ".png", path + os.path.basename(file_name))
     if __debug__:
-        print("IO::decomposition:writeH: written {}".format(file_name + "_HL"))
+        print("IO::decomposition:writeH: written {}".format(file_name))
 
     HH = H[2].astype(np.float32)
     HH += 32768.0
     HH = HH.astype(np.uint16)
     if __debug__:
         cv2.imshow("IO::decomposition:writeH: HH subband", normalize(HH))
-    cv2.imwrite(file_name + "_HH.png", HH)
-    os.rename(file_name + "_HH.png", file_name + "_HH")
+    path = os.path.dirname(file_name)
+    path += '/HH/'
+    if not os.path.exists(path):
+        os.mkdir(path)
+    cv2.imwrite(path + os.path.basename(file_name) + ".png", HH)
+    os.rename(path + os.path.basename(file_name) + ".png", path + os.path.basename(file_name))
     if __debug__:
-        print("IO::decomposition:writeH: written {}".format(file_name + "_HH"))
+        print("IO::decomposition:writeH: written {}".format(file_name))
 
     if __debug__:
         while cv2.waitKey(1) & 0xFF != ord('q'):
