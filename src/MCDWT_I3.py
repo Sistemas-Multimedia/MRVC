@@ -32,7 +32,7 @@ class MCDWT:
         self.zero_H = (self.zero_L, self.zero_L, self.zero_L)
         self.dwt = DWT()
 
-    def __forward_butterfly(self, aL, aH, bL, bH, cL, cH):
+    def __forward_butterfly(self, aL, aH, bL, bH, cL, cH, ACM):
         '''Motion compensated forward MCDWT butterfly.
 
         Input:
@@ -81,7 +81,7 @@ class MCDWT:
         bH = self.dwt.forward(BH)
         return bH[1]
 
-    def forward(self, s="/tmp/stockholm_", S="/tmp/mc_stockholm_", N=5, T=2):
+    def forward(self, s="/tmp/stockholm_", S="/tmp/mc_stockholm_", N=5, T=2,ACM):
         '''A Motion Compensated Discrete Wavelet Transform.
 
         Compute the MC 1D-DWT. The input video s (as a sequence of
@@ -132,7 +132,7 @@ class MCDWT:
                 bL, bH = decomposition.read(
                     "{}{:03d}".format(s, x * i + x // 2))
                 cL, cH = decomposition.read("{}{:03d}".format(s, x * i + x))
-                bH = self.__forward_butterfly(aL, aH, bL, bH, cL, cH)
+                bH = self.__forward_butterfly(aL, aH, bL, bH, cL, cH, ACM)
                 decomposition.write(
                     (bL, bH), "{}{:03d}".format(S, x * i + x // 2))
                 decomposition.write((cL, cH), "{}{:03d}".format(S, x * i + x))
@@ -140,7 +140,7 @@ class MCDWT:
                 i += 1
             x *= 2
 
-    def backward(self, S="/tmp/mc_stockholm_", s="/tmp/stockholm_", N=5, T=2):
+    def backward(self, S="/tmp/mc_stockholm_", s="/tmp/stockholm_", N=5, T=2,ACM):
         x = 2**T
         for t in range(T):  # Temporal scale
             i = 0
@@ -150,7 +150,7 @@ class MCDWT:
                 bL, bH = decomposition.read(
                     "{}{:03d}".format(S, x * i + x // 2))
                 cL, cH = decomposition.read("{}{:03d}".format(S, x * i + x))
-                bH = self.__backward_butterfly(aL, aH, bL, bH, cL, cH)
+                bH = self.__backward_butterfly(aL, aH, bL, bH, cL, cH,ACM)
                 decomposition.write(
                     (bL, bH), "{}{:03d}".format(s, x * i + x // 2))
                 decomposition.write((cL, cH), "{}{:03d}".format(s, x * i + x))
@@ -159,7 +159,7 @@ class MCDWT:
             x //= 2
 
     # Ignore
-    def forward_(prefix="/tmp/", N=5, K=2):
+    def forward_(prefix="/tmp/", N=5, K=2, ACM):
         '''A Motion Compensated Discrete Wavelet Transform.
 
         Compute the MC 1D-DWT. The input video (as a sequence of images)
@@ -276,7 +276,7 @@ class MCDWT:
                 x *= 2
 
     # Ignore
-    def backward_(input='/tmp/', output='/tmp/', N=5, S=2):
+    def backward_(input='/tmp/', output='/tmp/', N=5, S=2,ACM):
         '''A (Inverse) Motion Compensated Discrete Wavelet Transform.
 
         iMCDWT is the inverse transform of MCDWT. Inputs a sequence of
