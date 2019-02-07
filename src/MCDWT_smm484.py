@@ -58,20 +58,7 @@ class MCDWT:
         BHC = estimate_frame(CH, flow)
         BLC = estimate_frame(CL, flow)
      
-        if args.predictionerror == 2: 
-            ELA = BL - BLA
-            ELC = BL - BLC
-            '''Modificación para corregir la división por 0'''
-            SLA = 1 / (1+abs(ELA))
-            SLC = 1 / (1+abs(ELC))
-         
-            prediction_BH = (BHA*SLA + BHC*SLC)/(SLA + SLC)
-
-            '''
-            Fin Nueva Predicción BH
-            '''
-        else:
-            prediction_BH = (BHA + BHC) / 2
+        prediction_BH = definition.calcula_prediction()
 
         residue_BH = BH - prediction_BH
         residue_bH = self.dwt.forward(residue_BH)
@@ -95,20 +82,8 @@ class MCDWT:
         BHC = estimate_frame(CH, flow)
         BLC = estimate_frame(CL, flow)
 
-        if args.predictionerror == 2: 
-            ELA = BL - BLA
-            ELC = BL - BLC
-            '''Modificación corregir la división por 0'''
-            SLA = 1 / (1+abs(ELA))
-            SLC = 1 / (1+abs(ELC))
-         
-            prediction_BH = (BHA*SLA + BHC*SLC)/(SLA + SLC)
-
-            '''
-            Fin Nueva Predicción BH
-            '''
-        else:
-            prediction_BH = (BHA + BHC) / 2
+        prediction_BH = definition.calcula_prediction()
+        
         BH = residue_BH + prediction_BH
         bH = self.dwt.forward(BH)
         return bH[1]
@@ -394,11 +369,16 @@ if __name__ == "__main__":
     parser.add_argument("-T",
                         help="Number of temporal levels", default=2, type=int)
 
-    parser.add_argument("-e", "--predictionerror", default=1, type=int)  
+    parser.add_argument("-e", "--predictionerror", default=0, type=int)  
 
     args = parser.parse_args()
 
-    
+    if args.predictionerror == 0:
+        import definition_0 as definition
+        print("Imported definition_0")
+    else if arg.predictionerror == 1:
+        import definition_1 as definition
+        print("Imported definition_1")
 
     if args.backward:
         if __debug__:
@@ -416,3 +396,4 @@ if __name__ == "__main__":
         d = MCDWT(p.shape)
 
         p = d.forward(args.decompositions, args.mc_decompositions, args.N, args.T)
+

@@ -100,5 +100,41 @@ The objective of this issue has been to modify the MCDWT.py code to change the p
 
     	args = parser.parse_args()
 
+5. We modify the code to obtain a cleaner code
 
+definition_0.py
 
+	def calcula_prediction():
+    	prediction_BH = (BHA + BHC) / 2
+
+definition_1.py
+
+	def calcula_prediction():
+    	ELA = BL - BLA
+    	ELC = BL - BLC
+    	'''Modificación para corregir la división por 0'''
+    	SLA = 1 / (1+abs(ELA))
+    	SLC = 1 / (1+abs(ELC))
+         
+    	prediction_BH = (BHA*SLA + BHC*SLC)/(SLA + SLC)
+    	
+MCDWT_smm484.py
+	
+	...
+	
+	'''New prediction'''
+	prediction_BH = definition.calcula_prediction()
+	
+	...
+	
+	'''import according to parameter'''
+	parser.add_argument("-e", "--predictionerror", default=0, type=int)  
+	
+	...
+	
+	if args.predictionerror == 0:
+        import definition_0 as definition
+        print("Imported definition_0")
+    else
+        import definition_1 as definition
+        print("Imported definition_1")
