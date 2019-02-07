@@ -15,6 +15,15 @@ from src.IO import image
 from src.IO import decomposition
 from MC.optical.motion import generate_prediction
 
+code_option = 0
+
+
+if code_option != 0:
+    import bhc as definition
+    print("Imported definition_0")
+else:
+    import bhb as definition
+    print("Imported definition_1")
 
 class MCDWT:
 
@@ -46,9 +55,12 @@ class MCDWT:
         AH = self.dwt.backward((self.zero_L, aH))
         BH = self.dwt.backward((self.zero_L, bH))
         CH = self.dwt.backward((self.zero_L, cH))
-        BHA = generate_prediction(AL, BL, AH)
-        BHC = generate_prediction(CL, BL, CH)
-        prediction_BH = (BHA + BHC) / 2
+
+        #BHA = generate_prediction(AL, BL, AH)
+        #BHC = generate_prediction(CL, BL, CH)
+        #prediction_BH = (BHA + BHC) / 2
+        prediction_BH = definition.do_something(AL, BL, AH, CL,  CH)
+
         residue_BH = BH - prediction_BH
         residue_bH = self.dwt.forward(residue_BH)
         return residue_bH[1]
@@ -60,9 +72,11 @@ class MCDWT:
         AH = self.dwt.backward((self.zero_L, aH))
         residue_BH = self.dwt.backward((self.zero_L, residue_bH))
         CH = self.dwt.backward((self.zero_L, cH))
-        BHA = generate_prediction(AL, BL, AH)
-        BHC = generate_prediction(CL, BL, CH)
-        prediction_BH = (BHA + BHC) / 2
+        #BHA = generate_prediction(AL, BL, AH)
+        #BHC = generate_prediction(CL, BL, CH)
+        #prediction_BH = (BHA + BHC) / 2
+        prediction_BH = definition.do_something(AL, BL, AH, CL,  CH)
+
         BH = residue_BH + prediction_BH
         bH = self.dwt.forward(BH)
         return bH[1]
@@ -242,7 +256,9 @@ class MCDWT:
                     if __debug__:
                         image.write(BH, "{}{:03d}_{}".format(
                             prefix + "_BH_", x * i + x // 2, k))
-                    prediction = (BHA + BHC) / 2
+                    #prediction = (BHA + BHC) / 2
+                    prediction = definition.do_something(AL, BL, AH, CL,  CH)
+
                     if __debug__:
                         image.write(prediction, "{}{:03d}_{}".format(
                             prefix + "_prediction_", x * i + x // 2, k))
@@ -322,7 +338,9 @@ class MCDWT:
                 iw.write(C, x * i + x, output)
                 BHA = motion_compensation.motion_compensation(BL, AL, AH)
                 BHC = motion_compensation.motion_compensation(BL, CL, CH)
-                BH = rBH + (BHA + BHC) / 2
+                #BH = rBH + (BHA + BHC) / 2
+                prediction=definition.do_something(AL, BL, AH, CL,  CH)
+                BH=rBH + prediction
                 B = BL + BH
                 iw.write(B, x * i + x // 2, output)
                 AL = CL
@@ -366,6 +384,8 @@ if __name__ == "__main__":
     parser.add_argument("-T",
                         help="Number of temporal levels", default=2, type=int)
 
+    parser.add_argument(
+        "-AMC", help="Adaptive motion compensation based", default=0, type=int)
     args = parser.parse_args()
 
     if args.backward:
