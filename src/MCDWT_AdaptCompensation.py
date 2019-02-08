@@ -58,7 +58,7 @@ class MCDWT:
         BHC = estimate_frame(CH, flow)
         BLC = estimate_frame(CL, flow)
      
-        prediction_BH = definition.calcula_prediction()
+        prediction_BH = defprediction.calcula_prediction()
 
         residue_BH = BH - prediction_BH
         residue_bH = self.dwt.forward(residue_BH)
@@ -82,7 +82,7 @@ class MCDWT:
         BHC = estimate_frame(CH, flow)
         BLC = estimate_frame(CL, flow)
 
-        prediction_BH = definition.calcula_prediction()
+        prediction_BH = defprediction.calcula_prediction()
         
         BH = residue_BH + prediction_BH
         bH = self.dwt.forward(BH)
@@ -374,11 +374,11 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     if args.predictionerror == 0:
-        import definition_0 as definition
-        print("Imported definition_0")
-    else if arg.predictionerror == 1:
-        import definition_1 as definition
-        print("Imported definition_1")
+        import prediction_0 as defprediction
+        print("Imported prediction_0")
+    elif args.predictionerror == 1:
+        import prediction_1 as defprediction
+        print("Imported prediction_1")
 
     if args.backward:
         if __debug__:
