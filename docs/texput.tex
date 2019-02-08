@@ -409,7 +409,7 @@ In the previous implementation of the MCDWT bufferfly, both
 predictions $[b_a.H]$ and $[b_c.H]$ have the same weight to build the
 prediction
 \begin{equation}
-  \hat{[b_b.H]} = \frac{[b_a.H] + [b_c.H]}{2}.
+  \hat{[b.H]} = \frac{[b_a.H] + [b_c.H]}{2}.
 \end{equation}
 This simple computation, that can have very effective for example in
 \href{https://biteable.com/blog/tips/video-transitions-effects-examples/}{dissolves}
@@ -444,14 +444,14 @@ error is high, the similarity tends to be $0$.
 With this information, that can be recovered by the decoder, the
 improved prediction is defined as
 \begin{equation}
-  \hat{[b_b.H]} = \frac{[b_a.H][s_a.L]+[b_c.H][s_c.L]}{[s_a.L]+[s_c.L]}.
+  \hat{[b.H]} = \frac{[b_a.H][s_a.L]+[b_c.H][s_c.L]}{[s_a.L]+[s_c.L]}.
 \end{equation}
 
 Notice that, if (for example) $[s_a.L]_{x,y}=1$ and
 $[s_c.L]_{x,y}\approx 0$, then
-$\hat{[b_b.H]}_{x,y}\approx [b_a.H]_{x,y}$, and viceversa. If
+$\hat{[b.H]}_{x,y}\approx [b_a.H]_{x,y}$, and viceversa. If
 $[s_a.L]_{x,y}=[s_c.L]_{x,y}$, then
-$\hat{[b_b.H]}_{x,y}=\frac{[b_a.H]+[b_c.H]}{2}$ (even if both similarities are small).
+$\hat{[b.H]}_{x,y}=\frac{[b_a.H]+[b_c.H]}{2}$ (even if both similarities are small).
 
 \section{Orthogonal, orthonormal, and biorthogonal transforms}
 In signal processing\footnote{In mathemathics the definition of
