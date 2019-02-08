@@ -1,6 +1,8 @@
 # (Week 3) Adaptative motion compensation based on the distortion of the prediction error
 
-The objective of this issue has been to modify the MCDWT.py code to change the prediction based on the average [(BHA+BHC)/2] by the calculation based on the distortion of the prediction error [(BHA*ELC + BHC*ELA)/(ELA + ELC)], según [this](https://sistemas-multimedia.github.io/MCDWT/#x1-160006).
+The objective of this issue has been to modify the MCDWT.py code to change the prediction based on the average [(BHA+BHC)/2] by the calculation based on the distortion of the prediction error [(BHA·ELC + BHC·ELA)/(ELA + ELC)], según [this](https://sistemas-multimedia.github.io/MCDWT/#x1-160006).
+
+## Our experiments
 
 1. In our first tests, we modified the code to calculate the BLA and BLC bands and implement the new formula:
 
@@ -64,7 +66,7 @@ The objective of this issue has been to modify the MCDWT.py code to change the p
         SLC = 1 / (1+abs(ELC))
         prediction_BH = (BHA*SLA + BHC*SLC)/(SLA + SLC)
 
-4. Finally, we introduce a parameter to choose one or another prediction (1-average or 2-distortion):
+4. Finally, we introduce a parameter to choose one or another prediction (0-average or 1-distortion):
 
 		'''
         Cálculo BHA, BLA, BHC, BLC optimizado
@@ -76,7 +78,7 @@ The objective of this issue has been to modify the MCDWT.py code to change the p
         BHC = estimate_frame(CH, flow)
         BLC = estimate_frame(CL, flow)
 
-        if args.predictionerror == 2: 
+        if args.predictionerror == 1: 
             ELA = BL - BLA
             ELC = BL - BLC
             '''Modificación corregir la división por 0'''
@@ -102,13 +104,17 @@ The objective of this issue has been to modify the MCDWT.py code to change the p
 
 5. We modify the code to obtain a cleaner code
 
-definition_0.py
+**prediction_0.py**
 
 	def calcula_prediction():
     	prediction_BH = (BHA + BHC) / 2
+    	return prediction_BH
 
-definition_1.py
+**prediction_1.py**
 
+	from MC.optical.motion import motion_estimation
+	from MC.optical.motion import estimate_frame
+	
 	def calcula_prediction():
     	ELA = BL - BLA
     	ELC = BL - BLC
@@ -117,13 +123,14 @@ definition_1.py
     	SLC = 1 / (1+abs(ELC))
          
     	prediction_BH = (BHA*SLA + BHC*SLC)/(SLA + SLC)
+    	return prediction_BH
     	
-MCDWT_smm484.py
+**MCDWT_AdaptCompensation.py**
 	
 	...
 	
 	'''New prediction'''
-	prediction_BH = definition.calcula_prediction()
+	prediction_BH = defprediction.calcula_prediction()
 	
 	...
 	
@@ -132,9 +139,24 @@ MCDWT_smm484.py
 	
 	...
 	
-	if args.predictionerror == 0:
-        import definition_0 as definition
-        print("Imported definition_0")
-    else
-        import definition_1 as definition
-        print("Imported definition_1")
+    if args.predictionerror == 0:
+        import prediction_0 as defprediction
+        print("Imported prediction_0")
+    elif args.predictionerror == 1:
+        import prediction_1 as defprediction
+        print("Imported prediction_1")
+ 
+        
+## Our test
+
+### New parameter to use:
+**-e 0** -->	to make the prediction by the average
+
+**-e 1** -->	to make the prediction by compensation
+### Example:
+	python3 -O ./MDWT.py -i ../sequences/stockholm/ -d /tmp/stockholm_
+	MCDWT_AdaptCompensation.py -d /tmp/stockholm_ -m /tmp/mc_stockholm_ -e 0 
+	MCDWT_AdaptCompensation.py -d /tmp/stockholm_ -m /tmp/mc_stockholm_ -e 1
+
+
+ 
