@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python
 
 # import cv2
 # import numpy as np
@@ -15,6 +15,7 @@ from src.IO import image
 from src.IO import decomposition
 from MC.optical.motion import generate_prediction
 
+
 class MCDWT:
 
     def __init__(self, shape):
@@ -24,19 +25,14 @@ class MCDWT:
 
     def __forward_butterfly(self, aL, aH, bL, bH, cL, cH):
         '''Motion compensated forward MCDWT butterfly.
-
         Input:
         -----
-
         aL, aH, bL, bH, cL, cH: array[y, x, component], the decomposition of
         the images a, b and c.
-
         Output:
         ------
-
         residue_bH: array[y, x, component], the base of the decomposition of
         the residue fot the image b.
-
         '''
 
         AL = self.dwt.backward((aL, self.zero_H))
@@ -45,14 +41,9 @@ class MCDWT:
         AH = self.dwt.backward((self.zero_L, aH))
         BH = self.dwt.backward((self.zero_L, bH))
         CH = self.dwt.backward((self.zero_L, cH))
-        EAL = BL - AL #BAL # ecuacion 2 necesaria para calcular EAL de la ecuacion 3
-        ECL = BL - CL #BCL # ecuacion 2 necesaria para calcular ECL de la ecuacion 3
-        BHA = generate_prediction(AL, BL, AL) # la ultima AH la he reemplazado por AL
-        BHC = generate_prediction(CL, BL, CH)
-        # prediction_BH = (BHA + BHC) / 2 esta ecuacion la he reemplazado por las dos siguientes, es decir, SAL y SCL (ecuacion 3)
-        SAL = 1 / (1+(np.absolute(EAL)))
-        SCL = 1 / (1+(np.absolute(ECL)))
-        prediction_BH = (BHA*SAL+BHC*SCL) / (SAL+SCL) # ecuacion 4
+
+        prediction_BH  = prediction.predice(AL, BL, CL, AH, CH)
+
         residue_BH = BH - prediction_BH
         residue_bH = self.dwt.forward(residue_BH)
         return residue_bH[1]
@@ -64,37 +55,29 @@ class MCDWT:
         AH = self.dwt.backward((self.zero_L, aH))
         residue_BH = self.dwt.backward((self.zero_L, residue_bH))
         CH = self.dwt.backward((self.zero_L, cH))
-        BHA = generate_prediction(AL, BL, AH)
-        BHC = generate_prediction(CL, BL, CH)
-        prediction_BH = (BHA + BHC) / 2
+
+        prediction_BH  = prediction.predice(AL, BL, CL, AH, CH)
+
         BH = residue_BH + prediction_BH
         bH = self.dwt.forward(BH)
         return bH[1]
 
     def forward(self, s="/tmp/stockholm_", S="/tmp/mc_stockholm_", N=5, T=2):
         '''A Motion Compensated Discrete Wavelet Transform.
-
         Compute the MC 1D-DWT. The input video s (as a sequence of
         1-levels decompositions) must be stored in disk and the output (as a
         1-levels MC decompositions) will be stored in S.
-
         Imput:
         -----
-
-            prefix : s
-
-                Localization of the input images. Example: "/tmp/stockholm_".
-
+            prefix : str
+                Localization of the input/output images. Example:
+                "/tmp/".
              N : int
-
                 Number of images to process.
-
-             T : int
-
+             K : int
                 Number of levels of the MCDWT (temporal scales). Controls
                 the GOP size.
-
-                  T | GOP_size
+                  K | GOP_size
                 ----+-----------
                   0 |        1
                   1 |        2
@@ -103,15 +86,13 @@ class MCDWT:
                   4 |       16
                   5 |       32
                   : |        :
-
+             P : int
+                Predictor to use.
+                 1 --> Simple Average Predictor.
+                 2 --> Weighted Average Predictor.
         Returns
         -------
-
-            prefix : S
-
-                Localization of the output decompositions. For example:
-                "/tmp/mc_stockholm_".
-
+            None.
         '''
         x = 2
         for t in range(T): # Temporal scale
@@ -143,33 +124,23 @@ class MCDWT:
                 aL, aH = cL, cH
                 i += 1
             x //=2
-
     # Ignore
     def forward_(prefix = "/tmp/", N = 5, K = 2):
         '''A Motion Compensated Discrete Wavelet Transform.
-
         Compute the MC 1D-DWT. The input video (as a sequence of images)
         must be stored in disk (<input> directory) and the output (as a
         sequence of DWT coefficients that are called decompositions) will be
         stored in disk (<output> directory).
-
         Arguments
         ---------
-
             prefix : str
-
                 Localization of the input/output images. Example:
                 "/tmp/".
-
              N : int
-
                 Number of images to process.
-
              K : int
-
                 Number of levels of the MCDWT (temporal scales). Controls
                 the GOP size. 
-
                   K | GOP_size
                 ----+-----------
                   0 |        1
@@ -179,12 +150,9 @@ class MCDWT:
                   4 |       16
                   5 |       32
                   : |        :
-
         Returns
         -------
-
             None.
-
         '''
 
         # import ipdb; ipdb.set_trace()
@@ -245,42 +213,28 @@ class MCDWT:
                     AH = CH
                     i += 1
                 x *= 2
-
     # Ignore
     def backward_(input = '/tmp/', output='/tmp/', N=5, S=2):
         '''A (Inverse) Motion Compensated Discrete Wavelet Transform.
-
         iMCDWT is the inverse transform of MCDWT. Inputs a sequence of
         decompositions and outputs a sequence of images.
-
         Arguments
         ---------
-
             input : str
-
                 Path where the input decompositions are. Example:
                 "../input/image".
-
             output : str
-
                 Path where the (inversely transformed) images will
                 be. Example: "../output/decomposition".
-
              N : int
-
                 Number of decompositions to process.
-
              S : int
-
                 Number of leves of the MCDWT (temporal scales). Controls
                 the GOP size. Examples: `l`=0 -> GOP_size = 1, `l`=1 ->
                 GOP_size = 2, `l`=2 -> GOP_size = 4. etc.
-
         Returns
         -------
-
             None.
-
         '''
 
         #import ipdb; ipdb.set_trace()
@@ -341,7 +295,7 @@ if __name__ == "__main__":
                         help="Performs backward transform")
 
     parser.add_argument("-d", "--decompositions",
-                        help="Sequence of decompositions", default="/tmp/dwt/") # antes ponia: "/tmp/stockholm_"
+                        help="Sequence of decompositions", default="/tmp/stockholm_")
 
     parser.add_argument("-m", "--mc_decompositions",
                         help="Sequence of motion compensated decompositions", default="/tmp/mc_stockholm_")
@@ -352,7 +306,15 @@ if __name__ == "__main__":
     parser.add_argument("-T",
                         help="Number of temporal levels", default=2, type=int)
 
+    parser.add_argument("-P",
+                        help="Predictor to use", default=1, type=int)
+
     args = parser.parse_args()
+
+    if args.P == 1:
+        import simpleAverage as prediction
+    else:
+        import weightedAverage as prediction
 
     if args.backward:
         if __debug__:
@@ -369,4 +331,4 @@ if __name__ == "__main__":
         p = decomposition.readL("{}000".format(args.decompositions))
         d = MCDWT(p.shape)
 
-        p = d.forward(args.decompositions, args.mc_decompositions, args.N, args.T)
+p = d.forward(args.decompositions, args.mc_decompositions, args.N, args.T)
