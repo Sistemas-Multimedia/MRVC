@@ -436,6 +436,7 @@ Now, we define the similarity matrices as
     {[s_a.L]} = \frac{1}{1+{|[e_a.L]|}}\\
     {[s_c.L]} = \frac{1}{1+{|[e_c.L]|}}.    
   \end{array}
+  \label{eq:weighted_prediction}
 \end{equation}
 Notice that, if (for example) the error $[e_a.L]_{x,y}=0$, the
 similarity is $[s_a.L]_{x,y}=1$ (the maximum similarity), and if the
@@ -444,7 +445,7 @@ error is high, the similarity tends to be $0$.
 With this information, that can be recovered by the decoder, the
 improved prediction is defined as
 \begin{equation}
-  \hat{[b.H]} = \frac{[b_a.H][s_a.L]+[b_c.H][s_c.L]}{[s_a.L]+[s_c.L]}.
+  \hat{[b.H]} = \frac{[b_a.H][s_a.L]+[s_c.L][b_c.H]}{[s_a.L]+[s_c.L]}.
 \end{equation}
 
 Notice that, if (for example) $[s_a.L]_{x,y}=1$ and
@@ -528,3 +529,34 @@ To compute the subband gains we have two options:
 
 This computation can be also applied to MCDWT, by computing the subband
 gains as a function of the number $T$ of temporal decompositions.
+
+\begin{comment}
+
+\section{Progressive reconstruction}
+The forward bufferfly should reduce the energy of subband $b.H$$ after
+substracting a prediction (see Eq.~\ref{eq:weighted_prediction}) which
+is generated using the subbands $a.H$ and $c.H$ as references. If the
+prediction is good, the energy of $\tilde{b.H}$ will be small and
+viceversa. If the prediction is good, the quantization of the subbands
+$a.H$, $b.h$ and $c.H$ should leave more energy in the subbands $a.H$
+and $c.H$ than in $b.H$. Therefore, if the prediction is good, the
+progressive reconstruction of the subbands (using a progressively
+small quantization step) should reconstruct first the information of
+$a.H$ and $c.H$.
+
+\section{Coefficients encoding}
+Subband $\tilde{b.H}$ is not used any more as a reference and
+therefore, it can be compressed. The compression algorithm sort the
+coefficients of $\tilde{b.H}$ by the amplitude of $\tilde{b.L}$,
+considering that the prediction error will affect in the same way the
+low and the high frequencies of $b$. Then, the sorted coefficients are
+DPCM encoded, quantized, and entropy compressed.
+
+\section{Multilevel MCLT}
+The distance between images $a$, $b$ and $c$ should decrease the
+efficiency of the predictions, generating more energy in the
+low-frequency subbands. Therefore, the quantization when $T>1$ should
+transmit more information of the low-frequency subbands than of the
+high-frequency ones.
+
+\end{comment}
