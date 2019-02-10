@@ -6,19 +6,16 @@ def predice(AL, BL, CL, AH, CH):
     if __debug__:
         print("Weighted Average Prediction")
 
-    flow = motion_estimation(AL, BL)
-    flow = motion_estimation(CL, BL)
+    flow_AL_BL = motion_estimation(AL, BL)
+    flow_CL_BL = motion_estimation(CL, BL)
         
-    BHC = estimate_frame(CH, flow)
-    BLC = estimate_frame(CL, flow)
+    BAH = estimate_frame(AH, flow_AL_BL)
+    BCH = estimate_frame(CH, flow_CL_BL)
+    BAL = estimate_frame(AL, flow_AL_BL)
+    BCL = estimate_frame(CL, flow_CL_BL)
+    EAL = BL - BAL
+    ECL = BL - BCL
+    SAL = 1/(1+abs(EAL))
+    SCL = 1/(1+abs(ECL))
 
-    BHA = estimate_frame(AH, flow)
-    BLA = estimate_frame(AL, flow)
-
-    ELA = BL - BLA
-    ELC = BL - BLC
-    SLA = 1/(1+abs(ELA))
-    SLC = 1/(1+abs(ELC))
-
-
-    return (BHA * SLA + BHC * SLC) / (SLA+SLC)
+    return (BAH*SAL+BCH*SCL)/(SAL+SCL)
