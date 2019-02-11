@@ -410,7 +410,7 @@ As can be seen in the MCDWT bufferfly (see
 Fig.~\ref{fig:forward_butterfly}), both predictions $[b_a.H]$ and
 $[b_c.H]$ have the same weight to build the prediction
 \begin{equation}
-  \hat{[b.H]} = \frac{[b_a.H] + [b_c.H]}{2}.
+  [\hat{b.H}] = \frac{[b_a.H] + [b_c.H]}{2}.
 \end{equation}
 This simple computation, that can have very effective for example in
 \href{https://biteable.com/blog/tips/video-transitions-effects-examples/}{dissolves}
@@ -446,14 +446,14 @@ error is high, the similarity tends to be $0$.
 With this information, that can be recovered by the decoder, the
 improved prediction is defined as
 \begin{equation}
-  \hat{[b.H]} = \frac{[b_a.H][s_a.L]+[s_c.L][b_c.H]}{[s_a.L]+[s_c.L]}.
+  [\hat{b.H}] = \frac{[b_a.H][s_a.L]+[s_c.L][b_c.H]}{[s_a.L]+[s_c.L]}.
 \end{equation}
 
 Notice that, if (for example) $[s_a.L]_{x,y}=1$ and
 $[s_c.L]_{x,y}\approx 0$, then
-$\hat{[b.H]}_{x,y}\approx [b_a.H]_{x,y}$, and viceversa. If
+$[\hat{b.H}]_{x,y}\approx [b_a.H]_{x,y}$, and viceversa. If
 $[s_a.L]_{x,y}=[s_c.L]_{x,y}$, then
-$\hat{[b.H]}_{x,y}=\frac{[b_a.H]+[b_c.H]}{2}$ (even if both similarities are small).
+$[\hat{b.H}]_{x,y}=\frac{[b_a.H]+[b_c.H]}{2}$ (even if both similarities are small).
 
 \lstinputlisting[firstline=4, lastline=15, language=python, caption={weighted\_average.py (extract)}]{../src/weighted_average.py}
 
@@ -543,29 +543,37 @@ GOP.
 
 To compress the $\tilde{b.H}$ subbands, the following algorithm can be
 used:
-\begin{itemize}
+\begin{enumerate}
 \item [1.] Compute the prediction error for the $[b.L]$ subband
 \begin{equation}
   [\tilde{b.L}] = [b.L] - [\hat{b.L}]
 \end{equation}
 where
 \begin{equation}
-  [\hat{b.L}] = = \frac{[b_a.L][s_a.L]+[s_c.L][b_c.L]}{[s_a.L]+[s_c.L]}.
+  [\hat{b.L}] = \frac{[b_a.L][s_a.L]+[s_c.L][b_c.L]}{[s_a.L]+[s_c.L]}.
 \end{equation}
 
-\item [2.] Compute 2D-DWT([\hat{b.L}]).
-
-\item [3.] $\lambda=1024$.
-
-\item [4.] For each coefficients $x,y$ in $[\hat{b.L}].H$:
-  \begin{itemize}
-  \item [a.] If $(\hat{b.H}_{x,y}$ then send $\mathtt{sign}(\hat{b.H}_{x,y})$. Send $(\hat{b.H}_{x,y} \mathtt{AND} \lambda)/\lambda$. If
-    it is the first time that a 1 has been sent for this coefficient,
-    send also its sign previously.
-  \end{itemize}
-\item [5.] $\labmda /= 2$.
-\item [6.] Goto step 4.
-\end{itemize}
+\item [2.] Compute $\tilde{b}=\text{2D-DWT}([\tilde{b.L}])$.
+\item [3.] For each coefficient $x,y$ in $\tilde{b}.L$:
+  \begin{enumerate}
+  \item [a.] $d_{i=x\times b.\text{rows}+y} = (\text{abs}(\tilde{b}_{x,y}, x, y)$
+  \end{enumerate}
+\item [4.] Sort $d$ in desceding order by field 0 /* amplitude */.
+\item [5.] $\lambda_0 = \lambda = 1 <<
+  \text{int}(\log_2(\text{abs}(d_{0})))$ /* maximum */.
+\item [6.] For each coefficient $i$ in $d$:
+  \begin{enumerate}
+  \item [a.] $x,y = d_i[1:2]$.
+  \item [b.] If any of
+    $1<<\text{int}(\log_2(\tilde{b.H}_{x,y}))==\lambda_0$ then send
+    $\text{sign}(\tilde{b.H}_{x,y})$ for the three (LH, HL and HH)
+    subbands.
+  \item [b.] Send $(\hat{b.H}_{x,y} \text{and} \lambda)/\lambda$ for
+    the three (LH, HL and HH) subbands.
+  \end{enumerate}
+\item [7.] $\lambda >>= 1$.
+\item [8.] Goto step 6.
+\end{enumerate}
 
 \begin{comment}
 

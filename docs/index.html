@@ -64,12 +64,14 @@ href="#x1-150005.5" id="QQ2-1-24">Example</a></span>
 href="#x1-160006" id="QQ2-1-25">Adaptive motion compensation based on the distortion of the prediction error</a></span>
 <br />   <span class="sectionToc" >7 <a 
 href="#x1-170007" id="QQ2-1-27">Orthogonal, orthonormal, and biorthogonal transforms</a></span>
+<br />   <span class="sectionToc" >8 <a 
+href="#x1-180008" id="QQ2-1-28">Encoding</a></span>
    </div>
-<!--l. 13--><p class="noindent" >
-</p>
                                                                   
 
                                                                   
+<!--l. 13--><p class="noindent" >
+</p>
    <h3 class="sectionHead"><span class="titlemark">1   </span> <a 
  id="x1-20001"></a>Intro</h3>
 <!--l. 15--><p class="noindent" ><a 
@@ -2094,6 +2096,9 @@ class="ectt-1000"> </span><span
 class="ectt-1000">image</span>
    
    </div>
+                                                                  
+
+                                                                  
 <!--l. 67--><p class="indent" >   The multilevel DWT is a recursive use of the (1-level) DWT applied to the
 <!--l. 68--><math 
  xmlns="http://www.w3.org/1998/Math/MathML"  
@@ -2104,9 +2109,6 @@ the DWT is applied <!--l. 68--><math
  xmlns="http://www.w3.org/1998/Math/MathML"  
 display="inline" ><mi 
 >k</mi></math>-times
-                                                                  
-
-                                                                  
 to the <!--l. 69--><math 
  xmlns="http://www.w3.org/1998/Math/MathML"  
 display="inline" ><mi 
@@ -6405,15 +6407,15 @@ the same weight to build the prediction </p><table class="equation"><tr><td> <a
 <!--l. 412--><math 
  xmlns="http://www.w3.org/1998/Math/MathML"  
 display="block" class="equation">
-                      <mover 
+                      <mrow ><mo 
+class="MathClass-open">[</mo><mrow><mover 
 accent="true"><mrow 
-><mrow ><mo 
-class="MathClass-open">[</mo><mrow><mi 
+><mi 
 >b</mi><mo 
 class="MathClass-punc">.</mo><mi 
 >H</mi></mrow><mo 
-class="MathClass-close">]</mo></mrow></mrow><mo 
-class="MathClass-op">̂</mo></mover> <mo 
+class="MathClass-op">̂</mo></mover></mrow><mo 
+class="MathClass-close">]</mo></mrow> <mo 
 class="MathClass-rel">=</mo> <mfrac><mrow 
 ><mrow ><mo 
 class="MathClass-open">[</mo><mrow><msub><mrow 
@@ -6705,15 +6707,15 @@ prediction is deﬁned as </p><table class="equation"><tr><td> <a
 <!--l. 448--><math 
  xmlns="http://www.w3.org/1998/Math/MathML"  
 display="block" class="equation">
-                  <mover 
+                  <mrow ><mo 
+class="MathClass-open">[</mo><mrow><mover 
 accent="true"><mrow 
-><mrow ><mo 
-class="MathClass-open">[</mo><mrow><mi 
+><mi 
 >b</mi><mo 
 class="MathClass-punc">.</mo><mi 
 >H</mi></mrow><mo 
-class="MathClass-close">]</mo></mrow></mrow><mo 
-class="MathClass-op">̂</mo></mover> <mo 
+class="MathClass-op">̂</mo></mover></mrow><mo 
+class="MathClass-close">]</mo></mrow> <mo 
 class="MathClass-rel">=</mo> <mfrac><mrow 
 ><mrow ><mo 
 class="MathClass-open">[</mo><mrow><msub><mrow 
@@ -6817,15 +6819,15 @@ class="MathClass-rel">≈</mo> <mn>0</mn></math>, then
 <!--l. 454--><math 
  xmlns="http://www.w3.org/1998/Math/MathML"  
 display="inline" ><msub><mrow 
-><mover 
-accent="true"><mrow 
 ><mrow ><mo 
-class="MathClass-open">[</mo><mrow><mi 
+class="MathClass-open">[</mo><mrow><mover 
+accent="true"><mrow 
+><mi 
 >b</mi><mo 
 class="MathClass-punc">.</mo><mi 
 >H</mi></mrow><mo 
-class="MathClass-close">]</mo></mrow></mrow><mo 
-class="MathClass-op">̂</mo></mover></mrow><mrow 
+class="MathClass-op">̂</mo></mover></mrow><mo 
+class="MathClass-close">]</mo></mrow></mrow><mrow 
 ><mi 
 >x</mi><mo 
 class="MathClass-punc">,</mo><mi 
@@ -6884,15 +6886,15 @@ class="MathClass-punc">,</mo><mi
 then <!--l. 456--><math 
  xmlns="http://www.w3.org/1998/Math/MathML"  
 display="inline" ><msub><mrow 
-><mover 
-accent="true"><mrow 
 ><mrow ><mo 
-class="MathClass-open">[</mo><mrow><mi 
+class="MathClass-open">[</mo><mrow><mover 
+accent="true"><mrow 
+><mi 
 >b</mi><mo 
 class="MathClass-punc">.</mo><mi 
 >H</mi></mrow><mo 
-class="MathClass-close">]</mo></mrow></mrow><mo 
-class="MathClass-op">̂</mo></mover></mrow><mrow 
+class="MathClass-op">̂</mo></mover></mrow><mo 
+class="MathClass-close">]</mo></mrow></mrow><mrow 
 ><mi 
 >x</mi><mo 
 class="MathClass-punc">,</mo><mi 
@@ -7262,6 +7264,384 @@ display="inline" ><mi
 >T</mi></math>
 of temporal decompositions.
 </p>
+   <h3 class="sectionHead"><span class="titlemark">8   </span> <a 
+ id="x1-180008"></a>Encoding</h3>
+<!--l. 537--><p class="noindent" >The subband <!--l. 537--><math 
+ xmlns="http://www.w3.org/1998/Math/MathML"  
+display="inline" ><mover 
+accent="true"><mrow 
+><mi 
+>b</mi><mo 
+class="MathClass-punc">.</mo><mi 
+>H</mi></mrow><mo 
+class="MathClass-op">̃</mo></mover></math>
+is no longer needed for applying the butterﬂy to diﬀerent decompositions and scales.
+For this reason, we can compress this subband. As a result, after using the
+butterﬂy to all the decompositions of the sequence and all the scales, all the
+<!--l. 540--><math 
+ xmlns="http://www.w3.org/1998/Math/MathML"  
+display="inline" ><mi 
+>H</mi></math>
+subbands will be compressed, excepting the intra-coded image of each GOP.
+</p><!--l. 544--><p class="indent" >   To compress the <!--l. 544--><math 
+ xmlns="http://www.w3.org/1998/Math/MathML"  
+display="inline" ><mover 
+accent="true"><mrow 
+><mi 
+>b</mi><mo 
+class="MathClass-punc">.</mo><mi 
+>H</mi></mrow><mo 
+class="MathClass-op">̃</mo></mover></math>
+subbands, the following algorithm can be used:
+     </p><ol  class="enumerate1" >
+     <li 
+  class="enumerate" id="x1-18001x8">Compute the prediction error for the
+     <!--l. 547--><math 
+ xmlns="http://www.w3.org/1998/Math/MathML"  
+display="inline" ><mrow ><mo 
+class="MathClass-open">[</mo><mrow><mi 
+>b</mi><mo 
+class="MathClass-punc">.</mo><mi 
+>L</mi></mrow><mo 
+class="MathClass-close">]</mo></mrow></math>
+     subband <table class="equation"><tr><td> <a 
+ id="x1-18002r6"></a>
+                                                                  
+
+                                                                  
+     <!--l. 548--><math 
+ xmlns="http://www.w3.org/1998/Math/MathML"  
+display="block" class="equation">
+                                     <mrow ><mo 
+class="MathClass-open">[</mo><mrow><mover 
+accent="true"><mrow 
+><mi 
+>b</mi><mo 
+class="MathClass-punc">.</mo><mi 
+>L</mi></mrow><mo 
+class="MathClass-op">̃</mo></mover></mrow><mo 
+class="MathClass-close">]</mo></mrow> <mo 
+class="MathClass-rel">=</mo> <mrow ><mo 
+class="MathClass-open">[</mo><mrow><mi 
+>b</mi><mo 
+class="MathClass-punc">.</mo><mi 
+>L</mi></mrow><mo 
+class="MathClass-close">]</mo></mrow> <mo 
+class="MathClass-bin">−</mo> <mrow ><mo 
+class="MathClass-open">[</mo><mrow><mover 
+accent="true"><mrow 
+><mi 
+>b</mi><mo 
+class="MathClass-punc">.</mo><mi 
+>L</mi></mrow><mo 
+class="MathClass-op">̂</mo></mover></mrow><mo 
+class="MathClass-close">]</mo></mrow>
+</math></td><td class="eq-no">(6)</td></tr></table>
+     <!--l. 551--><p class="noindent" >where </p><table class="equation"><tr><td> <a 
+ id="x1-18003r7"></a>
+     <!--l. 552--><math 
+ xmlns="http://www.w3.org/1998/Math/MathML"  
+display="block" class="equation">
+                             <mrow ><mo 
+class="MathClass-open">[</mo><mrow><mover 
+accent="true"><mrow 
+><mi 
+>b</mi><mo 
+class="MathClass-punc">.</mo><mi 
+>L</mi></mrow><mo 
+class="MathClass-op">̂</mo></mover></mrow><mo 
+class="MathClass-close">]</mo></mrow> <mo 
+class="MathClass-rel">=</mo> <mfrac><mrow 
+><mrow ><mo 
+class="MathClass-open">[</mo><mrow><msub><mrow 
+><mi 
+>b</mi></mrow><mrow 
+><mi 
+>a</mi></mrow></msub 
+><mo 
+class="MathClass-punc">.</mo><mi 
+>L</mi></mrow><mo 
+class="MathClass-close">]</mo></mrow><mrow ><mo 
+class="MathClass-open">[</mo><mrow><msub><mrow 
+><mi 
+>s</mi></mrow><mrow 
+><mi 
+>a</mi></mrow></msub 
+><mo 
+class="MathClass-punc">.</mo><mi 
+>L</mi></mrow><mo 
+class="MathClass-close">]</mo></mrow> <mo 
+class="MathClass-bin">+</mo> <mrow ><mo 
+class="MathClass-open">[</mo><mrow><msub><mrow 
+><mi 
+>s</mi></mrow><mrow 
+><mi 
+>c</mi></mrow></msub 
+><mo 
+class="MathClass-punc">.</mo><mi 
+>L</mi></mrow><mo 
+class="MathClass-close">]</mo></mrow><mrow ><mo 
+class="MathClass-open">[</mo><mrow><msub><mrow 
+><mi 
+>b</mi></mrow><mrow 
+><mi 
+>c</mi></mrow></msub 
+><mo 
+class="MathClass-punc">.</mo><mi 
+>L</mi></mrow><mo 
+class="MathClass-close">]</mo></mrow></mrow> 
+       <mrow 
+><mrow ><mo 
+class="MathClass-open">[</mo><mrow><msub><mrow 
+><mi 
+>s</mi></mrow><mrow 
+><mi 
+>a</mi></mrow></msub 
+><mo 
+class="MathClass-punc">.</mo><mi 
+>L</mi></mrow><mo 
+class="MathClass-close">]</mo></mrow> <mo 
+class="MathClass-bin">+</mo> <mrow ><mo 
+class="MathClass-open">[</mo><mrow><msub><mrow 
+><mi 
+>s</mi></mrow><mrow 
+><mi 
+>c</mi></mrow></msub 
+><mo 
+class="MathClass-punc">.</mo><mi 
+>L</mi></mrow><mo 
+class="MathClass-close">]</mo></mrow></mrow></mfrac>        <mo 
+class="MathClass-punc">.</mo>
+</math></td><td class="eq-no">(7)</td></tr></table>
+     </li>
+     <li 
+  class="enumerate" id="x1-18004x8">Compute <!--l. 556--><math 
+ xmlns="http://www.w3.org/1998/Math/MathML"  
+display="inline" ><mover 
+accent="true"><mrow 
+><mi 
+>b</mi></mrow><mo 
+class="MathClass-op">̃</mo></mover> <mo 
+class="MathClass-rel">=</mo> <mstyle 
+class="text"><mtext  >2D-DWT</mtext></mstyle><mrow ><mo 
+class="MathClass-open">(</mo><mrow><mrow ><mo 
+class="MathClass-open">[</mo><mrow><mover 
+accent="true"><mrow 
+><mi 
+>b</mi><mo 
+class="MathClass-punc">.</mo><mi 
+>L</mi></mrow><mo 
+class="MathClass-op">̃</mo></mover></mrow><mo 
+class="MathClass-close">]</mo></mrow></mrow><mo 
+class="MathClass-close">)</mo></mrow></math>.
+     </li>
+     <li 
+  class="enumerate" id="x1-18005x8">For each coeﬃcient <!--l. 557--><math 
+ xmlns="http://www.w3.org/1998/Math/MathML"  
+display="inline" ><mi 
+>x</mi><mo 
+class="MathClass-punc">,</mo><mi 
+>y</mi></math>
+     in <!--l. 557--><math 
+ xmlns="http://www.w3.org/1998/Math/MathML"  
+display="inline" ><mover 
+accent="true"><mrow 
+><mi 
+>b</mi></mrow><mo 
+class="MathClass-op">̃</mo></mover><mo 
+class="MathClass-punc">.</mo><mi 
+>L</mi></math>:
+         <ol  class="enumerate2" >
+         <li 
+  class="enumerate" id="x1-18006x8"><!--l. 559--><math 
+ xmlns="http://www.w3.org/1998/Math/MathML"  
+display="inline" ><msub><mrow 
+><mi 
+>d</mi></mrow><mrow 
+><mi 
+>i</mi><mo 
+class="MathClass-rel">=</mo><mi 
+>x</mi><mo 
+class="MathClass-bin">×</mo><mi 
+>b</mi><mo 
+class="MathClass-punc">.</mo><mstyle 
+class="text"><mtext  >rows</mtext></mstyle><mo 
+class="MathClass-bin">+</mo><mi 
+>y</mi></mrow></msub 
+> <mo 
+class="MathClass-rel">=</mo> <mrow ><mo 
+class="MathClass-open">(</mo><mrow><mstyle 
+class="text"><mtext  >abs</mtext></mstyle><mrow ><mo 
+class="MathClass-open">(</mo><mrow><msub><mrow 
+><mover 
+accent="true"><mrow 
+><mi 
+>b</mi></mrow><mo 
+class="MathClass-op">̃</mo></mover></mrow><mrow 
+><mi 
+>x</mi><mo 
+class="MathClass-punc">,</mo><mi 
+>y</mi></mrow></msub 
+><mo 
+class="MathClass-punc">,</mo><mi 
+>x</mi><mo 
+class="MathClass-punc">,</mo><mi 
+>y</mi></mrow><mo 
+class="MathClass-close">)</mo></mrow></math></li></ol>
+     </li>
+     <li 
+  class="enumerate" id="x1-18007x8">Sort <!--l. 561--><math 
+ xmlns="http://www.w3.org/1998/Math/MathML"  
+display="inline" ><mi 
+>d</mi></math>
+     in desceding order by ﬁeld 0 /* amplitude */.
+     </li>
+     <li 
+  class="enumerate" id="x1-18008x8"><!--l. 562--><math 
+ xmlns="http://www.w3.org/1998/Math/MathML"  
+display="inline" ><msub><mrow 
+><mi 
+>λ</mi></mrow><mrow 
+><mn>0</mn></mrow></msub 
+> <mo 
+class="MathClass-rel">=</mo> <mi 
+>λ</mi> <mo 
+class="MathClass-rel">=</mo> <mn>1</mn> <mo 
+class="MathClass-rel">&#x003C;</mo><mo 
+class="MathClass-rel">&#x003C;</mo> <mstyle 
+class="text"><mtext  >int</mtext></mstyle><mrow ><mo 
+class="MathClass-open">(</mo><mrow><msub><mrow 
+><mo class="qopname">log</mo><!--nolimits--></mrow><mrow 
+><mn>2</mn></mrow></msub 
+><mrow ><mo 
+class="MathClass-open">(</mo><mrow><mstyle 
+class="text"><mtext  >abs</mtext></mstyle><mrow ><mo 
+class="MathClass-open">(</mo><mrow><msub><mrow 
+><mi 
+>d</mi></mrow><mrow 
+><mn>0</mn></mrow></msub 
+></mrow><mo 
+class="MathClass-close">)</mo></mrow></mrow><mo 
+class="MathClass-close">)</mo></mrow></mrow><mo 
+class="MathClass-close">)</mo></mrow></math>
+     /* maximum */.
+     </li>
+     <li 
+  class="enumerate" id="x1-18009x8">For each coeﬃcient <!--l. 564--><math 
+ xmlns="http://www.w3.org/1998/Math/MathML"  
+display="inline" ><mi 
+>i</mi></math>
+     in <!--l. 564--><math 
+ xmlns="http://www.w3.org/1998/Math/MathML"  
+display="inline" ><mi 
+>d</mi></math>:
+         <ol  class="enumerate2" >
+         <li 
+  class="enumerate" id="x1-18010x8"><!--l. 566--><math 
+ xmlns="http://www.w3.org/1998/Math/MathML"  
+display="inline" ><mi 
+>x</mi><mo 
+class="MathClass-punc">,</mo><mi 
+>y</mi> <mo 
+class="MathClass-rel">=</mo> <msub><mrow 
+><mi 
+>d</mi></mrow><mrow 
+><mi 
+>i</mi></mrow></msub 
+><mrow ><mo 
+class="MathClass-open">[</mo><mrow><mn>1</mn> <mo 
+class="MathClass-punc">:</mo> <mn>2</mn></mrow><mo 
+class="MathClass-close">]</mo></mrow></math>.
+                                                                  
+
+                                                                  
+         </li>
+         <li 
+  class="enumerate" id="x1-18011x8">If any of <!--l. 568--><math 
+ xmlns="http://www.w3.org/1998/Math/MathML"  
+display="inline" ><mn>1</mn> <mo 
+class="MathClass-rel">&#x003C;</mo><mo 
+class="MathClass-rel">&#x003C;</mo> <mstyle 
+class="text"><mtext  >int</mtext></mstyle><mrow ><mo 
+class="MathClass-open">(</mo><mrow><msub><mrow 
+><mo class="qopname">log</mo><!--nolimits--></mrow><mrow 
+><mn>2</mn></mrow></msub 
+><mrow ><mo 
+class="MathClass-open">(</mo><mrow><msub><mrow 
+><mover 
+accent="true"><mrow 
+><mi 
+>b</mi><mo 
+class="MathClass-punc">.</mo><mi 
+>H</mi></mrow><mo class="qopname">̃</mo></mover></mrow><mrow 
+><mi 
+>x</mi><mo 
+class="MathClass-punc">,</mo><mi 
+>y</mi></mrow></msub 
+></mrow><mo 
+class="MathClass-close">)</mo></mrow></mrow><mo 
+class="MathClass-close">)</mo></mrow> <mo 
+class="MathClass-rel">=</mo><mo 
+class="MathClass-rel">=</mo> <msub><mrow 
+><mi 
+>λ</mi></mrow><mrow 
+><mn>0</mn></mrow></msub 
+></math>
+         then send <!--l. 569--><math 
+ xmlns="http://www.w3.org/1998/Math/MathML"  
+display="inline" ><mstyle 
+class="text"><mtext  >sign</mtext></mstyle><mrow ><mo 
+class="MathClass-open">(</mo><mrow><msub><mrow 
+><mover 
+accent="true"><mrow 
+><mi 
+>b</mi><mo 
+class="MathClass-punc">.</mo><mi 
+>H</mi></mrow><mo 
+class="MathClass-op">̃</mo></mover></mrow><mrow 
+><mi 
+>x</mi><mo 
+class="MathClass-punc">,</mo><mi 
+>y</mi></mrow></msub 
+></mrow><mo 
+class="MathClass-close">)</mo></mrow></math>
+         for the three (LH, HL and HH) subbands.
+         </li>
+         <li 
+  class="enumerate" id="x1-18012x8">Send <!--l. 571--><math 
+ xmlns="http://www.w3.org/1998/Math/MathML"  
+display="inline" ><mrow ><mo 
+class="MathClass-open">(</mo><mrow><msub><mrow 
+><mover 
+accent="true"><mrow 
+><mi 
+>b</mi><mo 
+class="MathClass-punc">.</mo><mi 
+>H</mi></mrow><mo 
+class="MathClass-op">̂</mo></mover></mrow><mrow 
+><mi 
+>x</mi><mo 
+class="MathClass-punc">,</mo><mi 
+>y</mi></mrow></msub 
+><mstyle 
+class="text"><mtext  >and</mtext></mstyle><mi 
+>λ</mi></mrow><mo 
+class="MathClass-close">)</mo></mrow><mo 
+class="MathClass-bin">∕</mo><mi 
+>λ</mi></math>
+         for the three (LH, HL and HH) subbands.</li></ol>
+     </li>
+     <li 
+  class="enumerate" id="x1-18013x8"><!--l. 574--><math 
+ xmlns="http://www.w3.org/1998/Math/MathML"  
+display="inline" ><mi 
+>λ</mi> <mo 
+class="MathClass-rel">&#x003E;</mo><mo 
+class="MathClass-rel">&#x003E;</mo><mo 
+class="MathClass-rel">=</mo> <mn>1</mn></math>.
+     </li>
+     <li 
+  class="enumerate" id="x1-18014x8">Goto step 6.</li></ol>
     
 </body> 
 </html>
