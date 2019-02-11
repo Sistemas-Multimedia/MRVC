@@ -533,6 +533,40 @@ To compute the subband gains we have two options:
 This computation can be also applied to MCDWT, by computing the subband
 gains as a function of the number $T$ of temporal decompositions.
 
+\section{Encoding}
+The subband $\tilde{b.H}$ is no longer needed for applying the
+butterfly to different decompositions and scales. For this reason, we
+can compress this subband. As a result, after using the butterfly to
+all the decompositions of the sequence and all the scales, all the $H$
+subbands will be compressed, excepting the intra-coded image of each
+GOP.
+
+To compress the $\tilde{b.H}$ subbands, the following algorithm can be
+used:
+\begin{itemize}
+\item [1.] Compute the prediction error for the $[b.L]$ subband
+\begin{equation}
+  [\tilde{b.L}] = [b.L] - [\hat{b.L}]
+\end{equation}
+where
+\begin{equation}
+  [\hat{b.L}] = = \frac{[b_a.L][s_a.L]+[s_c.L][b_c.L]}{[s_a.L]+[s_c.L]}.
+\end{equation}
+
+\item [2.] Compute 2D-DWT([\hat{b.L}]).
+
+\item [3.] $\lambda=1024$.
+
+\item [4.] For each coefficients $x,y$ in $[\hat{b.L}].H$:
+  \begin{itemize}
+  \item [a.] If $(\hat{b.H}_{x,y}$ then send $\mathtt{sign}(\hat{b.H}_{x,y})$. Send $(\hat{b.H}_{x,y} \mathtt{AND} \lambda)/\lambda$. If
+    it is the first time that a 1 has been sent for this coefficient,
+    send also its sign previously.
+  \end{itemize}
+\item [5.] $\labmda /= 2$.
+\item [6.] Goto step 4.
+\end{itemize}
+
 \begin{comment}
 
 \section{Progressive reconstruction}
