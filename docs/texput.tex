@@ -269,7 +269,8 @@ used to estimate and compensate the $H$ subbands.
 \imgw{1200}{graphics/forward_butterfly.svg}
 \caption{Forward MCDWT butterfly.\label{fig:forward_butterfly}}
 \end{figure}
-\lstinputlisting[firstline=20, lastline=67, language=python, caption={MCDWT.py (extract)}]{../src/MCDWT.py}
+\lstinputlisting[firstline=24, lastline=57, language=python, caption={MCDWT.py (extract)}]{../src/MCDWT.py}
+\lstinputlisting[firstline=4, lastline=9, language=python, caption={simple\_average.py (extract)}]{../src/simple_average.py}
 
 Notice that, even if $a$ and $c$ (at full resolution) are available at
 the decoder, only $b.L$ is. So, it does not make sense to search the
@@ -453,6 +454,8 @@ $[s_c.L]_{x,y}\approx 0$, then
 $\hat{[b.H]}_{x,y}\approx [b_a.H]_{x,y}$, and viceversa. If
 $[s_a.L]_{x,y}=[s_c.L]_{x,y}$, then
 $\hat{[b.H]}_{x,y}=\frac{[b_a.H]+[b_c.H]}{2}$ (even if both similarities are small).
+
+\lstinputlisting[firstline=4, lastline=15, language=python, caption={weighted\_average.py (extract)}]{../src/weighted_average.py}
 
 \section{Orthogonal, orthonormal, and biorthogonal transforms}
 In signal processing\footnote{In mathemathics the definition of
