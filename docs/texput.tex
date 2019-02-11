@@ -556,11 +556,11 @@ where
 \item [2.] Compute $\tilde{b}=\text{2D-DWT}([\tilde{b.L}])$.
 \item [3.] For each coefficient $x,y$ in $\tilde{b}.L$:
   \begin{enumerate}
-  \item [a.] $d_{i=x\times b.\text{rows}+y} = (\text{abs}(\tilde{b}_{x,y}, x, y)$
+  \item [a.] $d_{i=x\times b.\text{rows}+y} = (\text{abs}(\tilde{b}_{x,y}), x, y)$
   \end{enumerate}
-\item [4.] Sort $d$ in desceding order by field 0 /* amplitude */.
+\item [4.] Sort $d$ in desceding order sorted by field 0 /* use the amplitude of luminance */.
 \item [5.] $\lambda_0 = \lambda = 1 <<
-  \text{int}(\log_2(\text{abs}(d_{0})))$ /* maximum */.
+  \text{int}(\log_2(\text{abs}(d_{0})))$ /* maximum amplitude */.
 \item [6.] For each coefficient $i$ in $d$:
   \begin{enumerate}
   \item [a.] $x,y = d_i[1:2]$.
@@ -568,7 +568,7 @@ where
     $1<<\text{int}(\log_2(\tilde{b.H}_{x,y}))==\lambda_0$ then send
     $\text{sign}(\tilde{b.H}_{x,y})$ for the three (LH, HL and HH)
     subbands.
-  \item [b.] Send $(\hat{b.H}_{x,y} \text{and} \lambda)/\lambda$ for
+  \item [b.] Send $(\hat{b.H}_{x,y}~\text{bitwise-and}~\lambda)/\lambda$ for
     the three (LH, HL and HH) subbands.
   \end{enumerate}
 \item [7.] $\lambda >>= 1$.
