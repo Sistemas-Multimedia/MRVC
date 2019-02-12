@@ -51,7 +51,8 @@ for y in range(width):
 entropy = [None]*components
 for c in range(components):
     entropy[c] = compute_entropy(histogram[c], number_of_pixels)
-    
+
+
 max = [None] * components
 min = [None] * components
 dynamic_range = [None] * components
@@ -77,3 +78,15 @@ for c in range(components):
     print("Mean of component {}: {}".format(c, mean[c]))
 for c in range(components):
     print("Entropy of component {}: {}".format(c, entropy[c]))
+
+print("{0: <10} {1: <10} {2: <10}".format("position", "coordinates", "value"))
+indices = [None] * components
+for c in range(components):
+    # https://stackoverflow.com/questions/30577375/have-numpy-argsort-return-an-array-of-2d-indices
+    indices[c] = np.dstack(np.unravel_index(np.argsort(image[:,:,c].ravel()), (width, height)))
+    #print(indices[c].shape)
+    counter = 1
+    while counter <= 10:
+        print("{} {} {}".format(counter, indices[c][0][counter], image[indices[c][0][indices[c].shape[1]-counter][0], indices[c][0][indices[c].shape[1]-counter][1], c]))
+        counter += 1
+
