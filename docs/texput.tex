@@ -533,13 +533,14 @@ To compute the subband gains we have two options:
 This computation can be also applied to MCDWT, by computing the subband
 gains as a function of the number $T$ of temporal decompositions.
 
-\section{Encoding}
+\section{Encoding of B-type subbands}
 The subband $\tilde{b.H}$ is no longer needed for applying the
 butterfly to different decompositions and scales. For this reason, we
 can compress this subband. As a result, after using the butterfly to
 all the decompositions of the sequence and all the scales, all the $H$
 subbands will be compressed, excepting the intra-coded image of each
-GOP.
+GOP. Notice that the redundancy exploited in B-type $H$ subbands is
+temporal.
 
 To compress the $\tilde{b.H}$ subbands, the following algorithm can be
 used:
@@ -573,6 +574,66 @@ where
   \end{enumerate}
 \item [7.] $\lambda >>= 1$.
 \item [8.] Goto step 6.
+\end{enumerate}
+
+\section{Encoding of I-type subbands}
+After the the $T$-levels MCDWT transform of a sequence of
+decompositions, $T+1$ temporal subbands are generated, and the
+temporal subband $L^{T+1}$ has a one $H$ I-type subband for each
+GOP. Notice that the redundancy exploited in the I-type $H$ subbands
+is spatial.
+
+To compress the $a.H$ subband in the last iteration of the butterfly,
+the following algorithm can be used:
+\begin{enumerate}
+\item [1.] Compute the 2D-DWT of the $a.L$ subband
+\begin{equation}
+  LL^2, LH^2, HL^2, HH^2 = \text{DWT}(LL). 
+\end{equation}
+
+\item [2.] Desplace 2 bits to the left the $H$ coefficients to create
+  space for encoding the subband
+  \begin{equation}
+    \begin{array}{l}
+      LH^2 <<= 2 \\
+      HL^2 <<= 2 \\
+      HH^2 <<= 2.
+    \end{array}
+  \end{equation}
+\item [3.] Encode de subband:
+  \begin{equation}
+    \begin{array}{l}
+      HL^2 += 1 \\
+      HH^2 += 2.
+    \end{array}
+  \end{equation}
+\item [4.] Create a linear array with the 3 matrices
+  \begin{equation}
+    H = [LH^2, HL^2, HH^2].
+  \end{equation}
+\item [5.] Create a linear array with the 3 flattened matrices
+  \begin{equation}
+    H'=\text{ravel}(H).
+  \end{equation}
+\item [6.] Find the indices for the $LH^2$, $HL^2$ and $HH^2$ matrices
+  that sort $H'$ in descending order by energy
+  ($\text{width}=LH^2.\text{shape}[0]$ and $\text{height}=LH^2.\text{shape}[1]$)
+  \begin{equation}
+    \text{indices} =
+    \text{unravel\_index}(\text{argsort}(\text{abs}(H')), \text{width},
+    \text{height}).
+  \end{equation}
+\item [7.] Go over $H'$ looking for the wavelet coefficients of
+  subbands $LH^2$, $HL^2$ and $HH^2$ in descending order by energy
+  \begin{equation}
+    \begin{array}{l}
+      \text{for~}d\text{~in range}(3): \\
+      ~ \text{for~}y\text{~in range}(\text{height}): \\
+      ~~ \text{for~}x\text{~in range}(\text{width}): \\
+      ~~~ i = 3\times(\text{height}\times \text{width})+y\times \text{width} + x \\
+      ~~~ \text{send}(H[H'[\text{indice}[i]] \text{~mod~} 4][H'[\text{indice}[i]] >> 2]).
+    \end{array}
+  \end{equation}
 \end{enumerate}
 
 \begin{comment}
