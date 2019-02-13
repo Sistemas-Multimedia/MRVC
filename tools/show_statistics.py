@@ -4,6 +4,11 @@ import cv2
 import numpy as np
 import math
 import argparse
+from cv2 import Sobel
+from skimage import data, draw, transform, util, color, filters
+import pylab
+
+
 
 class CustomFormatter(argparse.ArgumentDefaultsHelpFormatter, argparse.RawDescriptionHelpFormatter):
         pass
@@ -35,6 +40,26 @@ height = image.shape[1]
 number_of_pixels = width * height
 components = image.shape[2]
 
+# Calculates the energy
+gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+component_x = Sobel(gray, cv2.CV_64F, 1, 0, ksize = 3)
+component_y = Sobel(gray, cv2.CV_64F, 1, 0 , ksize = 3)
+abs_component_x = cv2.convertScaleAbs(component_x)
+abs_component_y = cv2.convertScaleAbs(component_y)
+energyGris = cv2.addWeighted(abs_component_x, 0.5, abs_component_y, 0.5, 0)
+print("Canales en componentes: {}".format(np.sum(energyGris)))
+#pylab.imshow(energy)
+
+energy = util.img_as_float(image)
+energy = filters.sobel(color.rgb2gray(energy))
+print("Sum Energy 1: {}".format(np.sum(energy)))
+pylab.title("Energìa de la imagen")
+pylab.imshow(energy), pylab.show()
+
+energy2 = np.power(image, 2)
+print("Sum Energy 2: {}".format(np.sum(energy2)))
+
+
 histogram = [None]*components
 for c in range(components):
     histogram[c] = {}
@@ -51,7 +76,7 @@ for y in range(width):
 entropy = [None]*components
 for c in range(components):
     entropy[c] = compute_entropy(histogram[c], number_of_pixels)
-    
+
 max = [None] * components
 min = [None] * components
 dynamic_range = [None] * components
@@ -67,6 +92,7 @@ print("Width: {}".format(width))
 print("Height: {}".format(height))
 print("Components: {}".format(components))
 print("Number of pixels: {}".format(number_of_pixels))
+print("Energy: {}".format(np.sum(energy)))
 for c in range(components):
     print("Max value of component {}: {}".format(c, max[c]))
 for c in range(components):
