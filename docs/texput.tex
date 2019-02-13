@@ -267,9 +267,10 @@ used to estimate and compensate the $H$ subbands.
 \begin{figure}
 \centering
 \imgw{1200}{graphics/forward_butterfly.svg}
-\caption{Forward MCDWT butterfly.}
+\caption{Forward MCDWT butterfly.\label{fig:forward_butterfly}}
 \end{figure}
-\lstinputlisting[firstline=20, lastline=67, language=python, caption={MCDWT.py (extract)}]{../src/MCDWT.py}
+\lstinputlisting[firstline=24, lastline=57, language=python, caption={MCDWT.py (extract)}]{../src/MCDWT.py}
+\lstinputlisting[firstline=4, lastline=9, language=python, caption={simple\_average.py (extract)}]{../src/simple_average.py}
 
 Notice that, even if $a$ and $c$ (at full resolution) are available at
 the decoder, only $b.L$ is. So, it does not make sense to search the
@@ -405,11 +406,11 @@ rm -f /tmp/diff*.png; for i in {0..4}; do ii=$(printf "%03d" $i); bash ../tools/
 \end{verbatim}
 
 \section{Adaptive motion compensation based on the distortion of the prediction error}
-In the previous implementation of the MCDWT bufferfly, both
-predictions $[b_a.H]$ and $[b_c.H]$ have the same weight to build the
-prediction
+As can be seen in the MCDWT bufferfly (see
+Fig.~\ref{fig:forward_butterfly}), both predictions $[b_a.H]$ and
+$[b_c.H]$ have the same weight to build the prediction
 \begin{equation}
-  \hat{[b.H]} = \frac{[b_a.H] + [b_c.H]}{2}.
+  [\hat{b.H}] = \frac{[b_a.H] + [b_c.H]}{2}.
 \end{equation}
 This simple computation, that can have very effective for example in
 \href{https://biteable.com/blog/tips/video-transitions-effects-examples/}{dissolves}
@@ -436,6 +437,7 @@ Now, we define the similarity matrices as
     {[s_a.L]} = \frac{1}{1+{|[e_a.L]|}}\\
     {[s_c.L]} = \frac{1}{1+{|[e_c.L]|}}.    
   \end{array}
+  \label{eq:weighted_prediction}
 \end{equation}
 Notice that, if (for example) the error $[e_a.L]_{x,y}=0$, the
 similarity is $[s_a.L]_{x,y}=1$ (the maximum similarity), and if the
@@ -444,14 +446,16 @@ error is high, the similarity tends to be $0$.
 With this information, that can be recovered by the decoder, the
 improved prediction is defined as
 \begin{equation}
-  \hat{[b.H]} = \frac{[b_a.H][s_a.L]+[b_c.H][s_c.L]}{[s_a.L]+[s_c.L]}.
+  [\hat{b.H}] = \frac{[b_a.H][s_a.L]+[s_c.L][b_c.H]}{[s_a.L]+[s_c.L]}.
 \end{equation}
 
 Notice that, if (for example) $[s_a.L]_{x,y}=1$ and
 $[s_c.L]_{x,y}\approx 0$, then
-$\hat{[b.H]}_{x,y}\approx [b_a.H]_{x,y}$, and viceversa. If
+$[\hat{b.H}]_{x,y}\approx [b_a.H]_{x,y}$, and viceversa. If
 $[s_a.L]_{x,y}=[s_c.L]_{x,y}$, then
-$\hat{[b.H]}_{x,y}=\frac{[b_a.H]+[b_c.H]}{2}$ (even if both similarities are small).
+$[\hat{b.H}]_{x,y}=\frac{[b_a.H]+[b_c.H]}{2}$ (even if both similarities are small).
+
+\lstinputlisting[firstline=4, lastline=15, language=python, caption={weighted\_average.py (extract)}]{../src/weighted_average.py}
 
 \section{Orthogonal, orthonormal, and biorthogonal transforms}
 In signal processing\footnote{In mathemathics the definition of
@@ -528,3 +532,137 @@ To compute the subband gains we have two options:
 
 This computation can be also applied to MCDWT, by computing the subband
 gains as a function of the number $T$ of temporal decompositions.
+
+\section{Encoding of B-type subbands}
+The subband $\tilde{b.H}$ is no longer needed for applying the
+butterfly to different decompositions and scales. For this reason, we
+can compress this subband. As a result, after using the butterfly to
+all the decompositions of the sequence and all the scales, all the $H$
+subbands will be compressed, excepting the intra-coded image of each
+GOP. Notice that the redundancy exploited in B-type $H$ subbands is
+temporal.
+
+To compress the $\tilde{b.H}$ subbands, the following algorithm can be
+used:
+\begin{enumerate}
+\item [1.] Compute the prediction error for the $[b.L]$ subband
+\begin{equation}
+  [\tilde{b.L}] = [b.L] - [\hat{b.L}]
+\end{equation}
+where
+\begin{equation}
+  [\hat{b.L}] = \frac{[b_a.L][s_a.L]+[s_c.L][b_c.L]}{[s_a.L]+[s_c.L]}.
+\end{equation}
+
+\item [2.] Compute $\tilde{b}=\text{2D-DWT}([\tilde{b.L}])$.
+\item [3.] For each coefficient $x,y$ in $\tilde{b}.L$:
+  \begin{enumerate}
+  \item [a.] $d_{i=x\times b.\text{rows}+y} = (\text{abs}(\tilde{b}_{x,y}), x, y)$
+  \end{enumerate}
+\item [4.] Sort $d$ in desceding order sorted by field 0 /* use the amplitude of luminance */.
+\item [5.] $\lambda_0 = \lambda = 1 <<
+  \text{int}(\log_2(\text{abs}(d_{0})))$ /* maximum amplitude */.
+\item [6.] For each coefficient $i$ in $d$:
+  \begin{enumerate}
+  \item [a.] $x,y = d_i[1:2]$.
+  \item [b.] If any of
+    $1<<\text{int}(\log_2(\tilde{b.H}_{x,y}))==\lambda_0$ then send
+    $\text{sign}(\tilde{b.H}_{x,y})$ for the three (LH, HL and HH)
+    subbands.
+  \item [b.] Send $(\hat{b.H}_{x,y}~\text{bitwise-and}~\lambda)/\lambda$ for
+    the three (LH, HL and HH) subbands.
+  \end{enumerate}
+\item [7.] $\lambda >>= 1$.
+\item [8.] Goto step 6.
+\end{enumerate}
+
+\section{Encoding of I-type subbands}
+After the the $T$-levels MCDWT transform of a sequence of
+decompositions, $T+1$ temporal subbands are generated, and the
+temporal subband $L^{T+1}$ has a one $H$ I-type subband for each
+GOP. Notice that the redundancy exploited in the I-type $H$ subbands
+is spatial.
+
+To compress the $a.H$ subband in the last iteration of the butterfly,
+the following algorithm can be used:
+\begin{enumerate}
+\item [1.] Compute the 2D-DWT of the $a.L$ subband
+\begin{equation}
+  LL^2, LH^2, HL^2, HH^2 = \text{DWT}(LL). 
+\end{equation}
+
+\item [2.] Desplace 2 bits to the left the $H$ coefficients to create
+  space for encoding the subband
+  \begin{equation}
+    \begin{array}{l}
+      LH^2 <<= 2 \\
+      HL^2 <<= 2 \\
+      HH^2 <<= 2.
+    \end{array}
+  \end{equation}
+\item [3.] Encode de subband:
+  \begin{equation}
+    \begin{array}{l}
+      HL^2 += 1 \\
+      HH^2 += 2.
+    \end{array}
+  \end{equation}
+\item [4.] Create a linear array with the 3 matrices
+  \begin{equation}
+    H = [LH^2, HL^2, HH^2].
+  \end{equation}
+\item [5.] Create a linear array with the 3 flattened matrices
+  \begin{equation}
+    H'=\text{ravel}(H).
+  \end{equation}
+\item [6.] Find the indices for the $LH^2$, $HL^2$ and $HH^2$ matrices
+  that sort $H'$ in descending order by energy
+  ($\text{width}=LH^2.\text{shape}[0]$ and $\text{height}=LH^2.\text{shape}[1]$)
+  \begin{equation}
+    \text{indices} =
+    \text{unravel\_index}(\text{argsort}(\text{abs}(H')), \text{width},
+    \text{height}).
+  \end{equation}
+\item [7.] Go over $H'$ looking for the wavelet coefficients of
+  subbands $LH^2$, $HL^2$ and $HH^2$ in descending order by energy
+  \begin{equation}
+    \begin{array}{l}
+      \text{for~}d\text{~in range}(3): \\
+      ~ \text{for~}y\text{~in range}(\text{height}): \\
+      ~~ \text{for~}x\text{~in range}(\text{width}): \\
+      ~~~ i = 3\times(\text{height}\times \text{width})+y\times \text{width} + x \\
+      ~~~ \text{send}(H[H'[\text{indice}[i]] \text{~mod~} 4][H'[\text{indice}[i]] >> 2]).
+    \end{array}
+  \end{equation}
+\end{enumerate}
+
+\begin{comment}
+
+\section{Progressive reconstruction}
+The forward bufferfly should reduce the energy of subband $b.H$$ after
+substracting a prediction (see Eq.~\ref{eq:weighted_prediction}) which
+is generated using the subbands $a.H$ and $c.H$ as references. If the
+prediction is good, the energy of $\tilde{b.H}$ will be small and
+viceversa. If the prediction is good, the quantization of the subbands
+$a.H$, $b.H$ and $c.H$ should leave more energy in the subbands $a.H$
+and $c.H$ than in $b.H$. Therefore, if the prediction is good, the
+progressive reconstruction of the subbands (using a progressively
+small quantization step) should reconstruct first the information of
+$a.H$ and $c.H$.
+
+\section{Coefficients encoding}
+Subband $\tilde{b.H}$ is not used any more as a reference and
+therefore, it can be compressed. The compression algorithm sort the
+coefficients of $\tilde{b.H}$ by the amplitude of the coefficients of
+$\tilde{b.L}$, considering that the prediction error will affect in
+the same way the low and the high frequencies of $b$. Then, the sorted
+coefficients are DPCM encoded, quantized, and entropy encoded.
+
+\section{Multilevel MCLT}
+The distance between images $a$, $b$ and $c$ should decrease the
+efficiency of the predictions, generating more energy in the
+low-frequency subbands. Therefore, the quantization when $T>1$ should
+transmit more information of the low-frequency subbands than of the
+high-frequency ones when the subbands are quantized.
+
+\end{comment}
