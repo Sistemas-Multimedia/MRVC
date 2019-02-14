@@ -143,7 +143,7 @@ if __name__ == "__main__":
         d = decomposition.read(args.prefix, args.decomposition, ".png")
         i = dwt.backward(d)
         #i = np.rint(i)
-        image.write(i, "{}".format(args.image), ".png")
+        image.write(i, args.prefix, args.image, ".png")
     else:
         if __debug__:
             print("Forward transform")

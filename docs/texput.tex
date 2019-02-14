@@ -81,61 +81,63 @@ different spatial scales (resolutions). For example, if an image $s_1$ has been 
 \item $s_1.L^0=\text{iDWT}(s_1.L, s_1.H)$ (the original image) with the scale 0.
 \end{itemize}
 
-\subsection{Example}
+\subsection{Simple 2D-DWT 1-levels example}
 \begin{verbatim}
 # You must be in the 'src' directory.
 
-# Create the output directory for the 1st-level decomposition:
-rm -rf /tmp/000
-mkdir /tmp/000
+# Copy a image (the output directory must be the same than the input one):
+rm /tmp/*.png
+cp ../sequences/stockholm/000.png /tmp
 
-# 2D 1-levels forward DWT of the first image of the 'stockholm' sequence:
-python3 ./DWT.py -i ../sequences/stockholm/000 -d /tmp/000/
-
-
-# Visualize the subbands:
-tree /tmp/000
-display -normalize /tmp/000/LL.png # <- LL1
-display -normalize /tmp/000/LH.png # <- LH1
-display -normalize /tmp/000/HL.png # <- HL1
-display -normalize /tmp/000/HH.png # <- HH1
-
-# Create the output directory for the 2nd-level decomposition:
-mkdir /tmp/000/LL
-
-# 2D 1-levels forward DWT of the LL subband:
-./DWT.py -i /tmp/000/LL -d /tmp/000/LL/
+# 2D 1-levels forward DWT:
+python3 -O DWT.py -p /tmp/ -i 000 -d 000
 
 # Visualize the subbands:
-tree /tmp/0
-display -normalize /tmp/000/LL/LL.png # <- LL2
-display -normalize /tmp/000/LL/LH.png # <- LH2
-display -normalize /tmp/000/LL/HL.png # <- HL2
-display -normalize /tmp/000/LL/HH.png # <- HH2
+display -normalize /tmp/LL000.png # <- LL1
+display -normalize /tmp/LH000.png # <- LH1
+display -normalize /tmp/HL000.png # <- HL1
+display -normalize /tmp/HH000.png # <- HH1
 
-# The result of the 2D 2-levels forward DWT are the subbands: LL2,
-# LH2, HL2, HH2, LH1, HL1, HH1
+# 2D 1-levels backward DWT:
+python3 -O DWT.py -b -p /tmp/ -d 000 -i reconstruction
 
-# The scale 2 of the image is represented by LL2.
+# Visualize the reconstruction:
+display -normalize /tmp/reconstruction.png 
 
-# The scale 1 can be reconstructed using the 2D 1-levels backward DWT
-# on the 000_LL_{LL, LH, HL, HH} subbands:
-python3 ./DWT.py -b -d /tmp/000/LL/ -i /tmp/scale1 && display -normalize /tmp/scale1.png
-
-# The reconstruction '/tmp/scale1' and the original scale 1
-# '/tmp/000_LL' have the same resolution:
-file /tmp/scale1.png /tmp/000/LL.png
-
-# Floating-point arithmetic of DWT introduces minimal distortions:
-cmp /tmp/scale1.png /tmp/000/LL.png
-
-# Basically, distortion is white noise:
-../tools/show_differences.sh -1 /tmp/scale1.png -2 /tmp/000/LL.png -o /tmp/diffs.png
+# Show diferences:
+../tools/show_differences.sh -1 /tmp/reconstruction.png -2 /tmp/000.png -o /tmp/diffs.png
 display -normalize /tmp/diffs.png
+\end{verbatim}
 
-# The scale 0 is recovered using again the inverse transform:
-cp -f /tmp/scale1.png /tmp/000/LL.png
-python3 ./DWT.py -b -d /tmp/000/ -i /tmp/scale0 && display -normalize /tmp/scale0.png
+\subsection{Simple 2D-DWT 2-levels example}
+\begin{verbatim}
+# You must be in the 'src' directory.
+
+# Copy a image (the output directory must be the same than the input one):
+rm /tmp/*.png
+cp ../sequences/stockholm/000.png /tmp
+
+# First level:
+python3 -O DWT.py -p /tmp/ -i 000 -d 000
+
+# Second level:
+python3 -O DWT.py -p /tmp/LL -i 000 -d 000
+
+# Visualize the subbands:
+ls -l /tmp/*.png
+
+# Reverse second level:
+python3 -O DWT.py -b -p /tmp/LL -i reconstruction -d 000
+display -normalize /tmp/LLreconstruction.png
+
+# Reverse first level:
+cp /tmp/LLreconstruction.png /tmp/LL000.png
+python3 -O DWT.py -b -p /tmp/ -i reconstruction -d 000
+display -normalize /tmp/reconstruction.png
+
+# Show diferences:
+../tools/show_differences.sh -1 /tmp/reconstruction.png -2 /tmp/000.png -o /tmp/diffs.png
+display -normalize /tmp/diffs.png
 \end{verbatim}
 
 \section{Motion DWT (MDWT)}
@@ -544,6 +546,8 @@ To compute the subband gains we have two options:
 This computation can be also applied to MCDWT, by computing the subband
 gains as a function of the number $T$ of temporal decompositions.
 
+\begin{comment}
+
 \section{Encoding of B-type subbands}
 The subband $\tilde{b.H}$ is no longer needed for applying the
 butterfly to different decompositions and scales. For this reason, we
@@ -659,6 +663,8 @@ the following algorithm can be used:
     \end{array}
   \end{equation}
 \end{enumerate}
+
+\end{comment}
 
 \begin{comment}
 
