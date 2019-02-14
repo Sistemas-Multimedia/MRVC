@@ -28,6 +28,9 @@ for f in *.png; do
     mv $f $filenx
 done
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> actualizacion
 cd $pathscript
 for f in /tmp/issues02/*; do
     echo    python ./DWT.py -i $f -d   $f
@@ -35,6 +38,7 @@ done
 echo " transformada MDWT.py"
 echo python -O ./MDWT.py -i /tmp/issues02/ -d /tmp/mdwt/
 echo " transformada MDWT.py"
+<<<<<<< HEAD
 =======
 for f in /tmp/issues02/*; do
 # ./DWT.py -i $f -d /tmp/000  
@@ -42,5 +46,7 @@ echo "./DWT.py -i $f -d $f"
 #echo "./DWT.py -i $f -d /tmp/dwt"
 done
 >>>>>>> 5c59961440788c854864bd500f64055e423fad4e
+=======
+>>>>>>> actualizacion
 #./add_32768_128.py /tmp/issues02/003.png /tmp/issues02/003_offset.png
 #./sub_32768_128.py /tmp/issues02/003_offset.png /tmp/issues02/003_original.png
