@@ -81,7 +81,7 @@ different spatial scales (resolutions). For example, if an image $s_1$ has been 
 \item $s_1.L^0=\text{iDWT}(s_1.L, s_1.H)$ (the original image) with the scale 0.
 \end{itemize}
 
-\subsection{Simple 2D-DWT 1-levels example}
+\subsection{2D-DWT 1-levels example}
 \begin{verbatim}
 # You must be in the 'src' directory.
 
@@ -90,7 +90,7 @@ rm /tmp/*.png
 cp ../sequences/stockholm/000.png /tmp
 
 # 2D 1-levels forward DWT:
-python3 -O DWT.py -p /tmp/ -i 000 -d 000
+python3 -O DWT.py -p /tmp/ -s 000.png
 
 # Visualize the subbands:
 display -normalize /tmp/LL000.png # <- LL1
@@ -99,17 +99,17 @@ display -normalize /tmp/HL000.png # <- HL1
 display -normalize /tmp/HH000.png # <- HH1
 
 # 2D 1-levels backward DWT:
-python3 -O DWT.py -b -p /tmp/ -d 000 -i reconstruction
+python3 -O DWT.py -b -p /tmp/ -s 000.png
 
 # Visualize the reconstruction:
-display -normalize /tmp/reconstruction.png 
+display -normalize /tmp/000.png 
 
 # Show diferences:
-../tools/show_differences.sh -1 /tmp/reconstruction.png -2 /tmp/000.png -o /tmp/diffs.png
+../tools/show_differences.sh -1 /tmp/000.png -2 ../sequences/stockholm/000.png -o /tmp/diffs.png
 display -normalize /tmp/diffs.png
 \end{verbatim}
 
-\subsection{Simple 2D-DWT 2-levels example}
+\subsection{2D-DWT 2-levels example}
 \begin{verbatim}
 # You must be in the 'src' directory.
 
@@ -118,25 +118,24 @@ rm /tmp/*.png
 cp ../sequences/stockholm/000.png /tmp
 
 # First level:
-python3 -O DWT.py -p /tmp/ -i 000 -d 000
+python3 -O DWT.py -p /tmp/ -s 000.png
 
 # Second level:
-python3 -O DWT.py -p /tmp/LL -i 000 -d 000
+python3 -O DWT.py -p /tmp/LL -s 000.png
 
 # Visualize the subbands:
 ls -l /tmp/*.png
 
 # Reverse second level:
-python3 -O DWT.py -b -p /tmp/LL -i reconstruction -d 000
-display -normalize /tmp/LLreconstruction.png
+python3 -O DWT.py -b -p /tmp/LL -s 000.png
+display -normalize /tmp/LL000.png
 
 # Reverse first level:
-cp /tmp/LLreconstruction.png /tmp/LL000.png
-python3 -O DWT.py -b -p /tmp/ -i reconstruction -d 000
-display -normalize /tmp/reconstruction.png
+python3 -O DWT.py -b -p /tmp/ -s 000.png
+display -normalize /tmp/000.png
 
 # Show diferences:
-../tools/show_differences.sh -1 /tmp/reconstruction.png -2 /tmp/000.png -o /tmp/diffs.png
+../tools/show_differences.sh -1 /tmp/000.png -2 ../sequences/stockholm/000.png -o /tmp/diffs.png
 display -normalize /tmp/diffs.png
 \end{verbatim}
 
@@ -162,34 +161,31 @@ hand, it is trivial to observe that MDWT provides \emph{fully}
 temporal scalability (we can access to the images randomly) because
 each image of the input sequence is transformed independently.
 
-\subsection{Example}
+\subsection{2D-MDWT 1-levels example}
 \begin{verbatim}
 # You must be in the 'src' directory.
 
 # Create the output directory for the 1st-level decompositions:
-rm -rf /tmp/S
-mkdir /tmp/S
+cp ../sequences/stockholm/*.png /tmp
 
-# Motion 2D 1-levels forward DWT of the 'stockholm' sequence:
-python3 -O ./MDWT.py -i ../sequences/stockholm/ -d /tmp/S/
+# 2D 1-levels forward MDWT:
+python3 -O MDWT.py -p /tmp/ -s .png -N 5
 
 # Visualize the subbands:
-for i in /tmp/S/00?/LL.png; do convert -normalize $i $i.norm; done
-animate /tmp/S/00?/LL*.norm
-for i in /tmp/S/00?/LH.png; do convert -normalize $i $i.norm; done
-animate /tmp/S/00?/LH*.norm
-for i in /tmp/S/00?/HL.png; do convert -normalize $i $i.norm; done
-animate /tmp/S/00?/HL*.norm
-for i in /tmp/S/00?/HH.png; do convert -normalize $i $i.norm; done
-animate /tmp/S/00?/HH*.norm
+for i in /tmp/LL00?.png; do convert -normalize $i $i.norm; done
+animate /tmp/LL*.norm
+for i in /tmp/LH00?.png; do convert -normalize $i $i.norm; done
+animate /tmp/LH*.norm
+for i in /tmp/HL00?.png; do convert -normalize $i $i.norm; done
+animate /tmp/HL*.norm
+for i in /tmp/HH00?.png; do convert -normalize $i $i.norm; done
+animate /tmp/HH*.norm
 
-# Motion 2D 1-levels backward DWT:
-rm -rf /tmp/s
-mkdir /tmp/s
-python3 -O MDWT.py -b -i /tmp/s/ -d /tmp/S/
+# 2D 1-levels backward MDWT:
+python3 -O MDWT.py -b -p /tmp/ -s .png -N 5
 
 # Visualization of the reconstruction:
-for i in /tmp/s/00?.png; do convert -normalize $i $i.norm; done; animate /tmp/s/*.norm
+for i in /tmp/00?.png; do convert -normalize $i $i.norm; done; animate /tmp/00?.png.norm
 \end{verbatim}
 
 \section{Video transform alternatives}

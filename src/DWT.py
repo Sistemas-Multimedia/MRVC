@@ -127,6 +127,8 @@ if __name__ == "__main__":
                         help="Performs backward transform")
 
     parser.add_argument("-p", "--prefix", help="Prefix", default="/tmp/")
+    parser.add_argument("-s", "--suffix", help="Suffix", default="000.png")
+    
     
     parser.add_argument("-i", "--image",
                         help="File with the image", default="000")
@@ -140,23 +142,12 @@ if __name__ == "__main__":
     if args.backward:
         if __debug__:
             print("Backward transform")
-        d = decomposition.read(args.prefix, args.decomposition, ".png")
+        d = decomposition.read(args.prefix, args.suffix)
         i = dwt.backward(d)
-        #i = np.rint(i)
-        image.write(i, args.prefix, args.image, ".png")
+        image.write(i, args.prefix, args.suffix)
     else:
         if __debug__:
             print("Forward transform")
-        i = image.read(args.prefix, args.image, ".png")
+        i = image.read(args.prefix, args.suffix)
         d = dwt.forward(i)
-        #LL = np.rint(d[0])
-        #LH = np.rint(d[1][0])
-        #HL = np.rint(d[1][1])
-        #HH = np.rint(d[1][2])
-        #decomposition.write((LL, (LH, HL, HH)), "{}".format(args.decomposition))
-        #os.mkdir(args.decomposition)
-        #os.mkdir(args.decomposition + "LL")
-        #os.mkdir(args.decomposition + "LH")
-        #os.mkdir(args.decomposition + "HL")
-        #os.mkdir(args.decomposition + "HH")
-        decomposition.write(d, args.prefix, args.decomposition, ".png")
+        decomposition.write(d, args.prefix, args.suffix)
