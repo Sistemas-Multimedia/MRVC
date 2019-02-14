@@ -400,7 +400,7 @@ ls -l /tmp/HL004.png
 # The rest, are transformed (step 1/2):
 ls -l /tmp/HL001.png
 ls -l /tmp/LH002.png
-ls -l /tmp/HG003.png
+ls -l /tmp/HH003.png
 
 # Showing statistics (step 1/2):
 python3 ../tools/show_statistics.py -i /tmp/LH001.png
@@ -431,38 +431,51 @@ python3 ../tools/show_statistics.py -i /tmp/HL002.png
 python3 ../tools/show_statistics.py -i /tmp/HH002.png
 
 # Visualization of the H-subbands
-rm -f /tmp/*.png; for i in /tmp/mc_stockholm_00?_LH; do convert -normalize $i $i.png; done; animate /tmp/*.png
-rm -f /tmp/*.png; for i in /tmp/mc_stockholm_00?_HL; do convert -normalize $i $i.png; done; animate /tmp/*.png
-rm -f /tmp/*.png; for i in /tmp/mc_stockholm_00?_HH; do convert -normalize $i $i.png; done; animate /tmp/*.png
+for i in /tmp/LH00?.png; do convert -normalize $i $i.png; done; animate /tmp/LH00?.png.png
+for i in /tmp/HL00?.png; do convert -normalize $i $i.png; done; animate /tmp/HL00?.png.png
+for i in /tmp/HH00?.png; do convert -normalize $i $i.png; done; animate /tmp/HH00?.png.png
+\end{verbatim}
 
-# Motion Compensated 1D 1-levels backward DWT:
-python -O ./MCDWT.py -b -m /tmp/mc_stockholm_ -d /tmp/recons_MCDWT_
+\subsection{}
+\begin{verbatim}
+# You must be in the 'src' directory.
 
-# Motion 2D 1-levels backward DWT:
-python -O ./MDWT.py -b -d /tmp/recons_MCDWT_ -i /tmp/recons_MDWT_
+cp ../sequences/stockholm/*.png /tmp
 
-# Visualization of the reconstruction:
-rm -f /tmp/*.png; for i in /tmp/recons_MDWT_*; do python ../tools/substract_offset.py -i $i -o $i.png; done; animate /tmp/recons_MDWT_*.png
+# 1D 1-levels forward MDWT:
+python3 -O MDWT.py -p /tmp/ -s .png -N 5
 
-# Visualize the original sequence:
-rm -f /tmp/stockholm/*.png; cp -r ../sequences/stockholm /tmp; for i in /tmp/stockholm/*; do python ../tools/substract_offset.py -i $i -o $i.png; done; animate /tmp/stockholm/*.png
+# 1D 1-levels forward MCDWT:
+python3 -O MCDWT.py -p /tmp/ -s .png -N 5
 
 # Let's clear the motion compensated subbands and reconstruct the sequence ...
 
 # Create a zero subband:
 bash ../tools/create_black_image.sh; python ../tools/add_offset.py -i /tmp/zero.png -o /tmp/zero16.png -f 32768
-python ../tools/show_statistics.py -i /tmp/zero16.png
+python3 ../tools/show_statistics.py -i /tmp/zero16.png
 
 # "Delete" the motion compensated subbands:
-cp /tmp/zero16.png /tmp/mc_stockholm_001_LH
-cp /tmp/zero16.png /tmp/mc_stockholm_001_HL
-cp /tmp/zero16.png /tmp/mc_stockholm_001_HH
-cp /tmp/zero16.png /tmp/mc_stockholm_002_LH
-cp /tmp/zero16.png /tmp/mc_stockholm_002_HL
-cp /tmp/zero16.png /tmp/mc_stockholm_002_HH
-cp /tmp/zero16.png /tmp/mc_stockholm_003_LH
-cp /tmp/zero16.png /tmp/mc_stockholm_003_HL
-cp /tmp/zero16.png /tmp/mc_stockholm_003_HH
+cp /tmp/zero16.png /tmp/LH001.png
+cp /tmp/zero16.png /tmp/HL001.png
+cp /tmp/zero16.png /tmp/HH001.png
+cp /tmp/zero16.png /tmp/LH002.png
+cp /tmp/zero16.png /tmp/HL002.png
+cp /tmp/zero16.png /tmp/HH002.png
+cp /tmp/zero16.png /tmp/LH003.png
+cp /tmp/zero16.png /tmp/HL003.png
+cp /tmp/zero16.png /tmp/HH003.png
+
+# 1D 1-levels backward MCDWT:
+python3 -O MCDWT.py -b -p /tmp/ -s .png -N 5
+
+# 1D 1-levels backward MDWT:
+python3 -O MDWT.py -b -p /tmp/ -s .png -N 5
+
+# Visualization of the reconstruction:
+for i in /tmp/00?.png; do python ../tools/substract_offset.py -i $i -o $i.png; done; animate /tmp/00?.png.png
+
+# Visualize the original sequence:
+rm -f /tmp/stockholm/*.png; cp -r ../sequences/stockholm /tmp; for i in /tmp/stockholm/*; do python ../tools/substract_offset.py -i $i -o $i.png; done; animate /tmp/stockholm/*.png
 
 # Motion Compensated 1D 1-levels backward DWT:
 python -O ./MCDWT.py -b -m /tmp/mc_stockholm_ -d /tmp/recons2_MCDWT_
