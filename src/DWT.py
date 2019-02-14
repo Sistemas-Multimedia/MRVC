@@ -10,6 +10,7 @@ import numpy as np
 import pywt
 import math
 import sys
+import os
 
 sys.path.insert(0, "..")
 from src.IO import image
@@ -116,8 +117,8 @@ if __name__ == "__main__":
         "Examples:\n\n"
         "  rm -rf /tmp/stockholm/\n"
         "  mkdir /tmp/stockholm\n"
-        "  cp ../sequences/stockholm/000 /tmp/stockholm/\n"
-        "  ./DWT.py    -i /tmp/stockholm/000 -d /tmp/stockholm_000 # Forward transform\n"
+        "  cp ../sequences/stockholm/000.png /tmp/\n"
+        "  ./DWT.py    -i /tmp/000 -d /tmp/000/ # Forward transform\n"
         "  rm /tmp/stockholm/000                                   # Not really necessary\n"
         "  ./DWT.py -b -d /tmp/stockholm_000 -i /tmp/stockholm/000 # Backward transform\n",
         formatter_class=CustomFormatter)
@@ -125,11 +126,13 @@ if __name__ == "__main__":
     parser.add_argument("-b", "--backward", action='store_true',
                         help="Performs backward transform")
 
+    parser.add_argument("-p", "--prefix", help="Prefix", default="/tmp/")
+    
     parser.add_argument("-i", "--image",
-                        help="Image to be transformed", default="/tmp/stockholm/000")
+                        help="File with the image", default="000")
 
     parser.add_argument("-d", "--decomposition",
-                        help="Decomposition to be transformed", default="/tmp/stockholm_000")
+                        help="Directory where the files LL, LH, HL, and HH are localized", default="000")
 
     args = parser.parse_args()
 
@@ -137,18 +140,23 @@ if __name__ == "__main__":
     if args.backward:
         if __debug__:
             print("Backward transform")
-        d = decomposition.read("{}".format(args.decomposition))
+        d = decomposition.read(args.prefix, args.decomposition, ".png")
         i = dwt.backward(d)
         #i = np.rint(i)
-        image.write(i, "{}".format(args.image))
+        image.write(i, args.prefix, args.image, ".png")
     else:
         if __debug__:
             print("Forward transform")
-        i = image.read("{}".format(args.image))
+        i = image.read(args.prefix, args.image, ".png")
         d = dwt.forward(i)
         #LL = np.rint(d[0])
         #LH = np.rint(d[1][0])
         #HL = np.rint(d[1][1])
         #HH = np.rint(d[1][2])
         #decomposition.write((LL, (LH, HL, HH)), "{}".format(args.decomposition))
-        decomposition.write(d, "{}".format(args.decomposition))
+        #os.mkdir(args.decomposition)
+        #os.mkdir(args.decomposition + "LL")
+        #os.mkdir(args.decomposition + "LH")
+        #os.mkdir(args.decomposition + "HL")
+        #os.mkdir(args.decomposition + "HH")
+        decomposition.write(d, args.prefix, args.decomposition, ".png")

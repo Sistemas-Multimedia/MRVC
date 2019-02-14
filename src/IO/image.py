@@ -5,7 +5,7 @@ import os
 class InputFileException(Exception):
     pass
 
-def read(file_name):
+def read(prefix = "../../sequences/stockholm/", image = "000", suffix = ".png"):
     '''Read a 3-components image from disk. Each component stores
        integers between [0, 65535].
 
@@ -24,17 +24,18 @@ def read(file_name):
             A color image, where each component is in the range [-32768, 32767].
 
     '''
-    image = cv2.imread(file_name, -1)
-    if image is None:
-        raise InputFileException('IO::image:read: {} not found'.format(file_name))
+    fn = prefix + image + suffix
+    data = cv2.imread(fn, -1)
+    if data is None:
+        raise InputFileException('IO::image:read: {} not found'.format(fn))
     else:
         if __debug__:
-            print("IO::image:read: read {}".format(file_name))
-    buf = image.astype(np.float32)
+            print("IO::image:read: read {}".format(fn))
+    buf = data.astype(np.float32)
     buf -= 32768.0
     return buf.astype(np.int16)
 
-def write(image, file_name):
+def write(data, prefix = "/tmp/", image = "000", suffix = ".png"):
     '''Write a 3-components image to disk. Each component stores integers
        between [0, 65536].
 
@@ -55,16 +56,18 @@ def write(image, file_name):
         None.
     '''
 
-    image = image.astype(np.float32)
-    image += 32768.0
-    image = image.astype(np.uint16)
-    cv2.imwrite(file_name + ".png", image)
-    os.rename(file_name + ".png", file_name)
+    data = data.astype(np.float32)
+    data += 32768.0
+    data = data.astype(np.uint16)
+    fn = prefix + image + suffix
+    cv2.imwrite(fn, data)
+    #cv2.imwrite(file_name, image)
+    #os.rename(file_name + ".png", file_name)
     if __debug__:
-        print("IO::image:write: written {}".format(file_name + ".png"))
+        print("IO::image:write: written {}".format(fn))
 
 if __name__ == "__main__":
 
-    img = read("../../sequences/stockholm/000")
-    write(img, "/tmp/000")
-    print("IO::image:__main__: generated /tmp/000")
+    img = read("../../sequences/stockholm/", "000", ".png")
+    write(img, "/tmp/", "000", ".png")
+    print("IO::image:__main__: generated /tmp/000.png")

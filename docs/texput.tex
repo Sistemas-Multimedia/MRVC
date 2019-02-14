@@ -81,52 +81,63 @@ different spatial scales (resolutions). For example, if an image $s_1$ has been 
 \item $s_1.L^0=\text{iDWT}(s_1.L, s_1.H)$ (the original image) with the scale 0.
 \end{itemize}
 
-\subsection{Example}
+\subsection{Simple 2D-DWT 1-levels example}
 \begin{verbatim}
 # You must be in the 'src' directory.
 
-# 2D 1-levels forward DWT of the first image of the 'stockholm' sequence:
-./DWT.py -i ../sequences/stockholm/000 -d /tmp/000
+# Copy a image (the output directory must be the same than the input one):
+rm /tmp/*.png
+cp ../sequences/stockholm/000.png /tmp
+
+# 2D 1-levels forward DWT:
+python3 -O DWT.py -p /tmp/ -i 000 -d 000
 
 # Visualize the subbands:
-display -normalize /tmp/000_LL # <- LL1
-display -normalize /tmp/000_LH # <- LH1
-display -normalize /tmp/000_HL # <- HL1
-display -normalize /tmp/000_HH # <- HH1
+display -normalize /tmp/LL000.png # <- LL1
+display -normalize /tmp/LH000.png # <- LH1
+display -normalize /tmp/HL000.png # <- HL1
+display -normalize /tmp/HH000.png # <- HH1
 
-# 2D 1-levels forward DWT of the LL subband:
-./DWT.py -i /tmp/000_LL
--d /tmp/000_LL
+# 2D 1-levels backward DWT:
+python3 -O DWT.py -b -p /tmp/ -d 000 -i reconstruction
 
-# Visualize the subbands:
-display -normalize /tmp/000_LL_LL # <- LL2
-display -normalize /tmp/000_LL_LH # <- LH2
-display -normalize /tmp/000_LL_HL # <- HL2
-display -normalize /tmp/000_LL_HH # <- HH2
+# Visualize the reconstruction:
+display -normalize /tmp/reconstruction.png 
 
-# The result of the 2D 2-levels forward DWT are the subbands: LL2,
-# LH2, HL2, HH2, LH1, HL1, HH1
-
-# The scale 2 of the image is represented by LL2.
-
-# The scale 1 can be reconstructed using the 2D 1-levels backward DWT
-# on the 000_LL_{LL, LH, HL, HH} subbands:
-./DWT.py -b -d /tmp/000_LL -i /tmp/scale1 && display -normalize /tmp/scale1
-
-# The reconstruction '/tmp/scale1' and the original scale 1
-# '/tmp/000_LL' have the same resolution:
-file /tmp/scale1 /tmp/000_LL
-
-# Floating-point arithmetic of DWT introduces minimal distortions:
-cmp /tmp/scale1 /tmp/000_LL
-
-# Basically, distortion is white noise:
-../tools/show_differences.sh -1 /tmp/scale1 -2 /tmp/000_LL -o /tmp/diffs.png
+# Show diferences:
+../tools/show_differences.sh -1 /tmp/reconstruction.png -2 /tmp/000.png -o /tmp/diffs.png
 display -normalize /tmp/diffs.png
+\end{verbatim}
 
-# The scale 0 is recovered using again the inverse transform:
-cp /tmp/scale1 /tmp/000_LL
-./DWT.py -b -d /tmp/000 -i /tmp/scale0 && display -normalize /tmp/scale0
+\subsection{Simple 2D-DWT 2-levels example}
+\begin{verbatim}
+# You must be in the 'src' directory.
+
+# Copy a image (the output directory must be the same than the input one):
+rm /tmp/*.png
+cp ../sequences/stockholm/000.png /tmp
+
+# First level:
+python3 -O DWT.py -p /tmp/ -i 000 -d 000
+
+# Second level:
+python3 -O DWT.py -p /tmp/LL -i 000 -d 000
+
+# Visualize the subbands:
+ls -l /tmp/*.png
+
+# Reverse second level:
+python3 -O DWT.py -b -p /tmp/LL -i reconstruction -d 000
+display -normalize /tmp/LLreconstruction.png
+
+# Reverse first level:
+cp /tmp/LLreconstruction.png /tmp/LL000.png
+python3 -O DWT.py -b -p /tmp/ -i reconstruction -d 000
+display -normalize /tmp/reconstruction.png
+
+# Show diferences:
+../tools/show_differences.sh -1 /tmp/reconstruction.png -2 /tmp/000.png -o /tmp/diffs.png
+display -normalize /tmp/diffs.png
 \end{verbatim}
 
 \section{Motion DWT (MDWT)}
@@ -155,28 +166,30 @@ each image of the input sequence is transformed independently.
 \begin{verbatim}
 # You must be in the 'src' directory.
 
+# Create the output directory for the 1st-level decompositions:
+rm -rf /tmp/S
+mkdir /tmp/S
+
 # Motion 2D 1-levels forward DWT of the 'stockholm' sequence:
-python -O ./MDWT.py -i ../sequences/stockholm/ -d /tmp/stockholm_
+python3 -O ./MDWT.py -i ../sequences/stockholm/ -d /tmp/S/
 
 # Visualize the subbands:
-rm /tmp/*.png
-for i in /tmp/stockholm_00?_LL; do convert -normalize $i $i.png; done
-animate /tmp/*.png
-rm /tmp/*.png
-for i in /tmp/stockholm_00?_LH; do convert -normalize $i $i.png; done
-animate /tmp/*.png
-rm /tmp/*.png
-for i in /tmp/stockholm_00?_HL; do convert -normalize $i $i.png; done
-animate /tmp/*.png
-rm /tmp/*.png
-for i in /tmp/stockholm_00?_HH; do convert -normalize $i $i.png; done
-animate /tmp/*.png
+for i in /tmp/S/00?/LL.png; do convert -normalize $i $i.norm; done
+animate /tmp/S/00?/LL*.norm
+for i in /tmp/S/00?/LH.png; do convert -normalize $i $i.norm; done
+animate /tmp/S/00?/LH*.norm
+for i in /tmp/S/00?/HL.png; do convert -normalize $i $i.norm; done
+animate /tmp/S/00?/HL*.norm
+for i in /tmp/S/00?/HH.png; do convert -normalize $i $i.norm; done
+animate /tmp/S/00?/HH*.norm
 
 # Motion 2D 1-levels backward DWT:
-python -O MDWT.py -b -i /tmp/recons_ -d /tmp/stockholm_
+rm -rf /tmp/s
+mkdir /tmp/s
+python3 -O MDWT.py -b -i /tmp/s/ -d /tmp/S/
 
 # Visualization of the reconstruction:
-rm -f /tmp/*.png; for i in /tmp/recons_*; do convert -normalize $i $i.png; done; animate /tmp/*.png
+for i in /tmp/s/00?.png; do convert -normalize $i $i.norm; done; animate /tmp/s/*.norm
 \end{verbatim}
 
 \section{Video transform alternatives}
@@ -533,6 +546,8 @@ To compute the subband gains we have two options:
 This computation can be also applied to MCDWT, by computing the subband
 gains as a function of the number $T$ of temporal decompositions.
 
+\begin{comment}
+
 \section{Encoding of B-type subbands}
 The subband $\tilde{b.H}$ is no longer needed for applying the
 butterfly to different decompositions and scales. For this reason, we
@@ -554,23 +569,36 @@ where
   [\hat{b.L}] = \frac{[b_a.L][s_a.L]+[s_c.L][b_c.L]}{[s_a.L]+[s_c.L]}.
 \end{equation}
 
-\item [2.] Compute $\tilde{b}=\text{2D-DWT}([\tilde{b.L}])$.
-\item [3.] For each coefficient $x,y$ in $\tilde{b}.L$:
-  \begin{enumerate}
-  \item [a.] $d_{i=x\times b.\text{rows}+y} = (\text{abs}(\tilde{b}_{x,y}), x, y)$
-  \end{enumerate}
-\item [4.] Sort $d$ in desceding order sorted by field 0 /* use the amplitude of luminance */.
-\item [5.] $\lambda_0 = \lambda = 1 <<
-  \text{int}(\log_2(\text{abs}(d_{0})))$ /* maximum amplitude */.
-\item [6.] For each coefficient $i$ in $d$:
-  \begin{enumerate}
-  \item [a.] $x,y = d_i[1:2]$.
-  \item [b.] If any of
-    $1<<\text{int}(\log_2(\tilde{b.H}_{x,y}))==\lambda_0$ then send
-    $\text{sign}(\tilde{b.H}_{x,y})$ for the three (LH, HL and HH)
-    subbands.
-  \item [b.] Send $(\hat{b.H}_{x,y}~\text{bitwise-and}~\lambda)/\lambda$ for
-    the three (LH, HL and HH) subbands.
+\item [2.] Compute the 2D-DWT of subband $L$
+  \begin{equation}
+    \tilde{b}=\text{DWT}([\tilde{b.L}]).
+  \end{equation}
+
+\item [3.] Find the indices for $\tilde{b.L}$ that sorts it in descending order by energy
+  \begin{equation}
+    \text{indices}=\text{unravel\_index}(\text{argsort}(\text{abs}(\tilde{b.L}),
+    b.L.\text{width}, b.L.\text{height})).
+  \end{equation}
+%\item [3.] For each coefficient $x,y$ in $\tilde{b}.L$:
+%  \begin{enumerate}
+%  \item [a.] $d_{i=x\times b.\text{width}+y} = (\text{abs}(\tilde{b}_{x,y}), x, y)$
+%  \end{enumerate}
+%\item [4.] Sort $d$ in desceding order sorted by field 0 /* use the amplitude of luminance */.
+\item Go over $\tilde{b}.L$ sending the wavelet coefficients of subbands
+  $LH^2$, $HL^2$ and $HH^2$ in descending order by energy
+%\item [5.] Estimate the nearest power of two smaller or equan than the maximum amplitude
+%  \begin{equation}
+%    \lambda_0 = \lambda = 1 << \text{int}(\log_2(\text{abs}(d_{0}))).
+%  \end{equation}
+%\item [6.] For each coefficient $i$ in $d$:
+%  \begin{enumerate}
+%  \item [a.] $x,y = d_i[1:2]$.
+%  \item [b.] If any of
+%    $1<<\text{int}(\log_2(\tilde{b.H}_{x,y}))==\lambda_0$ then send
+%    $\text{sign}(\tilde{b.H}_{x,y})$ for the three (LH, HL and HH)
+%    subbands.
+%  \item [b.] Send $(\hat{b.H}_{x,y}~\text{bitwise-and}~\lambda)/\lambda$ for
+%    the three (LH, HL and HH) subbands.
   \end{enumerate}
 \item [7.] $\lambda >>= 1$.
 \item [8.] Goto step 6.
@@ -607,7 +635,7 @@ the following algorithm can be used:
       HH^2 += 2.
     \end{array}
   \end{equation}
-\item [4.] Create a linear array with the 3 matrices
+\item [4.] Create an array with the 3 matrices
   \begin{equation}
     H = [LH^2, HL^2, HH^2].
   \end{equation}
@@ -623,8 +651,8 @@ the following algorithm can be used:
     \text{unravel\_index}(\text{argsort}(\text{abs}(H')), \text{width},
     \text{height}).
   \end{equation}
-\item [7.] Go over $H'$ looking for the wavelet coefficients of
-  subbands $LH^2$, $HL^2$ and $HH^2$ in descending order by energy
+\item [7.] Go over $H'$ sending the wavelet coefficients of subbands
+  $LH^2$, $HL^2$ and $HH^2$ in descending order by energy
   \begin{equation}
     \begin{array}{l}
       \text{for~}d\text{~in range}(3): \\
@@ -635,6 +663,8 @@ the following algorithm can be used:
     \end{array}
   \end{equation}
 \end{enumerate}
+
+\end{comment}
 
 \begin{comment}
 
