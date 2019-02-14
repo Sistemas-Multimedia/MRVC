@@ -12,34 +12,38 @@ from DWT import DWT
 sys.path.insert(0, "..")
 from src.IO import image
 from src.IO import decomposition
+import os
 
 class MDWT:
 
     def __init__(self):
         self.dwt = DWT()
 
-    def forward(self, s="/tmp/stockholm/", S="/tmp/stockholm_", N=5):
+    def forward(self, prefix="/tmp/", suffix=".png", N=5):
         ''' Motion 1-iteration forward 2D DWT of a sequence of images.
 
         Compute the 2D-DWT of each image of the sequence s.
 
-        Input:
+        Input
         -----
 
             s: the sequence of images to be transformed.
 
-        Output:
+        Output
         ------
 
             S: the sequence of decompositions (transformed images).
 
         '''
         for i in range(N):
-            img = image.read("{}{:03d}".format(s, i))
+            img = image.read(prefix, "{:03d}{}".format(i, suffix))
             pyr = self.dwt.forward(img)
-            decomposition.write(pyr, "{}{:03d}".format(S, i))
+            #dir_name = "{}{:03d}".format(S, i)
+            #print("dir_name=",dir_name)
+            #os.mkdir(dir_name)
+            decomposition.write(pyr, prefix, "{:03d}{}".format(i, suffix))
 
-    def backward(self, S="/tmp/stockholm_", s="/tmp/stockholm_", N=5):
+    def backward(self, prefix="/tmp/", suffix=".png", N=5):
         ''' Motion 1-iteration forward 2D DWT of a sequence of decompositions.
 
         Compute the inverse 2D-DWT of each decomposition of the sequence S.
@@ -57,9 +61,9 @@ class MDWT:
         '''
 
         for i in range(N):
-            pyr = decomposition.read("{}{:03d}".format(S, i))
+            pyr = decomposition.read(prefix, "{:03d}{}".format(i, suffix))
             img = self.dwt.backward(pyr)
-            image.write(img, "{}{:03d}".format(s, i))
+            image.write(img, prefix, "{:03d}{}".format(i, suffix))
 
 if __name__ == "__main__":
 
@@ -80,11 +84,14 @@ if __name__ == "__main__":
     parser.add_argument("-b", "--backward", action='store_true',
                         help="Performs backward transform")
 
+    parser.add_argument("-p", "--prefix", help="Prefix", default="/tmp/")
+    parser.add_argument("-s", "--suffix", help="Suffix", default="/tmp/")
+
     parser.add_argument("-i", "--images",
-                        help="Sequence of images", default="/tmp/stockholm/")
+                        help="Sequence of images", default="/tmp/")
 
     parser.add_argument("-d", "--decompositions",
-                        help="Sequence of decompositions", default="/tmp/stockholm_")
+                        help="Sequence of decompositions", default="/tmp/")
 
     parser.add_argument("-N",
                         help="Number of images/decompositions", default=5, type=int)
@@ -95,8 +102,8 @@ if __name__ == "__main__":
     if args.backward:
         if __debug__:
             print("Backward transform")
-        d.backward(args.decompositions, args.images, args.N)
+        d.backward(args.prefix, args.suffix, args.N)
     else:
         if __debug__:
             print("Forward transform")
-        p = d.forward(args.images, args.decompositions, args.N)
+        p = d.forward(args.prefix, args.suffix, args.N)
