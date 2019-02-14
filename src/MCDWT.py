@@ -56,21 +56,30 @@ class MCDWT:
         bH = self.dwt.forward(BH)
         return bH[1]
 
-    def forward(self, s="/tmp/stockholm_", S="/tmp/mc_stockholm_", N=5, T=2):
+    def forward(self, prefix = "/tmp", suffix=".png", N=5, T=2):
         '''A Motion Compensated Discrete Wavelet Transform.
+
         Compute the MC 1D-DWT. The input video s (as a sequence of
         1-levels decompositions) must be stored in disk and the output (as a
         1-levels MC decompositions) will be stored in S.
-        Imput:
+
+        Input
         -----
+
             prefix : str
+
                 Localization of the input/output images. Example:
                 "/tmp/".
+
              N : int
+
                 Number of images to process.
+
              K : int
+
                 Number of levels of the MCDWT (temporal scales). Controls
                 the GOP size.
+
                   K | GOP_size
                 ----+-----------
                   0 |        1
@@ -80,41 +89,48 @@ class MCDWT:
                   4 |       16
                   5 |       32
                   : |        :
+
              P : int
-                Predictor to use.
+
+                Predictor to use:
+
                  1 --> Simple Average Predictor.
                  2 --> Weighted Average Predictor.
+
         Returns
         -------
+
             None.
         '''
         x = 2
         for t in range(T): # Temporal scale
             i = 0
-            aL, aH = decomposition.read("{}{:03d}".format(s, 0))
-            decomposition.write((aL, aH), "{}{:03d}".format(S, 0))
+            aL, aH = decomposition.read(prefix, "{:03d}{}".format(0, suffix))
+            #decomposition.write((aL, aH), prefix, "{:03d}{}".format(0, suffix))
             while i < (N//x):
-                bL, bH = decomposition.read("{}{:03d}".format(s, x*i+x//2))
-                cL, cH = decomposition.read("{}{:03d}".format(s, x*i+x))
+                bL, bH = decomposition.read(prefix, "{:03d}{}".format(x*i+x//2, suffix))
+                cL, cH = decomposition.read(prefix, "{:03d}{}".format(x*i+x, suffix))
                 bH = self.__forward_butterfly(aL, aH, bL, bH, cL, cH)
-                decomposition.write((bL, bH), "{}{:03d}".format(S, x*i+x//2))
-                decomposition.write((cL, cH), "{}{:03d}".format(S, x*i+x))
+                #decomposition.write((bL, bH), "{}{:03d}".format(S, x*i+x//2))
+                decomposition.writeH(bH, prefix, "{:03d}{}".format(x*i+x//2, suffix))
+                #decomposition.write((cL, cH), "{}{:03d}".format(S, x*i+x))
                 aL, aH = cL, cH
                 i += 1
             x *= 2
 
-    def backward(self, S="/tmp/mc_stockholm_", s="/tmp/stockholm_", N=5, T=2):
+    def backward(self, prefix = "/tmp", suffix=".png", N=5, T=2):
         x = 2**T
         for t in range(T): # Temporal scale
             i = 0
-            aL, aH = decomposition.read("{}{:03d}".format(S, 0))
-            decomposition.write((aL, aH), "{}{:03d}".format(s, 0))
+            aL, aH = decomposition.read(prefix, "{:03d}{}".format(0, suffix))
+            #decomposition.write((aL, aH), "{}{:03d}".format(s, 0))
             while i < (N//x):
-                bL, bH = decomposition.read("{}{:03d}".format(S, x*i+x//2))
-                cL, cH = decomposition.read("{}{:03d}".format(S, x*i+x))
+                bL, bH = decomposition.read(prefix, "{:03d}{}".format(x*i+x//2, suffix))
+                cL, cH = decomposition.read(prefix, "{:03d}{}".format(x*i+x, suffix))
                 bH = self.__backward_butterfly(aL, aH, bL, bH, cL, cH)
-                decomposition.write((bL, bH), "{}{:03d}".format(s, x*i+x//2))
-                decomposition.write((cL, cH), "{}{:03d}".format(s, x*i+x))
+                #decomposition.write((bL, bH), "{}{:03d}".format(s, x*i+x//2))
+                decomposition.writeH(bH, "{:03d}{}".format(x*i+x//2, suffix))
+                #decomposition.write((cL, cH), "{}{:03d}".format(s, x*i+x))
                 aL, aH = cL, cH
                 i += 1
             x //=2
@@ -147,6 +163,8 @@ if __name__ == "__main__":
     parser.add_argument("-m", "--mc_decompositions",
                         help="Sequence of motion compensated decompositions", default="/tmp/mc_stockholm_")
 
+    parser.add_argument("-p", "--prefix", help="Prefix", default="/tmp/")
+    parser.add_argument("-s", "--suffix", help="Suffix", default="/tmp/")
     parser.add_argument("-N",
                         help="Number of decompositions", default=5, type=int)
 
@@ -159,23 +177,23 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     if args.P == 1:
-        import simpleAverage as predictor
+        import simple_average as predictor
     else:
-        import weightedAverage as predictor
+        import weighted_average as predictor
 
     if args.backward:
         if __debug__:
             print("Backward transform")
 
-        p = decomposition.readL("{}000".format(args.mc_decompositions))
+        p = decomposition.readL(args.prefix, "000" + args.suffix)
         d = MCDWT(p.shape)
 
-        d.backward(args.mc_decompositions, args.decompositions, args.N, args.T)
+        d.backward(args.prefix, args.suffix, args.N, args.T)
     else:
         if __debug__:
             print("Forward transform")
 
-        p = decomposition.readL("{}000".format(args.decompositions))
+        p = decomposition.readL(args.prefix, "000" + args.suffix)
         d = MCDWT(p.shape)
 
-        p = d.forward(args.decompositions, args.mc_decompositions, args.N, args.T)
+        p = d.forward(args.prefix, args.suffix, args.N, args.T)

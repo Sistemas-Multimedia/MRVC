@@ -185,6 +185,28 @@ animate /tmp/HH*.norm
 python3 -O MDWT.py -b -p /tmp/ -s .png -N 5
 
 # Visualization of the reconstruction:
+rm /tmp/*.norm
+for i in /tmp/00?.png; do convert -normalize $i $i.norm; done; animate /tmp/00?.png.norm
+\end{verbatim}
+
+\subsection{2D-MDWT 2-levels example}
+\begin{verbatim}
+# You must be in the 'src' directory.
+
+# Create the output directory for the 1st-level decompositions:
+cp ../sequences/stockholm/*.png /tmp
+
+# 2D 2-levels forward MDWT:
+python3 -O MDWT.py -p /tmp/ -s .png -N 5
+python3 -O MDWT.py -p /tmp/LL -s .png -N 5
+
+
+# 2D 2-levels backward MDWT:
+python3 -O MDWT.py -b -p /tmp/LL -s .png -N 5
+python3 -O MDWT.py -b -p /tmp/ -s .png -N 5
+
+# Visualization of the reconstruction:
+rm /tmp/*.norm
 for i in /tmp/00?.png; do convert -normalize $i $i.norm; done; animate /tmp/00?.png.norm
 \end{verbatim}
 
@@ -340,32 +362,73 @@ $s_2$ and $s_4$ will be reconstructed (the second
   resolution}). If a second iteration of the backward transform is
 used, all the decompositions are rendered.
 
-\subsection{Example}
+\subsection{MCDWT 1-levels example}
 \begin{verbatim}
 # You must be in the 'src' directory.
 
-# Motion 2D 1-levels forward DWT of the 'stockholm' sequence:
-python -O ./MDWT.py -i ../sequences/stockholm/ -d /tmp/stockholm_
+cp ../sequences/stockholm/*.png /tmp
 
-# Motion Compensated 1D 1-levels forward DWT:
-python -O MCDWT.py -d /tmp/stockholm_ -m /tmp/mc_stockholm_
+# 1D 1-levels forward MDWT:
+python3 -O MDWT.py -p /tmp/ -s .png -N 5
 
-# First and last decompositions are not transformed by MCDWT:
-ls -l /tmp/stockholm_000_HH /tmp/mc_stockholm_000_HH
-ls -l /tmp/stockholm_004_HL /tmp/mc_stockholm_004_HL
+# 1D 1-levels forward MCDWT:
+python3 -O MCDWT.py -p /tmp/ -s .png -N 5
 
-# The rest, are transformed:
-ls -l /tmp/stockholm_001_LH /tmp/mc_stockholm_001_LH
-ls -l /tmp/stockholm_002_HL /tmp/mc_stockholm_002_HL
-ls -l /tmp/stockholm_003_HH /tmp/mc_stockholm_003_HH
+# 1D 1-levels backward MCDWT:
+python3 -O MCDWT.py -b -p /tmp/ -s .png -N 5
+
+# 1D 1-levels backward MDWT:
+python3 -O MDWT.py -b -p /tmp/ -s .png -N 5
+
+# Visualization of the reconstruction:
+for i in /tmp/???.png; do python3 ../tools/substract_offset.py -i $i -o $i.png; done; animate /tmp/???.png.png
+\end{verbatim}
+
+\subsection{Showing some statistics}
+\begin{verbatim}
+# You must be in the 'src' directory.
+
+cp ../sequences/stockholm/*.png /tmp
+
+# 1D 1-levels forward MDWT:
+python3 -O MDWT.py -p /tmp/ -s .png -N 5
+
+# First and last decompositions are not transformed by MCDWT (step 1/2):
+ls -l /tmp/HH000.png
+ls -l /tmp/HL004.png
+
+# The rest, are transformed (step 1/2):
+ls -l /tmp/HL001.png
+ls -l /tmp/LH002.png
+ls -l /tmp/HG003.png
+
+# Showing statistics (step 1/2):
+python3 ../tools/show_statistics.py -i /tmp/LH001.png
+python3 ../tools/show_statistics.py -i /tmp/HL001.png
+python3 ../tools/show_statistics.py -i /tmp/HH001.png
+python3 ../tools/show_statistics.py -i /tmp/LH002.png
+python3 ../tools/show_statistics.py -i /tmp/HL002.png
+python3 ../tools/show_statistics.py -i /tmp/HH002.png
+
+# 1D 1-levels forward MCDWT:
+python3 -O MCDWT.py -p /tmp/ -s .png -N 5
+
+# First and last decompositions are not transformed by MCDWT step 2/2):
+ls -l /tmp/HH000.png
+ls -l /tmp/HL004.png
+
+# The rest, are transformed (step 2/2):
+ls -l /tmp/HL001.png
+ls -l /tmp/LH002.png
+ls -l /tmp/HG003.png
 
 # Showing statistics:
-python ../tools/show_statistics.py -i /tmp/stockholm_001_LH
-python ../tools/show_statistics.py -i /tmp/mc_stockholm_001_LH
-python ../tools/show_statistics.py -i /tmp/stockholm_001_HL
-python ../tools/show_statistics.py -i /tmp/mc_stockholm_001_HL
-python ../tools/show_statistics.py -i /tmp/stockholm_001_HH
-python ../tools/show_statistics.py -i /tmp/mc_stockholm_001_HH
+python3 ../tools/show_statistics.py -i /tmp/LH001.png
+python3 ../tools/show_statistics.py -i /tmp/HL001.png
+python3 ../tools/show_statistics.py -i /tmp/HH001.png
+python3 ../tools/show_statistics.py -i /tmp/LH002.png
+python3 ../tools/show_statistics.py -i /tmp/HL002.png
+python3 ../tools/show_statistics.py -i /tmp/HH002.png
 
 # Visualization of the H-subbands
 rm -f /tmp/*.png; for i in /tmp/mc_stockholm_00?_LH; do convert -normalize $i $i.png; done; animate /tmp/*.png

@@ -24,12 +24,12 @@ class MDWT:
 
         Compute the 2D-DWT of each image of the sequence s.
 
-        Input:
+        Input
         -----
 
             s: the sequence of images to be transformed.
 
-        Output:
+        Output
         ------
 
             S: the sequence of decompositions (transformed images).
