@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+
 import cv2
 import numpy as np
 import math
@@ -27,6 +29,9 @@ def compute_entropy(d, counter):
     return -en
 
 image = cv2.imread(args.image, -1)
+tmp = image.astype(np.float32)
+tmp -= 32768.0
+image = tmp.astype(np.int16)
 
 width = image.shape[0]
 height = image.shape[1]
@@ -49,7 +54,7 @@ for y in range(width):
 entropy = [None]*components
 for c in range(components):
     entropy[c] = compute_entropy(histogram[c], number_of_pixels)
-    
+
 max = [None] * components
 min = [None] * components
 dynamic_range = [None] * components
@@ -75,3 +80,16 @@ for c in range(components):
     print("Mean of component {}: {}".format(c, mean[c]))
 for c in range(components):
     print("Entropy of component {}: {}".format(c, entropy[c]))
+
+indices = [None] * components
+for c in range(components):
+    print("Component {}".format(c))
+    print("{0: <8} {1: <10} {2: <10}".format("position", "coordinates", "value"))
+    # https://stackoverflow.com/questions/30577375/have-numpy-argsort-return-an-array-of-2d-indices
+    indices[c] = np.dstack(np.unravel_index(np.argsort(abs(image[:,:,c]).ravel()), (width, height)))
+    #print(indices[c].shape)
+    counter = 1
+    while counter <= 10:
+        print("{:8d}   {} {}".format(counter, indices[c][0][counter], image[indices[c][0][indices[c].shape[1]-counter][0], indices[c][0][indices[c].shape[1]-counter][1], c]))
+        counter += 1
+

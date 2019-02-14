@@ -13,7 +13,6 @@ from DWT import DWT
 sys.path.insert(0, "..")
 from src.IO import image
 from src.IO import decomposition
-from MC.optical.motion import generate_prediction
 
 
 class MCDWT:
@@ -25,19 +24,14 @@ class MCDWT:
 
     def __forward_butterfly(self, aL, aH, bL, bH, cL, cH):
         '''Motion compensated forward MCDWT butterfly.
-
         Input:
         -----
-
         aL, aH, bL, bH, cL, cH: array[y, x, component], the decomposition of
         the images a, b and c.
-
         Output:
         ------
-
         residue_bH: array[y, x, component], the base of the decomposition of
         the residue fot the image b.
-
         '''
 
         AL = self.dwt.backward((aL, self.zero_H))
@@ -46,9 +40,7 @@ class MCDWT:
         AH = self.dwt.backward((self.zero_L, aH))
         BH = self.dwt.backward((self.zero_L, bH))
         CH = self.dwt.backward((self.zero_L, cH))
-        BHA = generate_prediction(AL, BL, AH)
-        BHC = generate_prediction(CL, BL, CH)
-        prediction_BH = (BHA + BHC) / 2
+        prediction_BH  = predictor.generate_prediction(AL, BL, CL, AH, CH)
         residue_BH = BH - prediction_BH
         residue_bH = self.dwt.forward(residue_BH)
         return residue_bH[1]
@@ -60,37 +52,27 @@ class MCDWT:
         AH = self.dwt.backward((self.zero_L, aH))
         residue_BH = self.dwt.backward((self.zero_L, residue_bH))
         CH = self.dwt.backward((self.zero_L, cH))
-        BHA = generate_prediction(AL, BL, AH)
-        BHC = generate_prediction(CL, BL, CH)
-        prediction_BH = (BHA + BHC) / 2
+        prediction_BH  = predictor.generate_prediction(AL, BL, CL, AH, CH)
         BH = residue_BH + prediction_BH
         bH = self.dwt.forward(BH)
         return bH[1]
 
     def forward(self, s="/tmp/stockholm_", S="/tmp/mc_stockholm_", N=5, T=2):
         '''A Motion Compensated Discrete Wavelet Transform.
-
         Compute the MC 1D-DWT. The input video s (as a sequence of
         1-levels decompositions) must be stored in disk and the output (as a
         1-levels MC decompositions) will be stored in S.
-
         Imput:
         -----
-
-            prefix : s
-
-                Localization of the input images. Example: "/tmp/stockholm_".
-
+            prefix : str
+                Localization of the input/output images. Example:
+                "/tmp/".
              N : int
-
                 Number of images to process.
-
-             T : int
-
+             K : int
                 Number of levels of the MCDWT (temporal scales). Controls
                 the GOP size.
-
-                  T | GOP_size
+                  K | GOP_size
                 ----+-----------
                   0 |        1
                   1 |        2
@@ -99,15 +81,13 @@ class MCDWT:
                   4 |       16
                   5 |       32
                   : |        :
-
+             P : int
+                Predictor to use.
+                 1 --> Simple Average Predictor.
+                 2 --> Weighted Average Predictor.
         Returns
         -------
-
-            prefix : S
-
-                Localization of the output decompositions. For example:
-                "/tmp/mc_stockholm_".
-
+            None.
         '''
         x = 2
         for t in range(T):  # Temporal scale
@@ -144,6 +124,7 @@ class MCDWT:
                 i += 1
             x //= 2
 
+<<<<<<< HEAD
     # Ignore
     def forward_(prefix="/tmp/", N=5, K=2):
         '''A Motion Compensated Discrete Wavelet Transform.
@@ -332,6 +313,8 @@ class MCDWT:
             x //= 2
 
 
+=======
+>>>>>>> upstream/master
 if __name__ == "__main__":
 
     import argparse
@@ -366,7 +349,15 @@ if __name__ == "__main__":
     parser.add_argument("-T",
                         help="Number of temporal levels", default=2, type=int)
 
+    parser.add_argument("-P",
+                        help="Predictor to use", default=1, type=int)
+
     args = parser.parse_args()
+
+    if args.P == 1:
+        import simpleAverage as predictor
+    else:
+        import weightedAverage as predictor
 
     if args.backward:
         if __debug__:

@@ -211,13 +211,14 @@ video), a t+2D transformed video presents some drawbacks:
 \item We can restrict the perfect reconstruction only to the scale 0
   case, but in this case, a spatial resolution representation of the
   motion information should be available at the decoder. This can be
-  done, but in general, scalabilitity decreases the compression ratio.
+  done, but in general, scalabilitity decreases the compression ratio
+  (on the motion data in this case).
 \item We can use the full (scale 0) resolution version of the motion
   information for reconstructing all the scales of the texture
   (interpolating it for all those scales greater that 0), but in this
   case the memory and computing requirements at the decoders will
-  increase. Depending on the resolution of the scale 0 and the
-  computational resources, this can be affordable or not.
+  increase. Therefore, depending on the resolution of the scale 0 and the
+  computational resources, this could be affordable or not.
 \item As an alternative to this last problem, we can decrease the
   accuracy of the motion information in order to make it suitable for
   the spatial resolution. However, this will increase the distortion
@@ -225,7 +226,7 @@ video), a t+2D transformed video presents some drawbacks:
 \end{itemize}
 
 Finally, it is important to realize that the presence of the motion
-data in the code-stream introduces also complexity to the decoding
+data in the code-stream introduces also complexity into the decoding
 process because, in a quality scalable scenario, it is not trivial
 (specially when non-linear systems such as those based on ME are
 involved) to decide how to interleave the motion and the texture
@@ -266,22 +267,23 @@ used to estimate and compensate the $H$ subbands.
 \begin{figure}
 \centering
 \imgw{1200}{graphics/forward_butterfly.svg}
-\caption{Forward MCDWT butterfly.}
+\caption{Forward MCDWT butterfly.\label{fig:forward_butterfly}}
 \end{figure}
-\lstinputlisting[firstline=20, lastline=67, language=python, caption={MCDWT.py (extract)}]{../src/MCDWT.py}
+\lstinputlisting[firstline=24, lastline=57, language=python, caption={MCDWT.py (extract)}]{../src/MCDWT.py}
+\lstinputlisting[firstline=4, lastline=9, language=python, caption={simple\_average.py (extract)}]{../src/simple_average.py}
 
 Notice that, even if $a$ and $c$ (at full resolution) are available at
 the decoder, only $b.L$ is. So, it does not make sense to search the
 low resolution structures of $b.L$ in the high resolution images $a$
 and $c$, because even if a perfect match is achieved (think about the
-three images $a$, $b$ and $c$ are identical), the prediction error
+three decompositions $a$, $b$ and $c$ are identical), the prediction error
 would be different than $0$ as a consequence of that the high
 resolution information is missing in $b.L$.
 
 \subsection{MCDWT forward transform}
 
 The MCDWT forward transform is the result of appliying the MCDWT
-butterfly to all the input sequence of decompositions with different
+butterfly to the full input sequence of decompositions with different
 distances between them. As a result, except for the first and the last
 image of the sequence, all the $H$-subbands are temporally
 decorrelated.
@@ -368,32 +370,299 @@ python -O ./MCDWT.py -b -m /tmp/mc_stockholm_ -d /tmp/recons_MCDWT_
 python -O ./MDWT.py -b -d /tmp/recons_MCDWT_ -i /tmp/recons_MDWT_
 
 # Visualization of the reconstruction:
-rm -f /tmp/*.png; for i in /tmp/recons_MDWT_*; do ../tools/sub_32768_128.py $i $i.png; done; animate /tmp/recons_MDWT_*.png
+rm -f /tmp/*.png; for i in /tmp/recons_MDWT_*; do python ../tools/substract_offset.py -i $i -o $i.png; done; animate /tmp/recons_MDWT_*.png
 
 # Visualize the original sequence:
-rm -f /tmp/stockholm/*.png; cp -r ../sequences/stockholm /tmp; for i in /tmp/stockholm/*; do ../tools/sub_32768_128.py $i $i.png; done; animate /tmp/stockholm/*.png
+rm -f /tmp/stockholm/*.png; cp -r ../sequences/stockholm /tmp; for i in /tmp/stockholm/*; do python ../tools/substract_offset.py -i $i -o $i.png; done; animate /tmp/stockholm/*.png
+
+# Let's clear the motion compensated subbands and reconstruct the sequence ...
+
+# Create a zero subband:
+bash ../tools/create_black_image.sh; python ../tools/add_offset.py -i /tmp/zero.png -o /tmp/zero16.png -f 32768
+python ../tools/show_statistics.py -i /tmp/zero16.png
+
+# "Delete" the motion compensated subbands:
+cp /tmp/zero16.png /tmp/mc_stockholm_001_LH
+cp /tmp/zero16.png /tmp/mc_stockholm_001_HL
+cp /tmp/zero16.png /tmp/mc_stockholm_001_HH
+cp /tmp/zero16.png /tmp/mc_stockholm_002_LH
+cp /tmp/zero16.png /tmp/mc_stockholm_002_HL
+cp /tmp/zero16.png /tmp/mc_stockholm_002_HH
+cp /tmp/zero16.png /tmp/mc_stockholm_003_LH
+cp /tmp/zero16.png /tmp/mc_stockholm_003_HL
+cp /tmp/zero16.png /tmp/mc_stockholm_003_HH
+
+# Motion Compensated 1D 1-levels backward DWT:
+python -O ./MCDWT.py -b -m /tmp/mc_stockholm_ -d /tmp/recons2_MCDWT_
+
+# Motion 2D 1-levels backward DWT:
+python -O ./MDWT.py -b -d /tmp/recons2_MCDWT_ -i /tmp/recons2_MDWT_
+
+# Visualization of the reconstruction:
+rm -f tmp/recons2_MDWT_*.png; for i in /tmp/recons2_MDWT_*; do python ../tools/substract_offset.py -i $i -o $i.png; done; animate /tmp/recons2_MDWT_*.png
+
+# Visualization of the differences:
+rm -f /tmp/diff*.png; for i in {0..4}; do ii=$(printf "%03d" $i); bash ../tools/show_differences.sh -1 /tmp/recons_MDWT_$ii -2 /tmp/recons2_MDWT_$ii -o /tmp/diff_$i.png; done; animate /tmp/diff*.png
 \end{verbatim}
+
+\section{Adaptive motion compensation based on the distortion of the prediction error}
+As can be seen in the MCDWT bufferfly (see
+Fig.~\ref{fig:forward_butterfly}), both predictions $[b_a.H]$ and
+$[b_c.H]$ have the same weight to build the prediction
+\begin{equation}
+  [\hat{b.H}] = \frac{[b_a.H] + [b_c.H]}{2}.
+\end{equation}
+This simple computation, that can have very effective for example in
+\href{https://biteable.com/blog/tips/video-transitions-effects-examples/}{dissolves}
+video transitions, can also be counterproductive when objects appear
+only in one of the reference images. For this reason, in this section
+a different predictor is proposed, based on the prediction error
+generated during the ME process.
+
+Let $[b_a.L]$ the prediction generated for the subband $[b.L]$ using
+$[a.L]$ as reference and $[a.L]\rightarrow [b.L]$ as motion, and let
+$[b_c.L]$ the prediction generated for $[b.L]$ using $[c.L]$ as
+reference and $[c.L]\rightarrow [b.L]$ as motion. We now compute the
+prediction errors
+\begin{equation}
+  \begin{array}{l}
+    {[e_a.L]} = [b.L] - [b_a.L]\\
+    {[e_c.L]} = [b.L] - [b_c.L].
+  \end{array}
+\end{equation}
+
+Now, we define the similarity matrices as
+\begin{equation}
+  \begin{array}{l}
+    {[s_a.L]} = \frac{1}{1+{|[e_a.L]|}}\\
+    {[s_c.L]} = \frac{1}{1+{|[e_c.L]|}}.    
+  \end{array}
+  \label{eq:weighted_prediction}
+\end{equation}
+Notice that, if (for example) the error $[e_a.L]_{x,y}=0$, the
+similarity is $[s_a.L]_{x,y}=1$ (the maximum similarity), and if the
+error is high, the similarity tends to be $0$.
+
+With this information, that can be recovered by the decoder, the
+improved prediction is defined as
+\begin{equation}
+  [\hat{b.H}] = \frac{[b_a.H][s_a.L]+[s_c.L][b_c.H]}{[s_a.L]+[s_c.L]}.
+\end{equation}
+
+Notice that, if (for example) $[s_a.L]_{x,y}=1$ and
+$[s_c.L]_{x,y}\approx 0$, then
+$[\hat{b.H}]_{x,y}\approx [b_a.H]_{x,y}$, and viceversa. If
+$[s_a.L]_{x,y}=[s_c.L]_{x,y}$, then
+$[\hat{b.H}]_{x,y}=\frac{[b_a.H]+[b_c.H]}{2}$ (even if both similarities are small).
+
+\lstinputlisting[firstline=4, lastline=15, language=python, caption={weighted\_average.py (extract)}]{../src/weighted_average.py}
+
+\section{Orthogonal, orthonormal, and biorthogonal transforms}
+In signal processing\footnote{In mathemathics the definition of
+  orthogonality refers to characteristics such as the basis of the
+  transform forms an orthognal espace, where is is impossible to
+  represent one of the basis as a linear combination of the rest of
+  basis (or in other words, if the inner product is zero).}, a
+transform (such as the Discrete Cosine Transform, the Walsh-Hadamard
+Transform or the Karhunen-Loeve Transform) is orthogonal when the
+coefficients generated by the transform are uncorrelated (there is no
+way to infer one coefficient from another).
+
+If the norm of all the basis of the an orthogonal transform is one,
+then the transform is said orthonormal. Orthonormal transforms are
+interesting because:
+\begin{enumerate}
+\item They are energy preserving: the energy of the output is the same
+  than the energy of the input. This means that, for example, a
+  quantization error produced in a coefficient of the transform will
+  generate the same quantization error at the output (the complete
+  signal) of the inverse transform. The same holds by the forward
+  transform.
+\item The transform matrix of the inverse transform is the transpose
+  of the forward transform. In orthogonal transforms, the transform
+  matrix of the inverse transform is the inverse of the transform
+  matrix of the forward transform.
+\end{enumerate}
+
+Biorthogonal transforms do no satisfy any of these features: they are
+not energy preserving (this can be also observed because the
+frequency-domain responses of the analysis and synthesis filters are
+not symmetric), and there is not an algebraic way (matrix
+transposition/inversion) to compute the backward transform from the
+forward one, and viceversa. This, that can be considered as a
+drawback, gives an extra degree of freedom to design the analysis and
+the synthesis filters (whose only requirement is that transform pair
+to be reversible), providing in general the possibility of using more
+sofisticated filters such as those based on non-linear filtering, as
+for example, those based on motion estimation algorithms.
+
+In general, each subband $b$ of a decomposition generated by a
+biorthogonal 2D-DWT transform have a different subband gain
+$\alpha_b$. Usually, the lower the frequency of the subband, the
+higher the gain. Notice also, that these gains also are different for
+each different transform.
+
+Subband gains are important in lossy signal compression because they
+quantify the relative importance of the wavelet coefficients of the
+different subbands when we introduce distortion in the wavelet
+domain. Thus, for example, if we decide to quantize a wavelet
+coefficient, the amount of distortion that we are generating in the
+signal domain will depend on the subband where that coefficient is
+localized. In general, low-frequency coefficients are more
+``important'' that high-frequency ones.
+
+To compute the subband gains we have two options:
+\begin{enumerate}
+\item The algebraic way. We will need the expressions of the four
+  filters (two anaylsis filters and two synthesis filters) and deduce
+  the gains.
+\item The algorithmic way. We will need to compute the energy of the
+  impulse response of the inverse transform, when we apply such
+  impulse to each one of the subbands of the decomposition. Supposing
+  that, after appliying the DWT to an image, the coefficients of the
+  subband HH are the least energetic with an energy $x$, the subband
+  gain for subband $b$ is computed as
+  \begin{equation}
+    \alpha_b = \epsilon_b/x,
+  \end{equation}
+  where $\epsilon_b$ is the energy of the reconstruction when the
+  impulse signal is localized at $b$. Notice that all the gains should
+  be larger than one.
+\end{enumerate}
+
+This computation can be also applied to MCDWT, by computing the subband
+gains as a function of the number $T$ of temporal decompositions.
+
+\section{Encoding of B-type subbands}
+The subband $\tilde{b.H}$ is no longer needed for applying the
+butterfly to different decompositions and scales. For this reason, we
+can compress this subband. As a result, after using the butterfly to
+all the decompositions of the sequence and all the scales, all the $H$
+subbands will be compressed, excepting the intra-coded image of each
+GOP. Notice that the redundancy exploited in B-type $H$ subbands is
+temporal.
+
+To compress the $\tilde{b.H}$ subbands, the following algorithm can be
+used:
+\begin{enumerate}
+\item [1.] Compute the prediction error for the $[b.L]$ subband
+\begin{equation}
+  [\tilde{b.L}] = [b.L] - [\hat{b.L}]
+\end{equation}
+where
+\begin{equation}
+  [\hat{b.L}] = \frac{[b_a.L][s_a.L]+[s_c.L][b_c.L]}{[s_a.L]+[s_c.L]}.
+\end{equation}
+
+\item [2.] Compute $\tilde{b}=\text{2D-DWT}([\tilde{b.L}])$.
+\item [3.] For each coefficient $x,y$ in $\tilde{b}.L$:
+  \begin{enumerate}
+  \item [a.] $d_{i=x\times b.\text{rows}+y} = (\text{abs}(\tilde{b}_{x,y}), x, y)$
+  \end{enumerate}
+\item [4.] Sort $d$ in desceding order sorted by field 0 /* use the amplitude of luminance */.
+\item [5.] $\lambda_0 = \lambda = 1 <<
+  \text{int}(\log_2(\text{abs}(d_{0})))$ /* maximum amplitude */.
+\item [6.] For each coefficient $i$ in $d$:
+  \begin{enumerate}
+  \item [a.] $x,y = d_i[1:2]$.
+  \item [b.] If any of
+    $1<<\text{int}(\log_2(\tilde{b.H}_{x,y}))==\lambda_0$ then send
+    $\text{sign}(\tilde{b.H}_{x,y})$ for the three (LH, HL and HH)
+    subbands.
+  \item [b.] Send $(\hat{b.H}_{x,y}~\text{bitwise-and}~\lambda)/\lambda$ for
+    the three (LH, HL and HH) subbands.
+  \end{enumerate}
+\item [7.] $\lambda >>= 1$.
+\item [8.] Goto step 6.
+\end{enumerate}
+
+\section{Encoding of I-type subbands}
+After the the $T$-levels MCDWT transform of a sequence of
+decompositions, $T+1$ temporal subbands are generated, and the
+temporal subband $L^{T+1}$ has a one $H$ I-type subband for each
+GOP. Notice that the redundancy exploited in the I-type $H$ subbands
+is spatial.
+
+To compress the $a.H$ subband in the last iteration of the butterfly,
+the following algorithm can be used:
+\begin{enumerate}
+\item [1.] Compute the 2D-DWT of the $a.L$ subband
+\begin{equation}
+  LL^2, LH^2, HL^2, HH^2 = \text{DWT}(LL). 
+\end{equation}
+
+\item [2.] Desplace 2 bits to the left the $H$ coefficients to create
+  space for encoding the subband
+  \begin{equation}
+    \begin{array}{l}
+      LH^2 <<= 2 \\
+      HL^2 <<= 2 \\
+      HH^2 <<= 2.
+    \end{array}
+  \end{equation}
+\item [3.] Encode de subband:
+  \begin{equation}
+    \begin{array}{l}
+      HL^2 += 1 \\
+      HH^2 += 2.
+    \end{array}
+  \end{equation}
+\item [4.] Create a linear array with the 3 matrices
+  \begin{equation}
+    H = [LH^2, HL^2, HH^2].
+  \end{equation}
+\item [5.] Create a linear array with the 3 flattened matrices
+  \begin{equation}
+    H'=\text{ravel}(H).
+  \end{equation}
+\item [6.] Find the indices for the $LH^2$, $HL^2$ and $HH^2$ matrices
+  that sort $H'$ in descending order by energy
+  ($\text{width}=LH^2.\text{shape}[0]$ and $\text{height}=LH^2.\text{shape}[1]$)
+  \begin{equation}
+    \text{indices} =
+    \text{unravel\_index}(\text{argsort}(\text{abs}(H')), \text{width},
+    \text{height}).
+  \end{equation}
+\item [7.] Go over $H'$ looking for the wavelet coefficients of
+  subbands $LH^2$, $HL^2$ and $HH^2$ in descending order by energy
+  \begin{equation}
+    \begin{array}{l}
+      \text{for~}d\text{~in range}(3): \\
+      ~ \text{for~}y\text{~in range}(\text{height}): \\
+      ~~ \text{for~}x\text{~in range}(\text{width}): \\
+      ~~~ i = 3\times(\text{height}\times \text{width})+y\times \text{width} + x \\
+      ~~~ \text{send}(H[H'[\text{indice}[i]] \text{~mod~} 4][H'[\text{indice}[i]] >> 2]).
+    \end{array}
+  \end{equation}
+\end{enumerate}
 
 \begin{comment}
 
-\section{Video \href{http://inst.eecs.berkeley.edu/~ee290t/sp04/lectures/videowavelet_UCB1-3.pdf}{scalability}}
-MCDWT inputs a \href{https://en.wikipedia.org/wiki/Video}{video} (a
-sequence of images) and outputs a video (a sequece of pyramids), in
-such a way that when only a portion of the data of the transformed
-video is used, a video with a lower
-\href{https://en.wikipedia.org/wiki/Temporal_resolution}{temporal
-resolution}, lower
-\href{https://en.wikipedia.org/wiki/Image_resolution\#Spatial_resolution}{spatial
-resolution} or/and lower
-\href{https://en.wikipedia.org/wiki/Compression_artifact}{quality} can
-be generated.
+\section{Progressive reconstruction}
+The forward bufferfly should reduce the energy of subband $b.H$$ after
+substracting a prediction (see Eq.~\ref{eq:weighted_prediction}) which
+is generated using the subbands $a.H$ and $c.H$ as references. If the
+prediction is good, the energy of $\tilde{b.H}$ will be small and
+viceversa. If the prediction is good, the quantization of the subbands
+$a.H$, $b.H$ and $c.H$ should leave more energy in the subbands $a.H$
+and $c.H$ than in $b.H$. Therefore, if the prediction is good, the
+progressive reconstruction of the subbands (using a progressively
+small quantization step) should reconstruct first the information of
+$a.H$ and $c.H$.
 
-If all the transformed data is used, then the original video is
-restored (MCDWT is a lossless transform). The forward transform's
-output has exactly the same number of pyramids than images are in the
-input video (for example, no extra motion fields are produced). At
-this time, we will focuse only on spatial
-\href{http://inst.eecs.berkeley.edu/~ee290t/sp04/lectures/videowavelet_UCB1-3.pdf}{scalability}. Window
-Of Interest (WOI) and quality scabilities will be addressed later.
+\section{Coefficients encoding}
+Subband $\tilde{b.H}$ is not used any more as a reference and
+therefore, it can be compressed. The compression algorithm sort the
+coefficients of $\tilde{b.H}$ by the amplitude of the coefficients of
+$\tilde{b.L}$, considering that the prediction error will affect in
+the same way the low and the high frequencies of $b$. Then, the sorted
+coefficients are DPCM encoded, quantized, and entropy encoded.
+
+\section{Multilevel MCLT}
+The distance between images $a$, $b$ and $c$ should decrease the
+efficiency of the predictions, generating more energy in the
+low-frequency subbands. Therefore, the quantization when $T>1$ should
+transmit more information of the low-frequency subbands than of the
+high-frequency ones when the subbands are quantized.
 
 \end{comment}
