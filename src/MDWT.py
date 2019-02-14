@@ -12,13 +12,14 @@ from DWT import DWT
 sys.path.insert(0, "..")
 from src.IO import image
 from src.IO import decomposition
+import os
 
 class MDWT:
 
     def __init__(self):
         self.dwt = DWT()
 
-    def forward(self, s="/tmp/stockholm/", S="/tmp/stockholm_", N=5):
+    def forward(self, s="../stockholm/", S="/tmp/stockholm/", N=5):
         ''' Motion 1-iteration forward 2D DWT of a sequence of images.
 
         Compute the 2D-DWT of each image of the sequence s.
@@ -35,11 +36,14 @@ class MDWT:
 
         '''
         for i in range(N):
-            img = image.read("{}{:03d}".format(s, i))
+            img = image.read(s, "{:03d}".format(i), ".png")
             pyr = self.dwt.forward(img)
-            decomposition.write(pyr, "{}{:03d}".format(S, i))
+            #dir_name = "{}{:03d}".format(S, i)
+            #print("dir_name=",dir_name)
+            #os.mkdir(dir_name)
+            decomposition.write(pyr, S, "{:03d}".format(i), ".png")
 
-    def backward(self, S="/tmp/stockholm_", s="/tmp/stockholm_", N=5):
+    def backward(self, S="/tmp/stockholm/", s="/tmp/", N=5):
         ''' Motion 1-iteration forward 2D DWT of a sequence of decompositions.
 
         Compute the inverse 2D-DWT of each decomposition of the sequence S.
@@ -57,7 +61,7 @@ class MDWT:
         '''
 
         for i in range(N):
-            pyr = decomposition.read("{}{:03d}".format(S, i))
+            pyr = decomposition.read("{}{:03d}/".format(S, i))
             img = self.dwt.backward(pyr)
             image.write(img, "{}{:03d}".format(s, i))
 
@@ -81,10 +85,10 @@ if __name__ == "__main__":
                         help="Performs backward transform")
 
     parser.add_argument("-i", "--images",
-                        help="Sequence of images", default="/tmp/stockholm/")
+                        help="Sequence of images", default="/tmp/")
 
     parser.add_argument("-d", "--decompositions",
-                        help="Sequence of decompositions", default="/tmp/stockholm_")
+                        help="Sequence of decompositions", default="/tmp/")
 
     parser.add_argument("-N",
                         help="Number of images/decompositions", default=5, type=int)
