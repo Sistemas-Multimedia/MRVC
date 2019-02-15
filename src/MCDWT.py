@@ -1,17 +1,10 @@
 #!/usr/bin/env python
 
-# import cv2
-# import numpy as np
-# import pywt
-# import math
-
-#import cv2
 import numpy as np
 import sys
 
 from DWT import DWT
 sys.path.insert(0, "..")
-from src.IO import image
 from src.IO import decomposition
 
 class MCDWT:
