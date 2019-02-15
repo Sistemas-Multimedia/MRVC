@@ -12,7 +12,6 @@ from DWT import DWT
 sys.path.insert(0, "..")
 from src.IO import image
 from src.IO import decomposition
-import os
 
 class MDWT:
 
@@ -38,9 +37,9 @@ class MDWT:
 
         '''
         for i in range(N):
-            img = image.read(prefix, "{:03d}.png".format(i))
+            img = image.read(prefix, "{:03d}".format(i))
             pyr = self.dwt.forward(img)
-            decomposition.write(pyr, prefix, "{:03d}.png".format(i))
+            decomposition.write(pyr, prefix, "{:03d}".format(i))
 
     def backward(self, prefix="/tmp/", N=5):
         '''Motion 1-iteration forward 2D DWT of a sequence of decompositions.
@@ -62,9 +61,9 @@ class MDWT:
         '''
 
         for i in range(N):
-            pyr = decomposition.read(prefix, "{:03d}.png".format(i))
+            pyr = decomposition.read(prefix, "{:03d}".format(i))
             img = self.dwt.backward(pyr)
-            image.write(img, prefix, "{:03d}.png".format(i))
+            image.write(img, prefix, "{:03d}".format(i))
 
 if __name__ == "__main__":
 
@@ -77,17 +76,13 @@ if __name__ == "__main__":
         description = "Motion 2D Discrete Wavelet (color) Transform\n\n"
         "Examples:\n\n"
         "  yes | cp ../sequences/stockholm/* /tmp/\n"
-        "  python3 MDWT.py    # Forward transform\n"
-        "  python3 MDWT.py -b # Backward transform\n",
+        "  python3 -O MDWT.py    -p /tmp/ # Forward transform\n"
+        "  python3 -O MDWT.py -b -p /tmp/ # Backward transform\n",
         formatter_class=CustomFormatter)
 
-    parser.add_argument("-b", "--backward", action='store_true',
-                        help="Performs backward transform")
-
-    parser.add_argument("-p", "--prefix", help="Prefix", default="/tmp/")
-
-    parser.add_argument("-N",
-                        help="Number of images/decompositions", default=5, type=int)
+    parser.add_argument("-b", "--backward", action='store_true', help="Performs backward transform")
+    parser.add_argument("-p", "--prefix", help="Dir where the files the I/O files are placed", default="/tmp/")
+    parser.add_argument("-N", help="Number of images/decompositions", default=5, type=int)
 
     args = parser.parse_args()
 

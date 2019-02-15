@@ -90,7 +90,7 @@ rm /tmp/*.png
 cp ../sequences/stockholm/000.png /tmp
 
 # 2D 1-levels forward DWT:
-python3 -O DWT.py -p /tmp/ -s 000.png
+python3 -O DWT.py -p /tmp/ -i 000
 
 # Visualize the subbands:
 display -normalize /tmp/LL000.png # <- LL1
@@ -99,7 +99,7 @@ display -normalize /tmp/HL000.png # <- HL1
 display -normalize /tmp/HH000.png # <- HH1
 
 # 2D 1-levels backward DWT:
-python3 -O DWT.py -b -p /tmp/ -s 000.png
+python3 -O DWT.py -b -p /tmp/ -i 000
 
 # Visualize the reconstruction:
 display -normalize /tmp/000.png 
@@ -118,20 +118,20 @@ rm /tmp/*.png
 cp ../sequences/stockholm/000.png /tmp
 
 # First level:
-python3 -O DWT.py -p /tmp/ -s 000.png
+python3 -O DWT.py -p /tmp/ -i 000
 
 # Second level:
-python3 -O DWT.py -p /tmp/LL -s 000.png
+python3 -O DWT.py -p /tmp/LL -i 000
 
 # Visualize the subbands:
 ls -l /tmp/*.png
 
 # Reverse second level:
-python3 -O DWT.py -b -p /tmp/LL -s 000.png
+python3 -O DWT.py -b -p /tmp/LL -i 000
 display -normalize /tmp/LL000.png
 
 # Reverse first level:
-python3 -O DWT.py -b -p /tmp/ -s 000.png
+python3 -O DWT.py -b -p /tmp/ -i 000
 display -normalize /tmp/000.png
 
 # Show diferences:
@@ -166,10 +166,10 @@ each image of the input sequence is transformed independently.
 # You must be in the 'src' directory.
 
 # Create the output directory for the 1st-level decompositions:
-cp ../sequences/stockholm/*.png /tmp
+yes | cp ../sequences/stockholm/*.png /tmp
 
 # 2D 1-levels forward MDWT:
-python3 -O MDWT.py -p /tmp/ -s .png -N 5
+python3 -O MDWT.py -p /tmp/ -N 5
 
 # Visualize the subbands:
 for i in /tmp/LL00?.png; do convert -normalize $i $i.norm; done
@@ -182,7 +182,7 @@ for i in /tmp/HH00?.png; do convert -normalize $i $i.norm; done
 animate /tmp/HH*.norm
 
 # 2D 1-levels backward MDWT:
-python3 -O MDWT.py -b -p /tmp/ -s .png -N 5
+python3 -O MDWT.py -b -p /tmp/ -N 5
 
 # Visualization of the reconstruction:
 rm /tmp/*.norm
@@ -194,16 +194,16 @@ for i in /tmp/00?.png; do convert -normalize $i $i.norm; done; animate /tmp/00?.
 # You must be in the 'src' directory.
 
 # Create the output directory for the 1st-level decompositions:
-cp ../sequences/stockholm/*.png /tmp
+yes | cp ../sequences/stockholm/*.png /tmp
 
 # 2D 2-levels forward MDWT:
-python3 -O MDWT.py -p /tmp/ -s .png -N 5
-python3 -O MDWT.py -p /tmp/LL -s .png -N 5
+python3 -O MDWT.py -p /tmp/ -N 5
+python3 -O MDWT.py -p /tmp/LL -N 5
 
 
 # 2D 2-levels backward MDWT:
-python3 -O MDWT.py -b -p /tmp/LL -s .png -N 5
-python3 -O MDWT.py -b -p /tmp/ -s .png -N 5
+python3 -O MDWT.py -b -p /tmp/LL -N 5
+python3 -O MDWT.py -b -p /tmp/ -N 5
 
 # Visualization of the reconstruction:
 rm /tmp/*.norm
@@ -366,7 +366,7 @@ used, all the decompositions are rendered.
 \begin{verbatim}
 # You must be in the 'src' directory.
 
-cp ../sequences/stockholm/*.png /tmp
+yes | cp ../sequences/stockholm/*.png /tmp
 
 # 1D 1-levels forward MDWT:
 python3 -O MDWT.py -p /tmp/
