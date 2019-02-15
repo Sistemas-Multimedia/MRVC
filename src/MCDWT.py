@@ -2,7 +2,7 @@
 
 import numpy as np
 import sys
-
+import IO
 from DWT import DWT
 sys.path.insert(0, "..")
 from src.IO import decomposition
