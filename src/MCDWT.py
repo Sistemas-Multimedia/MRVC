@@ -164,7 +164,7 @@ if __name__ == "__main__":
                         help="Sequence of motion compensated decompositions", default="/tmp/mc_stockholm_")
 
     parser.add_argument("-p", "--prefix", help="Prefix", default="/tmp/")
-    parser.add_argument("-s", "--suffix", help="Suffix", default="/tmp/")
+    parser.add_argument("-s", "--suffix", help="Suffix", default=".png")
     parser.add_argument("-N",
                         help="Number of decompositions", default=5, type=int)
 
