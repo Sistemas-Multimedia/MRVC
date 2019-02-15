@@ -8,26 +8,11 @@
 
 import sys
 import os
+import math
+import numpy as np
+from MDWT import MDWT
 sys.path.insert(0, "..")
 from src.IO import decomposition
-
-class WCONTRIBUTION:
-
-    def __init__(self):
-
-    def getContribution(s="/tmp/stockholm_"):
-
-        LH, HL, HH = decomposition.read("{}{:03d}".format(s, 0))
-        LL = decomposition.readL("{}{:03d}".format(s, 0))
-
-        '''CALCULAR ENERGIA DE CADA BANDA'''
-        print("JLL --> {}\n".format('Energia LL/Energia HH'))
-        print("JHL --> {}\n".format('Energia HL/Energia HH'))
-        print("JLH --> {}\n\n".format('Energia LH/Energia HH'))
-
-
-
-
 
 if __name__ == "__main__":
 
@@ -46,21 +31,46 @@ if __name__ == "__main__":
     parser.add_argument("-d", "--decompositions",
                         help="Sequence of decompositions", default="/tmp/stockholm_")
 
-    parser.add_argument("-K",
-                        help="Number of spatial levels", default=2, type=int)
+    parser.add_argument("-N",
+                        help="Number of images/decompositions", default=5, type=int)
 
     args = parser.parse_args()
     path = os.path.dirname(args.decompositions)
 
-    '''Execute MDWT + MCDWT K times'''
-    for i in range(args.K):
+    '''PRIMERA TRANSFORMACIÓN DIRECTA'''
+    d = MDWT()
+    d.forward('../sequences/stockholm/', args.decompositions, args.N)
 
-        print("#################################\n"
-              "#########SPATIAL LEVEL {}#########\n"
-              "#################################\n".format(i))
+    '''MODIFICAMOS LA SUBBANDA HH PONIENDOLA EN NEGRO CON UN PUNTO BLANCO EN EL CENTRO'''
+    for i in range(args.N):
 
-        d = WCONTRIBUTION()
-        p = d.getContribution(args.decompositions)
+        LH, HL, HH = decomposition.readH("{}{:03d}".format(args.decompositions, i))
+        LL = decomposition.readL("{}{:03d}".format(args.decompositions, i))
 
-        path += '/LL/'
-        args.decompositions = path + os.path.basename(decompositions)
+        y = math.ceil(HH.shape[0]/2)
+        x = math.ceil(HH.shape[1]/2)
+
+        HH = HH * 0
+        HH[x][y][0] = 255
+        HH[x][y][1] = 255
+        HH[x][y][2] = 255
+
+        decomposition.writeH([LH,HL,HH],"{}{:03d}".format(args.decompositions, i))
+
+   
+
+    '''RECONSTRUIMOS LA IMAGEN Y VOLVEMOS A DESCOMPONERLA PARA CALCULAR LA GANANCIA'''
+    d.backward(args.decompositions, '/tmp/recons_MDWT_', args.N)
+    d.forward('/tmp/recons_MDWT_', args.decompositions, args.N)
+
+    '''OBTENEMOS LA GANANCIA DE CADA SUBBANDA'''
+    for i in range(args.N):
+
+        LH, HL, HH = decomposition.readH("{}{:03d}".format(args.decompositions, i))
+        LL = decomposition.readL("{}{:03d}".format(args.decompositions, i))
+
+
+        '''CALCULAR GANANCIA DE CADA SUBBANDA'''
+        print("JLL --> {}\n".format(np.sum(LL*LL)/np.sum(HH*HH)))
+        print("JHL --> {}\n".format(np.sum(HL*HL)/np.sum(HH*HH)))
+        print("JLH --> {}\n\n".format(np.sum(LH*LH)/np.sum(HH*HH)))
