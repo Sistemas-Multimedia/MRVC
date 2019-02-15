@@ -5,36 +5,38 @@ import os
 class InputFileException(Exception):
     pass
 
-def read(file_name):
+def read(prefix = "/tmp/", index = "000"):
     '''Read a 3-components image from disk. Each component stores
        integers between [0, 65535].
 
     Parameters
     ----------
 
-        image : str.
+        prefix : str.
 
             Path to the image in the file system, without extension.
 
     Returns
     -------
 
-        [:,:,:].
+        (disk): [:,:,:].
 
-            A color image, where each component is in the range [-32768, 32767].
+            A color image, where each component is in the range
+            [-32768, 32767].
 
     '''
-    image = cv2.imread(file_name, -1)
+    fn = prefix + index + ".png"
+    image = cv2.imread(fn, -1)
     if image is None:
-        raise InputFileException('IO::image:read: {} not found'.format(file_name))
+        raise InputFileException('IO::image:read: {} not found'.format(fn))
     else:
         if __debug__:
-            print("IO::image:read: read {}".format(file_name))
+            print("IO::image:read: read {}".format(fn))
     buf = image.astype(np.float32)
     buf -= 32768.0
     return buf.astype(np.int16)
 
-def write(image, file_name):
+def write(image, prefix = "/tmp/", index = "000"):
     '''Write a 3-components image to disk. Each component stores integers
        between [0, 65536].
 
@@ -45,26 +47,28 @@ def write(image, file_name):
 
             The color image to write, where each component is in the range [-32768, 32768].
 
-        file_name : str.
+        prefix : str.
 
             Path to the image in the file system, without extension.
 
     Returns
     -------
 
-        None.
+        (disk) : [:,:,:].
+
+            A color image.
     '''
 
     image = image.astype(np.float32)
     image += 32768.0
     image = image.astype(np.uint16)
-    cv2.imwrite(file_name + ".png", image)
-    os.rename(file_name + ".png", file_name)
+    fn = prefix + index + ".png"
+    cv2.imwrite(fn, image)
     if __debug__:
-        print("IO::image:write: written {}".format(file_name + ".png"))
+        print("IO::image:write: written {}".format(fn))
 
 if __name__ == "__main__":
 
-    img = read("../../sequences/stockholm/000")
-    write(img, "/tmp/000")
-    print("IO::image:__main__: generated /tmp/000")
+    img = read("/tmp/", "000")
+    write(img, "/tmp/", "000")
+    print("IO::image:__main__: generated /tmp/000.png")

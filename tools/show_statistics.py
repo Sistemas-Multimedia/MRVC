@@ -34,34 +34,18 @@ def compute_entropy(d, counter):
     return -en
 
 image = cv2.imread(args.image, -1)
-tmp = image.astype(np.float32)
-tmp -= 32768.0
-image = tmp.astype(np.int16)
 
 width = image.shape[0]
 height = image.shape[1]
 number_of_pixels = width * height
 components = image.shape[2]
 
-# Calculates the energy
-gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
-component_x = Sobel(gray, cv2.CV_64F, 1, 0, ksize = 3)
-component_y = Sobel(gray, cv2.CV_64F, 1, 0 , ksize = 3)
-abs_component_x = cv2.convertScaleAbs(component_x)
-abs_component_y = cv2.convertScaleAbs(component_y)
-energyGris = cv2.addWeighted(abs_component_x, 0.5, abs_component_y, 0.5, 0)
-print("Canales en componentes: {}".format(np.sum(energyGris)))
-#pylab.imshow(energy)
+def calc_energy(img):
+    energy = np.power(img, 2)
+    energy = np.sum(energy)
+    return energy
 
-energy = util.img_as_float(image)
-energy = filters.sobel(color.rgb2gray(energy))
-print("Sum Energy 1: {}".format(np.sum(energy)))
-pylab.title("Energìa de la imagen")
-pylab.imshow(energy), pylab.show()
-
-energy2 = np.power(image, 2)
-print("Sum Energy 2: {}".format(np.sum(energy2)))
-
+energy = calc_energy(image)
 
 histogram = [None]*components
 for c in range(components):
@@ -95,7 +79,7 @@ print("Width: {}".format(width))
 print("Height: {}".format(height))
 print("Components: {}".format(components))
 print("Number of pixels: {}".format(number_of_pixels))
-print("Energy: {}".format(np.sum(energy)))
+print("Energy: {}".format(energy))
 for c in range(components):
     print("Max value of component {}: {}".format(c, max[c]))
 for c in range(components):
@@ -106,16 +90,3 @@ for c in range(components):
     print("Mean of component {}: {}".format(c, mean[c]))
 for c in range(components):
     print("Entropy of component {}: {}".format(c, entropy[c]))
-
-indices = [None] * components
-for c in range(components):
-    print("Component {}".format(c))
-    print("{0: <8} {1: <10} {2: <10}".format("position", "coordinates", "value"))
-    # https://stackoverflow.com/questions/30577375/have-numpy-argsort-return-an-array-of-2d-indices
-    indices[c] = np.dstack(np.unravel_index(np.argsort(abs(image[:,:,c]).ravel()), (width, height)))
-    #print(indices[c].shape)
-    counter = 1
-    while counter <= 10:
-        print("{:8d}   {} {}".format(counter, indices[c][0][counter], image[indices[c][0][indices[c].shape[1]-counter][0], indices[c][0][indices[c].shape[1]-counter][1], c]))
-        counter += 1
-

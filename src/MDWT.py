@@ -18,48 +18,52 @@ class MDWT:
     def __init__(self):
         self.dwt = DWT()
 
-    def forward(self, s="/tmp/stockholm/", S="/tmp/stockholm_", N=5):
-        ''' Motion 1-iteration forward 2D DWT of a sequence of images.
+    def forward(self, prefix="/tmp/", N=5):
+        '''Motion 1-iteration forward 2D DWT of a sequence of images.
 
-        Compute the 2D-DWT of each image of the sequence s.
+        Compute the forward 2D-DWT of each image of the sequence
+        placed at <prefix>.
 
-        Input:
+        Input
         -----
 
-            s: the sequence of images to be transformed.
+            prefix: the sequence of images to be transformed.
+            N: number of images.
 
-        Output:
+        Output
         ------
 
-            S: the sequence of decompositions (transformed images).
+            (disk): the sequence of decompositions.
 
         '''
         for i in range(N):
-            img = image.read("{}{:03d}".format(s, i))
+            img = image.read(prefix, "{:03d}".format(i))
             pyr = self.dwt.forward(img)
-            decomposition.write(pyr, "{}{:03d}".format(S, i))
+            decomposition.write(pyr, prefix, "{:03d}".format(i))
 
-    def backward(self, S="/tmp/stockholm_", s="/tmp/stockholm_", N=5):
-        ''' Motion 1-iteration forward 2D DWT of a sequence of decompositions.
+    def backward(self, prefix="/tmp/", N=5):
+        '''Motion 1-iteration forward 2D DWT of a sequence of decompositions.
 
-        Compute the inverse 2D-DWT of each decomposition of the sequence S.
+        Compute the inverse 2D-DWT of each decomposition of the
+        sequence of decompositions placed at <prefix>.
 
         Input:
         -----
 
-            S: the sequence of decompositions to be transformed.
+            prefix: the sequence of decompositions to be transformed.
+            N: the number of decompositions.
 
         Output:
         ------
 
-            s: the sequence of images.
+            (disk): the sequence of images.
 
         '''
 
         for i in range(N):
-            pyr = decomposition.read("{}{:03d}".format(S, i))
+            pyr = decomposition.read(prefix, "{:03d}".format(i))
             img = self.dwt.backward(pyr)
-            image.write(img, "{}{:03d}".format(s, i))
+            image.write(img, prefix, "{:03d}".format(i))
 
 if __name__ == "__main__":
 
@@ -71,23 +75,14 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(
         description = "Motion 2D Discrete Wavelet (color) Transform\n\n"
         "Examples:\n\n"
-        "  rm -rf /tmp/stockholm/\n"
-        "  cp -r ../sequences/stockholm/ /tmp/\n"
-        "  ./MDWT.py    -i /tmp/stockholm/ -d /tmp/stockholm_ # Forward transform\n"
-        "  ./MDWT.py -b -i /tmp/stockholm_ -d /tmp/stockholm_ # Backward transform\n",
+        "  yes | cp ../sequences/stockholm/* /tmp/\n"
+        "  python3 -O MDWT.py    -p /tmp/ # Forward transform\n"
+        "  python3 -O MDWT.py -b -p /tmp/ # Backward transform\n",
         formatter_class=CustomFormatter)
 
-    parser.add_argument("-b", "--backward", action='store_true',
-                        help="Performs backward transform")
-
-    parser.add_argument("-i", "--images",
-                        help="Sequence of images", default="/tmp/stockholm/")
-
-    parser.add_argument("-d", "--decompositions",
-                        help="Sequence of decompositions", default="/tmp/stockholm_")
-
-    parser.add_argument("-N",
-                        help="Number of images/decompositions", default=5, type=int)
+    parser.add_argument("-b", "--backward", action='store_true', help="Performs backward transform")
+    parser.add_argument("-p", "--prefix", help="Dir where the files the I/O files are placed", default="/tmp/")
+    parser.add_argument("-N", help="Number of images/decompositions", default=5, type=int)
 
     args = parser.parse_args()
 
@@ -95,8 +90,8 @@ if __name__ == "__main__":
     if args.backward:
         if __debug__:
             print("Backward transform")
-        d.backward(args.decompositions, args.images, args.N)
+        d.backward(args.prefix, args.N)
     else:
         if __debug__:
             print("Forward transform")
-        p = d.forward(args.images, args.decompositions, args.N)
+        p = d.forward(args.prefix, args.N)
