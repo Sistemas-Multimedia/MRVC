@@ -13,9 +13,9 @@ import numpy as np
 import math
 import argparse
 import subprocess
-from cv2 import Sobel
-from skimage import data, draw, transform, util, color, filters
-import pylab
+# from cv2 import Sobel
+# from skimage import data, draw, transform, util, color, filters
+# import pylab
 
 # Creates the command line arguments
 parser = argparse.ArgumentParser("Calculates gain of an image calculating energies")
