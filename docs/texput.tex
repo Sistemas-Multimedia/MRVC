@@ -629,6 +629,44 @@ To compute the subband gains we have two options:
 This computation can be also applied to MCDWT, by computing the subband
 gains as a function of the number $T$ of temporal decompositions.
 
+\section{Quantization effects}
+\subsection{Quantization of the $H$ subbands}
+\begin{verbatim}
+# You must be in the 'src' directory.
+
+yes | cp ../sequences/stockholm/* /tmp
+python3 -O MDWT.py -p /tmp/ -N 3
+python3 -O MCDWT.py -p /tmp/ -N 3
+
+bash ../tools/create_black_image.sh; python ../tools/add_offset.py -i /tmp/zero.png -o /tmp/zero16.png -f 32768
+q_step=1
+
+yes | cp /tmp/zero16.png /tmp/LH000.png
+yes | cp /tmp/zero16.png /tmp/HL000.png
+yes | cp /tmp/zero16.png /tmp/HH000.png
+yes | cp /tmp/zero16.png /tmp/LH001.png
+yes | cp /tmp/zero16.png /tmp/HL001.png
+yes | cp /tmp/zero16.png /tmp/HH001.png
+yes | cp /tmp/zero16.png /tmp/LH002.png
+yes | cp /tmp/zero16.png /tmp/HL002.png
+yes | cp /tmp/zero16.png /tmp/HH002.png
+
+python3 -O MCDWT.py -p /tmp/ -b -N 3
+python3 -O MDWT.py -p /tmp/ -b -N 3
+
+for i in /tmp/00?.png; do python ../tools/substract_offset.py -i $i -o $i.png; done; animate /tmp/00?.png.png
+python3 ../tools/quantize.py -i /tmp/LH000.png -o /tmp/LH000.png -q $q_step
+python3 ../tools/quantize.py -i /tmp/HL000.png -o /tmp/HL000.png -q $q_step
+python3 ../tools/quantize.py -i /tmp/HH000.png -o /tmp/HH000.png -q $q_step
+python3 ../tools/quantize.py -i /tmp/LH001.png -o /tmp/LH001.png -q $q_step
+python3 ../tools/quantize.py -i /tmp/HL001.png -o /tmp/HL001.png -q $q_step
+python3 ../tools/quantize.py -i /tmp/HH001.png -o /tmp/HH001.png -q $q_step
+python3 ../tools/quantize.py -i /tmp/LH002.png -o /tmp/LH002.png -q $q_step
+python3 ../tools/quantize.py -i /tmp/HL002.png -o /tmp/HL002.png -q $q_step
+python3 ../tools/quantize.py -i /tmp/HH002.png -o /tmp/HH002.png -q $q_step
+
+\end{verbatim}
+
 \begin{comment}
 
 \section{Encoding of B-type subbands}
