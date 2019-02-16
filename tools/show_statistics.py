@@ -35,10 +35,6 @@ def compute_entropy(d, counter):
 
 image = cv2.imread(args.image, -1)
 component_depth = image.itemsize
-#tmp = image.astype(np.float32)
-#tmp -= 32768.0
-#image = tmp.astype(np.int16)
-
 width = image.shape[0]
 height = image.shape[1]
 number_of_pixels = width * height
@@ -82,7 +78,6 @@ print("Image: {}".format(args.image))
 print("Width: {}".format(width))
 print("Height: {}".format(height))
 print("Components: {}".format(components))
-print("Component depth: {}".format(component_depth))
 print("Number of pixels: {}".format(number_of_pixels))
 print("Energy: {}".format(energy))
 for c in range(components):
