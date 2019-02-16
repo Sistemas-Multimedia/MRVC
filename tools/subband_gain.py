@@ -1,70 +1,63 @@
+#!/usr/bin/env python3
+
+# Note: swap the above line with the following two ones to switch
+# between the standard and the optimized running mode.
+
+#!/bin/sh
+''''exec python3 -O -- "$0" ${1+"$@"} # '''
+
+"""subbnad_gain.py: Calculates the gain using DWT and !DWT."""
+
 import cv2
 import numpy as np
 import math
 import argparse
+import subprocess
 from cv2 import Sobel
 from skimage import data, draw, transform, util, color, filters
 import pylab
-sys.path.insert(0, "..")
-from tools.show_statistics import calc_energy
 
-class CustomFormatter(argparse.ArgumentDefaultsHelpFormatter, argparse.RawDescriptionHelpFormatter):
-        pass
+# Creates the command line arguments
+parser = argparse.ArgumentParser("Calculates gain of an image calculating energies")
+parser.add_argument("-i", help="Image to calculate gain without extension example: 000", default = "000")
+parser.add_argument("-path", "--path", help="Dir where the files the I/O files are placed", default="/tmp/")                                
+args = parser.parse_args() # Parses all the arguments
 
-def main():
-        parser = argparse.ArgumentParser(description = "Shows the subands gains\n\n"
-                                        "Example:\n\n"
-                                        "  python3 show_statistics.py -i ../tmp/scale1 -hh /tmp/000_HH\n",
-                                        formatter_class=CustomFormatter)
+# Applies the DWT forward transform
+subprocess.run("python3 -O ../src/DWT.py -i {} -p {}".format(args.i, args.path), shell=True, check=True)
 
-        parser.add_argument("-hh", "--subband HH",
-                        help="Subband HH to compare", default="/tmp/HH/000_LL")
-        parser.add_argument("-i", "--Reconstructed image",
-                        help="Reconstructed image with DWT backwards", default="/tmp/scale1")
-                                        
-                        
-        args = parser.parse_args()
+image = cv2.imread((args.path+"HH000.png"), -1) 
+print("Image shape: ", image.shape)
+img_bandHH = image * 0
+width = image.shape[0]
+height = image.shape[1]
 
-        # if args.hh != None:
-        #     img_reconstructed = cv2.imread(args.hh)        
+# Adds a pixel in the middle of the band
+img_bandHH[width//2][height//2][0] = 65535
+img_bandHH[width//2][height//2][1] = 65535
+img_bandHH[width//2][height//2][2] = 65535
+image_black = image * 0
 
-        # if args.i != None:
-        #     img_bandHH = cv2.imread(args.i)
-        # else:
-        #     img_bandHH = img_reconstructed * 0
+# Black the images for every subband
+subprocess.run("mkdir -p {}gainCalc".format(args.path), shell=True) # locates the images before calculating the base
+cv2.imwrite("{}gainCalc/LL000.png".format(args.path), image_black.astype(np.uint16))
+cv2.imwrite("{}gainCalc/HL000.png".format(args.path), image_black.astype(np.uint16))
+cv2.imwrite("{}gainCalc/LH000.png".format(args.path), image_black.astype(np.uint16))
+cv2.imwrite("{}gainCalc/HH000.png".format(args.path), img_bandHH.astype(np.uint16))
+# !DWT to reconstruct to create the base
+subprocess.run("python3 -O ../src/DWT.py -i {} -p {} -b".format(args.i, args.path+"gainCalc/"), shell=True, check=True)
+subprocess.run("python3 -O ../src/DWT.py -i {} -p {} -b".format(args.i, args.path), shell=True, check=True)
+# Reads the two images
+base = cv2.imread((args.path+"gainCalc/"+"000.png"), -1) 
+img_reconstructed = cv2.imread((args.path+"000.png"), -1)
 
-        img_reconstructed = cv2.imread("img") 
-        img_bandHH = img_reconstructed
+def calc_energy(input_image):
+    energy = np.power(input_image, 2)
+    energy = np.sum(energy)
+    print("Energy:  {}".format(energy))
+    return energy
 
-        
-        img_bandHH[(img_bandHH.[0].count//2)][(img_bandHH.[1].count//2)][0] = 255
-        img_bandHH[(img_bandHH.[0].count//2)][(img_bandHH.[1].count//2)][1] = 255
-        img_bandHH[(img_bandHH.[0].count//2)][(img_bandHH.[1].count//2)][3] = 255
+# Calculates the gain
+gain = calc_energy(img_reconstructed)/ calc_energy(base)
+print("Total gain:  {}".format(gain))
 
-        gain = calc_energy(img_reconstructed)/ calc_energy(img_bandHH)
-
-        #pylab.imshow(reconstructed), pylab.show()
-
-        print("Shape: {}".format(img_reconstructed.shape))
-
-        image_black = imagen * 0
-        imageHH = imagen_negro
-
-        print("Forma imagen en negro: {}".format(imagen.shape))
-
-
-
-
-        pylab.imshow(imagenHH), pylab.show()
-
-        imagen = cv2.imread(args.image)
-
-        cv2.imwrite("black.png", imagenLH.astype(np.uint16))
-        cv2.imwrite("imgHH.pnh", imagenHH.astype(np.uint16))
-
-
-
-
-
-if __name__ == "__main__":
-    main()
