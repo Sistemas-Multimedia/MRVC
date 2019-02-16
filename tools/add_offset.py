@@ -16,13 +16,13 @@ parser = argparse.ArgumentParser(description = "Adds an offset to an image\n\n"
                                  formatter_class=CustomFormatter)
 
 parser.add_argument("-i", "--input",
-                    help="Input image", default="../sequences/stockholm/000")
+                    help="Input image", default="../sequences/stockholm/000.png")
 
 parser.add_argument("-o", "--output",
-                    help="Input image", default="/tmp/000")
+                    help="Input image", default="/tmp/000.png")
 
 parser.add_argument("-f", "--offset", type=int,
-                    help="Offset", default=32768'''-128''')
+                    help="Offset", default=32768)
 
 args = parser.parse_args()
 
@@ -41,7 +41,7 @@ if __debug__:
     print("Max value at output: {}".format(np.amax(image)))
     print("Min value at output: {}".format(np.amin(image)))
 
-cv2.imwrite(args.output, image'''.astype(np.uint16)''')
+cv2.imwrite(args.output, image)
 #try:
 #    check_call("mv " + output + ".png " + output, shell=True)
 #except CalledProcessError:
