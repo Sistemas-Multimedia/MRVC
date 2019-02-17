@@ -15,11 +15,12 @@ parser = argparse.ArgumentParser(description = "Compress (lossy) image\n\n"
 parser.add_argument("-i", "--input", help="Input image", default="../sequences/stockholm/000.png")
 parser.add_argument("-o", "--output", help="Output image", default="/tmp/000.png")
 parser.add_argument("-q", "--quality", type=int, help="Quality", default=50)
+parser.add_argument("-f", "--offset", type=int, help="Offset added to each component to avoid the clipping of negative values", default=32768-128)
 
 args = parser.parse_args()
 image = cv2.imread(args.input, -1)
 image = image.astype(np.float32)
-image -= 32768
+image -= args.offset
 encode_param = [int(cv2.IMWRITE_JPEG_QUALITY), args.quality]
 _, jpg = cv2.imencode('.jpg', image, encode_param)
 image = cv2.imdecode(jpg, 1)

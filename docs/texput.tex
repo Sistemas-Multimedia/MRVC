@@ -715,6 +715,94 @@ python3 -O MDWT.py -p /tmp/ -b -N 3
 for i in /tmp/00?.png; do python ../tools/substract_offset.py -i $i -o $i.png; done; animate /tmp/00?.png.png
 \end{verbatim}
 
+\section{Lossy compression effects}
+\subsection{Compression of ($H$) MC subbands}
+\begin{verbatim}
+# You must be in the 'src' directory.
+
+yes | cp ../sequences/stockholm/* /tmp
+python3 -O MDWT.py -p /tmp/ -N 3
+python3 -O MCDWT.py -p /tmp/ -N 3
+
+quality=50
+python3 ../tools/show_statistics.py -i /tmp/LH001.png
+python3 ../tools/compress.py -i /tmp/LH001.png -o /tmp/LH001.png -q $quality
+python3 ../tools/show_statistics.py -i /tmp/LH001.png
+python3 ../tools/add_offset.py -i /tmp/LH001.png -o /tmp/LH001.png -f 32640
+python3 ../tools/show_statistics.py -i /tmp/LH001.png
+python3 ../tools/quantize.py -i /tmp/HL001.png -o /tmp/HL001.png -q $q_step
+python3 ../tools/quantize.py -i /tmp/HH001.png -o /tmp/HH001.png -q $q_step
+
+python3 -O MCDWT.py -p /tmp/ -b -N 3
+python3 -O MDWT.py -p /tmp/ -b -N 3
+
+for i in /tmp/00?.png; do python ../tools/substract_offset.py -i $i -o $i.png; done; animate /tmp/00?.png.png
+\end{verbatim}
+
+\subsection{Quantization of all $H$ subbands}
+\begin{verbatim}
+# You must be in the 'src' directory.
+
+yes | cp ../sequences/stockholm/* /tmp
+python3 -O MDWT.py -p /tmp/ -N 3
+python3 -O MCDWT.py -p /tmp/ -N 3
+
+q_step=32
+python3 ../tools/quantize.py -i /tmp/LH000.png -o /tmp/LH000.png -q $q_step
+python3 ../tools/quantize.py -i /tmp/HL000.png -o /tmp/HL000.png -q $q_step
+python3 ../tools/quantize.py -i /tmp/HH000.png -o /tmp/HH000.png -q $q_step
+python3 ../tools/quantize.py -i /tmp/LH001.png -o /tmp/LH001.png -q $q_step
+python3 ../tools/quantize.py -i /tmp/HL001.png -o /tmp/HL001.png -q $q_step
+python3 ../tools/quantize.py -i /tmp/HH001.png -o /tmp/HH001.png -q $q_step
+python3 ../tools/quantize.py -i /tmp/LH002.png -o /tmp/LH002.png -q $q_step
+python3 ../tools/quantize.py -i /tmp/HL002.png -o /tmp/HL002.png -q $q_step
+python3 ../tools/quantize.py -i /tmp/HH002.png -o /tmp/HH002.png -q $q_step
+
+python3 -O MCDWT.py -p /tmp/ -b -N 3
+python3 -O MDWT.py -p /tmp/ -b -N 3
+
+for i in /tmp/00?.png; do python ../tools/substract_offset.py -i $i -o $i.png; done; animate /tmp/00?.png.png
+\end{verbatim}
+
+% bash ../tools/create_black_image.sh; python ../tools/add_offset.py -i /tmp/zero.png -o /tmp/zero16.png -f 32768
+% yes | cp /tmp/zero16.png /tmp/LH000.png
+% yes | cp /tmp/zero16.png /tmp/HL000.png
+% yes | cp /tmp/zero16.png /tmp/HH000.png
+% yes | cp /tmp/zero16.png /tmp/LH001.png
+% yes | cp /tmp/zero16.png /tmp/HL001.png
+% yes | cp /tmp/zero16.png /tmp/HH001.png
+% yes | cp /tmp/zero16.png /tmp/LH002.png
+% yes | cp /tmp/zero16.png /tmp/HL002.png
+% yes | cp /tmp/zero16.png /tmp/HH002.png
+
+\subsection{Quantization of all $H$ subbands}
+\begin{verbatim}
+# You must be in the 'src' directory.
+
+yes | cp ../sequences/stockholm/* /tmp
+python3 -O MDWT.py -p /tmp/ -N 3
+python3 -O MCDWT.py -p /tmp/ -N 3
+
+q_step=128
+python3 ../tools/quantize.py -i /tmp/LL000.png -o /tmp/LL000.png -q $q_step
+python3 ../tools/quantize.py -i /tmp/LH000.png -o /tmp/LH000.png -q $q_step
+python3 ../tools/quantize.py -i /tmp/HL000.png -o /tmp/HL000.png -q $q_step
+python3 ../tools/quantize.py -i /tmp/HH000.png -o /tmp/HH000.png -q $q_step
+python3 ../tools/quantize.py -i /tmp/LL001.png -o /tmp/LL001.png -q $q_step
+python3 ../tools/quantize.py -i /tmp/LH001.png -o /tmp/LH001.png -q $q_step
+python3 ../tools/quantize.py -i /tmp/HL001.png -o /tmp/HL001.png -q $q_step
+python3 ../tools/quantize.py -i /tmp/HH001.png -o /tmp/HH001.png -q $q_step
+python3 ../tools/quantize.py -i /tmp/LL002.png -o /tmp/LL002.png -q $q_step
+python3 ../tools/quantize.py -i /tmp/LH002.png -o /tmp/LH002.png -q $q_step
+python3 ../tools/quantize.py -i /tmp/HL002.png -o /tmp/HL002.png -q $q_step
+python3 ../tools/quantize.py -i /tmp/HH002.png -o /tmp/HH002.png -q $q_step
+
+python3 -O MCDWT.py -p /tmp/ -b -N 3
+python3 -O MDWT.py -p /tmp/ -b -N 3
+
+for i in /tmp/00?.png; do python ../tools/substract_offset.py -i $i -o $i.png; done; animate /tmp/00?.png.png
+\end{verbatim}
+
 \begin{comment}
 
 \section{Encoding of B-type subbands}
