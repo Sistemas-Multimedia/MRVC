@@ -695,7 +695,7 @@ yes | cp ../sequences/stockholm/* /tmp
 python3 -O MDWT.py -p /tmp/ -N 3
 python3 -O MCDWT.py -p /tmp/ -N 3
 
-q_step=32
+q_step=128
 python3 ../tools/quantize.py -i /tmp/LL000.png -o /tmp/LL000.png -q $q_step
 python3 ../tools/quantize.py -i /tmp/LH000.png -o /tmp/LH000.png -q $q_step
 python3 ../tools/quantize.py -i /tmp/HL000.png -o /tmp/HL000.png -q $q_step
