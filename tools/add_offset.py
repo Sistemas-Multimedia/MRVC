@@ -10,19 +10,16 @@ import argparse
 class CustomFormatter(argparse.ArgumentDefaultsHelpFormatter, argparse.RawDescriptionHelpFormatter):
     pass
 
-parser = argparse.ArgumentParser(description = "Adds an offset to an image\n\n"
+parser = argparse.ArgumentParser(description = "Adds an offset to an image and coverts it from\n"
+                                 "8 bpp/component to 16 bpp/component. The pixels of the input\n"
+                                 "and the output image are represented as integer without sign.\n\n"
                                  "Example:\n\n"
-                                 "  add_offset -i ../sequences/stockholm/000 -o /tmp/000 -f 32640\n",
+                                 "  python3 add_offset -i ../sequences/stockholm/000.png -o /tmp/000.png -f 32768\n",
                                  formatter_class=CustomFormatter)
 
-parser.add_argument("-i", "--input",
-                    help="Input image", default="../sequences/stockholm/000.png")
-
-parser.add_argument("-o", "--output",
-                    help="Input image", default="/tmp/000.png")
-
-parser.add_argument("-f", "--offset", type=int,
-                    help="Offset", default=32768)
+parser.add_argument("-i", "--input", help="Input image", default="../sequences/stockholm/000.png")
+parser.add_argument("-o", "--output", help="Input image", default="/tmp/000.png")
+parser.add_argument("-f", "--offset", type=int,help="Offset", default=32768)
 
 args = parser.parse_args()
 
