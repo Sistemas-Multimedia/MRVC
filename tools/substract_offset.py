@@ -27,8 +27,8 @@ if __debug__:
     print("Max value at input: {}".format(np.amax(image)))
     print("Min value at input: {}".format(np.amin(image)))
 
-image = np.clip(image, offset, offset+255)
-image -= offset
+image = np.clip(image, args.offset, args.offset+255)
+image -= args.offset
 
 if __debug__:
     print("Substracting {}".format(32768))
@@ -37,4 +37,4 @@ if __debug__:
     print("Max value at output: {}".format(np.amax(image)))
     print("Min value at output: {}".format(np.amin(image)))
 
-cv2.imwrite(output, image.astype(np.uint8))
+cv2.imwrite(args.output, image.astype(np.uint8))

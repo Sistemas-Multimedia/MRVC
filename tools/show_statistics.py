@@ -10,13 +10,16 @@ class CustomFormatter(argparse.ArgumentDefaultsHelpFormatter, argparse.RawDescri
 
 parser = argparse.ArgumentParser(description = "Displays information about an image\n\n"
                                  "Example:\n\n"
-                                 "  python show_statistics.py -i ../sequences/stockholm/000\n",
+                                 "  python show_statistics.py -i ../sequences/stockholm/000.png\n",
                                  formatter_class=CustomFormatter)
 
-parser.add_argument("-i", "--image",
-                    help="Input image", default="/tmp/stockholm/000")
+parser.add_argument("-i", "--image", help="Input image", default="/tmp/stockholm/000.png")
+parser.add_argument("-o", "--offset", type=int, help="Offset", default=32768)
+parser.add_argument("-r", "--range", type=int, help="Range of max and min shown values", default=5)
 
 args = parser.parse_args()
+
+print("Offset = {}".format(args.offset))
 
 def compute_entropy(d, counter):
     for x in d:
@@ -73,13 +76,13 @@ print("Components: {}".format(components))
 print("Component depth: {}".format(component_depth))
 print("Number of pixels: {}".format(number_of_pixels))
 for c in range(components):
-    print("Max value of component {}: {}".format(c, max[c]))
+    print("Max value of component {}: {} ({})".format(c, max[c], max[c]-args.offset))
 for c in range(components):
-    print("Min value of component {}: {}".format(c, min[c]))
+    print("Min value of component {}: {} ({})".format(c, min[c], min[c]-args.offset))
 for c in range(components):
     print("Dynamic range of component {}: {}".format(c, dynamic_range[c]))
 for c in range(components):
-    print("Mean of component {}: {}".format(c, mean[c]))
+    print("Mean of component {}: {} ({})".format(c, mean[c], mean[c]-args.offset))
 for c in range(components):
     print("Entropy of component {}: {}".format(c, entropy[c]))
 
@@ -92,6 +95,14 @@ for c in range(components):
     #print(indices[c].shape)
     counter = 1
     while counter <= 10:
-        print("{:8d}   {} {}".format(counter, indices[c][0][counter], image[indices[c][0][indices[c].shape[1]-counter][0], indices[c][0][indices[c].shape[1]-counter][1], c]))
+        coordinates = indices[c][0][counter]
+        val = image[indices[c][0][indices[c].shape[1]-counter][0], indices[c][0][indices[c].shape[1]-counter][1], c]
+        print("{:8d}   {} {} ({})".format(counter, coordinates, val, val-args.offset))
+        counter += 1
+    counter = number_of_pixels - 1 - 10
+    while counter <= number_of_pixels - 1:
+        coordinates = indices[c][0][counter]
+        val = image[indices[c][0][indices[c].shape[1]-counter][0], indices[c][0][indices[c].shape[1]-counter][1], c]
+        print("{:8d}   {} {} ({})".format(counter, coordinates, val, val-args.offset))
         counter += 1
 

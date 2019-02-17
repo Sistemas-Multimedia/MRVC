@@ -19,7 +19,7 @@ parser = argparse.ArgumentParser(description = "Adds an offset to an image and c
 
 parser.add_argument("-i", "--input", help="Input image", default="../sequences/stockholm/000.png")
 parser.add_argument("-o", "--output", help="Input image", default="/tmp/000.png")
-parser.add_argument("-f", "--offset", type=int,help="Offset", default=32768)
+parser.add_argument("-f", "--offset", type=int, help="Offset", default=32768)
 
 args = parser.parse_args()
 
