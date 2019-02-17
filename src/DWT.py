@@ -10,7 +10,6 @@ import numpy as np
 import pywt
 import math
 import sys
-import os
 
 sys.path.insert(0, "..")
 from src.IO import image
@@ -115,26 +114,14 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(
         description = "2D Discrete Wavelet (color) Transform\n\n"
         "Examples:\n\n"
-        "  rm -rf /tmp/stockholm/\n"
-        "  mkdir /tmp/stockholm\n"
         "  cp ../sequences/stockholm/000.png /tmp/\n"
-        "  ./DWT.py    -i /tmp/000 -d /tmp/000/ # Forward transform\n"
-        "  rm /tmp/stockholm/000                                   # Not really necessary\n"
-        "  ./DWT.py -b -d /tmp/stockholm_000 -i /tmp/stockholm/000 # Backward transform\n",
+        "  python3 -O DWT.py    -p /tmp/ -i 000 # Forward transform\n"
+        "  python3 -O DWT.py -b -d /tmp/ -i 000 # Backward transform\n",
         formatter_class=CustomFormatter)
 
-    parser.add_argument("-b", "--backward", action='store_true',
-                        help="Performs backward transform")
-
-    parser.add_argument("-p", "--prefix", help="Prefix", default="/tmp/")
-    parser.add_argument("-s", "--suffix", help="Suffix", default="000.png")
-    
-    
-    parser.add_argument("-i", "--image",
-                        help="File with the image", default="000")
-
-    parser.add_argument("-d", "--decomposition",
-                        help="Directory where the files LL, LH, HL, and HH are localized", default="000")
+    parser.add_argument("-b", "--backward", action='store_true', help="Performs backward transform")
+    parser.add_argument("-p", "--prefix", help="Dir where the files the I/O files are placed", default="/tmp/")
+    parser.add_argument("-i", "--index", help="Index of the image/decomposition", default="000")
 
     args = parser.parse_args()
 
@@ -142,12 +129,12 @@ if __name__ == "__main__":
     if args.backward:
         if __debug__:
             print("Backward transform")
-        d = decomposition.read(args.prefix, args.suffix)
+        d = decomposition.read(args.prefix, args.index)
         i = dwt.backward(d)
-        image.write(i, args.prefix, args.suffix)
+        image.write(i, args.prefix, args.index)
     else:
         if __debug__:
             print("Forward transform")
-        i = image.read(args.prefix, args.suffix)
+        i = image.read(args.prefix, args.index)
         d = dwt.forward(i)
-        decomposition.write(d, args.prefix, args.suffix)
+        decomposition.write(d, args.prefix, args.index)
