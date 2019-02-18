@@ -11,8 +11,114 @@ import os
 import math
 import numpy as np
 from MDWT import MDWT
+from DWT import DWT
 sys.path.insert(0, "..")
 from src.IO import decomposition
+
+def getLLContribution(path, N):
+    d = DWT()
+    for i in range(N):
+
+        LL, LH, HL, HH = LLtoBlack(path, N)
+        imgLL = d.backward((LL, (LH, HL, HH)))
+
+        LL, LH, HL, HH = HHtoBlack(path, N)
+        imgHH = d.backward((LL, (LH, HL, HH)))
+
+        print("LL Contribution --> {}\n".format(np.sum(imgLL*imgLL)/np.sum(imgHH*imgHH)))
+
+def getHLContribution(path, N):
+    d = DWT()
+    for i in range(N):
+
+        LL, LH, HL, HH = HLtoBlack(path, N)
+        imgHL = d.backward((LL, (LH, HL, HH)))
+
+        LL, LH, HL, HH = HHtoBlack(path, N)
+        imgHH = d.backward((LL, (LH, HL, HH)))
+
+        print("HL Contribution --> {}\n".format(np.sum(imgHL*imgHL)/np.sum(imgHH*imgHH)))
+
+def getLHContribution(path, N):
+    d = DWT()
+    for i in range(N):
+
+        LL, LH, HL, HH = LHtoBlack(path, N)
+        imgLH = d.backward((LL, (LH, HL, HH)))
+
+        LL, LH, HL, HH = HHtoBlack(path, N)
+        imgHH = d.backward((LL, (LH, HL, HH)))
+
+        print("LH Contribution --> {}\n".format(np.sum(imgLH*imgLH)/np.sum(imgHH*imgHH)))
+
+def getHHContribution(path, N):
+    d = DWT()
+    for i in range(N):
+
+        LL, LH, HL, HH = HHtoBlack(path, N)
+        imgHH_B = d.backward((LL, (LH, HL, HH)))
+
+        LL, LH, HL, HH = HHtoBlack(path, N)
+        imgHH = d.backward((LL, (LH, HL, HH)))
+
+        print("HH Contribution --> {}\n".format(np.sum(imgHH_B*imgHH_B)/np.sum(imgHH*imgHH)))
+
+def LLtoBlack(path, N):
+    for i in range(N):
+
+        LH, HL, HH = decomposition.readH(path, "{:03d}".format(i))
+        LL = decomposition.readL(path, "{:03d}".format(i))
+
+        y = math.ceil(LL.shape[0]/2)
+        x = math.ceil(LL.shape[1]/2)
+
+        LH *= 0
+        HL *= 0
+        HH *= 0
+        LL = LL * 0
+        LL[x][y][0] = 255
+        LL[x][y][1] = 255
+        LL[x][y][2] = 255
+
+        return LL, LH, HL, HH
+
+def LHtoBlack(path, N):
+    for i in range(N):
+
+        LH, HL, HH = decomposition.readH(path, "{:03d}".format(i))
+        LL = decomposition.readL(path, "{:03d}".format(i))
+
+        y = math.ceil(LH.shape[0]/2)
+        x = math.ceil(LH.shape[1]/2)
+
+        LL *= 0
+        HL *= 0
+        HH *= 0
+        LH = LH * 0
+        LH[x][y][0] = 255
+        LH[x][y][1] = 255
+        LH[x][y][2] = 255
+
+        return LL, LH, HL, HH
+
+def HLtoBlack(path, N):
+    for i in range(N):
+
+        LH, HL, HH = decomposition.readH(path, "{:03d}".format(i))
+        LL = decomposition.readL(path, "{:03d}".format(i))
+
+        y = math.ceil(HL.shape[0]/2)
+        x = math.ceil(HL.shape[1]/2)
+
+        LH *= 0
+        LL *= 0
+        HH *= 0
+        HL = HL * 0
+        HL[x][y][0] = 255
+        HL[x][y][1] = 255
+        HL[x][y][2] = 255
+
+        return LL, LH, HL, HH
 
 def HHtoBlack(path, N):
     for i in range(N):
@@ -23,24 +129,15 @@ def HHtoBlack(path, N):
         y = math.ceil(HH.shape[0]/2)
         x = math.ceil(HH.shape[1]/2)
 
+        LH *= 0
+        HL *= 0
+        LL *= 0
         HH = HH * 0
         HH[x][y][0] = 255
         HH[x][y][1] = 255
         HH[x][y][2] = 255
 
-        decomposition.writeH([LH,HL,HH],"{:03d}".format(i))
-
-def getContribution(path, N):
-    for i in range(N):
-
-        LH, HL, HH = decomposition.readH(path, "{:03d}".format(i))
-        LL = decomposition.readL(path, "{:03d}".format(i))
-
-        '''CALCULATE THE CONTRIBUTION OF EACH SUBBAND'''
-        print("LL Contribution --> {}\n".format(np.sum(LL*LL)/np.sum(HH*HH)))
-        print("HL Contribution --> {}\n".format(np.sum(HL*HL)/np.sum(HH*HH)))
-        print("LH Contribution --> {}\n\n".format(np.sum(LH*LH)/np.sum(HH*HH)))
-
+        return LL, LH, HL, HH
 
 if __name__ == "__main__":
 
@@ -65,16 +162,11 @@ if __name__ == "__main__":
     path = os.path.dirname(args.decompositions)
 
     '''FIRST DIRECT TRANSFORM'''
-    d = MDWT()
-    d.forward(args.decompositions, args.N)
-
-    '''MODIFY THE SUBBAND HH, WHITE DOT IN THE MIDDLE OF THE IMAGE AND THE REST OF PIXELS TO BLACK'''
-    HHtoBlack(args.decompositions, args.N)
-   
-
-    '''RECONSTRUCT THE IMAGE AND ANOTHER DECOMPOSITION TO GET THE CONTRUBITON OF EACH SUBBAND'''
-    d.backward(args.decompositions, args.N)
-    d.forward(args.decompositions, args.N)
+    md = MDWT()
+    md.forward(args.decompositions, args.N)
 
     '''GET THE CONTRUBITON OF EACH SUBBAND'''
-    getContribution(args.decompositions, args.N)
+    getLLContribution(args.decompositions, args.N)
+    getHLContribution(args.decompositions, args.N)
+    getLHContribution(args.decompositions, args.N)
+    getHHContribution(args.decompositions, args.N)
