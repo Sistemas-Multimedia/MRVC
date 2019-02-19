@@ -22,6 +22,14 @@ def divimg(im,factor):
     plt.imshow(a2)
     plt.show()
     
+    a=np.multiply(a2,factor)
+    title=im+"reconstruido"
+    plt.title(title)
+    #plt.subplot(2, 2, 2)
+    #plt.figure()
+    plt.imshow(a)
+    plt.show()
+    
 def divimgw(im,factor):
     im2 = cv2.imread(im,cv2.COLOR_BGR2GRAY)
     plt.imshow(im2)
