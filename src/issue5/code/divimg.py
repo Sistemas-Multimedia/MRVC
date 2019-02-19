@@ -10,15 +10,18 @@ def divimg(im,factor):
     #print(im)
     im2 = cv2.imread(im,cv2.COLOR_BGR2GRAY)
     plt.title(im)
+    #plt.subplot(2, 2, 1)
     plt.imshow(im2)
+    plt.show()
+    
     a2 = np.true_divide(im2,factor)
     title=im+"factor"
-    
     plt.title(title)
-    plt.figure()
-    plt.subplot(2, 2, 1)
+    #plt.subplot(2, 2, 2)
+    #plt.figure()
     plt.imshow(a2)
-
+    plt.show()
+    
 def divimgw(im,factor):
     im2 = cv2.imread(im,cv2.COLOR_BGR2GRAY)
     plt.imshow(im2)
