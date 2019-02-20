@@ -72,10 +72,6 @@ def LLtoBlack(path, N):
         y = math.ceil(LL.shape[0]/2)
         x = math.ceil(LL.shape[1]/2)
 
-        LH *= 0
-        HL *= 0
-        HH *= 0
-        LL = LL * 0
         LL[x][y][0] = 255
         LL[x][y][1] = 255
         LL[x][y][2] = 255
@@ -91,10 +87,6 @@ def LHtoBlack(path, N):
         y = math.ceil(LH.shape[0]/2)
         x = math.ceil(LH.shape[1]/2)
 
-        LL *= 0
-        HL *= 0
-        HH *= 0
-        LH = LH * 0
         LH[x][y][0] = 255
         LH[x][y][1] = 255
         LH[x][y][2] = 255
@@ -110,10 +102,6 @@ def HLtoBlack(path, N):
         y = math.ceil(HL.shape[0]/2)
         x = math.ceil(HL.shape[1]/2)
 
-        LH *= 0
-        LL *= 0
-        HH *= 0
-        HL = HL * 0
         HL[x][y][0] = 255
         HL[x][y][1] = 255
         HL[x][y][2] = 255
@@ -129,10 +117,6 @@ def HHtoBlack(path, N):
         y = math.ceil(HH.shape[0]/2)
         x = math.ceil(HH.shape[1]/2)
 
-        LH *= 0
-        HL *= 0
-        LL *= 0
-        HH = HH * 0
         HH[x][y][0] = 255
         HH[x][y][1] = 255
         HH[x][y][2] = 255
@@ -156,14 +140,10 @@ if __name__ == "__main__":
                         help="Sequence of decompositions", default="/tmp/stockholm_")
 
     parser.add_argument("-N",
-                        help="Number of images/decompositions", default=5, type=int)
+                        help="Number of images/decompositions", default=1, type=int)
 
     args = parser.parse_args()
     path = os.path.dirname(args.decompositions)
-
-    '''FIRST DIRECT TRANSFORM'''
-    md = MDWT()
-    md.forward(args.decompositions, args.N)
 
     '''GET THE CONTRUBITON OF EACH SUBBAND'''
     getLLContribution(args.decompositions, args.N)
