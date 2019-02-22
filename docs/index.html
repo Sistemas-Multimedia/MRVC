@@ -27,7 +27,7 @@ class="ecrm-1200">Vicente Gonz</span><span
 class="ecrm-1200">á</span><span 
 class="ecrm-1200">lez Ruiz</span></div><br />
 <div class="date" ><span 
-class="ecrm-1200">February 18, 2019</span></div>
+class="ecrm-1200">February 22, 2019</span></div>
    </div>
    <h3 class="likesectionHead"><a 
  id="x1-1000"></a>Contents</h3>
@@ -119,6 +119,10 @@ display="inline" ><mi
 >H</mi></math> subbands</a></span>
 <br />   <span class="sectionToc" >10 <a 
 href="#x1-3100010" id="QQ2-1-41">MCDWT decomposition</a></span>
+<br />   <span class="sectionToc" >11 <a 
+href="#x1-3200011" id="QQ2-1-43">Encoding of B-type subbands</a></span>
+<br />   <span class="sectionToc" >12 <a 
+href="#x1-3300012" id="QQ2-1-44">Encoding of I-type subbands</a></span>
    </div>
 <!--l. 13--><p class="noindent" >
 </p>
@@ -159,14 +163,14 @@ href="http://inst.eecs.berkeley.edu/~ee290t/sp04/lectures/videowavelet_UCB1-3.pd
 </p>
    <h3 class="sectionHead"><span class="titlemark">2   </span> <a 
  id="x1-30002"></a>Distrete Wavelet Transform (DWT)</h3>
+                                                                  
+
+                                                                  
 <!--l. 44--><p class="noindent" ><a 
 href="https://en.wikipedia.org/wiki/Discrete_wavelet_transform" >(2D-)DWT</a> is a digital transform that, applied to an image, performs spatial
 decorrelation (2D) and obtains a <a 
 href="https://vicente-gonzalez-ruiz.github.io/image_transformations_for_coding/index.html#x1-3500024" >multiresolution dyadic representation</a> of such image,
 conforming a collection of DWT subbands. The forward transform converts the image
-                                                                  
-
-                                                                  
 into a set of frequency subbands with coeﬃcients representing diﬀerent spatial areas
 and frequency orientations. There is an equivalence between (DWT) subbands (a
 <span 
@@ -2249,6 +2253,9 @@ class="MathClass-punc">.</mo><msup><mrow
 ><mn>2</mn></mrow></msup 
 ></math>
      with the scale 2.
+                                                                  
+
+                                                                  
      </li>
      <li class="itemize">Subband <!--l. 79--><math 
  xmlns="http://www.w3.org/1998/Math/MathML"  
@@ -2293,9 +2300,6 @@ class="MathClass-punc">.</mo><msup><mrow
 ></mrow><mo 
 class="MathClass-close">)</mo></mrow></math>
      (“iDWT” = “inverse DWT” = “backward DWT”) with the scale 1.
-                                                                  
-
-                                                                  
      </li>
      <li class="itemize"><!--l. 81--><math 
  xmlns="http://www.w3.org/1998/Math/MathML"  
@@ -7206,6 +7210,718 @@ class="MathClass-rel">=</mo> <mn>8</mn></math>).</span></div><!--tex4ht:label?: 
 
                                                                   
    </div><hr class="endfigure" />
+   <h3 class="sectionHead"><span class="titlemark">11   </span> <a 
+ id="x1-3200011"></a>Encoding of B-type subbands</h3>
+<!--l. 826--><p class="noindent" >The subband <!--l. 826--><math 
+ xmlns="http://www.w3.org/1998/Math/MathML"  
+display="inline" ><mover 
+accent="true"><mrow 
+><mi 
+>b</mi></mrow><mo 
+class="MathClass-op">̃</mo></mover><mo 
+class="MathClass-punc">.</mo><mi 
+>H</mi></math>
+is no longer needed for applying the butterﬂy to diﬀerent decompositions and scales.
+For this reason, we can compress this subband. As a result, after using the
+butterﬂy to all the decompositions of the sequence and all the scales, all the
+<!--l. 829--><math 
+ xmlns="http://www.w3.org/1998/Math/MathML"  
+display="inline" ><mi 
+>H</mi></math>
+subbands will be compressed, excepting the intra-coded image
+of each GOP. Notice that the redundancy exploited in B-type
+<!--l. 831--><math 
+ xmlns="http://www.w3.org/1998/Math/MathML"  
+display="inline" ><mi 
+>H</mi></math>
+subbands is temporal.
+</p><!--l. 834--><p class="indent" >   To compress the <!--l. 834--><math 
+ xmlns="http://www.w3.org/1998/Math/MathML"  
+display="inline" ><mover 
+accent="true"><mrow 
+><mi 
+>b</mi></mrow><mo 
+class="MathClass-op">̃</mo></mover><mo 
+class="MathClass-punc">.</mo><mi 
+>H</mi></math>
+subbands, the following algorithm can be used:
+     </p><ol  class="enumerate1" >
+     <li 
+  class="enumerate" id="x1-32001x11">Compute the prediction error for the
+     <!--l. 837--><math 
+ xmlns="http://www.w3.org/1998/Math/MathML"  
+display="inline" ><mrow ><mo 
+class="MathClass-open">[</mo><mrow><mi 
+>b</mi><mo 
+class="MathClass-punc">.</mo><mi 
+>L</mi></mrow><mo 
+class="MathClass-close">]</mo></mrow></math>
+     subband <table class="equation"><tr><td> <a 
+ id="x1-32002r6"></a>
+     <!--l. 838--><math 
+ xmlns="http://www.w3.org/1998/Math/MathML"  
+display="block" class="equation">
+                                     <mrow ><mo 
+class="MathClass-open">[</mo><mrow><mover 
+accent="true"><mrow 
+><mi 
+>b</mi></mrow><mo 
+class="MathClass-op">̃</mo></mover><mo 
+class="MathClass-punc">.</mo><mi 
+>L</mi></mrow><mo 
+class="MathClass-close">]</mo></mrow> <mo 
+class="MathClass-rel">=</mo> <mrow ><mo 
+class="MathClass-open">[</mo><mrow><mi 
+>b</mi><mo 
+class="MathClass-punc">.</mo><mi 
+>L</mi></mrow><mo 
+class="MathClass-close">]</mo></mrow> <mo 
+class="MathClass-bin">−</mo> <mrow ><mo 
+class="MathClass-open">[</mo><mrow><mover 
+accent="true"><mrow 
+><mi 
+>b</mi></mrow><mo 
+class="MathClass-op">̂</mo></mover><mo 
+class="MathClass-punc">.</mo><mi 
+>L</mi></mrow><mo 
+class="MathClass-close">]</mo></mrow>
+</math></td><td class="eq-no">(6)</td></tr></table>
+     <!--l. 841--><p class="noindent" >where </p><table class="equation"><tr><td> <a 
+ id="x1-32003r7"></a>
+     <!--l. 842--><math 
+ xmlns="http://www.w3.org/1998/Math/MathML"  
+display="block" class="equation">
+                             <mrow ><mo 
+class="MathClass-open">[</mo><mrow><mover 
+accent="true"><mrow 
+><mi 
+>b</mi></mrow><mo 
+class="MathClass-op">̂</mo></mover><mo 
+class="MathClass-punc">.</mo><mi 
+>L</mi></mrow><mo 
+class="MathClass-close">]</mo></mrow> <mo 
+class="MathClass-rel">=</mo> <mfrac><mrow 
+><mrow ><mo 
+class="MathClass-open">[</mo><mrow><msub><mrow 
+><mi 
+>b</mi></mrow><mrow 
+><mi 
+>a</mi></mrow></msub 
+><mo 
+class="MathClass-punc">.</mo><mi 
+>L</mi></mrow><mo 
+class="MathClass-close">]</mo></mrow><mrow ><mo 
+class="MathClass-open">[</mo><mrow><msub><mrow 
+><mi 
+>s</mi></mrow><mrow 
+><mi 
+>a</mi></mrow></msub 
+><mo 
+class="MathClass-punc">.</mo><mi 
+>L</mi></mrow><mo 
+class="MathClass-close">]</mo></mrow> <mo 
+class="MathClass-bin">+</mo> <mrow ><mo 
+class="MathClass-open">[</mo><mrow><msub><mrow 
+><mi 
+>s</mi></mrow><mrow 
+><mi 
+>c</mi></mrow></msub 
+><mo 
+class="MathClass-punc">.</mo><mi 
+>L</mi></mrow><mo 
+class="MathClass-close">]</mo></mrow><mrow ><mo 
+class="MathClass-open">[</mo><mrow><msub><mrow 
+><mi 
+>b</mi></mrow><mrow 
+><mi 
+>c</mi></mrow></msub 
+><mo 
+class="MathClass-punc">.</mo><mi 
+>L</mi></mrow><mo 
+class="MathClass-close">]</mo></mrow></mrow> 
+       <mrow 
+><mrow ><mo 
+class="MathClass-open">[</mo><mrow><msub><mrow 
+><mi 
+>s</mi></mrow><mrow 
+><mi 
+>a</mi></mrow></msub 
+><mo 
+class="MathClass-punc">.</mo><mi 
+>L</mi></mrow><mo 
+class="MathClass-close">]</mo></mrow> <mo 
+class="MathClass-bin">+</mo> <mrow ><mo 
+class="MathClass-open">[</mo><mrow><msub><mrow 
+><mi 
+>s</mi></mrow><mrow 
+><mi 
+>c</mi></mrow></msub 
+><mo 
+class="MathClass-punc">.</mo><mi 
+>L</mi></mrow><mo 
+class="MathClass-close">]</mo></mrow></mrow></mfrac>        <mo 
+class="MathClass-punc">.</mo>
+</math></td><td class="eq-no">(7)</td></tr></table>
+                                                                  
+
+                                                                  
+     </li>
+     <li 
+  class="enumerate" id="x1-32004x11">Compute the 2D-DWT of subband
+     <!--l. 846--><math 
+ xmlns="http://www.w3.org/1998/Math/MathML"  
+display="inline" ><mi 
+>L</mi></math> <table class="equation"><tr><td>
+     <a 
+ id="x1-32005r8"></a>
+     <!--l. 847--><math 
+ xmlns="http://www.w3.org/1998/Math/MathML"  
+display="block" class="equation">
+                                 <mover 
+accent="true"><mrow 
+><mi 
+>b</mi></mrow><mo 
+class="MathClass-op">̃</mo></mover> <mo 
+class="MathClass-rel">=</mo> <mstyle 
+class="text"><mtext  >DWT</mtext></mstyle><mrow ><mo 
+class="MathClass-open">(</mo><mrow><mrow ><mo 
+class="MathClass-open">[</mo><mrow><mover 
+accent="true"><mrow 
+><mi 
+>b</mi><mo 
+class="MathClass-punc">.</mo><mi 
+>L</mi></mrow><mo 
+class="MathClass-op">̃</mo></mover></mrow><mo 
+class="MathClass-close">]</mo></mrow></mrow><mo 
+class="MathClass-close">)</mo></mrow><mo 
+class="MathClass-punc">.</mo>
+</math></td><td class="eq-no">(8)</td></tr></table>
+     </li>
+     <li 
+  class="enumerate" id="x1-32006x11">Find the indices for <!--l. 851--><math 
+ xmlns="http://www.w3.org/1998/Math/MathML"  
+display="inline" ><mover 
+accent="true"><mrow 
+><mi 
+>b</mi><mo 
+class="MathClass-punc">.</mo><mi 
+>L</mi></mrow><mo 
+class="MathClass-op">̃</mo></mover></math>
+     that sorts it in descending order by energy <table class="equation"><tr><td> <a 
+ id="x1-32007r9"></a>
+     <!--l. 852--><math 
+ xmlns="http://www.w3.org/1998/Math/MathML"  
+display="block" class="equation">
+        <mstyle 
+class="text"><mtext  >indices</mtext></mstyle> <mo 
+class="MathClass-rel">=</mo> <mstyle 
+class="text"><mtext  >unravel_index</mtext></mstyle><mrow ><mo 
+class="MathClass-open">(</mo><mrow><mstyle 
+class="text"><mtext  >argsort</mtext></mstyle><mrow ><mo 
+class="MathClass-open">(</mo><mrow><mstyle 
+class="text"><mtext  >abs</mtext></mstyle><mrow ><mo 
+class="MathClass-open">(</mo><mrow><mover 
+accent="true"><mrow 
+><mi 
+>b</mi><mo 
+class="MathClass-punc">.</mo><mi 
+>L</mi></mrow><mo 
+class="MathClass-op">̃</mo></mover></mrow><mo 
+class="MathClass-close">)</mo></mrow><mo 
+class="MathClass-punc">,</mo><mi 
+>b</mi><mo 
+class="MathClass-punc">.</mo><mi 
+>L</mi><mo 
+class="MathClass-punc">.</mo><mstyle 
+class="text"><mtext  >width</mtext></mstyle><mo 
+class="MathClass-punc">,</mo><mi 
+>b</mi><mo 
+class="MathClass-punc">.</mo><mi 
+>L</mi><mo 
+class="MathClass-punc">.</mo><mstyle 
+class="text"><mtext  >height</mtext></mstyle></mrow><mo 
+class="MathClass-close">)</mo></mrow></mrow><mo 
+class="MathClass-close">)</mo></mrow><mo 
+class="MathClass-punc">.</mo>
+</math></td><td class="eq-no">(9)</td></tr></table>
+     </li>
+     <li 
+  class="enumerate" id="x1-32009x1">Go over <!--l. 861--><math 
+ xmlns="http://www.w3.org/1998/Math/MathML"  
+display="inline" ><mover 
+accent="true"><mrow 
+><mi 
+>b</mi></mrow><mo 
+class="MathClass-op">̃</mo></mover><mo 
+class="MathClass-punc">.</mo><mi 
+>L</mi></math>
+     sending the wavelet coeﬃcients of subbands
+     <!--l. 862--><math 
+ xmlns="http://www.w3.org/1998/Math/MathML"  
+display="inline" ><mi 
+>L</mi><msup><mrow 
+><mi 
+>H</mi></mrow><mrow 
+><mn>2</mn></mrow></msup 
+></math>,
+     <!--l. 862--><math 
+ xmlns="http://www.w3.org/1998/Math/MathML"  
+display="inline" ><mi 
+>H</mi><msup><mrow 
+><mi 
+>L</mi></mrow><mrow 
+><mn>2</mn></mrow></msup 
+></math> and
+     <!--l. 862--><math 
+ xmlns="http://www.w3.org/1998/Math/MathML"  
+display="inline" ><mi 
+>H</mi><msup><mrow 
+><mi 
+>H</mi></mrow><mrow 
+><mn>2</mn></mrow></msup 
+></math>
+     in descending order by energy.
+     </li>
+     <li 
+  class="enumerate" id="x1-32010x1"><!--l. 877--><math 
+ xmlns="http://www.w3.org/1998/Math/MathML"  
+display="inline" ><mi 
+>λ</mi> <mo 
+class="MathClass-rel">&#x003E;</mo><mo 
+class="MathClass-rel">&#x003E;</mo><mo 
+class="MathClass-rel">=</mo> <mn>1</mn></math>.
+     </li>
+     <li 
+  class="enumerate" id="x1-32011x1">Goto step 6.</li></ol>
+                                                                  
+
+                                                                  
+<!--l. 881--><p class="noindent" >
+</p>
+   <h3 class="sectionHead"><span class="titlemark">12   </span> <a 
+ id="x1-3300012"></a>Encoding of I-type subbands</h3>
+<!--l. 882--><p class="noindent" >After a <!--l. 882--><math 
+ xmlns="http://www.w3.org/1998/Math/MathML"  
+display="inline" ><mi 
+>T</mi></math>-levels MCDWT
+transform of a sequence, <!--l. 882--><math 
+ xmlns="http://www.w3.org/1998/Math/MathML"  
+display="inline" ><mi 
+>T</mi> <mo 
+class="MathClass-bin">+</mo> <mn>1</mn></math>
+temporal subbands are generated, and the temporal subband
+<!--l. 883--><math 
+ xmlns="http://www.w3.org/1998/Math/MathML"  
+display="inline" ><msup><mrow 
+><mi 
+>L</mi></mrow><mrow 
+><mi 
+>T</mi><mo 
+class="MathClass-bin">+</mo><mn>1</mn></mrow></msup 
+></math> has a
+one <!--l. 884--><math 
+ xmlns="http://www.w3.org/1998/Math/MathML"  
+display="inline" ><mi 
+>H</mi></math>
+I-type subband for each GOP. Notice that the redundancy exploited in the I-type
+<!--l. 885--><math 
+ xmlns="http://www.w3.org/1998/Math/MathML"  
+display="inline" ><mi 
+>H</mi></math>
+subbands is spatial.
+</p><!--l. 887--><p class="indent" >   To compress the <!--l. 887--><math 
+ xmlns="http://www.w3.org/1998/Math/MathML"  
+display="inline" ><mi 
+>a</mi><mo 
+class="MathClass-punc">.</mo><mi 
+>H</mi></math>
+subband in the last iteration of the butterﬂy, the following algorithm can be
+used:
+     </p><ol  class="enumerate1" >
+     <li 
+  class="enumerate" id="x1-33001x12">Compute the 2D-DWT of the <!--l. 890--><math 
+ xmlns="http://www.w3.org/1998/Math/MathML"  
+display="inline" ><mi 
+>a</mi><mo 
+class="MathClass-punc">.</mo><mi 
+>L</mi></math>
+     subband <table class="equation"><tr><td> <a 
+ id="x1-33002r10"></a>
+     <!--l. 891--><math 
+ xmlns="http://www.w3.org/1998/Math/MathML"  
+display="block" class="equation">
+                            <mi 
+>L</mi><msup><mrow 
+><mi 
+>L</mi></mrow><mrow 
+><mn>2</mn></mrow></msup 
+><mo 
+class="MathClass-punc">,</mo><mi 
+>L</mi><msup><mrow 
+><mi 
+>H</mi></mrow><mrow 
+><mn>2</mn></mrow></msup 
+><mo 
+class="MathClass-punc">,</mo><mi 
+>H</mi><msup><mrow 
+><mi 
+>L</mi></mrow><mrow 
+><mn>2</mn></mrow></msup 
+><mo 
+class="MathClass-punc">,</mo><mi 
+>H</mi><msup><mrow 
+><mi 
+>H</mi></mrow><mrow 
+><mn>2</mn></mrow></msup 
+> <mo 
+class="MathClass-rel">=</mo> <mstyle 
+class="text"><mtext  >DWT</mtext></mstyle><mrow ><mo 
+class="MathClass-open">(</mo><mrow><mi 
+>L</mi><mi 
+>L</mi></mrow><mo 
+class="MathClass-close">)</mo></mrow><mo 
+class="MathClass-punc">.</mo>
+</math></td><td class="eq-no">(10)</td></tr></table>
+     </li>
+     <li 
+  class="enumerate" id="x1-33003x12">Desplace 2 bits to the left the <!--l. 895--><math 
+ xmlns="http://www.w3.org/1998/Math/MathML"  
+display="inline" ><mi 
+>H</mi></math>
+     coeﬃcients to create space for encoding the subband <table class="equation"><tr><td> <a 
+ id="x1-33004r11"></a>
+     <!--l. 897--><math 
+ xmlns="http://www.w3.org/1998/Math/MathML"  
+display="block" class="equation">
+ <mtable  align="axis" style=""  
+equalrows="false" equalcolumns="false" class="array"> <mtr><mtd 
+class="array"  columnalign="left">  <mi 
+>L</mi><msup><mrow 
+><mi 
+>H</mi></mrow><mrow 
+><mn>2</mn></mrow></msup 
+> <mo 
+class="MathClass-rel">&#x003C;</mo><mo 
+class="MathClass-rel">&#x003C;</mo><mo 
+class="MathClass-rel">=</mo> <mn>2</mn>   </mtd>
+</mtr>  <mtr><mtd 
+class="array"  columnalign="left">  <mi 
+>H</mi><msup><mrow 
+><mi 
+>L</mi></mrow><mrow 
+><mn>2</mn></mrow></msup 
+> <mo 
+class="MathClass-rel">&#x003C;</mo><mo 
+class="MathClass-rel">&#x003C;</mo><mo 
+class="MathClass-rel">=</mo> <mn>2</mn>   </mtd>
+</mtr>  <mtr><mtd 
+class="array"  columnalign="left">  <mi 
+>H</mi><msup><mrow 
+><mi 
+>H</mi></mrow><mrow 
+><mn>2</mn></mrow></msup 
+> <mo 
+class="MathClass-rel">&#x003C;</mo><mo 
+class="MathClass-rel">&#x003C;</mo><mo 
+class="MathClass-rel">=</mo> <mn>2</mn><mo 
+class="MathClass-punc">.</mo> </mtd></mtr><!--l--></mtable>
+</math></td><td class="eq-no">(11)</td></tr></table>
+                                                                  
+
+                                                                  
+     </li>
+     <li 
+  class="enumerate" id="x1-33005x12">Label the coeﬃcients of the subbands: <table class="equation"><tr><td> <a 
+ id="x1-33006r12"></a>
+     <!--l. 905--><math 
+ xmlns="http://www.w3.org/1998/Math/MathML"  
+display="block" class="equation">
+ <mtable  align="axis" style=""  
+equalrows="false" equalcolumns="false" class="array"> <mtr><mtd 
+class="array"  columnalign="left">  <mi 
+>H</mi><msup><mrow 
+><mi 
+>L</mi></mrow><mrow 
+><mn>2</mn></mrow></msup 
+><mo 
+class="MathClass-bin">+</mo> <mo 
+class="MathClass-rel">=</mo> <mn>1</mn>   </mtd>
+</mtr>  <mtr><mtd 
+class="array"  columnalign="left">  <mi 
+>H</mi><msup><mrow 
+><mi 
+>H</mi></mrow><mrow 
+><mn>2</mn></mrow></msup 
+><mo 
+class="MathClass-bin">+</mo> <mo 
+class="MathClass-rel">=</mo> <mn>2</mn><mo 
+class="MathClass-punc">.</mo> </mtd></mtr><!--l--></mtable>
+</math></td><td class="eq-no">(12)</td></tr></table>
+     </li>
+     <li 
+  class="enumerate" id="x1-33007x12">Create an array with the 3 matrices <table class="equation"><tr><td> <a 
+ id="x1-33008r13"></a>
+     <!--l. 912--><math 
+ xmlns="http://www.w3.org/1998/Math/MathML"  
+display="block" class="equation">
+                                    <mi 
+>H</mi> <mo 
+class="MathClass-rel">=</mo> <mrow ><mo 
+class="MathClass-open">[</mo><mrow><mi 
+>L</mi><msup><mrow 
+><mi 
+>H</mi></mrow><mrow 
+><mn>2</mn></mrow></msup 
+><mo 
+class="MathClass-punc">,</mo><mi 
+>H</mi><msup><mrow 
+><mi 
+>L</mi></mrow><mrow 
+><mn>2</mn></mrow></msup 
+><mo 
+class="MathClass-punc">,</mo><mi 
+>H</mi><msup><mrow 
+><mi 
+>H</mi></mrow><mrow 
+><mn>2</mn></mrow></msup 
+></mrow><mo 
+class="MathClass-close">]</mo></mrow><mo 
+class="MathClass-punc">.</mo>
+</math></td><td class="eq-no">(13)</td></tr></table>
+     </li>
+     <li 
+  class="enumerate" id="x1-33009x12">Create a linear array with the 3 ﬂattened matrices <table class="equation"><tr><td> <a 
+ id="x1-33010r14"></a>
+     <!--l. 916--><math 
+ xmlns="http://www.w3.org/1998/Math/MathML"  
+display="block" class="equation">
+                                          <msup><mrow 
+><mi 
+>H</mi></mrow><mrow 
+><mi 
+>′</mi></mrow></msup 
+> <mo 
+class="MathClass-rel">=</mo> <mstyle 
+class="text"><mtext  >ravel</mtext></mstyle><mrow ><mo 
+class="MathClass-open">(</mo><mrow><mi 
+>H</mi></mrow><mo 
+class="MathClass-close">)</mo></mrow><mo 
+class="MathClass-punc">.</mo>
+</math></td><td class="eq-no">(14)</td></tr></table>
+                                                                  
+
+                                                                  
+     </li>
+     <li 
+  class="enumerate" id="x1-33011x12">Find the indices for the <!--l. 919--><math 
+ xmlns="http://www.w3.org/1998/Math/MathML"  
+display="inline" ><mi 
+>L</mi><msup><mrow 
+><mi 
+>H</mi></mrow><mrow 
+><mn>2</mn></mrow></msup 
+></math>,
+     <!--l. 919--><math 
+ xmlns="http://www.w3.org/1998/Math/MathML"  
+display="inline" ><mi 
+>H</mi><msup><mrow 
+><mi 
+>L</mi></mrow><mrow 
+><mn>2</mn></mrow></msup 
+></math> and
+     <!--l. 919--><math 
+ xmlns="http://www.w3.org/1998/Math/MathML"  
+display="inline" ><mi 
+>H</mi><msup><mrow 
+><mi 
+>H</mi></mrow><mrow 
+><mn>2</mn></mrow></msup 
+></math> matrices that sort
+     <!--l. 920--><math 
+ xmlns="http://www.w3.org/1998/Math/MathML"  
+display="inline" ><msup><mrow 
+><mi 
+>H</mi></mrow><mrow 
+><mi 
+>′</mi></mrow></msup 
+></math> in descending
+     order by energy (<!--l. 921--><math 
+ xmlns="http://www.w3.org/1998/Math/MathML"  
+display="inline" ><mstyle 
+class="text"><mtext  >width</mtext></mstyle> <mo 
+class="MathClass-rel">=</mo> <mi 
+>L</mi><msup><mrow 
+><mi 
+>H</mi></mrow><mrow 
+><mn>2</mn></mrow></msup 
+><mo 
+class="MathClass-punc">.</mo><mstyle 
+class="text"><mtext  >shape</mtext></mstyle><mrow ><mo 
+class="MathClass-open">[</mo><mrow><mn>0</mn></mrow><mo 
+class="MathClass-close">]</mo></mrow></math>
+     and <!--l. 921--><math 
+ xmlns="http://www.w3.org/1998/Math/MathML"  
+display="inline" ><mstyle 
+class="text"><mtext  >height</mtext></mstyle> <mo 
+class="MathClass-rel">=</mo> <mi 
+>L</mi><msup><mrow 
+><mi 
+>H</mi></mrow><mrow 
+><mn>2</mn></mrow></msup 
+><mo 
+class="MathClass-punc">.</mo><mstyle 
+class="text"><mtext  >shape</mtext></mstyle><mrow ><mo 
+class="MathClass-open">[</mo><mrow><mn>1</mn></mrow><mo 
+class="MathClass-close">]</mo></mrow></math>)
+     <table class="equation"><tr><td> <a 
+ id="x1-33012r15"></a>
+     <!--l. 922--><math 
+ xmlns="http://www.w3.org/1998/Math/MathML"  
+display="block" class="equation">
+              <mstyle 
+class="text"><mtext  >indices</mtext></mstyle> <mo 
+class="MathClass-rel">=</mo> <mstyle 
+class="text"><mtext  >unravel_index</mtext></mstyle><mrow ><mo 
+class="MathClass-open">(</mo><mrow><mstyle 
+class="text"><mtext  >argsort</mtext></mstyle><mrow ><mo 
+class="MathClass-open">(</mo><mrow><mstyle 
+class="text"><mtext  >abs</mtext></mstyle><mrow ><mo 
+class="MathClass-open">(</mo><mrow><msup><mrow 
+><mi 
+>H</mi></mrow><mrow 
+><mi 
+>′</mi></mrow></msup 
+></mrow><mo 
+class="MathClass-close">)</mo></mrow></mrow><mo 
+class="MathClass-close">)</mo></mrow><mo 
+class="MathClass-punc">,</mo><mstyle 
+class="text"><mtext  >width</mtext></mstyle><mo 
+class="MathClass-punc">,</mo><mstyle 
+class="text"><mtext  >height</mtext></mstyle></mrow><mo 
+class="MathClass-close">)</mo></mrow><mo 
+class="MathClass-punc">.</mo>
+</math></td><td class="eq-no">(15)</td></tr></table>
+     </li>
+     <li 
+  class="enumerate" id="x1-33013x12">Go over <!--l. 927--><math 
+ xmlns="http://www.w3.org/1998/Math/MathML"  
+display="inline" ><msup><mrow 
+><mi 
+>H</mi></mrow><mrow 
+><mi 
+>′</mi></mrow></msup 
+></math>
+     sending the wavelet coeﬃcients of subbands
+     <!--l. 928--><math 
+ xmlns="http://www.w3.org/1998/Math/MathML"  
+display="inline" ><mi 
+>L</mi><msup><mrow 
+><mi 
+>H</mi></mrow><mrow 
+><mn>2</mn></mrow></msup 
+></math>,
+     <!--l. 928--><math 
+ xmlns="http://www.w3.org/1998/Math/MathML"  
+display="inline" ><mi 
+>H</mi><msup><mrow 
+><mi 
+>L</mi></mrow><mrow 
+><mn>2</mn></mrow></msup 
+></math> and
+     <!--l. 928--><math 
+ xmlns="http://www.w3.org/1998/Math/MathML"  
+display="inline" ><mi 
+>H</mi><msup><mrow 
+><mi 
+>H</mi></mrow><mrow 
+><mn>2</mn></mrow></msup 
+></math>
+     in descending order by energy <table class="equation"><tr><td> <a 
+ id="x1-33014r16"></a>
+     <!--l. 929--><math 
+ xmlns="http://www.w3.org/1998/Math/MathML"  
+display="block" class="equation">
+ <mtable  align="axis" style=""  
+equalrows="false" equalcolumns="false" class="array"> <mtr><mtd 
+class="array"  columnalign="left">  <mstyle 
+class="text"><mtext  >for </mtext></mstyle><mi 
+>d</mi><mstyle 
+class="text"><mtext  > in range</mtext></mstyle><mrow ><mo 
+class="MathClass-open">(</mo><mrow><mn>3</mn></mrow><mo 
+class="MathClass-close">)</mo></mrow> <mo 
+class="MathClass-punc">:</mo>                                          </mtd>
+</mtr>  <mtr><mtd 
+class="array"  columnalign="left">  <mspace width="1em" class="nbsp" /><mstyle 
+class="text"><mtext  >for </mtext></mstyle><mi 
+>y</mi><mstyle 
+class="text"><mtext  > in range</mtext></mstyle><mrow ><mo 
+class="MathClass-open">(</mo><mrow><mstyle 
+class="text"><mtext  >height</mtext></mstyle></mrow><mo 
+class="MathClass-close">)</mo></mrow> <mo 
+class="MathClass-punc">:</mo>                                   </mtd>
+</mtr>  <mtr><mtd 
+class="array"  columnalign="left">  <mspace width="1em" class="nbsp" /><mspace width="1em" class="nbsp" /><mstyle 
+class="text"><mtext  >for </mtext></mstyle><mi 
+>x</mi><mstyle 
+class="text"><mtext  > in range</mtext></mstyle><mrow ><mo 
+class="MathClass-open">(</mo><mrow><mstyle 
+class="text"><mtext  >width</mtext></mstyle></mrow><mo 
+class="MathClass-close">)</mo></mrow> <mo 
+class="MathClass-punc">:</mo>                                   </mtd>
+</mtr>  <mtr><mtd 
+class="array"  columnalign="left">  <mspace width="1em" class="nbsp" /><mspace width="1em" class="nbsp" /><mspace width="1em" class="nbsp" /><mi 
+>i</mi> <mo 
+class="MathClass-rel">=</mo> <mn>3</mn> <mo 
+class="MathClass-bin">×</mo> <mrow ><mo 
+class="MathClass-open">(</mo><mrow><mstyle 
+class="text"><mtext  >height</mtext></mstyle> <mo 
+class="MathClass-bin">×</mo><mstyle 
+class="text"><mtext  >width</mtext></mstyle></mrow><mo 
+class="MathClass-close">)</mo></mrow> <mo 
+class="MathClass-bin">+</mo> <mi 
+>y</mi> <mo 
+class="MathClass-bin">×</mo><mstyle 
+class="text"><mtext  >width</mtext></mstyle> <mo 
+class="MathClass-bin">+</mo> <mi 
+>x</mi>          </mtd>
+</mtr>  <mtr><mtd 
+class="array"  columnalign="left"> <mspace width="1em" class="nbsp" /><mspace width="1em" class="nbsp" /><mspace width="1em" class="nbsp" /><mstyle 
+class="text"><mtext  >send</mtext></mstyle><mrow ><mo 
+class="MathClass-open">(</mo><mrow><mi 
+>H</mi><mrow ><mo 
+class="MathClass-open">[</mo><mrow><msup><mrow 
+><mi 
+>H</mi></mrow><mrow 
+><mi 
+>′</mi></mrow></msup 
+><mrow ><mo 
+class="MathClass-open">[</mo><mrow><mstyle 
+class="text"><mtext  >indice</mtext></mstyle><mrow ><mo 
+class="MathClass-open">[</mo><mrow><mi 
+>i</mi></mrow><mo 
+class="MathClass-close">]</mo></mrow></mrow><mo 
+class="MathClass-close">]</mo></mrow><mstyle 
+class="text"><mtext  > mod </mtext></mstyle><mn>4</mn></mrow><mo 
+class="MathClass-close">]</mo></mrow><mrow ><mo 
+class="MathClass-open">[</mo><mrow><msup><mrow 
+><mi 
+>H</mi></mrow><mrow 
+><mi 
+>′</mi></mrow></msup 
+><mrow ><mo 
+class="MathClass-open">[</mo><mrow><mstyle 
+class="text"><mtext  >indice</mtext></mstyle><mrow ><mo 
+class="MathClass-open">[</mo><mrow><mi 
+>i</mi></mrow><mo 
+class="MathClass-close">]</mo></mrow></mrow><mo 
+class="MathClass-close">]</mo></mrow> <mo 
+class="MathClass-rel">&#x003E;</mo><mo 
+class="MathClass-rel">&#x003E;</mo> <mn>2</mn></mrow><mo 
+class="MathClass-close">]</mo></mrow></mrow><mo 
+class="MathClass-close">)</mo></mrow><mo 
+class="MathClass-punc">.</mo> </mtd></mtr><!--l--></mtable>
+</math></td><td class="eq-no">(16)</td></tr></table>
+     </li></ol>
     
 </body> 
 </html>

@@ -822,10 +822,8 @@ for i in /tmp/00?.png; do python ../tools/substract_offset.py -i $i -o $i.png; d
 \caption{MCDWT(1,3) decomposition ($\text{GOP\_size}=8$).\label{fig:MCDWT_decomposition}}
 \end{figure}
 
-\begin{comment}
-
 \section{Encoding of B-type subbands}
-The subband $\tilde{b.H}$ is no longer needed for applying the
+The subband $\tilde{b}.H$ is no longer needed for applying the
 butterfly to different decompositions and scales. For this reason, we
 can compress this subband. As a result, after using the butterfly to
 all the decompositions of the sequence and all the scales, all the $H$
@@ -833,16 +831,24 @@ subbands will be compressed, excepting the intra-coded image of each
 GOP. Notice that the redundancy exploited in B-type $H$ subbands is
 temporal.
 
-To compress the $\tilde{b.H}$ subbands, the following algorithm can be
-used:
+A $\tilde{b}.H$ subband can be compressed by sorting its coefficients
+by energy and predicting them. Thus, the better the prediction the
+higher the compression ratio. To sort the coefficients of subband
+$\tilde{b}.H$ by energy without using it (remember that the decoder
+does not know this information), we can think that there is a
+correlation between the coefficients of $\tilde{b}.H$ and
+$\tilde{b}.L$, that is, the prediction error resulting of substracting
+to $b.L$ a prediction $\hat{b}.L$ generated with the same motion
+information used to built the prediction $\hat{b}.H$. Such idea has
+been implemented in the following algorithm:
 \begin{enumerate}
 \item [1.] Compute the prediction error for the $[b.L]$ subband
 \begin{equation}
-  [\tilde{b.L}] = [b.L] - [\hat{b.L}]
+  [\tilde{b}.L] = [b.L] - [\hat{b}.L]
 \end{equation}
 where
 \begin{equation}
-  [\hat{b.L}] = \frac{[b_a.L][s_a.L]+[s_c.L][b_c.L]}{[s_a.L]+[s_c.L]}.
+  [\hat{b}.L] = \frac{[b_a.L][s_a.L]+[s_c.L][b_c.L]}{[s_a.L]+[s_c.L]}.
 \end{equation}
 
 \item [2.] Compute the 2D-DWT of subband $L$
@@ -875,7 +881,7 @@ where
 %    subbands.
 %  \item [b.] Send $(\hat{b.H}_{x,y}~\text{bitwise-and}~\lambda)/\lambda$ for
 %    the three (LH, HL and HH) subbands.
-  \end{enumerate}
+%  \end{enumerate}
 \item [7.] $\lambda >>= 1$.
 \item [8.] Goto step 6.
 \end{enumerate}
@@ -903,7 +909,7 @@ the following algorithm can be used:
       HH^2 <<= 2.
     \end{array}
   \end{equation}
-\item [3.] Encode de subband:
+\item [3.] Label the coefficients of the subbands:
   \begin{equation}
     \begin{array}{l}
       HL^2 += 1 \\
@@ -938,8 +944,6 @@ the following algorithm can be used:
     \end{array}
   \end{equation}
 \end{enumerate}
-
-\end{comment}
 
 \begin{comment}
 
