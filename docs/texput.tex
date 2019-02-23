@@ -11,6 +11,7 @@
 \tableofcontents
 
 \section{Intro}
+%{{{
 
 \href{https://en.wikipedia.org/wiki/Video}{Video} data contain high
 amounts of redundancy, spatial and temporal. For this reason, most of
@@ -40,7 +41,11 @@ have two interesting features:
   \href{http://inst.eecs.berkeley.edu/~ee290t/sp04/lectures/videowavelet_UCB1-3.pdf}{scalability}).
 \end{enumerate}
 
+%}}}
+
 \section{Distrete Wavelet Transform (DWT)}
+%{{{
+
 \href{https://en.wikipedia.org/wiki/Discrete_wavelet_transform}{(2D-)DWT}
 is a digital transform that, applied to an image, performs spatial
 decorrelation (2D) and obtains a
@@ -139,7 +144,11 @@ display -normalize /tmp/000.png
 display -normalize /tmp/diffs.png
 \end{verbatim}
 
+%}}}
+
 \section{Motion DWT (MDWT)}
+%{{{
+
 DWT can be applied to a sequence of images by simply transforming each
 image of the sequence independently. This is done, for example, in the
 \href{https://en.wikipedia.org/wiki/JPEG_2000}{motion JPEG2000 video
@@ -210,7 +219,11 @@ rm /tmp/*.norm
 for i in /tmp/00?.png; do convert -normalize $i $i.norm; done; animate /tmp/00?.png.norm
 \end{verbatim}
 
+%}}}
+
 \section{Video transform alternatives}
+%{{{
+
 To remove both, spatial and temporal redundancies, two different
 alternatives are available: (1) t+2D transforms and (2) 2D+t
 transforms. In a t+2D transform, the video is first
@@ -265,8 +278,12 @@ information in a code-stream that can be decoded following different
 orders, depending on the type of used scalability and the avaliable
 bandwidth.
 
+%}}}
+
 % Subband Motion Compensated Temporal Filtering (SMCTF) 
 \section{Motion Compensated Discrete Wavelet Transform (MCDWT)}
+%{{{
+
 MCDWT is a 2D+t transform. The 2D stage is MDWT. The t stage is a
 1D-DWT, which removes the temporal redundancy between adjacent $H$
 subbands by means of
@@ -500,7 +517,11 @@ python3 -O MDWT.py -p /tmp/ -b
 for i in /tmp/00?.png; do python ../tools/substract_offset.py -i $i -o $i.png; done; animate /tmp/00?.png.png
 \end{verbatim}
 
+%}}}
+
 \section{Adaptive motion compensation based on the distortion of the prediction error}
+%{{{
+
 As can be seen in the MCDWT bufferfly (see
 Fig.~\ref{fig:forward_butterfly}), both predictions $[b_a.H]$ and
 $[b_c.H]$ have the same weight to build the prediction
@@ -552,7 +573,11 @@ $[\hat{b.H}]_{x,y}=\frac{[b_a.H]+[b_c.H]}{2}$ (even if both similarities are sma
 
 \lstinputlisting[firstline=4, lastline=15, language=python, caption={weighted\_average.py (extract)}]{../src/weighted_average.py}
 
+%}}}
+
 \section{Orthogonal, orthonormal, and biorthogonal transforms}
+%{{{
+
 In signal processing\footnote{In mathemathics the definition of
   orthogonality refers to characteristics such as the basis of the
   transform forms an orthogonal espace, where it is impossible to
@@ -628,7 +653,10 @@ To compute the subband gains we have two options:
 This computation can be also applied to MCDWT, by computing the subband
 gains as a function of the number $T$ of temporal decompositions.
 
+%}}}
+
 \section{Quantization effects}
+%{{{
 \subsection{Quantization of ($H$) MC subbands}
 \begin{verbatim}
 # You must be in the 'src' directory.
@@ -714,7 +742,11 @@ python3 -O MDWT.py -p /tmp/ -b -N 3
 for i in /tmp/00?.png; do python ../tools/substract_offset.py -i $i -o $i.png; done; animate /tmp/00?.png.png
 \end{verbatim}
 
+%}}}
+
 \section{Lossy compression effects}
+%{{{
+
 \subsection{Compression of ($H$) MC subbands}
 \begin{verbatim}
 # You must be in the 'src' directory.
@@ -814,7 +846,10 @@ python3 -O MDWT.py -p /tmp/ -b -N 3
 for i in /tmp/00?.png; do python ../tools/substract_offset.py -i $i -o $i.png; done; animate /tmp/00?.png.png
 \end{verbatim}
 
+%}}}
+
 \section{MCDWT decomposition}
+%{{{
 
 \begin{figure}
 \centering
@@ -822,7 +857,11 @@ for i in /tmp/00?.png; do python ../tools/substract_offset.py -i $i -o $i.png; d
 \caption{MCDWT(1,3) decomposition ($\text{GOP\_size}=8$).\label{fig:MCDWT_decomposition}}
 \end{figure}
 
+%}}}
+
 \section{Encoding of B-type subbands}
+%{{{
+
 The subband $\tilde{b}.H$ is no longer needed for applying the
 butterfly to different decompositions and scales. For this reason, we
 can compress this subband. As a result, after using the butterfly to
@@ -886,12 +925,106 @@ where
 \item [8.] Goto step 6.
 \end{enumerate}
 
-\section{Encoding of I-type subbands}
+%}}}
+
+\section{Encoding of I-type images}
+%{{{
+
 After a $T$-levels MCDWT transform of a sequence, $T+1$ temporal
 subbands are generated, and the temporal subband $L^{T+1}$ has a one
 $H$ I-type subband for each GOP. Notice that the redundancy exploited
-in the I-type $H$ subbands is spatial.
+to accumulate the visual information in the $L$ subband (or to remove
+the visual information in the $H$ subbands is spatial) in a I-type
+image.
 
+After a $T$-levels MCDWT transform, I-type images are decomposed into
+the four subbands $LL$ (low-frequencies), $LH$, $HL$ and $HH$
+(high-frequencies). Depending on the image content and wavelets used
+in the 2D-DWT, $H$ subbands contain a certain amount of \emph{visual
+  information}\footnote{Any visual stimulus that provides information
+  to humans}. The key here is to reduce as much as possible such
+visual information, leaving in the $H$ subbands only \emph{visual
+  noise}\footnote{Any visual stimulus that does not provides
+  information to humans.} If we achieve this, the $H$ subbands,
+expressed in a sign/magnitude representation will have two features:
+(1) the probability of finding zeros when we are moving from the least
+significant bit-planes fo the most significant ones of the magnitude
+of the coefficients will increase (to the point where from one
+bit-plane upwards, all the bits will be zero), and (2) the correlation
+in the sign bit-plane will be zero. In this situation, an efficient
+encoding method is to compress the bit-planes, starting at the MSBP
+with at least one bit to 1 (in other words, ``send'' the ones of the
+MSBP), sending before the corresponding sign. If more than one if
+found in the MSBP, the bits should be processed by descending
+magnitude, i.e., sending first those bits that corresponds with
+coefficients with a higher magnitude. This information can be
+extracted from the $L$ subband as below is shown.
+
+Information in the $L$ subband can be used to futher reduce the visual
+information of $H$ subbands and to estimate the value of its
+high-frequency coefficients, and therefore to sort them by their
+magnitude. The idea is to predict the $H$ coefficients by introducing
+some (visual) information in the $[L]$ subband, and to perform again
+the 2D-DWT (using the same wavelets). This generates a $\hat{H}$
+subbands that substracted to $H$ should remove the visual information
+from them (decorrelating the signs and reducing the number of bits
+necessary to represent most of the coefficients). Moreover, the
+coefficients of $\hat{H}$ sorted by magnitude in descending order can
+be used to estimate which bits inside of each bit-plane should be
+encoded first.
+
+Introduced such ideas, to compress the $H$ subbands of a 1-level
+2D-DWT, the following algorithm can be used:
+
+\begin{enumerate}
+
+\item Compute $[L]$, zooming-in the $L$ subband.
+  \begin{equation}
+    [L] = \text{iDWT}(L, 0)
+  \end{equation}
+  
+\item Add to $[L]$ some visual information $V$ that could be present
+  in original $L^0$. Any edge enhancement algorithm should work.
+  \begin{equation}
+    [L'] = [L] + V
+  \end{equation}
+
+\item Compute the 2D-DWT of $[L']$ to obtain a prediction $\hat{H}$.
+  \begin{equation}
+    \_, \hat{H} = \text{DWT}([L'])$
+  \end{equation}
+  Notice that $\_\approx L$.
+
+\item Substract the prediction to the $H$ subbands.
+  \begin{equation}
+    \tilde{H} = H-\hat{H}
+  \end{equation}
+
+\item Sort $\hat{H}$ by magnitude in descending order.
+  \begin{equation}
+    \hat{H}\downarrow = \text{unravel\_index}(\text{argsort}(\text{abs}(\hat{H})))
+  \end{equation}
+
+\item Go over $\hat{H}\downarrow$, sending by bit-planes the
+  sign-magnitude representation of the coefficients of $H$.
+  \begin{enumerate}
+  \item 
+  \end{enumerate}
+  \begin{equation}
+    \begin{array}{l}
+      \text{for~}b\text{~in} log ...
+      \text{for~}i\text{~in} \hat{H}\downarrow: \\
+      %~ 
+      %\text{for~}d\text{~in range}(3): \\
+      %~ \text{for~}y\text{~in range}(L^0.\text{height}): \\
+      %~~ \text{for~}x\text{~in range}(L^0.\text{width}): \\
+      %~~~ i = 3\times(\text{height}\times \text{width})+y\times \text{width} + x \\
+      %~~~ \text{send}(H[H'[\text{indice}[i]] \text{~mod~} 4][H'[\text{indice}[i]] >> 2]).
+    \end{array}
+  \end{equation}
+\end{enumerate}
+  
+\begin{comment}
 To compress the $a.H$ subband in the last iteration of the butterfly,
 the following algorithm can be used:
 \begin{enumerate}
@@ -944,6 +1077,9 @@ the following algorithm can be used:
     \end{array}
   \end{equation}
 \end{enumerate}
+\end{comment}
+
+%}}}
 
 \begin{comment}
 
