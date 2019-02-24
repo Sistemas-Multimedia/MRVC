@@ -937,7 +937,7 @@ to accumulate the visual information in the $L$ subband (or to remove
 the visual information in the $H$ subbands is spatial) in a I-type
 image.
 
-After a $T$-levels MCDWT transform, I-type images are decomposed into
+After using MCDWT, I-type images are decomposed into
 the four subbands $LL$ (low-frequencies), $LH$, $HL$ and $HH$
 (high-frequencies). Depending on the image content and wavelets used
 in the 2D-DWT, $H$ subbands contain a certain amount of \emph{visual
@@ -954,7 +954,7 @@ bit-plane upwards, all the bits will be zero), and (2) the correlation
 in the sign bit-plane will be zero. In this situation, an efficient
 encoding method is to compress the bit-planes, starting at the MSBP
 with at least one bit to 1 (in other words, ``send'' the ones of the
-MSBP), sending before the corresponding sign. If more than one if
+MSBP), sending before the corresponding sign. If more than one one is
 found in the MSBP, the bits should be processed by descending
 magnitude, i.e., sending first those bits that corresponds with
 coefficients with a higher magnitude. This information can be
@@ -962,16 +962,80 @@ extracted from the $L$ subband as below is shown.
 
 Information in the $L$ subband can be used to futher reduce the visual
 information of $H$ subbands and to estimate the value of its
-high-frequency coefficients, and therefore to sort them by their
-magnitude. The idea is to predict the $H$ coefficients by introducing
-some (visual) information in the $[L]$ subband, and to perform again
-the 2D-DWT (using the same wavelets). This generates a $\hat{H}$
-subbands that substracted to $H$ should remove the visual information
-from them (decorrelating the signs and reducing the number of bits
-necessary to represent most of the coefficients). Moreover, the
-coefficients of $\hat{H}$ sorted by magnitude in descending order can
-be used to estimate which bits inside of each bit-plane should be
-encoded first.
+high-frequency coefficients, and therefore to sort them (at least
+approximately) by their magnitude. The idea is to predict the $H$
+coefficients by introducing some (visual) information in the $[L]$
+subband, and to perform again the 2D-DWT (using the same
+wavelets). This generates a $\hat{H}$ subbands that substracted to $H$
+should remove the visual information from them (decorrelating the
+signs and reducing the number of bits necessary to represent most of
+the coefficients).
+\begin{equation}
+  \tilde{H} = H - \hat{H}
+\end{equation}
+
+$\tilde{H}$ is as a prediction error that basically should store
+noise. Therefore, if $\tilde{H}$ is not transmitted at all, a good
+approximation of $L^0$ should be recontructed. However, in most of
+cases, some amount of (unpredictable) visual information will remain
+in $\tilde{H}$, concentrated in the MSBPs. The current representation
+of the rest of BPs (with unpredictable bits) should be
+efficient. Sumarizing, $\tilde{H}$ is a triple subbands of spatially
+uncorrelated coefficients, most of them small, with zeros in the MSBPs
+and random bits in the LSBPs, and to progressively encode them, a BP
+compressor can be used.
+
+At this point, any BLIC (Bi-Level Image Compressor) should be
+applicable. However, there is a dependencies between the BPs that
+using a BLIC that cannot be exploited. The idea here is, is it
+possible to predict the coordinates of the ones in a BP? If this is
+possible, a sequence of bits (with so many bits as coefficients are in
+$H$) can encode the success of the prediction. Suppose that
+$\hat{H}\downarrow$ (the list of indexes the sorts $\hat{H}$ in
+descending order by amplitude) determines the possible localization of
+the most energetic coefficients in $H$ and in $\tilde{H}$. Therefore,
+the MSB of the first elements of $\tilde{H}[\hat{H}\downarrow]$ (the
+list of coefficients of the residue (approximately) sorted by energy)
+will be 1 (with a high probability) and the rest will be 0 (with a
+high probability). For example, if there are five 1's in the MSB of
+the beginning of $\tilde{H}[\hat{H}\downarrow]$, the complete BP can
+be encoded with the codewords <5><EOBP>. If for example, the MSB of the
+first elements of $\tilde{H}[\hat{H}\downarrow]$ is 0101001000110...,
+then the the output codewords are <0><1><1><1><2><1><3><2><EOBP>.
+
+
+For example, if the prediction is that all the bits of the BP are 0 and this is true, the XOR of both predictions should b
+
+
+only in a given coordinate of $LH$ there is a 1 (the rest of bits of the BP are 0)
+
+
+If this is
+true, the bits of a BP can be sorted and simple binary RLE (Run-Length
+Encoding) can be used to encode efficiently the BP. For example, lets
+suppose that there are only one 1 in the BP and we are able to predict
+its coordidates in the BP. In that case, we only need to output a
+codeword <1> to indicate that the position of the 1 is in the first
+position of the sorted bits (supposing that the binary RLE starts
+encoding runs of ones), and there is only one 1. If the prediction is
+wrong but the 1 is placed in the second position of the sorted array,
+the output is <0><1>. If there are two 1's and the prediction is
+right, both are in the beggining of the sorted array. In this case the
+output is <2>. If the prediction if wrong and the result of the
+prediction is 010010..., the output is <0><1><2><1>.
+
+By definition,
+unpredictable information can not be compressed. Consecuently, the lossless encoding of $H$ is basically: (1) determine the 
+
+The coefficients of $\hat{H}$ sorted by their magnitude in descending
+order can be used to send first those bits that belong to the largest
+coefficients of $H$.
+
+Obviously, the prediction
+\begin{equation}
+  \text{sort}(H)==\text{sort}(\hat{H})
+\end{equation}
+will not always be perfect. This can have two different consequences: (1) that 
 
 Introduced such ideas, to compress the $H$ subbands of a 1-level
 2D-DWT, the following algorithm can be used:
@@ -1000,20 +1064,33 @@ Introduced such ideas, to compress the $H$ subbands of a 1-level
     \tilde{H} = H-\hat{H}
   \end{equation}
 
-\item Sort $\hat{H}$ by magnitude in descending order.
+\item Sort $\hat{H}$ by magnitude in descending order. For most
+  images, $\hat{H}\approx H$ and therefore, the most significant
+  coefficients in both structures should be placed in the same
+  coordinates.
   \begin{equation}
     \hat{H}\downarrow = \text{unravel\_index}(\text{argsort}(\text{abs}(\hat{H})))
   \end{equation}
 
 \item Go over $\hat{H}\downarrow$, sending by bit-planes the
   sign-magnitude representation of the coefficients of $H$.
+
   \begin{enumerate}
-  \item 
-  \end{enumerate}
+
+  \item Estimate the nearest power of two, smaller or equal than the
+    coefficient of $H$ with the maximum amplitude.
+    \begin{equation}
+      \lambda_0 = \lambda = 1 << \text{int}(\log_2(\text{abs}(H_{\hat{H}\downarrow[0]}))).
+    \end{equation}
+    $\lambda$ should be the index of the MSBP in $H$.
+
+  \item Send the BP of index $\lambda$.
   \begin{equation}
     \begin{array}{l}
-      \text{for~}b\text{~in} log ...
-      \text{for~}i\text{~in} \hat{H}\downarrow: \\
+      \text{for~}H_{s,x,y}\text{~in} H[\hat{H}\downarrow]: \\
+      ~ if \lambda > int(\log_2(abs(H_{s,x,y}))) > \lambda/2: \\
+      ~~ send(sign(H_{s,x,y}))\\
+      ~ 
       %~ 
       %\text{for~}d\text{~in range}(3): \\
       %~ \text{for~}y\text{~in range}(L^0.\text{height}): \\
