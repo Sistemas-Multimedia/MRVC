@@ -22,44 +22,44 @@ La ejecución de comandos para realizar el experimento ha sido el siguiente:
 
 1. Se copian las secuencias de imágenes sobre las que se trabajara a */tmp*
 
-  - *yes | cp ../sequences/stockholm/*.png /tmp*  
+  -  yes | cp ../sequences/stockholm/*.png /tmp  
  
 2. Se realiza la transformada directa MDWT:  
 
-  - *python3 -O MDWT.py -p /tmp/*  
+  - python3 -O MDWT.py -p /tmp/  
  
 3. Se realiza la transformada directa MCDWT:  
 
-  - *python3 -O MCDWT.py -p /tmp/*  
+  - python3 -O MCDWT.py -p /tmp/  
  
 4. Se eliminan las imágenes de la secuencia original 
 
-  - *rm /tmp/00?.png*
+  - rm /tmp/00?.png
 
 5. Se cuantifican las subbandas:
 
   - En la primera prueba solo las H:
 
-    - *for i in /tmp/H????.png; do python3 ../tools/quantization_image.py -i $i -c 2 -o $i; done;*
+    - for i in /tmp/H????.png; do python3 ../tools/quantization_image.py -i $i -c 2 -o $i; done;
 
   - En la segunda prueba incluimos las L:
 
-    - *for i in /tmp/L????.png; do python3 ../tools/quantization_image.py -i $i -c 2 -o $i; done;*
+    - for i in /tmp/L????.png; do python3 ../tools/quantization_image.py -i $i -c 2 -o $i; done;
 
 **Nota:** Al revisar estas capas hemos observado que se ha generado demasiado ruido,
 posiblemente debido al rango dinámico de la imagenes
 
  6.  Se realiza la transformada inversa MCDWT:  
 
-  - *python3 -O MCDWT.py -b -p /tmp/*  
+  - python3 -O MCDWT.py -b -p /tmp/  
  
  7. Se realiza la transformada inversa MDWT:  
 
-  - *python3 -O MDWT.py -b -p /tmp/*  
+  - python3 -O MDWT.py -b -p /tmp/  
  
 8. Se visualiza la reconstrucción:  
 
-  - *for i in /tmp/???.png; do python3 ../tools/substract_offset.py -i $i -o $i.png; done; animate /tmp/???.png.png*
+  - for i in /tmp/???.png; do python3 ../tools/substract_offset.py -i $i -o $i.png; done; animate /tmp/???.png.png
   
   ## Conlusiones
 
