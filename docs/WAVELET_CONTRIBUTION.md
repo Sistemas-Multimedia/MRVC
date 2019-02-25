@@ -8,28 +8,19 @@ En el caso de que se usen filtros similares y ambos tengan extensiones simétric
 
 # REVIEW
 
-Hemos utilizado como conjunto de pruebas la secuencia de 5 imágenes del video stockholm.
+Hemos utilizado como conjunto de pruebas una secuencia de imágenes negra que simula las distintas subbandas de una imágen (LL,LH,HL,HH).
 
-Primero, para cada imágen la hemos descompuesto en subbandas (LL, LH, HL, HH). El script implementado se encarga de poner a 0 todos los coeficientes de la subbanda HH excepto un valor central que lo pone a 255 (pulso).
-Posteriormente, se reconstruye la imágenes y se compara la energía de cada subbanda respecto a la de HH para obtener los valores de ganancia.
+El script implementado se encarga de calcular la ganancia de cada subbanda respecto a la subbanda HH en el proceso de reconstrucción de una secuencia de imágenes. Para ello para cada subbanda se convierten todos sus valores a 0, excepto un valor central de la subbanda a la que se quiere calcular la ganancia, que en ese caso se inicializa a 255 (pulso). Posteriomente, se reconstruye la imágen usando la transformada inversa y se calcula su energía. Este proceso se repite para la subbanda HH y finalmente se divide la energia obtenida de la primera fase entre la energía obtenida de la segunda fase, este valor resultante es la ganancia.
 
-Además de calcular la ganacia respecto a la subbanda HH hemos realizado pruebas con el resto de subbandas con los siguientes resultados medios:
+Para realizar los experimentos hemos usado un filtro no ortogonal, en concreto el filtro Reverse biorthogonal 3.5 (rbio3.5). Con este filtro la energía no se conserva, siendo la ganancia de la subbanda LL superior al resto ya que es donde se concentra la mayoría de la información de la imágen.
 
-* HH: 
-  * HL: &nbsp;&nbsp; 4,752
-  * LH: &nbsp;12,081
-  * LL: 442,058
-      
-* HL:
-  * LH: &nbsp;&nbsp;2,541
-  * LL: &nbsp;92,969
-  
-* LH:
-  * LL: &nbsp;36,584
+A continuación, se muestran las ganacias obtenidas al ejecutar el experimento:
 
-Por último realizamos una prueba aplicando el pulso a todas las subbandas excepto a la LL.
+* Ganancia LL &nbsp;&nbsp;--> 1,0000038640411728
+* Ganancia HL &nbsp;--> 1,0000009087893984
+* Ganancia LH &nbsp;--> 1,0000009087893982
+* Ganancia HH --> 1,0
 
-* HH, HL, LH:
-  * LL: &nbsp;24,780
-  
-La ganancia tan elevada de la subbanda LL es debido a que está posee la mayor parte de la información de la imágen y modificar el resto de subbandas como hemos realizado en estos experimentos a penas tiene cambios apreciables cuando se recomponen la secuencias de imagenes.
+
+
+
