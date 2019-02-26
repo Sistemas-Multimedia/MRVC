@@ -16,7 +16,7 @@ El script se encarga de dividir la imagen de entrada entre el paso (frame/step) 
 
 ## Ejecución del experimento
 
-La ejecución de comandos para realizar el experimento ha sido el siguiente:
+La ejecución de comandos se ha realizado desde la carpeta src y su secuencia ha sido la siguiente:
 
 1. Se copian las secuencias de imágenes sobre las que se trabajara a */tmp*
 
@@ -40,11 +40,11 @@ La ejecución de comandos para realizar el experimento ha sido el siguiente:
 
   - En la primera prueba solo las H:
 
-    - for i in /tmp/H????.png; do python3 tools/substract_offset.py -i $i -o $i; python3 ../tools/quantization_image.py -i $i -s 2 -o $i;python3 tools/add_offset.py -i $i -o $i; done;
+    - for i in /tmp/H????.png; do python3 ../tools/substract_offset.py -i $i -o $i; python3 ../tools/quantization_image.py -i $i -s 2 -o $i;python3 ../tools/add_offset.py -i $i -o $i; done;
 
   - En la segunda prueba incluimos las L:
 
-    - for i in /tmp/L????.png; do python3 tools/substract_offset.py -i $i -o $i; python3 ../tools/quantization_image.py -i $i -s 2 -o $i;python3 tools/add_offset.py -i $i -o $i; done;
+    - for i in /tmp/L????.png; do python3 ../tools/substract_offset.py -i $i -o $i; python3 ../tools/quantization_image.py -i $i -s 2 -o $i;python3 ../tools/add_offset.py -i $i -o $i; done;
 
  6.  Se realiza la transformada inversa MCDWT:  
 
@@ -60,25 +60,16 @@ La ejecución de comandos para realizar el experimento ha sido el siguiente:
   
   ## Conlusiones
 
-En el caso de cuantificar únicamente las subbandas H la imagen es aun distinguible a pesar del ruido, esto es debido a que 
-la mayoria de la información de la imagen se encuentra en la subbanda LL.
+En el caso de cuantificar únicamente las subbandas H la imagen es bastante próxima a la original, esto es debido a que 
+la mayoria de la información de la imagen se encuentra en la subbanda LL que no se ha cuantificado.
 
 | ![](images/quantization_original.png)| ![](images/quantization_reconstructionH.png)|
 |:--:| :--:| 
 | *Imágen original*|*Imágen reconstruida trás cuantificar subbandas H*|
 
-En el segundo caso la imagen es completamente indistinguible, el modificar los valores de la subbanda LL 
-además puede provocar que fallen las predicciones debido a que esta contiene la información de movimiento.
+En el segundo caso la imagen es distinguible, pero se aprecia que hay diferencias respecto a la imágen original. El modificar los valores de la subbanda LL además puede provocar que fallen las predicciones debido a que esta contiene la información de movimiento.
 
 | ![](images/quantization_original.png)| ![](images/quantization_reconstructionFull.png)|
 |:--:| :--:| 
 | *Imágen original*|*Imágen reconstruida trás cuantificar todas las subbandas*|
-
-Hemos realizado pruebas con imagenes a las que no se habia modificado el rango dinámico y el resultado de cuantificar en esta
-ocasión producia imagenes más oscuras al realizar la división y una imagen similar a la original cuando se descuantificaba 
-realizando la multiplicación.
-
-| ![](images/quantization_original.png)| ![](images/quantization_normalRange_unquantizated.png)|![](images/quantization_normalRange_quantizated.png)|
-|:--:| :--:| :--:|  
-| *Imágen original*|*Fase I de cuantificación (División)*| *Fase II de cuantificación (Multiplicación)*|
 
