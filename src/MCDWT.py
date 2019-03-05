@@ -14,6 +14,11 @@ class MCDWT:
         self.zero_H = (self.zero_L, self.zero_L, self.zero_L)
         self.dwt = DWT()
 
+		
+	def __distorsion_predictions():
+	
+	
+	
     def __forward_butterfly(self, aL, aH, bL, bH, cL, cH):
         '''Motion compensated forward MCDWT butterfly.
 
