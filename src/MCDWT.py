@@ -14,45 +14,6 @@ class MCDWT:
         self.zero_H = (self.zero_L, self.zero_L, self.zero_L)
         self.dwt = DWT()
 
-    def __forward_butterfly(self, aL, aH, bL, bH, cL, cH):
-        '''Motion compensated forward MCDWT butterfly.
-
-        Input:
-        -----
-
-        aL, aH, bL, bH, cL, cH: array[y, x, component], the decomposition of
-        the images a, b and c.
-
-        Output:
-        ------
-
-        residue_bH: array[y, x, component], the base of the decomposition of
-        the residue fot the image b.
-        '''
-
-        AL = self.dwt.backward((aL, self.zero_H))
-        BL = self.dwt.backward((bL, self.zero_H))
-        CL = self.dwt.backward((cL, self.zero_H))
-        AH = self.dwt.backward((self.zero_L, aH))
-        BH = self.dwt.backward((self.zero_L, bH))
-        CH = self.dwt.backward((self.zero_L, cH))
-        prediction_BH  = predictor.generate_prediction(AL, BL, CL, AH, CH)
-        residue_BH = BH - prediction_BH
-        residue_bH = self.dwt.forward(residue_BH)
-        return residue_bH[1]
-
-    def __backward_butterfly(self, aL, aH, bL, residue_bH, cL, cH):
-        AL = self.dwt.backward((aL, self.zero_H))
-        BL = self.dwt.backward((bL, self.zero_H))
-        CL = self.dwt.backward((cL, self.zero_H))
-        AH = self.dwt.backward((self.zero_L, aH))
-        residue_BH = self.dwt.backward((self.zero_L, residue_bH))
-        CH = self.dwt.backward((self.zero_L, cH))
-        prediction_BH  = predictor.generate_prediction(AL, BL, CL, AH, CH)
-        BH = residue_BH + prediction_BH
-        bH = self.dwt.forward(BH)
-        return bH[1]
-
     def forward(self, prefix = "/tmp/", N=5, T=2):
         '''A Motion Compensated Discrete Wavelet Transform.
 
@@ -127,6 +88,45 @@ class MCDWT:
                 aL, aH = cL, cH
                 i += 1
             x //=2
+
+    def __forward_butterfly(self, aL, aH, bL, bH, cL, cH):
+        '''Motion compensated forward MCDWT butterfly.
+
+        Input:
+        -----
+
+        aL, aH, bL, bH, cL, cH: array[y, x, component], the decomposition of
+        the images a, b and c.
+
+        Output:
+        ------
+
+        residue_bH: array[y, x, component], the base of the decomposition of
+        the residue fot the image b.
+        '''
+
+        AL = self.dwt.backward((aL, self.zero_H))
+        BL = self.dwt.backward((bL, self.zero_H))
+        CL = self.dwt.backward((cL, self.zero_H))
+        AH = self.dwt.backward((self.zero_L, aH))
+        BH = self.dwt.backward((self.zero_L, bH))
+        CH = self.dwt.backward((self.zero_L, cH))
+        prediction_BH  = predictor.generate_prediction(AL, BL, CL, AH, CH)
+        residue_BH = BH - prediction_BH
+        residue_bH = self.dwt.forward(residue_BH)
+        return residue_bH[1]
+
+    def __backward_butterfly(self, aL, aH, bL, residue_bH, cL, cH):
+        AL = self.dwt.backward((aL, self.zero_H))
+        BL = self.dwt.backward((bL, self.zero_H))
+        CL = self.dwt.backward((cL, self.zero_H))
+        AH = self.dwt.backward((self.zero_L, aH))
+        residue_BH = self.dwt.backward((self.zero_L, residue_bH))
+        CH = self.dwt.backward((self.zero_L, cH))
+        prediction_BH  = predictor.generate_prediction(AL, BL, CL, AH, CH)
+        BH = residue_BH + prediction_BH
+        bH = self.dwt.forward(BH)
+        return bH[1]
 
 if __name__ == "__main__":
 

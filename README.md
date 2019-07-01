@@ -1,10 +1,10 @@
 # Motion Compensated Discrete Wavelet Transform (MCDWT)
 
-Welcome to the MCDWT project!
+Welcome to this project!
 
-This an implementation of a novel video transform based on MC and DWT (see [docs/MCDWT.ipynb]).
+This an implementation of a novel video transform based on Motion Compensation (MC) and the DWT (see [docs/MCDWT.ipynb]).
 
-Contents of proyect:
+Contents of this repo:
 
 1. `demos`: some OpenCV demos.
 2. `distribute`: use of Distutils for distributing this software (unmaintained).
