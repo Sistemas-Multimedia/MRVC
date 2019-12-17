@@ -148,7 +148,7 @@ exploited. All the temporal redundancy still remains in the video.
 
 \begin{figure}
 \centering
-\imgw{800}{graphics/forward_MDWT.svg}
+\myfig{graphics/forward_MDWT}{6cm}{800}
 \caption{Forward MDWT step.}
 \end{figure}
 
@@ -298,7 +298,7 @@ used to estimate and compensate the $H$ subbands.
 
 \begin{figure}
 \centering
-\imgw{1200}{graphics/forward_butterfly.svg}
+\myfig{graphics/forward_butterfly}{10cm}{1200}:
 \caption{Forward MCDWT butterfly.\label{fig:forward_butterfly}}
 \end{figure}
 \lstinputlisting[firstline=24, lastline=57, language=python, caption={MCDWT.py (extract)}]{../src/MCDWT.py}
@@ -322,7 +322,7 @@ decorrelated.
 
 \begin{figure}
 \centering
-\imgw{1200}{graphics/temporal_decorrelation.svg}
+\myfig{graphics/temporal_decorrelation}{10cm}{1200}
 \caption{MCDWT forward transform.\label{fig:forward_MCDWT}}
 \end{figure}
 \lstinputlisting[firstline=69, lastline=138, language=python, caption={MCDWT.py (extract)}]{../src/MCDWT.py}
@@ -333,7 +333,7 @@ Spatial dyadic multiresolution can be obtained by appliying a sequence of MDWT+M
 
 \begin{figure}
 \centering
-\imgw{1200}{graphics/multiresolution.svg}
+\myfig{graphics/multiresolution}{10cm}{1200}
 \caption{MDWT+MCDWT multiresolution procedure. The input to the second
   iteration of the MDWT+MCDWT transform is the output of a previous
   (first) iteration MDWT+MCDWT transform. The second iteration is only
