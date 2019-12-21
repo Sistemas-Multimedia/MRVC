@@ -78,7 +78,7 @@ spatial scales (resolutions). For example, if an image $s_1$ has been
 transformed using the DWT of 2 levels, we get:
 \begin{itemize}
 \item Subband $s_1.L^2$ with the scale 2.
-\item Subband $s_1.L^1=s_1.L=\text{iDWT}(s_1.L^2, S_1.H^2)$ $(\text{iDWT}=\text{inverse DWT}=\text{backward DWT}) with the scale $1$.
+\item Subband $s_1.L^1=s_1.L=\text{iDWT}(s_1.L^2, S_1.H^2)$ ($\text{iDWT}=\text{inverse DWT}=\text{backward DWT}$) with the scale $1$.
 \item $s_1.L^0=\text{iDWT}(s_1.L, s_1.H)$ (the original image) with the scale $0$.
 \end{itemize}
 
@@ -86,7 +86,7 @@ transformed using the DWT of 2 levels, we get:
 \begin{verbatim}
 # You must be in the 'src' directory.
 
-# Copy a image (the output directory must be the same than the input one):
+# Copy an image (the output directory must be the same as the input one):
 rm /tmp/*.png
 cp ../sequences/stockholm/000.png /tmp
 
@@ -149,7 +149,7 @@ exploited. All the temporal redundancy still remains in the video.
 
 \begin{figure}
   \centering
-  \myfig{graphics/forward_MDWT.pdf}{6cm}{800}
+  \myfig{graphics/forward_MDWT}{6cm}{600}
   \caption{Forward MDWT step.}
   \label{fig:forward_MDWT}
 \end{figure}
