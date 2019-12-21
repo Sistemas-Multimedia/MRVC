@@ -43,8 +43,8 @@ have two interesting features:
 
 \section{Distrete Wavelet Transform (DWT)}
 \href{https://en.wikipedia.org/wiki/Discrete_wavelet_transform}{(2D-)DWT}
-is a digital transform that, applied to an image, performs spatial
-decorrelation (2D) and obtains a
+is a digital transform that, applied to an image, performs spatial (2D)
+decorrelation and obtains a
 \href{https://vicente-gonzalez-ruiz.github.io/image_transformations_for_coding/index.html#x1-3500024}{multiresolution
   dyadic representation} of such image, conforming a collection of DWT
 subbands. The forward transform converts the image into a set of
@@ -72,14 +72,14 @@ the sake of simplicity, we will denote the subbands $\{LH^k, HL^k,
 HH^k\}$ as only $H^k$, and $LL^k$ as only $L^k$.
 
 \subsection{Scalability provided by DWT}
-Depending on the number of subbands levels (pyramid levels in the
-pyramid representation) that we use, we can reconstruct a image at
-different spatial scales (resolutions). For example, if an image $s_1$ has been transformed using the DWT of 2 levels, we get:
+Depending on the number of subbands (pyramid levels in the pyramid
+representation) that we use, we can reconstruct an image at different
+spatial scales (resolutions). For example, if an image $s_1$ has been
+transformed using the DWT of 2 levels, we get:
 \begin{itemize}
 \item Subband $s_1.L^2$ with the scale 2.
-\item Subband $s_1.L^1=s_1.L=\text{iDWT}(s_1.L^2, S_1.H^2)$ (``iDWT'' =
-  ``inverse DWT'' = ``backward DWT'') with the scale 1.
-\item $s_1.L^0=\text{iDWT}(s_1.L, s_1.H)$ (the original image) with the scale 0.
+\item Subband $s_1.L^1=s_1.L=\text{iDWT}(s_1.L^2, S_1.H^2)$ $(\text{iDWT}=\text{inverse DWT}=\text{backward DWT}) with the scale $1$.
+\item $s_1.L^0=\text{iDWT}(s_1.L, s_1.H)$ (the original image) with the scale $0$.
 \end{itemize}
 
 \subsection{2D-DWT 1-levels example}
