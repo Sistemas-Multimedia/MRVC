@@ -1,12 +1,5 @@
-%%% Local Variables:
-%%% mode: latex
-%%% TeX-master: "<none>"
-%%% End:
-
 \title{Motion Compensated Discrete Wavelet Transform (MCDWT)}
-
 \author{Vicente González Ruiz}
-
 %\makeglossaries
 \maketitle
 \tableofcontents
@@ -14,8 +7,9 @@
 \section{Intro}
 
 \href{https://en.wikipedia.org/wiki/Video}{Video} data contain high
-amounts of redundancy, spatial and temporal. For this reason, most of
-video encoders compress the input sequece of
+amounts of \mylink{redundancy}{redundancy}, spatial and temporal. For
+this reason, most of \mylink{video_compression}{video encoders}
+compress the input sequece of
 \href{https://en.wikipedia.org/wiki/Digital_image}{images} (which are
 matrices of \href{https://en.wikipedia.org/wiki/Pixel}{pixels})
 basically in two stages: (1) a transform stage in the
@@ -35,35 +29,41 @@ have two interesting features:
   entropy}} than the original pixels. This helps to increase
   the \href{https://en.wikipedia.org/wiki/Data_compression_ratio}{compression
   ratio}.
-\item The transform domain provides a
+\item The transform domain provides a priorization of the information
+  contained in the signal, enabling a
   \textbf{\href{https://en.wikipedia.org/wiki/Image_resolution}{multiresolution}
-    representation (spatial and temporal)} of the visual information (spatial
-  \href{http://inst.eecs.berkeley.edu/~ee290t/sp04/lectures/videowavelet_UCB1-3.pdf}{scalability}).
+    representation (spatial and temporal)} of the visual information
+  (spatial
+  \href{http://inst.eecs.berkeley.edu/~ee290t/sp04/lectures/videowavelet_UCB1-3.pdf}{scalability}),
+  as well as an energy compactation in a small number of coefficients.
 \end{enumerate}
 
-\section{Distrete Wavelet Transform (DWT)}
+\section{The Distrete Wavelet Transform (DWT)}
 \href{https://en.wikipedia.org/wiki/Discrete_wavelet_transform}{(2D-)DWT}
-is a digital transform that, applied to an image, performs spatial (2D)
-decorrelation and obtains a
+is a digital transform that, applied to an image, performs a spatial
+(2D) decorrelation and obtains a
 \href{https://vicente-gonzalez-ruiz.github.io/image_transformations_for_coding/index.html#x1-3500024}{multiresolution
-  dyadic representation} of such image, conforming a collection of DWT
-subbands. The forward transform converts the image into a set of
-frequency subbands with coefficients representing different spatial
-areas and frequency orientations. There is an equivalence between
-(DWT) subbands (a \emph{(subband) decomposition}) and
+  (generally dyadic) representation} of such image, conforming a
+collection of DWT subbands. The forward transform converts the image
+into a set of frequency subbands with coefficients representing
+different spatial areas and frequency orientations. There is an
+equivalence between (DWT) subbands (a \emph{(subband) decomposition})
+and
 \href{http://fourier.eng.hmc.edu/e161/lectures/canny/node3.html}{Laplacian
-  pyramids}, and it is quite simple to
+  Pyramids}, and it is quite simple to
 \href{https://vicente-gonzalez-ruiz.github.io/pyramids-and-wavelets/}{pass
   from a decomposition representation to a pyramid representation and
   viceversa}.
 
 \href{https://github.com/vicente-gonzalez-ruiz/MCDWT/blob/master/src/DWT.py}{DWT.py}
-implements the forward and backward (2D-)DWT for color images. $L$ and
-$H$ stands for \emph{low-pass filtered} and \emph{high-pass filtered},
-respectively.  More information about the implementation can be found at
-\href{https://pywavelets.readthedocs.io/en/latest/index.html}{PyWavelets}.
+implements the forward and backward (2D-)DWT for color images.
 
 \lstinputlisting[firstline=9, lastline=105, language=python, caption=DWT.py]{../src/DWT.py}
+
+$L$ and $H$ stands for \emph{low-pass filtered} and \emph{high-pass
+  filtered}, respectively.  More information about the implementation
+can be found at
+\href{https://pywavelets.readthedocs.io/en/latest/index.html}{PyWavelets}.
 
 The multilevel DWT is a recursive use of the (1-level) DWT applied to
 the $LL$ subband. For example, if the DWT is applied $k$-times to the
@@ -640,7 +640,7 @@ The subband $\tilde{b.H}$ is no longer needed for applying the
 butterfly to different decompositions and scales. For this reason, we
 can compress this subband. As a result, after using the butterfly to
 all the decompositions of the sequence and all the scales, all the $H$
-subbands will be compressed, excepting the intra-coded image of each
+subbands can be compressed, excepting the intra-coded image of each
 GOP. Notice that the redundancy exploited in B-type $H$ subbands is
 temporal.
 

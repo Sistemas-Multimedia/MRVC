@@ -9,15 +9,15 @@ def read(prefix = "/tmp/", index = "000"):
     '''Read a 3-components image from disk. Each component stores
        integers between [0, 65535].
 
-    Parameters
-    ----------
+    Input:
+    -----
 
-        prefix : str.
+        prefix: str.
 
             Path to the image in the file system, without extension.
 
-    Returns
-    -------
+    Output:
+    ------
 
         (disk): [:,:,:].
 
@@ -26,7 +26,8 @@ def read(prefix = "/tmp/", index = "000"):
 
     '''
     fn = prefix + index + ".png"
-    image = cv2.imread(fn, -1)
+    image = cv2.imread(fn, cv2.IMREAD_UNCHANGED)
+    #image = cv2.imread(fn, cv2.IMREAD_COLOR)
     if image is None:
         raise InputFileException('IO::image:read: {} not found'.format(fn))
     else:
@@ -40,19 +41,19 @@ def write(image, prefix = "/tmp/", index = "000"):
     '''Write a 3-components image to disk. Each component stores integers
        between [0, 65536].
 
-    Parameters
-    ----------
+    Input:
+    -----
 
-        image : [:,:,:].
+        image: [:,:,:].
 
             The color image to write, where each component is in the range [-32768, 32768].
 
-        prefix : str.
+        prefix: str.
 
             Path to the image in the file system, without extension.
 
-    Returns
-    -------
+    Output:
+    ------
 
         (disk) : [:,:,:].
 

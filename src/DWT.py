@@ -23,27 +23,27 @@ class DWT:
         Input:
         -----
 
-            image: an array[y, x, component] with a color image.
+            an image: an array[y, x, component] with a color (usually YUV) image.
 
                   x
              +---------------+
              |              Y|-+ component
            y |               |U|-+
              |               | |V|
-             |             or| | |
-             |               |r| |
-             |               | |r|
-             |              R| | |
-             +---------------+G| |
-               +---------------+B|
+             |     image     | | |
+             |               | | |
+             |               | | |
+             |               | | |
+             +---------------+ | |
+               +---------------+ |
                  +---------------+
 
 
         Output:
         ------
 
-            a decomposition: a tuple (L, H), where L (low-frequencies subband)
-            is an array[y, x, component], and H (high-frequencies
+            a decomposition: a tuple (L, H), where L (the low-frequencie
+            subband) is an array[y, x, component], and H (high-frequencies
             subbands) is a tuple (LH, HL, HH), where LH, HL, HH are
             array[y, x, component], with the color decomposition.
 
@@ -55,10 +55,13 @@ class DWT:
              +-------+-------+ | |
              |       |       |-+ |
              |  LH   |  HH   | |-+
-             |       |      R| | |
-             +-------+-------+G| |
-               +-------+-------+B|
+             |       |       | | |
+             +-------+-------+ | |
+               +-------+-------+ |
                  +-------+-------+
+
+            This structure provides 2 spatial resolution levels: LL and
+            image.
 
         '''
 
