@@ -54,7 +54,7 @@ equivalence between 2D-DWT subbands (a \emph{(subband) decomposition})
 and
 \href{http://fourier.eng.hmc.edu/e161/lectures/canny/node3.html}{Laplacian
   Pyramids}, and it is quite simple to
-\href{https://vicente-gonzalez-ruiz.github.io/pyramids-and-wavelets/}{pass
+\href{https://nbviewer.jupyter.org/github/vicente-gonzalez-ruiz/pyramids-and-wavelets/index.ipynb}{pass
   from a decomposition representation to a pyramid representation and
   viceversa}.
 
@@ -68,23 +68,26 @@ $L$ and $H$ stands for \emph{low-pass filtered} and \emph{high-pass
 can be found at
 \href{https://pywavelets.readthedocs.io/en/latest/index.html}{PyWavelets}.
 
-\subsection{Multi-levels 2D-DWT structures}
+\subsection{Multi-level 2D-DWT structures}
 A dyadic 2D-DWT is a recursive use of the
 (1-iteration\footnote{\href{https://pywavelets.readthedocs.io/en/latest/index.html}{PyWavelets}
-uses the term ``levels'' for refering to the number of iterations of
-the 1-interation DWT, and athough levels and interations are closely
-related ($k+1$ spatial resolution levels are provided by the
-$k$-iterations 2D-DWT), we will distinguish between iterations and
-spatial resolution levels.}) 2D-DWT applied to the $LL$ subband. For example, if
-the 2D-DWT is applied $k$-times to the $LL$ subband, recursively, a
-decomposition of spatial resolution $k+1$-levels is generated. For the
-sake of simplicity, we will denote the subbands $\{LH^k, HL^k, HH^k\}$
-as only $H^k$, and $LL^k$ as only $L^k$.
+  uses the term ``levels'' for refering to the number of iterations of
+  the 1-interation DWT, and athough levels and interations are closely
+  related ($k+1$ spatial resolution levels are provided by the
+  $k$-iterations 2D-DWT), we will distinguish between iterations and
+  spatial resolution levels.}) 2D-DWT applied to the $LL$ subband. For
+example, if the 2D-DWT is applied $k$-times to the $LL$ subband,
+recursively, a decomposition of spatial resolution $k+1$-levels is
+generated. For the sake of simplicity, we will denote the subbands
+$\{LH^k, HL^k, HH^k\}$ as only $H^k$, and $LL^k$ as only $L^k$. See
+\href{https://nbviewer.jupyter.org/github/vicente-gonzalez-ruiz/MCDWT/docs/DWT_vs_LPT.ipynb}{DWT
+  versus LPT}.
 
 \subsection{Scalability provided by the 2D-DWT}
-Depending on the number of subbands (pyramid levels in the pyramid
-representation) that we use, we can reconstruct an image at different
-spatial scales (resolutions). For example, if an image $s_1$ has been
+Depending on the number of subband levels (pyramid levels in the
+\mylink{https://pywavelets.readthedocs.io/en/latest/index.html}{pyramid
+  representation}), we can reconstruct an image at different spatial
+scales (resolutions). For example, if an image $s_1$ has been
 transformed using the DWT of 2 iterations, we get:
 \begin{itemize}
 \item Subband $s_1.L^2$ with the scale 2.
