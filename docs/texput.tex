@@ -91,11 +91,48 @@ scales (resolutions). For example, if an image $s_1$ has been
 transformed using the DWT of 2 iterations, we get:
 \begin{itemize}
 \item Subband $s_1.L^2$ with the scale 2.
+\begin{verbatim}
+    +------+
+    |      |
+Y/4 |  L2  |
+    |      |
+    +------+
+       X/4
+\end{verbatim}
 \item Subband $s_1.L^1=s_1.L=\text{iDWT}(s_1.L^2, S_1.H^2)$
   ($\text{iDWT}=\text{inverse DWT}=\text{backward DWT}$) with the
   scale $1$.
+\begin{verbatim}
+    +-------------+
+    |             |
+    |             |
+Y/2 |     L1      |
+    |             | 
+    |             |
+    +-------------+
+          X/2
+\end{verbatim}
+  
 \item $s_1.L^0=\text{iDWT}(s_1.L, s_1.H)$ (the original image) with
   the scale $0$.
+\begin{verbatim}
+    +---------------------------+
+    |                           |
+    |                           |
+    |                           | 
+    |                           |
+    |                           |
+    |                           |
+  Y |            L0             |
+    |                           | 
+    |                           |
+    |                           | 
+    |                           | 
+    |                           |
+    |                           |
+    +---------------------------+
+                  X
+\end{verbatim}
 \end{itemize}
 
 \subsection{A 2D-DWT 1-levels example}
@@ -121,7 +158,7 @@ python3 -O DWT.py -b -p /tmp/ -i 000
 # Visualize the reconstruction:
 display -normalize /tmp/000.png 
 
-# Show diferences:
+# Show diferences (PyWavelets uses floating point arithmetic):
 ../tools/show_differences.sh -1 /tmp/000.png -2 ../sequences/stockholm/000.png -o /tmp/diffs.png
 display -normalize /tmp/diffs.png
 \end{verbatim}
@@ -142,6 +179,14 @@ python3 -O DWT.py -p /tmp/LL -i 000
 
 # Visualize the subbands:
 ls -l /tmp/*.png
+display -normalize /tmp/LL000.png # <- LL1  
+display -normalize /tmp/LH000.png # <- LH1  
+display -normalize /tmp/HL000.png # <- HL1  
+display -normalize /tmp/HH000.png # <- HH1  
+display -normalize /tmp/LLLL000.png # <- LL2
+display -normalize /tmp/LLLH000.png # <- LH2
+display -normalize /tmp/LLHL000.png # <- HL2
+display -normalize /tmp/LLHH000.png # <- HH2
 
 # Reverse second level:
 python3 -O DWT.py -b -p /tmp/LL -i 000
@@ -159,9 +204,9 @@ display -normalize /tmp/diffs.png
 \section{Motion DWT (MDWT)}
 DWT can be applied to a sequence of images by simply transforming each
 image of the sequence independently. This is done, for example, in the
-\href{https://en.wikipedia.org/wiki/JPEG_2000}{motion JPEG2000 video
-  compression standard}. Notice that only the spatial redundancy is
-exploited. All the temporal redundancy still remains in the video.
+\mylink{JPEG2000}{motion JPEG2000 video compression standard}. Notice
+that only the spatial redundancy is exploited. All the temporal
+redundancy still remains in the video.
 
 \begin{figure}
   \centering
