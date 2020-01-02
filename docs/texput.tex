@@ -38,7 +38,10 @@ have two interesting features:
   as well as an energy compactation in a small number of coefficients.
 \end{enumerate}
 
-\section{The Distrete Wavelet Transform (DWT)}
+\section{The DWT (Discrete Wavelet Transform)}
+See \href{https://vicente-gonzalez-ruiz.github.io/image_transformations_for_coding/#x1-3100020}{image transformations for coding}.
+
+\section{The 2D DWT (Distrete Wavelet Transform)}
 \href{https://en.wikipedia.org/wiki/Discrete_wavelet_transform}{(2D-)DWT}
 is a digital transform that, applied to an image, performs a spatial
 (2D) decorrelation and obtains a
@@ -67,22 +70,25 @@ can be found at
 
 The multilevel DWT is a recursive use of the (1-level) DWT applied to
 the $LL$ subband. For example, if the DWT is applied $k$-times to the
-$LL$ subband, recursively, a decomposition of $k+1$-levels is generated. For
-the sake of simplicity, we will denote the subbands $\{LH^k, HL^k,
-HH^k\}$ as only $H^k$, and $LL^k$ as only $L^k$.
+$LL$ subband, recursively, a decomposition of $k+1$-levels is
+generated. For the sake of simplicity, we will denote the subbands
+$\{LH^k, HL^k, HH^k\}$ as only $H^k$, and $LL^k$ as only $L^k$.
 
-\subsection{Scalability provided by DWT}
+\subsection{Scalability provided by the DWT}
 Depending on the number of subbands (pyramid levels in the pyramid
 representation) that we use, we can reconstruct an image at different
 spatial scales (resolutions). For example, if an image $s_1$ has been
-transformed using the DWT of 2 levels, we get:
+transformed using the DWT of 2 iterations, we get:
 \begin{itemize}
 \item Subband $s_1.L^2$ with the scale 2.
-\item Subband $s_1.L^1=s_1.L=\text{iDWT}(s_1.L^2, S_1.H^2)$ ($\text{iDWT}=\text{inverse DWT}=\text{backward DWT}$) with the scale $1$.
-\item $s_1.L^0=\text{iDWT}(s_1.L, s_1.H)$ (the original image) with the scale $0$.
+\item Subband $s_1.L^1=s_1.L=\text{iDWT}(s_1.L^2, S_1.H^2)$
+  ($\text{iDWT}=\text{inverse DWT}=\text{backward DWT}$) with the
+  scale $1$.
+\item $s_1.L^0=\text{iDWT}(s_1.L, s_1.H)$ (the original image) with
+  the scale $0$.
 \end{itemize}
 
-\subsection{2D-DWT 1-levels example}
+\subsection{A 2D-DWT 1-levels example}
 \begin{verbatim}
 # You must be in the 'src' directory.
 
