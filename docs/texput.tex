@@ -50,7 +50,7 @@ is a digital transform that, applied to an image, performs a spatial
 collection of DWT subbands. The forward transform converts the image
 into a set of frequency subbands with coefficients representing
 different spatial areas and frequency orientations. There is an
-equivalence between 2D-DWT subbands (a \emph{(subband) decomposition})
+equivalence between 2D DWT subbands (a \emph{(subband) decomposition})
 and
 \href{http://fourier.eng.hmc.edu/e161/lectures/canny/node3.html}{Laplacian
   Pyramids}, and it is quite simple to
@@ -59,7 +59,7 @@ and
   viceversa}.
 
 \href{https://github.com/vicente-gonzalez-ruiz/MCDWT/blob/master/src/DWT.py}{DWT.py}
-implements the forward and backward 2D-DWT for color images.
+implements the forward and backward 2D DWT for color images.
 
 \lstinputlisting[firstline=9, lastline=105, language=python, caption=DWT.py]{../src/DWT.py}
 
@@ -68,22 +68,22 @@ $L$ and $H$ stands for \emph{low-pass filtered} and \emph{high-pass
 can be found at
 \href{https://pywavelets.readthedocs.io/en/latest/index.html}{PyWavelets}.
 
-\subsection{Multi-level 2D-DWT structures}
-A dyadic 2D-DWT is a recursive use of the
+\subsection{Multi-level 2D DWT structures}
+A dyadic 2D DWT is a recursive use of the
 (1-iteration\footnote{\href{https://pywavelets.readthedocs.io/en/latest/index.html}{PyWavelets}
   uses the term ``levels'' for refering to the number of iterations of
   the 1-interation DWT, and athough levels and interations are closely
   related ($k+1$ spatial resolution levels are provided by the
-  $k$-iterations 2D-DWT), we will distinguish between iterations and
+  $k$-iterations 2D DWT), we will distinguish between iterations and
   spatial resolution levels.}) 2D-DWT applied to the $LL$ subband. For
-example, if the 2D-DWT is applied $k$-times to the $LL$ subband,
+example, if the 2D DWT is applied $k$-times to the $LL$ subband,
 recursively, a decomposition of spatial resolution $k+1$-levels is
 generated. For the sake of simplicity, we will denote the subbands
 $\{LH^k, HL^k, HH^k\}$ as only $H^k$, and $LL^k$ as only $L^k$. See
 \href{https://nbviewer.jupyter.org/github/Sistemas-Multimedia/MCDWT/blob/master/docs/DWT_vs_LPT.ipynb}{DWT
   versus LPT}.
 
-\subsection{Scalability provided by the 2D-DWT}
+\subsection{Scalability provided by the 2D DWT}
 Depending on the number of subband levels (pyramid levels in the
 \mylink{https://pywavelets.readthedocs.io/en/latest/index.html}{pyramid
   representation}), we can reconstruct an image at different spatial
@@ -135,7 +135,7 @@ Y/2 |     L1      |
 \end{verbatim}
 \end{itemize}
 
-\subsection{A 2D-DWT 1-levels example}
+\subsection{A 1-iteration 2D DWT example}
 \begin{verbatim}
 # You must be in the 'src' directory.
 
@@ -143,7 +143,7 @@ Y/2 |     L1      |
 rm /tmp/*.png
 cp ../sequences/stockholm/000.png /tmp
 
-# 2D 1-levels forward DWT:
+# 1-iteration 2D forward DWT:
 python3 -O DWT.py -p /tmp/ -i 000
 
 # Visualize the subbands:
@@ -152,7 +152,7 @@ display -normalize /tmp/LH000.png # <- LH1
 display -normalize /tmp/HL000.png # <- HL1
 display -normalize /tmp/HH000.png # <- HH1
 
-# 2D 1-levels backward DWT:
+# 1-iteration 2D backward DWT:
 python3 -O DWT.py -b -p /tmp/ -i 000
 
 # Visualize the reconstruction:
@@ -163,7 +163,7 @@ display -normalize /tmp/000.png
 display -normalize /tmp/diffs.png
 \end{verbatim}
 
-\subsection{2D-DWT 2-levels example}
+\subsection{A 2-iterations 2D DWT example}
 \begin{verbatim}
 # You must be in the 'src' directory.
 
@@ -171,10 +171,10 @@ display -normalize /tmp/diffs.png
 rm /tmp/*.png
 cp ../sequences/stockholm/000.png /tmp
 
-# First level:
+# First iteration:
 python3 -O DWT.py -p /tmp/ -i 000
 
-# Second level:
+# Second iteration:
 python3 -O DWT.py -p /tmp/LL -i 000
 
 # Visualize the subbands:
@@ -188,11 +188,11 @@ display -normalize /tmp/LLLH000.png # <- LH2
 display -normalize /tmp/LLHL000.png # <- HL2
 display -normalize /tmp/LLHH000.png # <- HH2
 
-# Reverse second level:
+# Reverse second iteration:
 python3 -O DWT.py -b -p /tmp/LL -i 000
 display -normalize /tmp/LL000.png
 
-# Reverse first level:
+# Reverse first iteration:
 python3 -O DWT.py -b -p /tmp/ -i 000
 display -normalize /tmp/000.png
 
@@ -202,16 +202,21 @@ display -normalize /tmp/diffs.png
 \end{verbatim}
 
 \section{Motion DWT (MDWT)}
-DWT can be applied to a sequence of images by simply transforming each
-image of the sequence independently. This is done, for example, in the
-\mylink{JPEG2000}{motion JPEG2000 video compression standard}. Notice
-that only the spatial redundancy is exploited. All the temporal
-redundancy still remains in the video.
+The DWT can be applied to a sequence of images by simply transforming
+each image of the sequence independently. This is done, for example,
+in the \mylink{JPEG2000}{Motion JPEG2000 video compression
+  standard}. Notice that only the spatial redundancy is exploited in
+MDWT. All the temporal redundancy still remains in the video. The
+decomposition structure generated by MDWT is shown in the
+Fig~\ref{fig:forward_MDWT}. 1-iteration MDWT inputs a sequence of
+images $\{s_i\}$ and outputs a sequence of decompositions $\{S_i\}$,
+each one providing 2 spatial resolution levels ($\{s_i.L\}$ and
+$\{s_i.L^0\}=\{s_i\}$) of the image sequence.
 
 \begin{figure}
   \centering
   \myfig{graphics/forward_MDWT}{6cm}{600}
-  \caption{Forward MDWT step.}
+  \caption{Forward 1-iteration MDWT step.}
   \label{fig:forward_MDWT}
 \end{figure}
 
@@ -219,19 +224,20 @@ redundancy still remains in the video.
 
 \subsection{Scalability provided by MDWT}
 MDWT sequences (of (subband) decompositions) are scalable in space and
-in time. Spatial scalability is a direct consequence of DWT. On the other
-hand, it is trivial to observe that MDWT provides \emph{fully}
-temporal scalability (we can access to the images randomly) because
-each image of the input sequence is transformed independently.
+in time. Spatial scalability is a direct consequence of the 2D DWT. On
+the other hand, it is trivial to observe that MDWT provides
+\emph{fully} temporal scalability (we can access to the images
+randomly) because each image of the input sequence is transformed
+independently.
 
-\subsection{2D-MDWT 1-levels example}
+\subsection{1-iteration MDWT example}
 \begin{verbatim}
 # You must be in the 'src' directory.
 
 # Create the output directory for the 1st-level decompositions:
 yes | cp ../sequences/stockholm/*.png /tmp
 
-# 2D 1-levels forward MDWT:
+# 2D 1-iteration forward MDWT:
 python3 -O MDWT.py -p /tmp/ -N 5
 
 # Visualize the subbands:
@@ -244,7 +250,7 @@ animate /tmp/HL*.norm
 for i in /tmp/HH00?.png; do convert -normalize $i $i.norm; done
 animate /tmp/HH*.norm
 
-# 2D 1-levels backward MDWT:
+# 2D 1-iteration backward MDWT:
 python3 -O MDWT.py -b -p /tmp/ -N 5
 
 # Visualization of the reconstruction:
@@ -252,19 +258,19 @@ rm /tmp/*.norm
 for i in /tmp/00?.png; do convert -normalize $i $i.norm; done; animate /tmp/00?.png.norm
 \end{verbatim}
 
-\subsection{2D-MDWT 2-levels example}
+\subsection{2-iterations MDWT example}
 \begin{verbatim}
 # You must be in the 'src' directory.
 
 # Create the output directory for the 1st-level decompositions:
 yes | cp ../sequences/stockholm/*.png /tmp
 
-# 2D 2-levels forward MDWT:
+# 2D 2-iterations forward MDWT:
 python3 -O MDWT.py -p /tmp/ -N 5
 python3 -O MDWT.py -p /tmp/LL -N 5
 
 
-# 2D 2-levels backward MDWT:
+# 2D 2-iterations backward MDWT:
 python3 -O MDWT.py -b -p /tmp/LL -N 5
 python3 -O MDWT.py -b -p /tmp/ -N 5
 
@@ -289,12 +295,12 @@ sequence decompositions.
 \href{http://www.polyvalens.com/blog/wavelets/theory}{The overwhelming
   majority of DWT's} are not
 \href{http://www.polyvalens.com/blog/wavelets/theory}{shift
-  invariant}, which basically means $\text{DWT}(s[t]) \neq
-\text{DWT}(s[t+x])$, where $x$ is a displacement of $s[t]$ along one of the
-signal domains.  Therefore, motion estimators which compare pixel values
-will not work on the (subband) decomposition domain. On the other
-hand, if we want to provide true spatial scalability (processing only
-those
+  invariant}, which basically means that a even an (integer) pixel
+accuracy movement of an object that is shown by two different images
+will generate different wavelet coefficients.  Therefore, motion
+estimators which compare coefficient values will not work on the
+decomposition domain. On the other hand, if we want to provide true
+spatial scalability (processing only those
 \href{https://www.tutorialspoint.com/dip/spatial_resolution.htm}{spatial
   resolutions} (scales) necessary to get a spatially scaled of our
 video), a t+2D transformed video presents some drawbacks:
@@ -311,8 +317,10 @@ video), a t+2D transformed video presents some drawbacks:
   information for reconstructing all the scales of the texture
   (interpolating it for all those scales greater that 0), but in this
   case the memory and computing requirements at the decoders will
-  increase. Therefore, depending on the resolution of the scale 0 and the
-  computational resources, this could be affordable or not.
+  increase unnecessarily when a low spatial resolution of the sequence
+  is decoded. Therefore, depending on the resolution of the scale 0
+  and the computational resources (specially at the receiver side),
+  this could be affordable or not.
 \item As an alternative to this last problem, we can decrease the
   accuracy of the motion information in order to make it suitable for
   the spatial resolution. However, this will increase the distortion
@@ -331,7 +339,7 @@ bandwidth.
 % Subband Motion Compensated Temporal Filtering (SMCTF) 
 \section{Motion Compensated Discrete Wavelet Transform (MCDWT)}
 MCDWT is a 2D+t transform. The 2D stage is MDWT. The t stage is a
-1D-DWT, which removes the temporal redundancy between adjacent $H$
+1D DWT, which removes the temporal redundancy between adjacent $H$
 subbands by means of
 \href{https://en.wikipedia.org/wiki/Motion_compensation}{Motion
   Compensation (MC)}. A special characteristic of MCDWT is that the
@@ -341,8 +349,7 @@ motion information is not transmitted from the
 possible because to estimate de motion at the encoder, only the
 information that it is accesible by the decoder is used.
 
-\subsection{MCDWT butterfly}
-
+\subsection{The MCDWT butterfly}
 MCDWT butterly inputs three decompositions $a=\{a.L, a.H\}$, $b=\{b.L,
 b.H\}$ and $c=\{c.L, c.H\}$, and outputs a residue subband
 $\tilde{b}.H$, which replaces to $b.H$ in the original $b$
@@ -365,7 +372,7 @@ used to estimate and compensate the $H$ subbands.
   \caption{Forward MCDWT butterfly.}
   \label{fig:forward_butterfly}
 \end{figure}
-\lstinputlisting[firstline=24, lastline=57, language=python, caption={MCDWT.py (extract)}]{../src/MCDWT.py}
+\lstinputlisting[firstline=17, lastline=54, language=python, caption={MCDWT.py (extract)}]{../src/MCDWT.py}
 \lstinputlisting[firstline=4, lastline=9, language=python, caption={simple\_average.py (extract)}]{../src/simple_average.py}
 
 Notice that, even if $a$ and $c$ (at full resolution) are available at
