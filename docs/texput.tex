@@ -48,39 +48,43 @@ have two interesting features:
 
 \section{The 2D DWT (Distrete Wavelet Transform)}
 \href{https://vicente-gonzalez-ruiz.github.io/image_transformations_for_coding/#x1-3100020}{The
-  2D DWT (Distrete Wavelet Transform)} is a digital transform that,
-applied to an image, performs a spatial (2D) decorrelation and obtains
-a
+  2D\footnote{In this document, we will use the term DWT to refeer to
+    the 2D DWT.} DWT (Distrete Wavelet Transform)} is a digital
+transform that, applied to an image, performs a spatial decorrelation
+and obtains a
 \href{https://vicente-gonzalez-ruiz.github.io/image_transformations_for_coding/index.html#x1-3500024}{multiresolution
   (generally dyadic) representation} of such image, conforming a
 collection of DWT subbands. The forward transform converts the image
 into a set of frequency subbands with coefficients representing
 different spatial areas and frequency orientations. There is an
-equivalence between 2D DWT subbands (a \emph{(subband) decomposition})
-and
+equivalence between DWT subbands and
 \href{http://fourier.eng.hmc.edu/e161/lectures/canny/node3.html}{Laplacian
   Pyramids}, and it is quite simple to
 \href{https://nbviewer.jupyter.org/github/vicente-gonzalez-ruiz/pyramids-and-wavelets/index.ipynb}{pass
-  from a decomposition representation to a pyramid representation and
-  viceversa}.
+  from a decomposition\footnote{The structure that forms the subbands
+    is called also a decomposition.} representation to a pyramid
+  representation and viceversa}.
 
+\subsection{Implementation of the 3 components (color) DWT step}
 \href{https://github.com/vicente-gonzalez-ruiz/MCDWT/blob/master/src/DWT.py}{DWT.py}
-implements the forward and backward 1-iteration 2D DWT for color
-images. In the rest of this document, only the 1-iteration 2D DWT
-(also known as the 2D DWT step) will be used to implement the
-$N$-iterations 2D DWT. This can be done by appliyin the 1-iteration 2D
-DWT recursively to the $LL$ subband. We will refeer to the 1-iteration
-2D DWT as only as the DWT, for the sake of simplicity.
+(see Fig.~\ref{fig:DWT}) implements the forward and backward
+1-iteration (step) 2D DWT for color images.
 
+\begin{figure}
 \lstinputlisting[firstline=9, lastline=105, language=python, caption=DWT.py]{../src/DWT.py}
+\caption{Implementation of the color DWT step. $L$ and $H$ stands for
+  \emph{low-pass filtered} and \emph{high-pass filtered},
+  respectively.  More information about the implementation can be
+  found at
+  \href{https://pywavelets.readthedocs.io/en/latest/index.html}{PyWavelets}.}
+\label{fig:DWT}
+\end{figure}
 
-$L$ and $H$ stands for \emph{low-pass filtered} and \emph{high-pass
-  filtered}, respectively.  More information about the implementation
-can be found at
-\href{https://pywavelets.readthedocs.io/en/latest/index.html}{PyWavelets}.
+Notice that the $N$-iterations DWT can be computed y applying the DWT
+step $N$ times, recursively, to the subband $LL$.
 
-\subsection{Multi-level 2D DWT structures}
-A dyadic 2D DWT is a recursive use of the
+\subsection{Multi-level DWT structures}
+A dyadic DWT is a recursive use of the
 (1-iteration\footnote{\href{https://pywavelets.readthedocs.io/en/latest/index.html}{PyWavelets}
   uses the term ``levels'' for refering to the number of iterations of
   the 1-interation DWT, and athough levels and interations are closely
