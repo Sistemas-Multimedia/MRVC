@@ -9,16 +9,16 @@
 \href{https://en.wikipedia.org/wiki/Video}{Video} data contain high
 amounts of \mylink{redundancy}{redundancy}, spatial and temporal. For
 this reason, most of \mylink{video_compression}{video encoders}
-compress the input sequece of
-\href{https://en.wikipedia.org/wiki/Digital_image}{images} (which are
-matrices of \href{https://en.wikipedia.org/wiki/Pixel}{pixels})
-basically in two stages: (1) a transform stage in the
+compress an input sequence of
+\href{https://en.wikipedia.org/wiki/Digital_image}{images}\footnote{Which
+  from a pure mathematical point of view are matrices of
+  \href{https://en.wikipedia.org/wiki/Pixel}{pixels}.}, basically, in
+two stages: (1) a transform stage in the
 \href{https://en.wikipedia.org/wiki/Time_domain}{time} and in the
 \href{https://www.quora.com/What-is-spatial-domain-in-image-processing}{spatial}
-domains that produces a collection of spatially
+domains that produces a collection of
 \href{https://en.wikipedia.org/wiki/Decorrelation}{uncorrelated}
-\href{https://en.wikipedia.org/wiki/Discrete_wavelet_transform}{coefficients},
-and (2) an
+\href{https://en.wikipedia.org/wiki/Discrete_wavelet_transform}{coefficients}, and (2) an
 \href{https://en.wikipedia.org/wiki/Entropy_encoding}{entropy
   encoding} phase which removes the statistical redundancy that can
 still remains after the decorrelation (transform). These coefficients
@@ -28,23 +28,29 @@ have two interesting features:
   \href{https://vicente-gonzalez-ruiz.github.io/symbol_compression/}{smaller
   entropy}} than the original pixels. This helps to increase
   the \href{https://en.wikipedia.org/wiki/Data_compression_ratio}{compression
-  ratio}.
-\item The transform domain provides a priorization of the information
-  contained in the signal, enabling a
-  \textbf{\href{https://en.wikipedia.org/wiki/Image_resolution}{multiresolution}
-    representation (spatial and temporal)} of the visual information
-  (spatial
-  \href{http://inst.eecs.berkeley.edu/~ee290t/sp04/lectures/videowavelet_UCB1-3.pdf}{scalability}),
-  as well as an energy compactation in a small number of coefficients.
+    ratio}.
+\item A
+  \textbf{\href{https://en.wikipedia.org/wiki/Image_resolution}{multiresolution
+      representation} (in space and time)} of the visual
+  information. This provides the posibility of decoding the sequence
+  of images using a smaller resolution (in space and time). This
+  feature is known as \mylink{video_compression}{spatial/temporal
+    scalability in video}.
+\item Usually, \textbf{most of the
+  \href{https://en.wikipedia.org/wiki/Energy_(signal_processing)}{energy}}
+  (and therefore, generally, most of the information interesting for
+  the humans) \textbf{is represented by
+    \href{https://vicente-gonzalez-ruiz.github.io/image_transformations_for_coding}{a
+      small number of coefficients}}. This helps to improve the
+  compression ratio and to prioritize the data in
+  \mylink{media_encoding_models}{progressive transmission scenarios}.
 \end{enumerate}
 
-\section{The DWT (Discrete Wavelet Transform)}
-See \href{https://vicente-gonzalez-ruiz.github.io/image_transformations_for_coding/#x1-3100020}{image transformations for coding}.
-
 \section{The 2D DWT (Distrete Wavelet Transform)}
-\href{https://en.wikipedia.org/wiki/Discrete_wavelet_transform}{(2D-)DWT}
-is a digital transform that, applied to an image, performs a spatial
-(2D) decorrelation and obtains a
+\href{https://vicente-gonzalez-ruiz.github.io/image_transformations_for_coding/#x1-3100020}{The
+  2D DWT (Distrete Wavelet Transform)} is a digital transform that,
+applied to an image, performs a spatial (2D) decorrelation and obtains
+a
 \href{https://vicente-gonzalez-ruiz.github.io/image_transformations_for_coding/index.html#x1-3500024}{multiresolution
   (generally dyadic) representation} of such image, conforming a
 collection of DWT subbands. The forward transform converts the image
@@ -59,7 +65,12 @@ and
   viceversa}.
 
 \href{https://github.com/vicente-gonzalez-ruiz/MCDWT/blob/master/src/DWT.py}{DWT.py}
-implements the forward and backward 2D DWT for color images.
+implements the forward and backward 1-iteration 2D DWT for color
+images. In the rest of this document, only the 1-iteration 2D DWT
+(also known as the 2D DWT step) will be used to implement the
+$N$-iterations 2D DWT. This can be done by appliyin the 1-iteration 2D
+DWT recursively to the $LL$ subband. We will refeer to the 1-iteration
+2D DWT as only as the DWT, for the sake of simplicity.
 
 \lstinputlisting[firstline=9, lastline=105, language=python, caption=DWT.py]{../src/DWT.py}
 
@@ -224,11 +235,12 @@ $\{s_i.L^0\}=\{s_i\}$) of the image sequence.
 
 \subsection{Scalability provided by MDWT}
 MDWT sequences (of (subband) decompositions) are scalable in space and
-in time. Spatial scalability is a direct consequence of the 2D DWT. On
-the other hand, it is trivial to observe that MDWT provides
-\emph{fully} temporal scalability (we can access to the images
-randomly) because each image of the input sequence is transformed
-independently.
+in time. Spatial scalability is a direct consequence of the 2D DWT
+(the number of spatial resolution levels can be generated bycontrolled by the number
+of iterations of DWT). On the other hand, it is trivial to observe
+that MDWT provides \emph{fully} temporal scalability (we can access to
+the images randomly) because each image of the input sequence is
+transformed independently.
 
 \subsection{1-iteration MDWT example}
 \begin{verbatim}
@@ -383,13 +395,24 @@ three decompositions $a$, $b$ and $c$ are identical), the prediction error
 would be different than $0$ as a consequence of that the high
 resolution information is missing in $b.L$.
 
-\subsection{MCDWT forward transform}
+\subsection{The MCDWT step}
+A step of the MCDWT is carried out when the MCDWT butterfly is applied
+to all the images of the input sequece using the pattern shown in the
+Fig.~\ref{fig:forward_MCDWT_step}. Notice that only the images with an
+odd number are transformed.
+\begin{figure}
+  \centering
+  \svg{forward_MCDWT_step}{1200}
+  \caption{MCDWT forward step.}
+  \label{fig:forward_MCDWT_step}
+\end{figure}
 
-The MCDWT forward transform is the result of appliying the MCDWT
-butterfly to the full input sequence of decompositions with different
-distances between them. As a result, except for the first and the last
-image of the sequence, all the $H$-subbands are temporally
-decorrelated.
+\subsection{The forward MCDWT}
+The forward MCDWT is the result of appliying the forward MCDWT step
+recursively, to the image with number $2^i$, where $i$ is the
+iteration of the MCDWT step. As a result, chooding $i$ larte enough,
+except for the first and the last image of the sequence, all the
+$H$-subbands are temporally decorrelated.
 
 \begin{figure}
   \centering
@@ -400,8 +423,8 @@ decorrelated.
 \lstinputlisting[firstline=69, lastline=138, language=python, caption={MCDWT.py (extract)}]{../src/MCDWT.py}
 
 \subsection{(Spatial) Multiresolution}
-
-Spatial dyadic multiresolution can be obtained by appliying a sequence of MDWT+MCDWT steps (see Fig.~\ref{fig:multiresolution}).
+Spatial dyadic multiresolution can be obtained by appliying a sequence
+of (MDWT+MCDWT) steps (see Fig.~\ref{fig:multiresolution}).
 
 \begin{figure}
   \centering
@@ -414,15 +437,15 @@ Spatial dyadic multiresolution can be obtained by appliying a sequence of MDWT+M
 \end{figure}
 
 \subsection{Scalability provided by MCDWT}
-The decomposition generated by the MCDWT is identical to
-MDWT. Therefore, MCDWT provides the same spatial scalability than
-MDWT. In order to obtain several spatial resolutions, MCDWT should be
-applied to the low-frequency subbands, recursively. As an example, in
-the Figure~\ref{fig:multiresolution}, MCDWT has been applied to the
-output of the example of the Figure~\ref{fig:forward_MCDWT}. Notice
-that between two consecutive iterations of MCDWT, MDWT must be applied
-to the low-frequency subband in order to reduce the resolution of the
-analysis.
+The spatial decomposition generated by MCDWT is identical to the
+produced by MDWT, and therefore, MCDWT provides the same spatial
+scalability than MDWT. In order to obtain several spatial resolutions,
+MCDWT should be applied to the low-frequency subbands, recursively. As
+it is shown in the example of the Figure~\ref{fig:multiresolution},
+MCDWT has been applied to the output of the example of the
+Figure~\ref{fig:forward_MCDWT}. Notice that between two consecutive
+iterations of MCDWT, MDWT must be applied to the low-frequency subband
+in order to reduce the resolution of the analysis.
 
 On the other hand, MCDWT decreases the temporal scalability offered by
 MDWT to allowing only dyadic access (depending on required image and
