@@ -4,7 +4,7 @@
 
 Welcome to this project!
 
-This an implementation of a novel video transform based on Motion Compensation (MC) and the DWT (see [docs/MCDWT.ipynb]).
+This an implementation of a novel video transform based on Motion Compensation (MC) and the Discrete Wavelet Transform (DWT)).
 
 Contents of this repo:
 
