@@ -26,8 +26,9 @@ class MCDWT:
         Output:
         ------
 
-        residue_bH: array[y, x, component], the base of the decomposition of
-        the residue fot the image b.
+        residue_bH: array[y, x, component], the residue of the
+        high-requency information of the image b.
+
         '''
 
         AL = self.dwt.backward((aL, self.zero_H))
@@ -42,6 +43,22 @@ class MCDWT:
         return residue_bH[1]
 
     def __backward_butterfly(self, aL, aH, bL, residue_bH, cL, cH):
+        '''Motion compensated forward MCDWT butterfly.
+
+        Input:
+        -----
+
+        aL, aH, bL, residue_bH, cL, cH: array[y, x, component], the
+        \tilde{b} image.
+
+        Output:
+        ------
+
+        bH: array[y, x, component], the high-frequencies of the image
+        b.
+
+        '''
+
         AL = self.dwt.backward((aL, self.zero_H))
         BL = self.dwt.backward((bL, self.zero_H))
         CL = self.dwt.backward((cL, self.zero_H))

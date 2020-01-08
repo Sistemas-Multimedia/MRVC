@@ -325,18 +325,20 @@ video), a t+2D transformed video presents some drawbacks:
 
 \begin{enumerate}
 \item The perfect reconstruction of the original images only is
-  possible of the t stage is identical at both, the encoder and the
-  decoder. Therefore, if the encoder apply t at the full resolution
-  (scale 0), the decoder must apply t at full resolution, also, even
-  if the resolution of the reconstructed images were smaller. This
-  could be unfeasible for receivers with low computational resourcers.
+  possible of the t stage is identical at both, the
+  \href{https://en.wikipedia.org/wiki/Encoder}{encoder} and the
+  \href{https://en.wikipedia.org/wiki/Decoder}{decoder}. Therefore, if
+  the encoder apply t at the full resolution (scale 0), the decoder
+  must apply t at full resolution, also, even if the resolution of the
+  reconstructed images were smaller. This could be unfeasible for
+  receivers with low computational resourcers.
 \item Perfect reconstruction can be sacrified using a quantized
   version of the motion information, but the rate/distortion (R/D)
   tradeoff will be worst. In this case, also, the decoder would be
   wasting motion information.
-\item A solution for this last problem (the waste of motion
-  information) could be avoided if the motion data is encoded in a
-  progressive representation (each one working in a different spatial
+\item This last problem (the waste of motion information) could be
+  avoided if the motion data were encoded in a progressive
+  representation (each one suitable for working in a different spatial
   resolution of the images). Unfortunately, progressive
   representations use to need more data than non-progressive ones.
 \end{enumerate}
@@ -356,12 +358,10 @@ first. The t stage is a 1D DWT, which removes the temporal redundancy
 between adjacent $H$ subbands by means of
 \href{https://en.wikipedia.org/wiki/Motion_compensation}{Motion
   Compensation (MC)}. A special characteristic of MCDWT is that the
-motion information is not transmitted from the
-\href{https://en.wikipedia.org/wiki/Encoder}{encoder} to the
-\href{https://en.wikipedia.org/wiki/Decoder}{decoder}, which must
-replicate it or at least, predict it. This is possible because to
-estimate de motion at the encoder, only the information that it is
-accesible by the decoder is used.
+motion information is not transmitted from the encoder to the decoder,
+which must replicate it or at least, predict it. This is possible
+because to estimate de motion at the encoder, only the information
+that it is accesible by the decoder is used.
 
 \subsection{The MCDWT butterfly}
 MCDWT butterly inputs three decompositions $a=\{a.L, a.H\}$, $b=\{b.L,
@@ -373,10 +373,14 @@ we get $a$ (an
 \href{https://en.wikipedia.org/wiki/Video_compression_picture_types}{intra-coded
   ``I'' image}), $\tilde{b}$ (a
 \href{https://en.wikipedia.org/wiki/Video_compression_picture_types}{bidirectionally
-  predicted ``B'' image}) and $c$ (another intra-coded ``I''
-image). This replacement is fully reversible because the forward
-transform uses only the information that the backward transform
-will have access to. Notice that the
+  predicted ``B'' image}\footnote{$\tilde{b}$ can be considered a
+  B-type image. However, notice that only the high-frequency
+  information of $\tilde{b}$ has been compensated with the
+  high-freq. information of the neighbor images. In a normal B image,
+  all the frequencies are compensated.}) and $c$ (another intra-coded
+``I'' image). This replacement is fully reversible because the forward
+transform uses only the information that the backward transform will
+have access to. Notice that the
 \href{http://www.vtvt.ece.vt.edu/research/references/video/DCT_Video_Compression/Zhang92a.pdf}{pyramid
   domain} (which is invariant to the pixels displacements) has been
 used to estimate and compensate the $H$ subbands.
@@ -387,7 +391,7 @@ used to estimate and compensate the $H$ subbands.
   \caption{Forward MCDWT butterfly.}
   \label{fig:forward_butterfly}
 \end{figure}
-\lstinputlisting[firstline=17, lastline=54, language=python, caption={MCDWT.py (extract)}]{../src/MCDWT.py}
+\lstinputlisting[firstline=17, lastline=71, language=python, caption={MCDWT.py (extract)}]{../src/MCDWT.py}
 \lstinputlisting[firstline=4, lastline=9, language=python, caption={simple\_average.py (extract)}]{../src/simple_average.py}
 
 Notice that, even if $a$ and $c$ (at full resolution) are available at
