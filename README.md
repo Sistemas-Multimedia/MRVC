@@ -1,5 +1,7 @@
 # Motion Compensated Discrete Wavelet Transform (MCDWT)
 
+[![Join the chat at https://gitter.im//Sistemas-multimedia//MCDWT](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/Sistemas-multimedia/MCDWT?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+
 Welcome to the MCDWT project!
 
 This an implementation of a novel video transform based on MC and DWT (see [docs/MCDWT.ipynb]).
