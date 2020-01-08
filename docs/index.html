@@ -3234,7 +3234,124 @@ class="ecit-1000"> </span><span
 class="ecit-1000"> </span><span 
 class="ecit-1000"> </span><span 
 class="ecit-1000"> </span><span 
-class="ecit-1000">’’’</span>
+class="ecit-1000">’’’</span><span 
+class="ectt-1000"> </span><br /><span class="label"><a 
+ id="x1-9050r47"></a></span><span 
+class="ectt-1000"> </span><br /><span class="label"><a 
+ id="x1-9051r48"></a></span><span 
+class="ectt-1000"> </span><span 
+class="ectt-1000"> </span><span 
+class="ectt-1000"> </span><span 
+class="ectt-1000"> </span><span 
+class="ectt-1000"> </span><span 
+class="ectt-1000"> </span><span 
+class="ectt-1000"> </span><span 
+class="ectt-1000"> </span><span 
+class="ectt-1000">for</span><span 
+class="ectt-1000"> </span><span 
+class="ectt-1000">i</span><span 
+class="ectt-1000"> </span><span 
+class="ectt-1000">in</span><span 
+class="ectt-1000"> </span><span 
+class="ectt-1000">range</span><span 
+class="ectt-1000">(</span><span 
+class="ectt-1000">N</span><span 
+class="ectt-1000">):</span><span 
+class="ectt-1000"> </span><br /><span class="label"><a 
+ id="x1-9052r49"></a></span><span 
+class="ectt-1000"> </span><span 
+class="ectt-1000"> </span><span 
+class="ectt-1000"> </span><span 
+class="ectt-1000"> </span><span 
+class="ectt-1000"> </span><span 
+class="ectt-1000"> </span><span 
+class="ectt-1000"> </span><span 
+class="ectt-1000"> </span><span 
+class="ectt-1000"> </span><span 
+class="ectt-1000"> </span><span 
+class="ectt-1000"> </span><span 
+class="ectt-1000"> </span><span 
+class="ectt-1000">pyr</span><span 
+class="ectt-1000"> </span><span 
+class="ectt-1000">=</span><span 
+class="ectt-1000"> </span><span 
+class="ectt-1000">decomposition</span><span 
+class="ectt-1000">.</span><span 
+class="ectt-1000">read</span><span 
+class="ectt-1000">(</span><span 
+class="ectt-1000">prefix</span><span 
+class="ectt-1000">,</span><span 
+class="ectt-1000"> </span><span 
+class="ectt-1000">&#x0022;</span><span 
+class="ectt-1000">{:03</span><span 
+class="ectt-1000">d</span><span 
+class="ectt-1000">}</span><span 
+class="ectt-1000">&#x0022;</span><span 
+class="ectt-1000">.</span><span 
+class="ectt-1000">format</span><span 
+class="ectt-1000">(</span><span 
+class="ectt-1000">i</span><span 
+class="ectt-1000">))</span><span 
+class="ectt-1000"> </span><br /><span class="label"><a 
+ id="x1-9053r50"></a></span><span 
+class="ectt-1000"> </span><span 
+class="ectt-1000"> </span><span 
+class="ectt-1000"> </span><span 
+class="ectt-1000"> </span><span 
+class="ectt-1000"> </span><span 
+class="ectt-1000"> </span><span 
+class="ectt-1000"> </span><span 
+class="ectt-1000"> </span><span 
+class="ectt-1000"> </span><span 
+class="ectt-1000"> </span><span 
+class="ectt-1000"> </span><span 
+class="ectt-1000"> </span><span 
+class="ectt-1000">img</span><span 
+class="ectt-1000"> </span><span 
+class="ectt-1000">=</span><span 
+class="ectt-1000"> </span><span 
+class="ectt-1000">self</span><span 
+class="ectt-1000">.</span><span 
+class="ectt-1000">dwt</span><span 
+class="ectt-1000">.</span><span 
+class="ectt-1000">backward</span><span 
+class="ectt-1000">(</span><span 
+class="ectt-1000">pyr</span><span 
+class="ectt-1000">)</span><span 
+class="ectt-1000"> </span><br /><span class="label"><a 
+ id="x1-9054r51"></a></span><span 
+class="ectt-1000"> </span><span 
+class="ectt-1000"> </span><span 
+class="ectt-1000"> </span><span 
+class="ectt-1000"> </span><span 
+class="ectt-1000"> </span><span 
+class="ectt-1000"> </span><span 
+class="ectt-1000"> </span><span 
+class="ectt-1000"> </span><span 
+class="ectt-1000"> </span><span 
+class="ectt-1000"> </span><span 
+class="ectt-1000"> </span><span 
+class="ectt-1000"> </span><span 
+class="ectt-1000">image</span><span 
+class="ectt-1000">.</span><span 
+class="ectt-1000">write</span><span 
+class="ectt-1000">(</span><span 
+class="ectt-1000">img</span><span 
+class="ectt-1000">,</span><span 
+class="ectt-1000"> </span><span 
+class="ectt-1000">prefix</span><span 
+class="ectt-1000">,</span><span 
+class="ectt-1000"> </span><span 
+class="ectt-1000">&#x0022;</span><span 
+class="ectt-1000">{:03</span><span 
+class="ectt-1000">d</span><span 
+class="ectt-1000">}</span><span 
+class="ectt-1000">&#x0022;</span><span 
+class="ectt-1000">.</span><span 
+class="ectt-1000">format</span><span 
+class="ectt-1000">(</span><span 
+class="ectt-1000">i</span><span 
+class="ectt-1000">))</span>
    
    </div>
    <h4 class="subsectionHead"><span class="titlemark">3.1   </span> <a 
@@ -3452,8 +3569,11 @@ class="MathClass-punc">.</mo><mi
 class="MathClass-close">}</mo></mrow></math>,
 <!--l. 374--><math 
  xmlns="http://www.w3.org/1998/Math/MathML"  
-display="inline" ><mi 
->b</mi> <mo 
+display="inline" ><mover 
+accent="true"><mrow 
+><mi 
+>b</mi></mrow><mo 
+class="MathClass-op">̃</mo></mover> <mo 
 class="MathClass-rel">=</mo> <mrow ><mo 
 class="MathClass-open">{</mo><mrow><mi 
 >b</mi><mo 
@@ -3519,10 +3639,10 @@ predicted “B” image</a>) and <!--l. 381--><math
 display="inline" ><mi 
 >c</mi></math>
 (another intra-coded “I” image). This replacement is fully reversible because the
-forward transform will use only the information that the backward transform
-has access to. Notice that the <a 
-href="http://www.vtvt.ece.vt.edu/research/references/video/DCT_Video_Compression/Zhang92a.pdf" >pyramid domain</a> (which is invariant to the
-pixels displacements) has been used to estimate and compensate the
+forward transform uses only the information that the backward transform
+will have access to. Notice that the <a 
+href="http://www.vtvt.ece.vt.edu/research/references/video/DCT_Video_Compression/Zhang92a.pdf" >pyramid domain</a> (which is invariant to
+the pixels displacements) has been used to estimate and compensate the
 <!--l. 387--><math 
  xmlns="http://www.w3.org/1998/Math/MathML"  
 display="inline" ><mi 

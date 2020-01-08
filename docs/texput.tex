@@ -235,7 +235,7 @@ $\{s_i.L^0\}=\{s_i\}$) of the image sequence.
   \label{fig:forward_MDWT}
 \end{figure}
 
-\lstinputlisting[firstline=16, lastline=62, language=python, caption=MDWT.py]{../src/MDWT.py}
+\lstinputlisting[firstline=16, lastline=66, language=python, caption=MDWT.py]{../src/MDWT.py}
 
 \subsection{Scalability provided by MDWT}
 MDWT sequences (of (subband) decompositions) are scalable in space and
@@ -323,42 +323,37 @@ scalability (processing only those
   resolutions} (scales) necessary to get a spatially scaled of our
 video), a t+2D transformed video presents some drawbacks:
 
-\begin{itemize}
-\item In order to implement a lossless system, the t stage must be
-  carried out at full (scale 0) resolution, as minimum.
-\item We can restrict the perfect reconstruction only to the scale 0
-  case, but in this case, a spatial resolution representation of the
-  motion information should be available at the decoder. This can be
-  done, but in general, scalabilitity decreases the compression ratio
-  (on the motion data in this case).
-\item We can use the full (scale 0) resolution version of the motion
-  information for reconstructing all the scales of the texture
-  (interpolating it for all those scales greater that 0), but in this
-  case the memory and computing requirements at the decoders will
-  increase unnecessarily when a low spatial resolution of the sequence
-  is processed. Therefore, depending on the resolution of the scale 0
-  and the computational resources (specially at the receiver side),
-  this could be feasible or not.
-\item As an alternative to this last problem, we can decrease the
-  accuracy of the motion information in order to make it suitable for
-  the spatial resolution. However, this will increase the distortion
-  of the reconstruction compared to the previous solution.
-\end{itemize}
+\begin{enumerate}
+\item The perfect reconstruction of the original images only is
+  possible of the t stage is identical at both, the encoder and the
+  decoder. Therefore, if the encoder apply t at the full resolution
+  (scale 0), the decoder must apply t at full resolution, also, even
+  if the resolution of the reconstructed images were smaller. This
+  could be unfeasible for receivers with low computational resourcers.
+\item Perfect reconstruction can be sacrified using a quantized
+  version of the motion information, but the rate/distortion (R/D)
+  tradeoff will be worst. In this case, also, the decoder would be
+  wasting motion information.
+\item A solution for this last problem (the waste of motion
+  information) could be avoided if the motion data is encoded in a
+  progressive representation (each one working in a different spatial
+  resolution of the images). Unfortunately, progressive
+  representations use to need more data than non-progressive ones.
+\end{enumerate}
 
 Finally, it is important to realize that the presence of the motion
 data in the code-stream introduces also complexity into the decoding
 process because, in a quality scalable scenario, for example, it is
 not trivial (specially when non-linear systems such as those based on
 ME are involved) to decide how to interleave the motion and the
-texture information in a code-stream that can be decoded following
-different orders, depending on the type of used scalability and the
-avaliable bandwidth.
+texture information in a code-stream that can be decoded partially
+depending on the avaliable bandwidth.
 
 % Subband Motion Compensated Temporal Filtering (SMCTF) 
 \section{Motion Compensated Discrete Wavelet Transform (MCDWT)}
-MCDWT is a 2D+t transform. The 2D stage is MDWT. The t stage is a 1D
-DWT, which removes the temporal redundancy between adjacent $H$
-subbands by means of
+MCDWT is a 2D+t transform. The 2D stage is MDWT, and it is applied
+first. The t stage is a 1D DWT, which removes the temporal redundancy
+between adjacent $H$ subbands by means of
 \href{https://en.wikipedia.org/wiki/Motion_compensation}{Motion
   Compensation (MC)}. A special characteristic of MCDWT is that the
 motion information is not transmitted from the

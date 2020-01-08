@@ -8,9 +8,8 @@ def generate_prediction(curr, next, base):
 def motion_estimation(curr, next):
     curr_y, _, _ = cv2.split(curr)
     next_y, _, _ = cv2.split(next)
-
-    return cv2.calcOpticalFlowFarneback(next_y, curr_y, 
-            None, 0.5, 3, 15, 3, 5, 1.2, 0)
+    return cv2.calcOpticalFlowFarneback(next_y, curr_y, None, 0.5, 3, 15, 3, 5, 1.2, 0)
+    #return cv2.calcOpticalFlowFarneback(curr_y, next_y, None, 0.5, 3, 15, 3, 5, 1.2, 0)
 
 def estimate_frame(base, flow):
     height, width = flow.shape[:2]

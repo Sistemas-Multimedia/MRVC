@@ -51,6 +51,7 @@
   node [block, below of=suma] (bHp) {$[\tilde{b}.H]$}
   node [node distance=3.5cm, below of=bHp] (bHp2) {\DWT{0}{\tilde{b}.H}}
   %node [node distance=3.5cm, below of=bHp2] (out) {\DWT{b.L}{\tilde{b}.H}}
+  node [below of=bHp2, node distance=1.2cm] (tildeb) {$\tilde{b}$}
   ;
   
   \draw [->] ($(DWTa) + (-1cm,0.5cm)$) -- node[below] {iDWT} (aL);
