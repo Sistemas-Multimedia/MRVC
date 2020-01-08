@@ -73,17 +73,17 @@ equivalence between DWT subbands and
 1-iteration (step) 2D DWT for color images.
 
 \begin{figure}
-\lstinputlisting[firstline=20, lastline=82, language=python, caption=Forward 1-level DWT
-  (\href{https://github.com/vicente-gonzalez-ruiz/MCDWT/blob/master/src/DWT.py}{DWT.py})]{../src/DWT.py}
-\lstinputlisting[firstline=84, lastline=105, language=python,
-  caption=Backward 1-level DWT
-  (\href{https://github.com/vicente-gonzalez-ruiz/MCDWT/blob/master/src/DWT.py}{DWT.py})]{../src/DWT.py}
-\caption{Implementation of the color DWT step. $L$ and $H$ stands for
-  \emph{low-pass filtered} and \emph{high-pass filtered},
-  respectively.  More information about the implementation can be
-  found at
-  \href{https://pywavelets.readthedocs.io/en/latest/index.html}{PyWavelets}.}
-\label{fig:DWT}
+  \lstinputlisting[firstline=20, lastline=82, language=python, caption=Forward 1-iteration DWT
+    (\href{https://github.com/vicente-gonzalez-ruiz/MCDWT/blob/master/src/DWT.py}{DWT.py})]{../src/DWT.py}
+  \lstinputlisting[firstline=84, lastline=105, language=python,
+    caption=Backward 1-level DWT
+    (\href{https://github.com/vicente-gonzalez-ruiz/MCDWT/blob/master/src/DWT.py}{DWT.py})]{../src/DWT.py}
+  \caption{Implementation of the color DWT step (forward and
+    backward). $L$ and $H$ stands for \emph{low-pass filtered} and
+    \emph{high-pass filtered}, respectively.  More information about the
+    implementation can be found at
+    \href{https://pywavelets.readthedocs.io/en/latest/index.html}{PyWavelets}.}
+  \label{fig:DWT}
 \end{figure}
 
 Notice that the $N$-iterations DWT can be computed y applying the DWT
@@ -239,7 +239,9 @@ $\{s_i.L^0\}=\{s_i\}$) of the image sequence.
 \begin{figure}
   \centering
   \myfig{graphics/forward_MDWT}{8cm}{800}
-  \caption{Forward 1-iteration MDWT step.} %
+  \lstinputlisting[firstline=21, lastline=42, language=python, caption=Forward MDWT (\href{https://github.com/vicente-gonzalez-ruiz/MCDWT/blob/master/src/MDWT.py}{MDWT.py})]{../src/MDWT.py}
+  \lstinputlisting[firstline=44, lastline=66, language=python, caption=Backward MDWT (\href{https://github.com/vicente-gonzalez-ruiz/MCDWT/blob/master/src/MDWT.py}{MDWT.py})]{../src/MDWT.py}
+  \caption{MDWT.} %
   \label{fig:forward_MDWT}
 \end{figure}
 
