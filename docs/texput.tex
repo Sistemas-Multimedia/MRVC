@@ -421,18 +421,6 @@ in order to improve the quality of the generated motion information
 $[a.L]\rightarrow [b.L]$ and $[c.L]\rightarrow [b.L]$.
 
 \subsection{The MCDWT step}
-A step of the MCDWT is carried out when the MCDWT butterfly is applied
-to all the images of the input sequece using the pattern shown in the
-Fig.~\ref{fig:MCDWT}.
-
-\begin{figure}
-  \centering
-  \myfig{graphics/temporal_decorrelation}{12cm}{1200}
-  \lstinputlisting[firstline=17, lastline=76, language=python, caption={Forward MCDWT (\href{https://github.com/Sistemas-Multimedia/MCDWT/blob/master/src/MCDWT.py}{MCDWT.py}).}]{../src/MCDWT.py}
-  \lstinputlisting[firstline=78, lastline=90, language=python, caption={Backward MCDWT  (\href{https://github.com/Sistemas-Multimedia/MCDWT/blob/master/src/MCDWT.py}{MCDWT.py}).}]{../src/MCDWT.py}
-  \caption{MCDWT.}
-  \label{fig:MCDWT}
-\end{figure}
 
 %\begin{figure}
 %  \centering
@@ -443,12 +431,26 @@ Fig.~\ref{fig:MCDWT}.
 %\subsection{Forward and backward (inverse) transform}
 
 \subsection{The forward MCDWT}
-The forward MCDWT is the result of appliying the forward MCDWT step
-recursively, to the image with number $2^i$, where $i$ is the
-iteration of the MCDWT step. As a result, chooding $i$ large enough,
-except for the first and the last image of the sequence, all the
-$H$-subbands are temporally decorrelated.
+A iteration of the MCDWT is carried out when the MCDWT butterfly is
+applied to all the images of the input sequece using the pattern shown
+in the Fig.~\ref{fig:MCDWT}.
 
+\begin{figure}
+  \centering
+  \myfig{graphics/temporal_decorrelation}{12cm}{1200}
+  \lstinputlisting[firstline=73, lastline=125, language=python, caption={Forward MCDWT (\href{https://github.com/Sistemas-Multimedia/MCDWT/blob/master/src/MCDWT.py}{MCDWT.py}).}]{../src/MCDWT.py}
+  \lstinputlisting[firstline=127, lastline=179, language=python, caption={Backward MCDWT (\href{https://github.com/Sistemas-Multimedia/MCDWT/blob/master/src/MCDWT.py}{MCDWT.py}).}]{../src/MCDWT.py}
+  \caption{Implementation of the MCDWT.}
+  \label{fig:MCDWT}
+\end{figure}
+
+The forward MCDWT is the result of appliying one iteration of the
+forward MCDWT recursively, to the image with number $2^i$, where $i$
+is the iteration. Notice that if $N=2^I$ (where $N$ is the number of
+images/decompositions and $I$ is the number of iterations), except for
+the first and the last image of the sequence, all the $H$-subbands are
+temporally decorrelated. Notice that the number of temporal escales is
+$T=I+1$.
 
 \subsection{(Spatial) Multiresolution}
 Spatial dyadic multiresolution can be obtained by appliying a sequence

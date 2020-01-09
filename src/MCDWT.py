@@ -70,7 +70,7 @@ class MCDWT:
         bH = self.dwt.forward(BH)
         return bH[1]
 
-    def forward(self, prefix = "/tmp/", N=5, T=2):
+    def forward(self, prefix = "/tmp/", N=5, I=2):
         '''Forward MCDWT.
 
         Compute the MC 1D-DWT. The input video (as a sequence of
@@ -90,13 +90,13 @@ class MCDWT:
 
                 Number of decompositions to process.
 
-             T : int
+             I : int
 
                 Number of iterations of the MCDWT (temporal scales). Controls
                 the GOP size.
 
-                  T | GOP_size
-                ----+-----------
+                  I | GOP_size
+                ----+----------
                   0 |        1
                   1 |        2
                   2 |        4
@@ -112,7 +112,7 @@ class MCDWT:
 
         '''
         x = 2
-        for t in range(T): # Temporal scale
+        for t in range(I): # Temporal scale
             i = 0
             aL, aH = decomposition.read(prefix, "{:03d}".format(0))
             while i < (N//x):
@@ -124,7 +124,7 @@ class MCDWT:
                 i += 1
             x *= 2
 
-    def backward(self, prefix = "/tmp/", N=5, T=2):
+    def backward(self, prefix = "/tmp/", N=5, I=2):
         '''Backward MCDWT.
 
         Compute the inverse MC 1D-DWT. The input sequence of
@@ -144,20 +144,9 @@ class MCDWT:
 
                 Number of decompositions to process.
 
-             T : int
+             I : int
 
-                Number of levels of the MCDWT (temporal scales). Controls
-                the GOP size.
-
-                  T | GOP_size
-                ----+-----------
-                  0 |        1
-                  1 |        2
-                  2 |        4
-                  3 |        8
-                  4 |       16
-                  5 |       32
-                  : |        :
+                Number of iterations of the MCDWT (temporal scales).
 
         Returns
         -------
@@ -165,8 +154,8 @@ class MCDWT:
             The sequence of 1-iteration decompositions.
 
         '''
-        x = 2**T
-        for t in range(T): # Temporal scale
+        x = 2**I
+        for t in range(I): # Temporal scale
             i = 0
             aL, aH = decomposition.read(prefix, "{:03d}".format(0))
             while i < (N//x):
