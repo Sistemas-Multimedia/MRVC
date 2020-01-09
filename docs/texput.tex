@@ -401,10 +401,10 @@ used to estimate and compensate the $H$ subbands.
 
 \begin{figure}
   \centering \myfig{graphics/forward_butterfly}{12cm}{1200}
-  \lstinputlisting[firstline=17, lastline=43, language=python,
+  \lstinputlisting[firstline=23, lastline=49, language=python,
     caption={Forward MCDWT butterfly
       (\href{https://github.com/Sistemas-Multimedia/MCDWT/blob/master/src/MCDWT.py}{MCDWT.py}).}]{../src/MCDWT.py}
-  \lstinputlisting[firstline=45, lastline=71, language=python,
+  \lstinputlisting[firstline=51, lastline=77, language=python,
     caption={Backward MCDWT butterfly
       (\href{https://github.com/Sistemas-Multimedia/MCDWT/blob/master/src/MCDWT.py}{MCDWT.py}).}]{../src/MCDWT.py}
   \lstinputlisting[firstline=4, lastline=9, language=python,
@@ -438,19 +438,18 @@ in the Fig.~\ref{fig:MCDWT}.
 \begin{figure}
   \centering
   \myfig{graphics/temporal_decorrelation}{12cm}{1200}
-  \lstinputlisting[firstline=73, lastline=125, language=python, caption={Forward MCDWT (\href{https://github.com/Sistemas-Multimedia/MCDWT/blob/master/src/MCDWT.py}{MCDWT.py}).}]{../src/MCDWT.py}
-  \lstinputlisting[firstline=127, lastline=179, language=python, caption={Backward MCDWT (\href{https://github.com/Sistemas-Multimedia/MCDWT/blob/master/src/MCDWT.py}{MCDWT.py}).}]{../src/MCDWT.py}
+  \lstinputlisting[firstline=79, lastline=131, language=python, caption={Forward MCDWT (\href{https://github.com/Sistemas-Multimedia/MCDWT/blob/master/src/MCDWT.py}{MCDWT.py}).}]{../src/MCDWT.py}
+  \lstinputlisting[firstline=133, lastline=174, language=python, caption={Backward MCDWT (\href{https://github.com/Sistemas-Multimedia/MCDWT/blob/master/src/MCDWT.py}{MCDWT.py}).}]{../src/MCDWT.py}
   \caption{Implementation of the MCDWT.}
   \label{fig:MCDWT}
 \end{figure}
 
 The forward MCDWT is the result of appliying one iteration of the
 forward MCDWT recursively, to the image with number $2^i$, where $i$
-is the iteration. Notice that if $N=2^I$ (where $N$ is the number of
+is the iteration. Notice that, if $N=2^I$ (where $N$ is the number of
 images/decompositions and $I$ is the number of iterations), except for
 the first and the last image of the sequence, all the $H$-subbands are
-temporally decorrelated. Notice that the number of temporal escales is
-$T=I+1$.
+temporally decorrelated.
 
 \subsection{(Spatial) Multiresolution}
 Spatial dyadic multiresolution can be obtained by appliying a sequence

@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 # Note: swap the above line with the following two ones to switch
-# between the standar and the optimized mode.
+# between the standard and the optimized mode.
 
 #!/bin/sh
 ''''exec python3 -O -- "$0" ${1+"$@"} # '''

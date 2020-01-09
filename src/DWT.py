@@ -122,7 +122,7 @@ if __name__ == "__main__":
         formatter_class=CustomFormatter)
 
     parser.add_argument("-b", "--backward", action='store_true', help="Performs backward transform")
-    parser.add_argument("-p", "--prefix", help="Dir where the files the I/O files are placed", default="/tmp/")
+    parser.add_argument("-p", "--prefix", help="Folder where the files the I/O files are placed", default="/tmp/")
     parser.add_argument("-i", "--index", help="Index of the image/decomposition", default="000")
 
     args = parser.parse_args()

@@ -1,5 +1,11 @@
 #!/usr/bin/env python
 
+# Note: swap the above line with the following two ones to switch
+# between the standard and the optimized mode.
+
+#!/bin/sh
+''''exec python3 -O -- "$0" ${1+"$@"} # '''
+
 import numpy as np
 import sys
 
@@ -188,7 +194,7 @@ if __name__ == "__main__":
     parser.add_argument("-b", "--backward", action='store_true', help="Performs backward transform")
     parser.add_argument("-p", "--prefix", help="Dir where the files the I/O files are placed", default="/tmp/")
     parser.add_argument("-N", help="Number of decompositions", default=5, type=int)
-    parser.add_argument("-T", help="Number of temporal levels", default=2, type=int)
+    parser.add_argument("-I", help="Number of temporal iterations", default=2, type=int)
     parser.add_argument("-P", help="Predictor to use (1=average, 2=weighted_average)", default=1, type=int)
 
     args = parser.parse_args()
@@ -205,7 +211,7 @@ if __name__ == "__main__":
         p = decomposition.readL(args.prefix, "000")
         d = MCDWT(p.shape)
 
-        d.backward(args.prefix, args.N, args.T)
+        d.backward(args.prefix, args.N, args.I)
     else:
         if __debug__:
             print("Forward transform")
@@ -213,4 +219,4 @@ if __name__ == "__main__":
         p = decomposition.readL(args.prefix, "000")
         d = MCDWT(p.shape)
 
-        p = d.forward(args.prefix, args.N, args.T)
+        p = d.forward(args.prefix, args.N, args.I)
