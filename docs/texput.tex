@@ -74,10 +74,10 @@ equivalence between DWT subbands and
 
 \begin{figure}
   \lstinputlisting[firstline=20, lastline=85, language=python, caption=Forward 1-iteration DWT
-    (\href{https://github.com/vicente-gonzalez-ruiz/MCDWT/blob/master/src/DWT.py}{DWT.py})]{../src/DWT.py}
+    (\href{https://github.com/vicente-gonzalez-ruiz/MCDWT/blob/master/src/DWT.py}{DWT.py}).]{../src/DWT.py}
   \lstinputlisting[firstline=87, lastline=108, language=python,
     caption=Backward 1-iteration DWT
-    (\href{https://github.com/vicente-gonzalez-ruiz/MCDWT/blob/master/src/DWT.py}{DWT.py})]{../src/DWT.py}
+    (\href{https://github.com/vicente-gonzalez-ruiz/MCDWT/blob/master/src/DWT.py}{DWT.py}).]{../src/DWT.py}
   \caption{Implementation of the color DWT step (forward and
     backward). $L$ and $H$ stands for \emph{low-pass filtering} and
     \emph{high-pass filtering}, respectively.  More information about the
@@ -233,10 +233,13 @@ each one providing 2 spatial resolution levels ($\{s_i.L\}$ and
 $\{s_i.L^0\}=\{s_i\}$) of the image sequence.
 
 \begin{figure}
-  \centering
-  \myfig{graphics/forward_MDWT}{8cm}{800}
-  \lstinputlisting[firstline=21, lastline=42, language=python, caption=Forward MDWT (\href{https://github.com/vicente-gonzalez-ruiz/MCDWT/blob/master/src/MDWT.py}{MDWT.py})]{../src/MDWT.py}
-  \lstinputlisting[firstline=44, lastline=66, language=python, caption=Backward MDWT (\href{https://github.com/vicente-gonzalez-ruiz/MCDWT/blob/master/src/MDWT.py}{MDWT.py})]{../src/MDWT.py}
+  \centering \myfig{graphics/forward_MDWT}{8cm}{800}
+  \lstinputlisting[firstline=21, lastline=42, language=python,
+    caption=Forward MDWT
+    (\href{https://github.com/vicente-gonzalez-ruiz/MCDWT/blob/master/src/MDWT.py}{MDWT.py}).]{../src/MDWT.py}.
+  \lstinputlisting[firstline=44, lastline=66, language=python,
+    caption=Backward MDWT
+    (\href{https://github.com/vicente-gonzalez-ruiz/MCDWT/blob/master/src/MDWT.py}{MDWT.py}).]{../src/MDWT.py}.
   \caption{Implementation of the MDWT.} %
   \label{fig:forward_MDWT}
 \end{figure}
@@ -305,13 +308,15 @@ for i in /tmp/00?.png; do convert -normalize $i $i.norm; done; animate /tmp/00?.
 %{{{
 
 To remove both, spatial and temporal redundancies, two different
-alternatives are available: (1) t+2D transforms and (2) 2D+t
-transforms. In a t+2D transform, the video is first
-\href{https://en.wikipedia.org/wiki/Digital_filter\#Analysis_techniques}{analyzed}
-(transformed) over the time domain and next, over the space domain. A
-2D+t transform does just the opposite. Each choice has a number of
-\emph{pros} and \emph{cons}. For example, in a t+2D transform we can
-apply directly any image predictor based on
+alternatives are available:
+\begin{enumerate}
+\item In a \textbf{t+2D transform}, the video is first
+  \href{https://en.wikipedia.org/wiki/Digital_filter\#Analysis_techniques}{analyzed}
+  (transformed) over the time domain and next, over the space domain.
+\item A \textbf{2D+t transform} does just the opposite.
+\end{enumerate}
+Each choice has a number of \emph{pros} and \emph{cons}. For example,
+in a t+2D transform we can apply directly any image predictor based on
 \href{https://en.wikipedia.org/wiki/Motion_estimation}{motion
   estimation} because the input is a normal video. However, if we
 implement a 2D+t transform, the input to the motion estimator is a
@@ -336,8 +341,8 @@ video), a t+2D transformed video presents some drawbacks:
   possible of the t stage is identical at both, the
   \href{https://en.wikipedia.org/wiki/Encoder}{encoder} and the
   \href{https://en.wikipedia.org/wiki/Decoder}{decoder}. Therefore, if
-  the encoder apply t at the full resolution (scale 0), the decoder
-  must apply t at full resolution, also, even if the resolution of the
+  the encoder applies t at the full resolution (scale 0), the decoder
+  must also apply t at full resolution, even if the resolution of the
   reconstructed images were smaller. This could be unfeasible for
   receivers with low computational resourcers.
 \item Perfect reconstruction can be sacrified using a quantized
@@ -346,18 +351,18 @@ video), a t+2D transformed video presents some drawbacks:
   wasting motion information.
 \item This last problem (the waste of motion information) could be
   avoided if the motion data were encoded in a progressive
-  representation (each one suitable for working in a different spatial
+  representation ( suitable for working in a different spatial
   resolution of the images). Unfortunately, progressive
-  representations use to need more data than non-progressive ones.
+  representations usually need more data than non-progressive ones.
 \end{enumerate}
 
 Finally, it is important to realize that the presence of the motion
 data in the code-stream introduces also complexity into the decoding
 process because, in a quality scalable scenario, for example, it is
 not trivial (specially when non-linear systems such as those based on
-ME are involved) to decide how to interleave the motion and the
-texture information in a code-stream that can be decoded partially
-depending on the avaliable bandwidth.
+\mylink{video_compression}{ME} are involved) to decide how to
+interleave the motion and the texture information in a code-stream
+that can be decoded partially, depending on the avaliable bandwidth.
 
 %}}}
 
@@ -395,21 +400,25 @@ have access to. Notice that the
 used to estimate and compensate the $H$ subbands.
 
 \begin{figure}
-  \centering %
-  \myfig{graphics/forward_butterfly}{12cm}{1200}
-  \caption{Forward MCDWT butterfly.}
-  \label{fig:forward_butterfly}
+  \centering \myfig{graphics/forward_butterfly}{12cm}{1200}
+  \lstinputlisting[firstline=17, lastline=43, language=python,
+    caption={Forward MCDWT butterfly
+      (\href{https://github.com/vicente-gonzalez-ruiz/MCDWT/blob/master/src/MCDWT.py}{MCDWT.py}).}]{../src/MCDWT.py}
+  \lstinputlisting[firstline=45, lastline=71, language=python,
+    caption={Backward MCDWT butterfly
+      (\href{https://github.com/vicente-gonzalez-ruiz/MCDWT/blob/master/src/MCDWT.py}{MCDWT.py}).}]{../src/MCDWT.py}
+  \lstinputlisting[firstline=4, lastline=9, language=python,
+    caption={Computation of the prediction
+      image (\href{https://github.com/vicente-gonzalez-ruiz/MCDWT/blob/master/src/simple_average.py}{simple\_average.py}).}]{../src/simple_average.py}
+  \caption{MCDWT butterflies.}
+  \label{fig:forward_butterflies}
 \end{figure}
-\lstinputlisting[firstline=17, lastline=71, language=python, caption={MCDWT.py (extract)}]{../src/MCDWT.py}
-\lstinputlisting[firstline=4, lastline=9, language=python, caption={simple\_average.py (extract)}]{../src/simple_average.py}
 
 Notice that, even if $a$ and $c$ (at full resolution) are available at
-the decoder, only $b.L$ is. So, it does not make sense to search the
-low resolution structures of $b.L$ in the high resolution images $a$
-and $c$, because even if a perfect match is achieved (think about the
-three decompositions $a$, $b$ and $c$ are identical), the prediction error
-would be different than $0$ as a consequence of that the high
-resolution information is missing in $b.L$.
+the decoder, only $b.L$ is. For this reason, the ME projections for
+$[b.L]$ are performed with $[a.L]$ and $[c.L]$ instead of $a$ and $c$,
+in order to improve the quality of the generated motion information
+$[a.L]\rightarrow [b.L]$ and $[c.L]\rightarrow [b.L]$.
 
 \subsection{The MCDWT step}
 A step of the MCDWT is carried out when the MCDWT butterfly is applied
@@ -624,7 +633,7 @@ for i in /tmp/00?.png; do python ../tools/substract_offset.py -i $i -o $i.png; d
 %{{{
 
 As can be seen in the MCDWT bufferfly (see
-Fig.~\ref{fig:forward_butterfly}), both predictions $[b_a.H]$ and
+Fig.~\ref{fig:forward_butterflies}), both predictions $[b_a.H]$ and
 $[b_c.H]$ have the same weight to build the prediction
 \begin{equation}
   [\hat{b.H}] = \frac{[b_a.H] + [b_c.H]}{2}.
@@ -1050,7 +1059,7 @@ where (see Eq.~\ref{eq:weighted_prediction})
 
 %}}}
 
-\section{Encoding of I-type H-subbands}
+\section{Encoding of I-type H-subbands (experimental)}
 %{{{
 
 After a $T$-levels MCDWT transform of a sequence, $T+1$ temporal
