@@ -18,7 +18,7 @@ from src.IO import decomposition
 class DWT:
 
     def forward(self, image):
-        '''1-iteration forward 2D-DWT of a color image.
+        '''1-iteration 2D-DWT of a color image.
 
         Input:
         -----
@@ -85,7 +85,7 @@ class DWT:
         return decomposition
 
     def backward(self, decomposition):
-        '''1-iteration inverse 2D DWT of a color decomposition.
+        '''Inverse 1-iteration 2D DWT of a color decomposition.
 
         Input:
         -----

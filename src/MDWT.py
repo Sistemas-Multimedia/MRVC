@@ -19,7 +19,7 @@ class MDWT:
         self.dwt = DWT()
 
     def forward(self, prefix="/tmp/", N=5):
-        '''Motion 1-iteration forward 2D DWT of a sequence of images.
+        '''1-iteration Motion 2D DWT of a sequence of images.
 
         Compute the forward 2D-DWT of each image of the sequence
         placed at <prefix>.
@@ -42,7 +42,7 @@ class MDWT:
             decomposition.write(pyr, prefix, "{:03d}".format(i))
 
     def backward(self, prefix="/tmp/", N=5):
-        '''Motion 1-iteration forward 2D DWT of a sequence of decompositions.
+        '''1-iteration Inverse Motion 2D DWT of a sequence of decompositions.
 
         Compute the inverse 2D-DWT of each decomposition of the
         sequence of decompositions placed at <prefix>.

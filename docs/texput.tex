@@ -73,43 +73,39 @@ equivalence between DWT subbands and
 1-iteration (step) 2D DWT for color images.
 
 \begin{figure}
-  \lstinputlisting[firstline=20, lastline=82, language=python, caption=Forward 1-iteration DWT
+  \lstinputlisting[firstline=20, lastline=85, language=python, caption=Forward 1-iteration DWT
     (\href{https://github.com/vicente-gonzalez-ruiz/MCDWT/blob/master/src/DWT.py}{DWT.py})]{../src/DWT.py}
-  \lstinputlisting[firstline=84, lastline=105, language=python,
-    caption=Backward 1-level DWT
+  \lstinputlisting[firstline=87, lastline=108, language=python,
+    caption=Backward 1-iteration DWT
     (\href{https://github.com/vicente-gonzalez-ruiz/MCDWT/blob/master/src/DWT.py}{DWT.py})]{../src/DWT.py}
   \caption{Implementation of the color DWT step (forward and
-    backward). $L$ and $H$ stands for \emph{low-pass filtered} and
-    \emph{high-pass filtered}, respectively.  More information about the
+    backward). $L$ and $H$ stands for \emph{low-pass filtering} and
+    \emph{high-pass filtering}, respectively.  More information about the
     implementation can be found at
     \href{https://pywavelets.readthedocs.io/en/latest/index.html}{PyWavelets}.}
   \label{fig:DWT}
 \end{figure}
 
-Notice that the $N$-iterations DWT can be computed y applying the DWT
-step $N$ times, recursively, to the subband $LL$.
-
 \subsection{Multi-level DWT structures}
-A dyadic 0DWT is a recursive use of the
+A dyadic DWT is a recursive use of the
 (1-iteration\footnote{\href{https://pywavelets.readthedocs.io/en/latest/index.html}{PyWavelets}
   uses the term ``levels'' for refering to the number of iterations of
   the 1-interation DWT, and athough levels and interations are closely
-  related ($k+1$ spatial resolution levels are provided by the
-  $k$-iterations 2D DWT), we will distinguish between iterations and
-  spatial resolution levels.}) 2D-DWT applied to the $LL$ subband. For
-example, if the 2D DWT is applied $k$-times to the $LL$ subband,
-recursively, a decomposition of spatial resolution $k+1$-levels is
-generated. For the sake of simplicity, we will denote the subbands
-$\{LH^k, HL^k, HH^k\}$ as only $H^k$, and $LL^k$ as only $L^k$. See
+  related, we will distinguish between iterations and spatial
+  resolution levels.}) DWT applied to the $LL$ subband. For example,
+if the DWT is applied $k$-times to the $LL$ subband, recursively, a
+decomposition of spatial resolution $(k+1)$ levels is generated. For
+the sake of simplicity, we will denote the subbands $\{LH^k, HL^k,
+HH^k\}$ as only $H^k$, and $LL^k$ as only $L^k$. See
 \href{https://nbviewer.jupyter.org/github/Sistemas-Multimedia/MCDWT/blob/master/docs/DWT_vs_LPT.ipynb}{DWT
   versus LPT}.
 
 \subsection{Scalability provided by the 2D DWT}
 Depending on the number of subband levels (pyramid levels in the
-\mylink{https://pywavelets.readthedocs.io/en/latest/index.html}{pyramid
-  representation}), we can reconstruct an image at different spatial
-scales (resolutions). For example, if an image $s_1$ has been
-transformed using the DWT of 2 iterations, we get:
+\mylink{pyramids-and-wavelets}{pyramid representation}), we can
+reconstruct an image at different spatial scales (resolutions). For
+example, if an image $s_1$ has been transformed using the DWT of 2
+iterations, we get:
 \begin{itemize}
 \item Subband $s_1.L^2$ with the scale 2.
 \begin{verbatim}
@@ -241,7 +237,7 @@ $\{s_i.L^0\}=\{s_i\}$) of the image sequence.
   \myfig{graphics/forward_MDWT}{8cm}{800}
   \lstinputlisting[firstline=21, lastline=42, language=python, caption=Forward MDWT (\href{https://github.com/vicente-gonzalez-ruiz/MCDWT/blob/master/src/MDWT.py}{MDWT.py})]{../src/MDWT.py}
   \lstinputlisting[firstline=44, lastline=66, language=python, caption=Backward MDWT (\href{https://github.com/vicente-gonzalez-ruiz/MCDWT/blob/master/src/MDWT.py}{MDWT.py})]{../src/MDWT.py}
-  \caption{MDWT.} %
+  \caption{Implementation of the MDWT.} %
   \label{fig:forward_MDWT}
 \end{figure}
 
