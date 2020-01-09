@@ -68,16 +68,16 @@ equivalence between DWT subbands and
   representation and viceversa}.
 
 \subsection{Implementation of the 3 components (color) DWT step}
-\href{https://github.com/vicente-gonzalez-ruiz/MCDWT/blob/master/src/DWT.py}{DWT.py}
+\href{https://github.com/Sistemas-Multimedia/MCDWT/blob/master/src/DWT.py}{DWT.py}
 (see Fig.~\ref{fig:DWT}) implements the forward and backward
 1-iteration (step) 2D DWT for color images.
 
 \begin{figure}
   \lstinputlisting[firstline=20, lastline=85, language=python, caption=Forward 1-iteration DWT
-    (\href{https://github.com/vicente-gonzalez-ruiz/MCDWT/blob/master/src/DWT.py}{DWT.py}).]{../src/DWT.py}
+    (\href{https://github.com/Sistemas-Multimedia/MCDWT/blob/master/src/DWT.py}{DWT.py}).]{../src/DWT.py}
   \lstinputlisting[firstline=87, lastline=108, language=python,
     caption=Backward 1-iteration DWT
-    (\href{https://github.com/vicente-gonzalez-ruiz/MCDWT/blob/master/src/DWT.py}{DWT.py}).]{../src/DWT.py}
+    (\href{https://github.com/Sistemas-Multimedia/MCDWT/blob/master/src/DWT.py}{DWT.py}).]{../src/DWT.py}
   \caption{Implementation of the color DWT step (forward and
     backward). $L$ and $H$ stands for \emph{low-pass filtering} and
     \emph{high-pass filtering}, respectively.  More information about the
@@ -236,10 +236,10 @@ $\{s_i.L^0\}=\{s_i\}$) of the image sequence.
   \centering \myfig{graphics/forward_MDWT}{8cm}{800}
   \lstinputlisting[firstline=21, lastline=42, language=python,
     caption=Forward MDWT
-    (\href{https://github.com/vicente-gonzalez-ruiz/MCDWT/blob/master/src/MDWT.py}{MDWT.py}).]{../src/MDWT.py}.
+    (\href{https://github.com/Sistemas-Multimedia/MCDWT/blob/master/src/MDWT.py}{MDWT.py}).]{../src/MDWT.py}.
   \lstinputlisting[firstline=44, lastline=66, language=python,
     caption=Backward MDWT
-    (\href{https://github.com/vicente-gonzalez-ruiz/MCDWT/blob/master/src/MDWT.py}{MDWT.py}).]{../src/MDWT.py}.
+    (\href{https://github.com/Sistemas-Multimedia/MCDWT/blob/master/src/MDWT.py}{MDWT.py}).]{../src/MDWT.py}.
   \caption{Implementation of the MDWT.} %
   \label{fig:forward_MDWT}
 \end{figure}
@@ -403,13 +403,13 @@ used to estimate and compensate the $H$ subbands.
   \centering \myfig{graphics/forward_butterfly}{12cm}{1200}
   \lstinputlisting[firstline=17, lastline=43, language=python,
     caption={Forward MCDWT butterfly
-      (\href{https://github.com/vicente-gonzalez-ruiz/MCDWT/blob/master/src/MCDWT.py}{MCDWT.py}).}]{../src/MCDWT.py}
+      (\href{https://github.com/Sistemas-Multimedia/MCDWT/blob/master/src/MCDWT.py}{MCDWT.py}).}]{../src/MCDWT.py}
   \lstinputlisting[firstline=45, lastline=71, language=python,
     caption={Backward MCDWT butterfly
-      (\href{https://github.com/vicente-gonzalez-ruiz/MCDWT/blob/master/src/MCDWT.py}{MCDWT.py}).}]{../src/MCDWT.py}
+      (\href{https://github.com/Sistemas-Multimedia/MCDWT/blob/master/src/MCDWT.py}{MCDWT.py}).}]{../src/MCDWT.py}
   \lstinputlisting[firstline=4, lastline=9, language=python,
     caption={Computation of the prediction
-      image (\href{https://github.com/vicente-gonzalez-ruiz/MCDWT/blob/master/src/simple_average.py}{simple\_average.py}).}]{../src/simple_average.py}
+      image (\href{https://github.com/Sistemas-Multimedia/MCDWT/blob/master/src/simple_average.py}{simple\_average.py}).}]{../src/simple_average.py}
   \caption{MCDWT butterflies.}
   \label{fig:forward_butterflies}
 \end{figure}
@@ -423,14 +423,23 @@ $[a.L]\rightarrow [b.L]$ and $[c.L]\rightarrow [b.L]$.
 \subsection{The MCDWT step}
 A step of the MCDWT is carried out when the MCDWT butterfly is applied
 to all the images of the input sequece using the pattern shown in the
-Fig.~\ref{fig:forward_MCDWT_step}. Notice that only the images with an
-odd number are transformed.
+Fig.~\ref{fig:MCDWT}.
+
 \begin{figure}
   \centering
-  \svg{forward_MCDWT_step}{1200}
-  \caption{MCDWT forward step.}
-  \label{fig:forward_MCDWT_step}
+  \myfig{graphics/temporal_decorrelation}{12cm}{1200}
+  \lstinputlisting[firstline=17, lastline=76, language=python, caption={Forward MCDWT (\href{https://github.com/Sistemas-Multimedia/MCDWT/blob/master/src/MCDWT.py}{MCDWT.py}).}]{../src/MCDWT.py}
+  \lstinputlisting[firstline=78, lastline=90, language=python, caption={Backward MCDWT  (\href{https://github.com/Sistemas-Multimedia/MCDWT/blob/master/src/MCDWT.py}{MCDWT.py}).}]{../src/MCDWT.py}
+  \caption{MCDWT.}
+  \label{fig:MCDWT}
 \end{figure}
+
+%\begin{figure}
+%  \centering
+%  \svg{forward_MCDWT_step}{1200}
+%  \caption{MCDWT forward step.}
+%  \label{fig:forward_MCDWT_step}
+%\end{figure}
 %\subsection{Forward and backward (inverse) transform}
 
 \subsection{The forward MCDWT}
@@ -440,15 +449,6 @@ iteration of the MCDWT step. As a result, chooding $i$ large enough,
 except for the first and the last image of the sequence, all the
 $H$-subbands are temporally decorrelated.
 
-\begin{figure}
-  \centering
-  \myfig{graphics/temporal_decorrelation}{12cm}{1200}
-  \caption{MCDWT forward transform.}
-  \label{fig:forward_MCDWT}
-\end{figure}
-
-\lstinputlisting[firstline=17, lastline=76, language=python, caption={Code of the forward transform (MCDWT.py)}]{../src/MCDWT.py}
-\lstinputlisting[firstline=78, lastline=90, language=python, caption={Code of the backward transform (MCDWT.py)}]{../src/MCDWT.py}
 
 \subsection{(Spatial) Multiresolution}
 Spatial dyadic multiresolution can be obtained by appliying a sequence

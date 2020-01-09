@@ -64,7 +64,6 @@ class DWT:
             image.
 
         '''
-
         y = math.ceil(image.shape[0]/2)
         x = math.ceil(image.shape[1]/2)
         LL = np.ndarray((y, x, 3), np.float64)

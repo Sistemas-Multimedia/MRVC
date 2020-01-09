@@ -15,7 +15,7 @@ class MCDWT:
         self.dwt = DWT()
 
     def __forward_butterfly(self, aL, aH, bL, bH, cL, cH):
-        '''Motion compensated forward MCDWT butterfly.
+        '''Forward MCDWT butterfly.
 
         Input:
         -----
@@ -43,7 +43,7 @@ class MCDWT:
         return residue_bH[1]
 
     def __backward_butterfly(self, aL, aH, bL, residue_bH, cL, cH):
-        '''Motion compensated forward MCDWT butterfly.
+        '''Backward MCDWT butterfly.
 
         Input:
         -----
@@ -71,11 +71,65 @@ class MCDWT:
         return bH[1]
 
     def forward(self, prefix = "/tmp/", N=5, T=2):
-        '''A Motion Compensated Discrete Wavelet Transform.
+        '''Forward MCDWT.
 
         Compute the MC 1D-DWT. The input video (as a sequence of
-        1-levels decompositions) must be stored in disk in the
-        directory <prefix>, and the output (as a 1-levels MC
+        1-iteration decompositions) must be stored in disk in the
+        directory <prefix>, and the output (as a 1-iteration MC
+        decompositions) will generated in the same directory.
+
+        Input
+        -----
+
+            prefix : str
+
+                Localization of the input/output images. Example:
+                "/tmp/".
+
+             N : int
+
+                Number of decompositions to process.
+
+             T : int
+
+                Number of iterations of the MCDWT (temporal scales). Controls
+                the GOP size.
+
+                  T | GOP_size
+                ----+-----------
+                  0 |        1
+                  1 |        2
+                  2 |        4
+                  3 |        8
+                  4 |       16
+                  5 |       32
+                  : |        :
+
+        Returns
+        -------
+
+            The output motion compensated decompositions.
+
+        '''
+        x = 2
+        for t in range(T): # Temporal scale
+            i = 0
+            aL, aH = decomposition.read(prefix, "{:03d}".format(0))
+            while i < (N//x):
+                bL, bH = decomposition.read(prefix, "{:03d}".format(x*i+x//2))
+                cL, cH = decomposition.read(prefix, "{:03d}".format(x*i+x))
+                bH = self.__forward_butterfly(aL, aH, bL, bH, cL, cH)
+                decomposition.writeH(bH, prefix, "{:03d}".format(x*i+x//2))
+                aL, aH = cL, cH
+                i += 1
+            x *= 2
+
+    def backward(self, prefix = "/tmp/", N=5, T=2):
+        '''Backward MCDWT.
+
+        Compute the inverse MC 1D-DWT. The input sequence of
+        1-iteration MC decompositions must be stored in disk in the
+        directory <prefix>, and the output (as a 1-iteration
         decompositions) will generated in the same directory.
 
         Input
@@ -105,33 +159,12 @@ class MCDWT:
                   5 |       32
                   : |        :
 
-             P : int
-
-                Predictor to use:
-
-                 1 --> Average Predictor.
-                 2 --> Weighted Average Predictor.
-
         Returns
         -------
 
-            None.
+            The sequence of 1-iteration decompositions.
 
         '''
-        x = 2
-        for t in range(T): # Temporal scale
-            i = 0
-            aL, aH = decomposition.read(prefix, "{:03d}".format(0))
-            while i < (N//x):
-                bL, bH = decomposition.read(prefix, "{:03d}".format(x*i+x//2))
-                cL, cH = decomposition.read(prefix, "{:03d}".format(x*i+x))
-                bH = self.__forward_butterfly(aL, aH, bL, bH, cL, cH)
-                decomposition.writeH(bH, prefix, "{:03d}".format(x*i+x//2))
-                aL, aH = cL, cH
-                i += 1
-            x *= 2
-
-    def backward(self, prefix = "/tmp/", N=5, T=2):
         x = 2**T
         for t in range(T): # Temporal scale
             i = 0
