@@ -182,7 +182,7 @@ if __name__ == "__main__":
 
 #        "  yes | cp -rf ../sequences/stockholm/ /tmp/\n"
     parser = argparse.ArgumentParser(
-        description = "Motion Compensated 2D Discrete Wavelet (color) Transform\n\n"
+        description = "Motion Compensated 2D Discrete Wavelet Transform\n\n"
         "Example:\n\n"
         "  yes | cp ../sequences/stockholm/* /tmp/\n"
         "  python3 -O MDWT.py     -p /tmp/\n"

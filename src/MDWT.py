@@ -73,7 +73,7 @@ if __name__ == "__main__":
         pass
     
     parser = argparse.ArgumentParser(
-        description = "Motion 2D Discrete Wavelet (color) Transform\n\n"
+        description = "Motion 2D Discrete Wavelet Transform\n\n"
         "Examples:\n\n"
         "  yes | cp ../sequences/stockholm/* /tmp/\n"
         "  python3 -O MDWT.py    -p /tmp/ # Forward transform\n"

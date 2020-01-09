@@ -152,7 +152,7 @@ Y/2 |     L1      |
 \end{verbatim}
 \end{itemize}
 
-\subsection{A 1-iteration 2D DWT example}
+\subsection*{A 1-iteration 2D DWT example}
 \begin{verbatim}
 # You must be in the 'src' directory.
 
@@ -180,7 +180,7 @@ display -normalize /tmp/000.png
 display -normalize /tmp/diffs.png
 \end{verbatim}
 
-\subsection{A 2-iterations 2D DWT example}
+\subsection*{A 2-iterations 2D DWT example}
 \begin{verbatim}
 # You must be in the 'src' directory.
 
@@ -253,7 +253,7 @@ that MDWT provides \emph{fully} temporal scalability (we can access to
 the images randomly) because each image of the input sequence is
 transformed independently.
 
-\subsection{1-iteration MDWT example}
+\subsection*{1-iteration MDWT example}
 \begin{verbatim}
 # You must be in the 'src' directory.
 
@@ -281,7 +281,7 @@ rm /tmp/*.norm
 for i in /tmp/00?.png; do convert -normalize $i $i.norm; done; animate /tmp/00?.png.norm
 \end{verbatim}
 
-\subsection{2-iterations MDWT example}
+\subsection*{2-iterations MDWT example}
 \begin{verbatim}
 # You must be in the 'src' directory.
 
@@ -420,7 +420,7 @@ $[b.L]$ are performed with $[a.L]$ and $[c.L]$ instead of $a$ and $c$,
 in order to improve the quality of the generated motion information
 $[a.L]\rightarrow [b.L]$ and $[c.L]\rightarrow [b.L]$.
 
-\subsection{The MCDWT step}
+%\subsection{The MCDWT step}
 
 %\begin{figure}
 %  \centering
@@ -450,6 +450,44 @@ is the iteration. Notice that, if $N=2^I$ (where $N$ is the number of
 images/decompositions and $I$ is the number of iterations), except for
 the first and the last image of the sequence, all the $H$-subbands are
 temporally decorrelated.
+
+\subsection*{1-iteration MCDWT example}
+Showing the effect of using MC.
+\begin{verbatim}
+# You must be in the 'src' directory.
+
+yes | cp ../sequences/stockholm/*.png /tmp
+
+# 1D 1-levels forward MDWT:
+python3 -O MDWT.py -p /tmp/
+
+# Show the length of the subbands
+for i in /tmp/LL???.png; do ls -l $i; done
+for i in /tmp/LH???.png; do ls -l $i; done
+for i in /tmp/HL???.png; do ls -l $i; done
+for i in /tmp/HH???.png; do ls -l $i; done
+
+# 1D 1-levels forward MCDWT:
+python3 -O MCDWT.py -p /tmp/ -I 1
+
+# Show the length of the subbands
+for i in /tmp/LL???.png; do ls -l $i; done
+for i in /tmp/LH???.png; do ls -l $i; done
+for i in /tmp/HL???.png; do ls -l $i; done
+for i in /tmp/HH???.png; do ls -l $i; done
+
+rm /tmp/00?.png
+
+# 1D 1-levels backward MCDWT:
+python3 -O MCDWT.py -b -p /tmp/ -I 1
+
+# 1D 1-levels backward MDWT:
+python3 -O MDWT.py -b -p /tmp/
+
+# Visualization of the reconstruction:
+for i in /tmp/???.png; do python3 ../tools/substract_offset.py -i $i -o $i.png; done; animate /tmp/???.png.png
+\end{verbatim}
+
 
 \subsection{(Spatial) Multiresolution}
 Spatial dyadic multiresolution can be obtained by appliying a sequence
@@ -490,29 +528,6 @@ $s_2$ and $s_4$ will be reconstructed (the second
   resolution}). If a second iteration of the backward transform is
 used, all the decompositions are rendered.
 
-\subsection{MCDWT 1-levels example}
-\begin{verbatim}
-# You must be in the 'src' directory.
-
-yes | cp ../sequences/stockholm/*.png /tmp
-
-# 1D 1-levels forward MDWT:
-python3 -O MDWT.py -p /tmp/
-
-# 1D 1-levels forward MCDWT:
-python3 -O MCDWT.py -p /tmp/
-
-rm /tmp/00?.png
-
-# 1D 1-levels backward MCDWT:
-python3 -O MCDWT.py -b -p /tmp/
-
-# 1D 1-levels backward MDWT:
-python3 -O MDWT.py -b -p /tmp/
-
-# Visualization of the reconstruction:
-for i in /tmp/???.png; do python3 ../tools/substract_offset.py -i $i -o $i.png; done; animate /tmp/???.png.png
-\end{verbatim}
 
 \subsection{Showing some statistics}
 \begin{verbatim}
