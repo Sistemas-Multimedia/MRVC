@@ -7,7 +7,7 @@ height=384
 usage() {
     echo $0
     echo "Creates a zero (3 components, 8 bpp/component) image"
-    echo "  [-i image to create ($image)]"
+    echo "  [-o image to create ($image)]"
     echo "  [-w width ($width)]"
     echo "  [-h height ($height)]"
     echo "  [-? help]"
@@ -15,9 +15,9 @@ usage() {
 
 echo $0: parsing: $@
 
-while getopts "i:w:h:?" opt; do
+while getopts "o:w:h:?" opt; do
     case ${opt} in
-        i)
+        o)
             image="${OPTARG}"
             echo "input =" $image
             ;;

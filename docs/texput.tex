@@ -304,6 +304,34 @@ for i in /tmp/00?.png; do convert -normalize $i $i.norm; done; animate /tmp/00?.
 
 %}}}
 
+\subsection*{Interpolating with the 2D DWT}
+If we apply an inversr 
+\begin{verbatim}
+# You must be in the 'src' directory.
+
+# Copy the current images as LL subbands:
+rm /tmp/*.png
+for i in {0..4}; do
+  image_number=$(printf "%03d" $i)
+  cp ../sequences/stockholm/$image_number.png /tmp/LL$image_number.png
+done
+
+# Create the H subbands as zero images:
+for i in {0..4}; do
+  image_number=$(printf "%03d" $i)
+  bash ../tools/create_black_image.sh -w 1280 -h 768 -o /tmp/LH$image_number.png
+  bash ../tools/create_black_image.sh -w 1280 -h 768 -o /tmp/HL$image_number.png
+  bash ../tools/create_black_image.sh -w 1280 -h 768 -o /tmp/HH$image_number.png
+done
+
+# Apply the inverse DWT:
+python3 -O MDWT.py -b -p /tmp/ -N 5
+
+# Visualization of the reconstruction:
+rm /tmp/*.norm
+for i in /tmp/00?.png; do convert -normalize $i $i.norm; done; animate /tmp/00?.png.norm
+\end{verbatim}
+
 \section{Video transform alternatives}
 %{{{
 
