@@ -368,15 +368,18 @@ that can be decoded partially, depending on the avaliable bandwidth.
 
 % Subband Motion Compensated Temporal Filtering (SMCTF) 
 \section{Motion Compensated Discrete Wavelet Transform (MCDWT)}
-MCDWT is a 2D+t transform. The 2D stage is MDWT, and it is applied
-first. The t stage is a 1D DWT, which removes the temporal redundancy
-between adjacent $H$ subbands by means of
+MCDWT is a 2D+t transform. The 2D stage is 1-iteration MDWT, and it is
+applied first. The t stage is a $I$-iterations 1D
 \href{https://en.wikipedia.org/wiki/Motion_compensation}{Motion
-  Compensation (MC)}. A special characteristic of MCDWT is that the
-motion information is not transmitted from the encoder to the decoder,
-which must replicate it or at least, predict it. This is possible
-because to estimate de motion at the encoder, only the information
-that it is accesible by the decoder is used.
+  Compensated (MC)} DWT, which removes the temporal redundancy between
+adjacent $H$ subbands. The number of iterations $I$ determines the
+\href{https://en.wikipedia.org/wiki/Group_of_pictures}{GOP} size.
+
+A special characteristic of MCDWT is that the motion information is
+not transmitted from the encoder to the decoder, which must replicate
+it or at least, predict it. This is possible because to estimate de
+motion at the encoder, only the information that it is accesible by
+the decoder is used.
 
 \subsection{The MCDWT butterfly}
 MCDWT butterly inputs three decompositions $a=\{a.L, a.H\}$, $b=\{b.L,
@@ -414,11 +417,10 @@ used to estimate and compensate the $H$ subbands.
   \label{fig:forward_butterflies}
 \end{figure}
 
-Notice that, even if $a$ and $c$ (at full resolution) are available at
-the decoder, only $b.L$ is. For this reason, the ME projections for
-$[b.L]$ are performed with $[a.L]$ and $[c.L]$ instead of $a$ and $c$,
-in order to improve the quality of the generated motion information
-$[a.L]\rightarrow [b.L]$ and $[c.L]\rightarrow [b.L]$.
+The ME projections for $[b.L]$ are performed with $[a.L]$ and $[c.L]$
+instead of $a$ and $c$ (that are available at the decoder) because, in
+$a$ and $c$ there is high-frequency information that can dificult the
+mappings $[a.L]\rightarrow [b.L]$ and $[c.L]\rightarrow [b.L]$.
 
 %\subsection{The MCDWT step}
 
@@ -431,9 +433,11 @@ $[a.L]\rightarrow [b.L]$ and $[c.L]\rightarrow [b.L]$.
 %\subsection{Forward and backward (inverse) transform}
 
 \subsection{The forward MCDWT}
-A iteration of the MCDWT is carried out when the MCDWT butterfly is
-applied to all the images of the input sequece using the pattern shown
-in the Fig.~\ref{fig:MCDWT}.
+The $I$-iterations MCDWT is the result of applying the MCDWT butterfly
+to all the images of $I+1$ different temporal scales (see
+Fig.~\ref{fig:MCDWT}). These scales are defined by the images with
+number multiple of $2^i$, where $1\leq i\leq I$ is the current
+iteration.
 
 \begin{figure}
   \centering
@@ -444,15 +448,17 @@ in the Fig.~\ref{fig:MCDWT}.
   \label{fig:MCDWT}
 \end{figure}
 
-The forward MCDWT is the result of appliying one iteration of the
-forward MCDWT recursively, to the image with number $2^i$, where $i$
-is the iteration. Notice that, if $N=2^I$ (where $N$ is the number of
-images/decompositions and $I$ is the number of iterations), except for
-the first and the last image of the sequence, all the $H$-subbands are
+Notice that, if $N=G+1$ (where $G=2^I$ is the number of
+images/decompositions in the GOP, i.e., the GOP size), except for the
+first and the last image of the sequence, all the $H$-subbands are
 temporally decorrelated.
 
 \subsection*{1-iteration MCDWT example}
-Showing the effect of using MC.
+In this example, a sequence of five images is transformed first with
+the (1-iteration) MDWT, producing 2 spatial resolution levels by
+image. Next, the $H$ subbands of the odd images (images 1 and 3) are
+motion compensated using the (1-iteration) MCDWT.
+
 \begin{verbatim}
 # You must be in the 'src' directory.
 
@@ -476,6 +482,9 @@ for i in /tmp/LH???.png; do ls -l $i; done
 for i in /tmp/HL???.png; do ls -l $i; done
 for i in /tmp/HH???.png; do ls -l $i; done
 
+# Has changed in length any of them? Remember that a change in lenght
+# implies a change in content.
+
 rm /tmp/00?.png
 
 # 1D 1-levels backward MCDWT:
@@ -488,66 +497,21 @@ python3 -O MDWT.py -b -p /tmp/
 for i in /tmp/???.png; do python3 ../tools/substract_offset.py -i $i -o $i.png; done; animate /tmp/???.png.png
 \end{verbatim}
 
+\subsection*{2-iterations MCDWT example}
+This example is similar to the previous, but now the number of
+iterations of MCDWT is $I=2$. This second iteration compensates also
+the $H$ subband of the image 2. This example matches exactly with the
+described in the Fig~\ref{fig:MCDWT}.
 
-\subsection{(Spatial) Multiresolution}
-Spatial dyadic multiresolution can be obtained by appliying a sequence
-of (MDWT+MCDWT) steps (see Fig.~\ref{fig:multiresolution}).
-
-\begin{figure}
-  \centering %
-  \myfig{graphics/multiresolution}{10cm}{1200}
-  \caption{MDWT+MCDWT multiresolution procedure. The input to the second
-    iteration of the MDWT+MCDWT transform is the output of a previous
-    (first) iteration MDWT+MCDWT transform. The second iteration is only
-    applied to the scale 1.} %
-  \label{fig:multiresolution}
-\end{figure}
-
-Spatial dyadic multiresolution can be obtained by appliying a sequence
-of MDWT+MCDWT steps (see Fig.~\ref{fig:multiresolution}).
-
-\subsection{Scalability provided by MCDWT}
-The spatial decomposition generated by MCDWT is identical to the
-produced by MDWT, and therefore, MCDWT provides the same spatial
-scalability than MDWT. In order to obtain several spatial resolutions,
-MCDWT should be applied to the low-frequency subbands, recursively. As
-it is shown in the example of the Figure~\ref{fig:multiresolution},
-MCDWT has been applied to the output of the example of the
-Figure~\ref{fig:forward_MCDWT}. Notice that between two consecutive
-iterations of MCDWT, MDWT must be applied to the low-frequency subband
-in order to reduce the resolution of the analysis.
-
-On the other hand, MCDWT decreases the temporal scalability offered by
-MDWT to allowing only dyadic access (depending on required image and
-the number of MCDWT levels, more than one decomposition needs to be
-inversely transformed). For example, if only one step of the backward
-transform is applied to the example of the
-Figure~\ref{fig:forward_MCDWT}, only the decompositions of $s_0$,
-$s_2$ and $s_4$ will be reconstructed (the second
-\href{https://en.wikipedia.org/wiki/Temporal_resolution}{temporal
-  resolution}). If a second iteration of the backward transform is
-used, all the decompositions are rendered.
-
-
-\subsection{Showing some statistics}
 \begin{verbatim}
 # You must be in the 'src' directory.
 
 cp ../sequences/stockholm/*.png /tmp
 
-# 1D 1-levels forward MDWT:
+# 1-iteration MDWT
 python3 -O MDWT.py -p /tmp/
 
-# First and last decompositions are not transformed by MCDWT (step 1/2):
-ls -l /tmp/HH000.png
-ls -l /tmp/HL004.png
-
-# The rest, are transformed (step 1/2):
-ls -l /tmp/HL001.png
-ls -l /tmp/LH002.png
-ls -l /tmp/HH003.png
-
-# Showing statistics (step 1/2):
+# Showing some statistics before using the MCDWT
 python3 ../tools/show_statistics.py -i /tmp/LH001.png
 python3 ../tools/show_statistics.py -i /tmp/HL001.png
 python3 ../tools/show_statistics.py -i /tmp/HH001.png
@@ -555,19 +519,10 @@ python3 ../tools/show_statistics.py -i /tmp/LH002.png
 python3 ../tools/show_statistics.py -i /tmp/HL002.png
 python3 ../tools/show_statistics.py -i /tmp/HH002.png
 
-# 1D 1-levels forward MCDWT:
-python3 -O MCDWT.py -p /tmp/
+# 2-iterations MCDWT
+python3 -O MCDWT.py -I 2 -p /tmp/
 
-# First and last decompositions are not transformed by MCDWT step 2/2):
-ls -l /tmp/HH000.png
-ls -l /tmp/HL004.png
-
-# The rest, are transformed (step 2/2):
-ls -l /tmp/HL001.png
-ls -l /tmp/LH002.png
-ls -l /tmp/HG003.png
-
-# Showing statistics:
+# Showing statistics after using the MCDWT
 python3 ../tools/show_statistics.py -i /tmp/LH001.png
 python3 ../tools/show_statistics.py -i /tmp/HL001.png
 python3 ../tools/show_statistics.py -i /tmp/HH001.png
@@ -580,6 +535,43 @@ for i in /tmp/LH00?.png; do convert -normalize $i $i.png; done; animate /tmp/LH0
 for i in /tmp/HL00?.png; do convert -normalize $i $i.png; done; animate /tmp/HL00?.png.png
 for i in /tmp/HH00?.png; do convert -normalize $i $i.png; done; animate /tmp/HH00?.png.png
 \end{verbatim}
+
+\subsection{Scalability provided by MCDWT}
+MCDWT preserves the dyadic spatial decomposition generated by MDWT,
+and therefore, MCDWT provides the same spatial scalability than MDWT.
+
+Unfortunately, as the rest of video encoders based on MC, MCDWT
+reduces the temporal scalability provided by MDWT, allowing only a
+dyadic access. For example, after applying each iteration of the
+inverse MCDWT, if $I=3$ (the GOP size $G=8$), the images of the second
+GOP (GOP 1, considered the first GOP, GOP 0, only composed by the
+first image of the sequence) should be reconstructed in this order:
+
+\begin{verbatim}
+GOP 0            GOP 1
+----- --------------------------------
+   s0                              s8  <- output of the 3-iterations MCDWT
+                   s4                  <- first iteration of the inverse MCDWT
+           s2              s6          <- second iteration
+       s1      s3      s5      s7      <- third iteration
+\end{verbatim}
+
+%\subsection{(Spatial) Multiresolution}
+%Spatial dyadic multiresolution can be obtained by appliying a sequence
+%of (MDWT+MCDWT) steps (see Fig.~\ref{fig:multiresolution}).
+
+%\begin{figure}
+%  \centering %
+%  \myfig{graphics/multiresolution}{10cm}{1200}
+%  \caption{MDWT+MCDWT multiresolution procedure. The input to the second
+%    iteration of the MDWT+MCDWT transform is the output of a previous
+%    (first) iteration MDWT+MCDWT transform. The second iteration is only
+%    applied to the scale 1.} %
+%  \label{fig:multiresolution}
+%\end{figure}
+
+%Spatial dyadic multiresolution can be obtained by appliying a sequence
+%of MDWT+MCDWT steps (see Fig.~\ref{fig:multiresolution}).
 
 \subsection{Filtering the MC subbands}
 \begin{verbatim}
