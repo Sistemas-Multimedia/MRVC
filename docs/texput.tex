@@ -68,16 +68,16 @@ equivalence between DWT subbands and
   representation and viceversa}.
 
 \subsection{Implementation of the 3 components (color) DWT step}
-\href{https://github.com/vicente-gonzalez-ruiz/MCDWT/blob/master/src/DWT.py}{DWT.py}
+\href{https://github.com/Sistemas-Multimedia/MCDWT/blob/master/src/DWT.py}{DWT.py}
 (see Fig.~\ref{fig:DWT}) implements the forward and backward
 1-iteration (step) 2D DWT for color images.
 
 \begin{figure}
   \lstinputlisting[firstline=20, lastline=85, language=python, caption=Forward 1-iteration DWT
-    (\href{https://github.com/vicente-gonzalez-ruiz/MCDWT/blob/master/src/DWT.py}{DWT.py}).]{../src/DWT.py}
+    (\href{https://github.com/Sistemas-Multimedia/MCDWT/blob/master/src/DWT.py}{DWT.py}).]{../src/DWT.py}
   \lstinputlisting[firstline=87, lastline=108, language=python,
     caption=Backward 1-iteration DWT
-    (\href{https://github.com/vicente-gonzalez-ruiz/MCDWT/blob/master/src/DWT.py}{DWT.py}).]{../src/DWT.py}
+    (\href{https://github.com/Sistemas-Multimedia/MCDWT/blob/master/src/DWT.py}{DWT.py}).]{../src/DWT.py}
   \caption{Implementation of the color DWT step (forward and
     backward). $L$ and $H$ stands for \emph{low-pass filtering} and
     \emph{high-pass filtering}, respectively.  More information about the
@@ -152,7 +152,7 @@ Y/2 |     L1      |
 \end{verbatim}
 \end{itemize}
 
-\subsection{A 1-iteration 2D DWT example}
+\subsection*{A 1-iteration 2D DWT example}
 \begin{verbatim}
 # You must be in the 'src' directory.
 
@@ -180,7 +180,7 @@ display -normalize /tmp/000.png
 display -normalize /tmp/diffs.png
 \end{verbatim}
 
-\subsection{A 2-iterations 2D DWT example}
+\subsection*{A 2-iterations 2D DWT example}
 \begin{verbatim}
 # You must be in the 'src' directory.
 
@@ -236,10 +236,10 @@ $\{s_i.L^0\}=\{s_i\}$) of the image sequence.
   \centering \myfig{graphics/forward_MDWT}{8cm}{800}
   \lstinputlisting[firstline=21, lastline=42, language=python,
     caption=Forward MDWT
-    (\href{https://github.com/vicente-gonzalez-ruiz/MCDWT/blob/master/src/MDWT.py}{MDWT.py}).]{../src/MDWT.py}.
+    (\href{https://github.com/Sistemas-Multimedia/MCDWT/blob/master/src/MDWT.py}{MDWT.py}).]{../src/MDWT.py}.
   \lstinputlisting[firstline=44, lastline=66, language=python,
     caption=Backward MDWT
-    (\href{https://github.com/vicente-gonzalez-ruiz/MCDWT/blob/master/src/MDWT.py}{MDWT.py}).]{../src/MDWT.py}.
+    (\href{https://github.com/Sistemas-Multimedia/MCDWT/blob/master/src/MDWT.py}{MDWT.py}).]{../src/MDWT.py}.
   \caption{Implementation of the MDWT.} %
   \label{fig:forward_MDWT}
 \end{figure}
@@ -253,7 +253,7 @@ that MDWT provides \emph{fully} temporal scalability (we can access to
 the images randomly) because each image of the input sequence is
 transformed independently.
 
-\subsection{1-iteration MDWT example}
+\subsection*{1-iteration MDWT example}
 \begin{verbatim}
 # You must be in the 'src' directory.
 
@@ -281,7 +281,7 @@ rm /tmp/*.norm
 for i in /tmp/00?.png; do convert -normalize $i $i.norm; done; animate /tmp/00?.png.norm
 \end{verbatim}
 
-\subsection{2-iterations MDWT example}
+\subsection*{2-iterations MDWT example}
 \begin{verbatim}
 # You must be in the 'src' directory.
 
@@ -401,15 +401,15 @@ used to estimate and compensate the $H$ subbands.
 
 \begin{figure}
   \centering \myfig{graphics/forward_butterfly}{12cm}{1200}
-  \lstinputlisting[firstline=17, lastline=43, language=python,
+  \lstinputlisting[firstline=23, lastline=49, language=python,
     caption={Forward MCDWT butterfly
-      (\href{https://github.com/vicente-gonzalez-ruiz/MCDWT/blob/master/src/MCDWT.py}{MCDWT.py}).}]{../src/MCDWT.py}
-  \lstinputlisting[firstline=45, lastline=71, language=python,
+      (\href{https://github.com/Sistemas-Multimedia/MCDWT/blob/master/src/MCDWT.py}{MCDWT.py}).}]{../src/MCDWT.py}
+  \lstinputlisting[firstline=51, lastline=77, language=python,
     caption={Backward MCDWT butterfly
-      (\href{https://github.com/vicente-gonzalez-ruiz/MCDWT/blob/master/src/MCDWT.py}{MCDWT.py}).}]{../src/MCDWT.py}
+      (\href{https://github.com/Sistemas-Multimedia/MCDWT/blob/master/src/MCDWT.py}{MCDWT.py}).}]{../src/MCDWT.py}
   \lstinputlisting[firstline=4, lastline=9, language=python,
     caption={Computation of the prediction
-      image (\href{https://github.com/vicente-gonzalez-ruiz/MCDWT/blob/master/src/simple_average.py}{simple\_average.py}).}]{../src/simple_average.py}
+      image (\href{https://github.com/Sistemas-Multimedia/MCDWT/blob/master/src/simple_average.py}{simple\_average.py}).}]{../src/simple_average.py}
   \caption{MCDWT butterflies.}
   \label{fig:forward_butterflies}
 \end{figure}
@@ -420,35 +420,74 @@ $[b.L]$ are performed with $[a.L]$ and $[c.L]$ instead of $a$ and $c$,
 in order to improve the quality of the generated motion information
 $[a.L]\rightarrow [b.L]$ and $[c.L]\rightarrow [b.L]$.
 
-\subsection{The MCDWT step}
-A step of the MCDWT is carried out when the MCDWT butterfly is applied
-to all the images of the input sequece using the pattern shown in the
-Fig.~\ref{fig:forward_MCDWT_step}. Notice that only the images with an
-odd number are transformed.
-\begin{figure}
-  \centering
-  \svg{forward_MCDWT_step}{1200}
-  \caption{MCDWT forward step.}
-  \label{fig:forward_MCDWT_step}
-\end{figure}
+%\subsection{The MCDWT step}
+
+%\begin{figure}
+%  \centering
+%  \svg{forward_MCDWT_step}{1200}
+%  \caption{MCDWT forward step.}
+%  \label{fig:forward_MCDWT_step}
+%\end{figure}
 %\subsection{Forward and backward (inverse) transform}
 
 \subsection{The forward MCDWT}
-The forward MCDWT is the result of appliying the forward MCDWT step
-recursively, to the image with number $2^i$, where $i$ is the
-iteration of the MCDWT step. As a result, chooding $i$ large enough,
-except for the first and the last image of the sequence, all the
-$H$-subbands are temporally decorrelated.
+A iteration of the MCDWT is carried out when the MCDWT butterfly is
+applied to all the images of the input sequece using the pattern shown
+in the Fig.~\ref{fig:MCDWT}.
 
 \begin{figure}
   \centering
   \myfig{graphics/temporal_decorrelation}{12cm}{1200}
-  \caption{MCDWT forward transform.}
-  \label{fig:forward_MCDWT}
+  \lstinputlisting[firstline=79, lastline=131, language=python, caption={Forward MCDWT (\href{https://github.com/Sistemas-Multimedia/MCDWT/blob/master/src/MCDWT.py}{MCDWT.py}).}]{../src/MCDWT.py}
+  \lstinputlisting[firstline=133, lastline=174, language=python, caption={Backward MCDWT (\href{https://github.com/Sistemas-Multimedia/MCDWT/blob/master/src/MCDWT.py}{MCDWT.py}).}]{../src/MCDWT.py}
+  \caption{Implementation of the MCDWT.}
+  \label{fig:MCDWT}
 \end{figure}
 
-\lstinputlisting[firstline=17, lastline=76, language=python, caption={Code of the forward transform (MCDWT.py)}]{../src/MCDWT.py}
-\lstinputlisting[firstline=78, lastline=90, language=python, caption={Code of the backward transform (MCDWT.py)}]{../src/MCDWT.py}
+The forward MCDWT is the result of appliying one iteration of the
+forward MCDWT recursively, to the image with number $2^i$, where $i$
+is the iteration. Notice that, if $N=2^I$ (where $N$ is the number of
+images/decompositions and $I$ is the number of iterations), except for
+the first and the last image of the sequence, all the $H$-subbands are
+temporally decorrelated.
+
+\subsection*{1-iteration MCDWT example}
+Showing the effect of using MC.
+\begin{verbatim}
+# You must be in the 'src' directory.
+
+yes | cp ../sequences/stockholm/*.png /tmp
+
+# 1D 1-levels forward MDWT:
+python3 -O MDWT.py -p /tmp/
+
+# Show the length of the subbands
+for i in /tmp/LL???.png; do ls -l $i; done
+for i in /tmp/LH???.png; do ls -l $i; done
+for i in /tmp/HL???.png; do ls -l $i; done
+for i in /tmp/HH???.png; do ls -l $i; done
+
+# 1D 1-levels forward MCDWT:
+python3 -O MCDWT.py -p /tmp/ -I 1
+
+# Show the length of the subbands
+for i in /tmp/LL???.png; do ls -l $i; done
+for i in /tmp/LH???.png; do ls -l $i; done
+for i in /tmp/HL???.png; do ls -l $i; done
+for i in /tmp/HH???.png; do ls -l $i; done
+
+rm /tmp/00?.png
+
+# 1D 1-levels backward MCDWT:
+python3 -O MCDWT.py -b -p /tmp/ -I 1
+
+# 1D 1-levels backward MDWT:
+python3 -O MDWT.py -b -p /tmp/
+
+# Visualization of the reconstruction:
+for i in /tmp/???.png; do python3 ../tools/substract_offset.py -i $i -o $i.png; done; animate /tmp/???.png.png
+\end{verbatim}
+
 
 \subsection{(Spatial) Multiresolution}
 Spatial dyadic multiresolution can be obtained by appliying a sequence
@@ -489,29 +528,6 @@ $s_2$ and $s_4$ will be reconstructed (the second
   resolution}). If a second iteration of the backward transform is
 used, all the decompositions are rendered.
 
-\subsection{MCDWT 1-levels example}
-\begin{verbatim}
-# You must be in the 'src' directory.
-
-yes | cp ../sequences/stockholm/*.png /tmp
-
-# 1D 1-levels forward MDWT:
-python3 -O MDWT.py -p /tmp/
-
-# 1D 1-levels forward MCDWT:
-python3 -O MCDWT.py -p /tmp/
-
-rm /tmp/00?.png
-
-# 1D 1-levels backward MCDWT:
-python3 -O MCDWT.py -b -p /tmp/
-
-# 1D 1-levels backward MDWT:
-python3 -O MDWT.py -b -p /tmp/
-
-# Visualization of the reconstruction:
-for i in /tmp/???.png; do python3 ../tools/substract_offset.py -i $i -o $i.png; done; animate /tmp/???.png.png
-\end{verbatim}
 
 \subsection{Showing some statistics}
 \begin{verbatim}

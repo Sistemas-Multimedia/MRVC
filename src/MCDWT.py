@@ -1,5 +1,11 @@
 #!/usr/bin/env python
 
+# Note: swap the above line with the following two ones to switch
+# between the standard and the optimized mode.
+
+#!/bin/sh
+''''exec python3 -O -- "$0" ${1+"$@"} # '''
+
 import numpy as np
 import sys
 
@@ -15,7 +21,7 @@ class MCDWT:
         self.dwt = DWT()
 
     def __forward_butterfly(self, aL, aH, bL, bH, cL, cH):
-        '''Motion compensated forward MCDWT butterfly.
+        '''Forward MCDWT butterfly.
 
         Input:
         -----
@@ -43,7 +49,7 @@ class MCDWT:
         return residue_bH[1]
 
     def __backward_butterfly(self, aL, aH, bL, residue_bH, cL, cH):
-        '''Motion compensated forward MCDWT butterfly.
+        '''Backward MCDWT butterfly.
 
         Input:
         -----
@@ -70,12 +76,12 @@ class MCDWT:
         bH = self.dwt.forward(BH)
         return bH[1]
 
-    def forward(self, prefix = "/tmp/", N=5, T=2):
-        '''A Motion Compensated Discrete Wavelet Transform.
+    def forward(self, prefix = "/tmp/", N=5, I=2):
+        '''Forward MCDWT.
 
         Compute the MC 1D-DWT. The input video (as a sequence of
-        1-levels decompositions) must be stored in disk in the
-        directory <prefix>, and the output (as a 1-levels MC
+        1-iteration decompositions) must be stored in disk in the
+        directory <prefix>, and the output (as a 1-iteration MC
         decompositions) will generated in the same directory.
 
         Input
@@ -90,13 +96,13 @@ class MCDWT:
 
                 Number of decompositions to process.
 
-             T : int
+             I : int
 
-                Number of levels of the MCDWT (temporal scales). Controls
+                Number of iterations of the MCDWT (temporal scales). Controls
                 the GOP size.
 
-                  T | GOP_size
-                ----+-----------
+                  I | GOP_size
+                ----+----------
                   0 |        1
                   1 |        2
                   2 |        4
@@ -105,21 +111,14 @@ class MCDWT:
                   5 |       32
                   : |        :
 
-             P : int
-
-                Predictor to use:
-
-                 1 --> Average Predictor.
-                 2 --> Weighted Average Predictor.
-
         Returns
         -------
 
-            None.
+            The output motion compensated decompositions.
 
         '''
         x = 2
-        for t in range(T): # Temporal scale
+        for t in range(I): # Temporal scale
             i = 0
             aL, aH = decomposition.read(prefix, "{:03d}".format(0))
             while i < (N//x):
@@ -131,9 +130,38 @@ class MCDWT:
                 i += 1
             x *= 2
 
-    def backward(self, prefix = "/tmp/", N=5, T=2):
-        x = 2**T
-        for t in range(T): # Temporal scale
+    def backward(self, prefix = "/tmp/", N=5, I=2):
+        '''Backward MCDWT.
+
+        Compute the inverse MC 1D-DWT. The input sequence of
+        1-iteration MC decompositions must be stored in disk in the
+        directory <prefix>, and the output (as a 1-iteration
+        decompositions) will generated in the same directory.
+
+        Input
+        -----
+
+            prefix : str
+
+                Localization of the input/output images. Example:
+                "/tmp/".
+
+             N : int
+
+                Number of decompositions to process.
+
+             I : int
+
+                Number of iterations of the MCDWT (temporal scales).
+
+        Returns
+        -------
+
+            The sequence of 1-iteration decompositions.
+
+        '''
+        x = 2**I
+        for t in range(I): # Temporal scale
             i = 0
             aL, aH = decomposition.read(prefix, "{:03d}".format(0))
             while i < (N//x):
@@ -154,7 +182,7 @@ if __name__ == "__main__":
 
 #        "  yes | cp -rf ../sequences/stockholm/ /tmp/\n"
     parser = argparse.ArgumentParser(
-        description = "Motion Compensated 2D Discrete Wavelet (color) Transform\n\n"
+        description = "Motion Compensated 2D Discrete Wavelet Transform\n\n"
         "Example:\n\n"
         "  yes | cp ../sequences/stockholm/* /tmp/\n"
         "  python3 -O MDWT.py     -p /tmp/\n"
@@ -166,7 +194,7 @@ if __name__ == "__main__":
     parser.add_argument("-b", "--backward", action='store_true', help="Performs backward transform")
     parser.add_argument("-p", "--prefix", help="Dir where the files the I/O files are placed", default="/tmp/")
     parser.add_argument("-N", help="Number of decompositions", default=5, type=int)
-    parser.add_argument("-T", help="Number of temporal levels", default=2, type=int)
+    parser.add_argument("-I", help="Number of temporal iterations", default=2, type=int)
     parser.add_argument("-P", help="Predictor to use (1=average, 2=weighted_average)", default=1, type=int)
 
     args = parser.parse_args()
@@ -183,7 +211,7 @@ if __name__ == "__main__":
         p = decomposition.readL(args.prefix, "000")
         d = MCDWT(p.shape)
 
-        d.backward(args.prefix, args.N, args.T)
+        d.backward(args.prefix, args.N, args.I)
     else:
         if __debug__:
             print("Forward transform")
@@ -191,4 +219,4 @@ if __name__ == "__main__":
         p = decomposition.readL(args.prefix, "000")
         d = MCDWT(p.shape)
 
-        p = d.forward(args.prefix, args.N, args.T)
+        p = d.forward(args.prefix, args.N, args.I)
