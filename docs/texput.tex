@@ -69,14 +69,14 @@ equivalence between DWT subbands and
 
 \subsection{Implementation of the 3 components (color) DWT step}
 \href{https://github.com/Sistemas-Multimedia/MCDWT/blob/master/src/DWT.py}{DWT.py}
-(see Fig.~\ref{fig:DWT}) implements the forward and backward
-1-iteration (step) 2D DWT for color images.
+(see Fig.~\ref{fig:DWT}) implements the forward (DWT) and backward
+1-iteration (step) 2D DWT (iDWT) for color images.
 
 \begin{figure}
-  \lstinputlisting[firstline=20, lastline=85, language=python, caption=Forward 1-iteration DWT
+  \lstinputlisting[firstline=20, lastline=85, language=python, caption=1-iteration DWT
     (\href{https://github.com/Sistemas-Multimedia/MCDWT/blob/master/src/DWT.py}{DWT.py}).]{../src/DWT.py}
   \lstinputlisting[firstline=87, lastline=108, language=python,
-    caption=Backward 1-iteration DWT
+    caption=1-iteration iDWT
     (\href{https://github.com/Sistemas-Multimedia/MCDWT/blob/master/src/DWT.py}{DWT.py}).]{../src/DWT.py}
   \caption{Implementation of the color DWT step (forward and
     backward). $L$ and $H$ stands for \emph{low-pass filtering} and
@@ -117,8 +117,7 @@ Y/4 |  L2  |
        X/4
 \end{verbatim}
 \item Subband $s_1.L^1=s_1.L=\text{iDWT}(s_1.L^2, S_1.H^2)$
-  ($\text{iDWT}=\text{inverse DWT}=\text{backward DWT}$) with the
-  scale $1$.
+  ($\text{iDWT}$) with the scale $1$.
 \begin{verbatim}
     +-------------+
     |             |
@@ -160,7 +159,7 @@ Y/2 |     L1      |
 rm /tmp/*.png
 cp ../sequences/stockholm/000.png /tmp
 
-# 1-iteration 2D forward DWT:
+# 1-iteration 2D DWT:
 python3 -O DWT.py -p /tmp/ -i 000
 
 # Visualize the subbands:
@@ -169,7 +168,7 @@ display -normalize /tmp/LH000.png # <- LH1
 display -normalize /tmp/HL000.png # <- HL1
 display -normalize /tmp/HH000.png # <- HH1
 
-# 1-iteration 2D backward DWT:
+# 1-iteration 2D iDWT:
 python3 -O DWT.py -b -p /tmp/ -i 000
 
 # Visualize the reconstruction:
@@ -235,10 +234,10 @@ $\{s_i.L^0\}=\{s_i\}$) of the image sequence.
 \begin{figure}
   \centering \myfig{graphics/forward_MDWT}{8cm}{800}
   \lstinputlisting[firstline=21, lastline=42, language=python,
-    caption=Forward MDWT
+    caption=MDWT
     (\href{https://github.com/Sistemas-Multimedia/MCDWT/blob/master/src/MDWT.py}{MDWT.py}).]{../src/MDWT.py}.
   \lstinputlisting[firstline=44, lastline=66, language=python,
-    caption=Backward MDWT
+    caption=iMDWT
     (\href{https://github.com/Sistemas-Multimedia/MCDWT/blob/master/src/MDWT.py}{MDWT.py}).]{../src/MDWT.py}.
   \caption{Implementation of the MDWT.} %
   \label{fig:forward_MDWT}
@@ -260,7 +259,7 @@ transformed independently.
 # Create the output directory for the 1st-level decompositions:
 yes | cp ../sequences/stockholm/*.png /tmp
 
-# 2D 1-iteration forward MDWT:
+# 2D 1-iteration MDWT:
 python3 -O MDWT.py -p /tmp/ -N 5
 
 # Visualize the subbands:
@@ -273,7 +272,7 @@ animate /tmp/HL*.norm
 for i in /tmp/HH00?.png; do convert -normalize $i $i.norm; done
 animate /tmp/HH*.norm
 
-# 2D 1-iteration backward MDWT:
+# 2D 1-iteration iMDWT:
 python3 -O MDWT.py -b -p /tmp/ -N 5
 
 # Visualization of the reconstruction:
@@ -288,12 +287,12 @@ for i in /tmp/00?.png; do convert -normalize $i $i.norm; done; animate /tmp/00?.
 # Create the output directory for the 1st-level decompositions:
 yes | cp ../sequences/stockholm/*.png /tmp
 
-# 2D 2-iterations forward MDWT:
+# 2D 2-iterations MDWT:
 python3 -O MDWT.py -p /tmp/ -N 5
 python3 -O MDWT.py -p /tmp/LL -N 5
 
 
-# 2D 2-iterations backward MDWT:
+# 2D 2-iterations iMDWT:
 python3 -O MDWT.py -b -p /tmp/LL -N 5
 python3 -O MDWT.py -b -p /tmp/ -N 5
 
@@ -424,7 +423,7 @@ we get $a$ (an
   high-freq. information of the neighbor images. In a normal B image,
   all the frequencies are compensated.}) and $c$ (another intra-coded
 ``I'' image). This replacement is fully reversible because the forward
-transform uses only the information that the backward transform will
+transform uses only the information that the inverse transform will
 have access to. Notice that the
 \href{http://www.vtvt.ece.vt.edu/research/references/video/DCT_Video_Compression/Zhang92a.pdf}{pyramid
   domain} (which is invariant to the pixels displacements) has been
@@ -433,10 +432,10 @@ used to estimate and compensate the $H$ subbands.
 \begin{figure}
   \centering \myfig{graphics/forward_butterfly}{12cm}{1200}
   \lstinputlisting[firstline=23, lastline=49, language=python,
-    caption={Forward MCDWT butterfly
+    caption={MCDWT butterfly
       (\href{https://github.com/Sistemas-Multimedia/MCDWT/blob/master/src/MCDWT.py}{MCDWT.py}).}]{../src/MCDWT.py}
   \lstinputlisting[firstline=51, lastline=77, language=python,
-    caption={Backward MCDWT butterfly
+    caption={Inverse MCDWT butterfly
       (\href{https://github.com/Sistemas-Multimedia/MCDWT/blob/master/src/MCDWT.py}{MCDWT.py}).}]{../src/MCDWT.py}
   \lstinputlisting[firstline=4, lastline=9, language=python,
     caption={Computation of the prediction
@@ -470,8 +469,8 @@ iteration.
 \begin{figure}
   \centering
   \myfig{graphics/temporal_decorrelation}{12cm}{1200}
-  \lstinputlisting[firstline=79, lastline=131, language=python, caption={Forward MCDWT (\href{https://github.com/Sistemas-Multimedia/MCDWT/blob/master/src/MCDWT.py}{MCDWT.py}).}]{../src/MCDWT.py}
-  \lstinputlisting[firstline=133, lastline=174, language=python, caption={Backward MCDWT (\href{https://github.com/Sistemas-Multimedia/MCDWT/blob/master/src/MCDWT.py}{MCDWT.py}).}]{../src/MCDWT.py}
+  \lstinputlisting[firstline=79, lastline=131, language=python, caption={MCDWT (\href{https://github.com/Sistemas-Multimedia/MCDWT/blob/master/src/MCDWT.py}{MCDWT.py}).}]{../src/MCDWT.py}
+  \lstinputlisting[firstline=133, lastline=174, language=python, caption={iMCDWT (\href{https://github.com/Sistemas-Multimedia/MCDWT/blob/master/src/MCDWT.py}{MCDWT.py}).}]{../src/MCDWT.py}
   \caption{Implementation of the MCDWT.}
   \label{fig:MCDWT}
 \end{figure}
@@ -492,7 +491,7 @@ motion compensated using the (1-iteration) MCDWT.
 
 yes | cp ../sequences/stockholm/*.png /tmp
 
-# 1D 1-levels forward MDWT:
+# 1D 1-iterations MDWT:
 python3 -O MDWT.py -p /tmp/
 
 # Show the length of the subbands
@@ -501,7 +500,7 @@ for i in /tmp/LH???.png; do ls -l $i; done
 for i in /tmp/HL???.png; do ls -l $i; done
 for i in /tmp/HH???.png; do ls -l $i; done
 
-# 1D 1-levels forward MCDWT:
+# 1D 1-iteration MCDWT:
 python3 -O MCDWT.py -p /tmp/ -I 1
 
 # Show the length of the subbands
@@ -515,10 +514,10 @@ for i in /tmp/HH???.png; do ls -l $i; done
 
 rm /tmp/00?.png
 
-# 1D 1-levels backward MCDWT:
+# 1D 1-iteration iMCDWT:
 python3 -O MCDWT.py -b -p /tmp/ -I 1
 
-# 1D 1-levels backward MDWT:
+# 1D 1-iteration iMDWT:
 python3 -O MDWT.py -b -p /tmp/
 
 # Visualization of the reconstruction:
@@ -575,6 +574,66 @@ for i in /tmp/HH00?.png; do convert -normalize $i $i.png; done; animate /tmp/HH0
 # The residues should have now less visual "information" than in the
 # previous visualization, when only the MDWT has been applied.
 \end{verbatim}
+
+\subsection*{Increasing the accuracy of the MC}
+The movement of the objects in the scene captured by a video is a
+continuous event. Conversely, the digital images taken from such
+objects are discrete in the time and the space domains. This means
+that, in general, two different positions of an object in two
+different images is not going to match with a distance that can be
+measured by an integer number of pixels. For example, lets suppose that the content of the image $s_0$ is:
+\begin{verbatim}
+  0   0   0 255   0   0   0
+  0   0   0 255   0   0   0
+  0   0   0 255   0   0   0
+  0   0   0 255   0   0   0
+  0   0   0 255   0   0   0
+  0   0   0 255   0   0   0
+\end{verbatim}
+and that the camera has moved, following a parallel movement to the
+surface of the object of 1/2 pixels. In this case, the image $s_1$
+taken from such object would be:
+\begin{verbatim}
+  0   0 128 128   0   0   0
+  0   0 128 128   0   0   0
+  0   0 128 128   0   0   0
+  0   0 128 128   0   0   0
+  0   0 128 128   0   0   0
+  0   0 128 128   0   0   0
+\end{verbatim}
+and it can be seen, it is difficult to determine that the object has
+been moved, because the values of the pixels have changed
+significantly. However, if we interpolate both images using the
+wavelet ``bior3.5'' of PyWavelets, we obtain for the first
+image\footnote{\texttt{pywt.idwt([0,0,0,255,0,0,0],None,'bior3.5',
+    'per')}}:
+\begin{verbatim}
+  0   0   0   0   0  45 135 135  45   0   0   0   0   0
+  0   0   0   0   0  45 135 135  45   0   0   0   0   0
+  0   0   0   0   0  45 135 135  45   0   0   0   0   0
+  0   0   0   0   0  45 135 135  45   0   0   0   0   0
+  0   0   0   0   0  45 135 135  45   0   0   0   0   0
+  0   0   0   0   0  45 135 135  45   0   0   0   0   0
+\end{verbatim}
+and for the second
+one\footnote{\texttt{pywt.idwt([0,0,128,128,0,0,0],None,'bior3.5',
+    'per')}}:
+\begin{verbatim}
+  0   0   0  23  68  91  91  68  23   0   0   0   0   0
+  0   0   0  23  68  91  91  68  23   0   0   0   0   0
+  0   0   0  23  68  91  91  68  23   0   0   0   0   0
+  0   0   0  23  68  91  91  68  23   0   0   0   0   0
+  0   0   0  23  68  91  91  68  23   0   0   0   0   0
+  0   0   0  23  68  91  91  68  23   0   0   0   0   0
+\end{verbatim}
+that is more suitable for determining the sub-pixel accuracy motion.
+
+So, to increase the accuracy of the MC step to 1/2 sub-pixel accuracy,
+we can interpolate\footnote{Considering the unkown high-frequency
+  information as zero.} all the subbands that are involved in the MC
+process by means of a 2-iterations iDWT, generating $[a.L]^2$,
+$[c.L]^2$, $[a.H]^2$, $[b.H]^2$ and $[c.H]^2$, and finally, using a
+2-iterations DWT, to obtain $\tilde{b}$.
 
 \subsection{Scalability provided by MCDWT}
 MCDWT preserves the dyadic spatial decomposition generated by MDWT,
@@ -675,10 +734,10 @@ $[\hat{b.H}]_{x,y}=\frac{[b_a.H]+[b_c.H]}{2}$ (even if both similarities are sma
 
 cp ../sequences/stockholm/*.png /tmp
 
-# 1D 1-levels forward MDWT:
+# 1D 1-iteration MDWT:
 python3 -O MDWT.py -p /tmp/
 
-# 1D 1-levels forward MCDWT:
+# 1D 1-iteration MCDWT:
 python3 -O MCDWT.py -p /tmp/
 
 # Let's clear the motion compensated subbands and reconstruct the sequence ...
@@ -698,10 +757,10 @@ yes | cp /tmp/zero16.png /tmp/LH003.png
 yes | cp /tmp/zero16.png /tmp/HL003.png
 yes | cp /tmp/zero16.png /tmp/HH003.png
 
-# 1D 1-levels backward MCDWT:
+# 1D 1-iteration iMCDWT:
 python3 -O MCDWT.py -b -p /tmp/
 
-# 1D 1-levels backward MDWT:
+# 1D 1-iteration iMDWT:
 python3 -O MDWT.py -b -p /tmp/
 
 # Visualization of the reconstruction:
