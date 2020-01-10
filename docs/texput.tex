@@ -717,6 +717,8 @@ improved prediction is defined as
 \begin{equation}
   [\hat{b.H}] = \frac{[b_a.H][s_a.L]+[s_c.L][b_c.H]}{[s_a.L]+[s_c.L]}.
 \end{equation}
+The Fig.~\ref{fig:weighted_average} shows an implementation of this
+equation.
 
 Notice that, if (for example) $[s_a.L]_{x,y}=1$ and
 $[s_c.L]_{x,y}\approx 0$, then
@@ -724,15 +726,19 @@ $[\hat{b.H}]_{x,y}\approx [b_a.H]_{x,y}$, and viceversa. If
 $[s_a.L]_{x,y}=[s_c.L]_{x,y}$, then
 $[\hat{b.H}]_{x,y}=\frac{[b_a.H]+[b_c.H]}{2}$ (even if both similarities are small).
 
-\lstinputlisting[firstline=4, lastline=15, language=python, caption={weighted\_average.py (extract)}]{../src/weighted_average.py}
-
+\begin{figure}
+  \centering \lstinputlisting[firstline=4, lastline=15,
+    language=python, caption={\href{https://github.com/Sistemas-Multimedia/MCDWT/blob/master/src/weighted_average.py}{weighted\_average.py}.}]{../src/weighted_average.py}
+  \caption{Computation of the weighted average prediction.}
+  \label{fig:weighted_average}
+\end{figure}
 %}}}
 
 \subsection{Filtering the MC subbands}
 \begin{verbatim}
 # You must be in the 'src' directory.
 
-cp ../sequences/stockholm/*.png /tmp
+yes | cp ../sequences/stockholm/*.png /tmp
 
 # 1D 1-iteration MDWT:
 python3 -O MDWT.py -p /tmp/
