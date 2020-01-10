@@ -381,7 +381,7 @@ it or at least, predict it. This is possible because to estimate de
 motion at the encoder, only the information that it is accesible by
 the decoder is used.
 
-\subsection{The MCDWT butterfly}
+\subsection{The butterfly}
 MCDWT butterly inputs three decompositions $a=\{a.L, a.H\}$, $b=\{b.L,
 b.H\}$ and $c=\{c.L, c.H\}$, and outputs a residue subband
 $\tilde{b}.H$, which replaces to $b.H$ in the original $b$
@@ -432,7 +432,7 @@ mappings $[a.L]\rightarrow [b.L]$ and $[c.L]\rightarrow [b.L]$.
 %\end{figure}
 %\subsection{Forward and backward (inverse) transform}
 
-\subsection{The forward MCDWT}
+\subsection{The transform}
 The $I$-iterations MCDWT is the result of applying the MCDWT butterfly
 to all the images of $I+1$ different temporal scales (see
 Fig.~\ref{fig:MCDWT}). These scales are defined by the images with
@@ -499,9 +499,9 @@ for i in /tmp/???.png; do python3 ../tools/substract_offset.py -i $i -o $i.png; 
 
 \subsection*{2-iterations MCDWT example}
 This example is similar to the previous, but now the number of
-iterations of MCDWT is $I=2$. This second iteration compensates also
-the $H$ subband of the image 2. This example matches exactly with the
-described in the Fig~\ref{fig:MCDWT}.
+iterations of MCDWT is $I=2$. Now, the second iteration of MCDWT
+compensates also the $H$ subband of the image 2. This example matches
+exactly with the described in the Fig~\ref{fig:MCDWT}.
 
 \begin{verbatim}
 # You must be in the 'src' directory.
@@ -519,6 +519,15 @@ python3 ../tools/show_statistics.py -i /tmp/LH002.png
 python3 ../tools/show_statistics.py -i /tmp/HL002.png
 python3 ../tools/show_statistics.py -i /tmp/HH002.png
 
+# Save a copy
+mkdir /tmp/tmp
+cp /tmp/*.png /tmp/tmp
+
+# Visualization of the H-subbands
+for i in /tmp/tmp/LH00?.png; do convert -normalize $i $i.png; done; animate /tmp/tmp/LH00?.png.png
+for i in /tmp/tmp/HL00?.png; do convert -normalize $i $i.png; done; animate /tmp/tmp/HL00?.png.png
+for i in /tmp/tmp/HH00?.png; do convert -normalize $i $i.png; done; animate /tmp/tmp/HH00?.png.png 
+
 # 2-iterations MCDWT
 python3 -O MCDWT.py -I 2 -p /tmp/
 
@@ -534,6 +543,9 @@ python3 ../tools/show_statistics.py -i /tmp/HH002.png
 for i in /tmp/LH00?.png; do convert -normalize $i $i.png; done; animate /tmp/LH00?.png.png
 for i in /tmp/HL00?.png; do convert -normalize $i $i.png; done; animate /tmp/HL00?.png.png
 for i in /tmp/HH00?.png; do convert -normalize $i $i.png; done; animate /tmp/HH00?.png.png
+
+# The residues should have now less visual "information" than in the
+# previous visualization, when only the MDWT has been applied.
 \end{verbatim}
 
 \subsection{Scalability provided by MCDWT}
@@ -572,6 +584,62 @@ GOP 0            GOP 1
 
 %Spatial dyadic multiresolution can be obtained by appliying a sequence
 %of MDWT+MCDWT steps (see Fig.~\ref{fig:multiresolution}).
+
+\section{Adaptive motion compensation based on the distortion of the prediction error}
+%{{{
+
+As can be seen in the MCDWT bufferfly (see
+Fig.~\ref{fig:forward_butterflies}), both predictions $[b_a.H]$ and
+$[b_c.H]$ have the same weight to build the prediction
+\begin{equation}
+  [\hat{b.H}] = \frac{[b_a.H] + [b_c.H]}{2}.
+\end{equation}
+This simple computation, that can have very effective for example in
+\href{https://biteable.com/blog/tips/video-transitions-effects-examples/}{dissolves}
+video transitions, can also be counterproductive when objects appear
+only in one of the reference images. For this reason, in this section
+a different predictor is proposed, based on the prediction error
+generated during the ME process.
+
+Let $[b_a.L]$ the prediction generated for the subband $[b.L]$ using
+$[a.L]$ as reference and $[a.L]\rightarrow [b.L]$ as motion, and let
+$[b_c.L]$ the prediction generated for $[b.L]$ using $[c.L]$ as
+reference and $[c.L]\rightarrow [b.L]$ as motion. We now compute the
+prediction errors
+\begin{equation}
+  \begin{array}{l}
+    {[e_a.L]} = [b.L] - [b_a.L]\\
+    {[e_c.L]} = [b.L] - [b_c.L].
+  \end{array}
+\end{equation}
+
+Now, we define the similarity matrices as
+\begin{equation}
+  \begin{array}{l}
+    {[s_a.L]} = \frac{1}{1+{|[e_a.L]|}}\\
+    {[s_c.L]} = \frac{1}{1+{|[e_c.L]|}}.    
+  \end{array}
+  \label{eq:weighted_prediction}
+\end{equation}
+Notice that, if (for example) the error $[e_a.L]_{x,y}=0$, the
+similarity is $[s_a.L]_{x,y}=1$ (the maximum similarity), and if the
+error is high, the similarity tends to be $0$.
+
+With this information, that can be recovered by the decoder, the
+improved prediction is defined as
+\begin{equation}
+  [\hat{b.H}] = \frac{[b_a.H][s_a.L]+[s_c.L][b_c.H]}{[s_a.L]+[s_c.L]}.
+\end{equation}
+
+Notice that, if (for example) $[s_a.L]_{x,y}=1$ and
+$[s_c.L]_{x,y}\approx 0$, then
+$[\hat{b.H}]_{x,y}\approx [b_a.H]_{x,y}$, and viceversa. If
+$[s_a.L]_{x,y}=[s_c.L]_{x,y}$, then
+$[\hat{b.H}]_{x,y}=\frac{[b_a.H]+[b_c.H]}{2}$ (even if both similarities are small).
+
+\lstinputlisting[firstline=4, lastline=15, language=python, caption={weighted\_average.py (extract)}]{../src/weighted_average.py}
+
+%}}}
 
 \subsection{Filtering the MC subbands}
 \begin{verbatim}
@@ -637,61 +705,6 @@ for i in /tmp/00?.png; do python ../tools/substract_offset.py -i $i -o $i.png; d
 
 %}}}
 
-\section{Adaptive motion compensation based on the distortion of the prediction error}
-%{{{
-
-As can be seen in the MCDWT bufferfly (see
-Fig.~\ref{fig:forward_butterflies}), both predictions $[b_a.H]$ and
-$[b_c.H]$ have the same weight to build the prediction
-\begin{equation}
-  [\hat{b.H}] = \frac{[b_a.H] + [b_c.H]}{2}.
-\end{equation}
-This simple computation, that can have very effective for example in
-\href{https://biteable.com/blog/tips/video-transitions-effects-examples/}{dissolves}
-video transitions, can also be counterproductive when objects appear
-only in one of the reference images. For this reason, in this section
-a different predictor is proposed, based on the prediction error
-generated during the ME process.
-
-Let $[b_a.L]$ the prediction generated for the subband $[b.L]$ using
-$[a.L]$ as reference and $[a.L]\rightarrow [b.L]$ as motion, and let
-$[b_c.L]$ the prediction generated for $[b.L]$ using $[c.L]$ as
-reference and $[c.L]\rightarrow [b.L]$ as motion. We now compute the
-prediction errors
-\begin{equation}
-  \begin{array}{l}
-    {[e_a.L]} = [b.L] - [b_a.L]\\
-    {[e_c.L]} = [b.L] - [b_c.L].
-  \end{array}
-\end{equation}
-
-Now, we define the similarity matrices as
-\begin{equation}
-  \begin{array}{l}
-    {[s_a.L]} = \frac{1}{1+{|[e_a.L]|}}\\
-    {[s_c.L]} = \frac{1}{1+{|[e_c.L]|}}.    
-  \end{array}
-  \label{eq:weighted_prediction}
-\end{equation}
-Notice that, if (for example) the error $[e_a.L]_{x,y}=0$, the
-similarity is $[s_a.L]_{x,y}=1$ (the maximum similarity), and if the
-error is high, the similarity tends to be $0$.
-
-With this information, that can be recovered by the decoder, the
-improved prediction is defined as
-\begin{equation}
-  [\hat{b.H}] = \frac{[b_a.H][s_a.L]+[s_c.L][b_c.H]}{[s_a.L]+[s_c.L]}.
-\end{equation}
-
-Notice that, if (for example) $[s_a.L]_{x,y}=1$ and
-$[s_c.L]_{x,y}\approx 0$, then
-$[\hat{b.H}]_{x,y}\approx [b_a.H]_{x,y}$, and viceversa. If
-$[s_a.L]_{x,y}=[s_c.L]_{x,y}$, then
-$[\hat{b.H}]_{x,y}=\frac{[b_a.H]+[b_c.H]}{2}$ (even if both similarities are small).
-
-\lstinputlisting[firstline=4, lastline=15, language=python, caption={weighted\_average.py (extract)}]{../src/weighted_average.py}
-
-%}}}
 
 \section{Orthogonal, orthonormal, and biorthogonal transforms}
 %{{{
