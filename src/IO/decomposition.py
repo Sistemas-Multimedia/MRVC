@@ -1,105 +1,136 @@
 import cv2
 import numpy as np
-import os
 if __debug__:
     import time
 
 class InputFileException(Exception):
     pass
 
-def normalize(x):
-    return ((x - np.amin(x)) / (np.amax(x) - np.amin(x)))
+if __debug__:
+    def normalize(x):
+        return ((x - np.amin(x)) / (np.amax(x) - np.amin(x)))
 
 def readL(prefix = "/tmp/", index = "000"):
-    '''Read a 3-components LL-subband from disk. Each component stores
-       integers between [0, 65535].
+    '''Read a 3-components LL-subband from disk. Each coefficient is an
+    integer between [0, 65535] in disk.
 
     Parameters
     ----------
 
-        file_name : str.
+        prefix : str.
 
-            Path to the LL-subband in the file system, without extension.
+            Path to the LL-subband in the file system, without
+            extension.
 
     Returns
     -------
 
         [:,:,:].
 
-            A color image, where each component is in the range [-32768, 32767].
+            A color subband, where each coefficient is in the range
+            [-32768, 32767].
 
     '''
     fn = prefix + "LL" + index + ".png"
     LL = cv2.imread(fn, -1)
     if LL is None:
-        raise InputFileException('IO::decomposition:readL: {} not found'.format(fn))
+        #raise InputFileException('IO::decomposition:readL: {} not found'.format(fn))
+        print("IO::decomposition::readL: warning: subband {} does not exist".format(fn))
     else:
         if __debug__:
             print("IO::decomposition:readL: read {}".format(fn))
-    LL = LL.astype(np.float32)
-    LL -= 32768.0
-    LL = LL.astype(np.int16)
 
-    if __debug__:
-        cv2.imshow("IO::decomposition:readL: LL subband", normalize(LL))
+        LL = LL.astype(np.float32)
+        LL -= 32768.0
+        LL = LL.astype(np.int16)
 
-    if __debug__:
-        while cv2.waitKey(1) & 0xFF != ord('q'):
-            time.sleep(0.1)
+        if __debug__:
+            cv2.imshow("IO::decomposition:readL: LL subband", normalize(LL))
+
+        if __debug__:
+            while cv2.waitKey(1) & 0xFF != ord('q'):
+                time.sleep(0.1)
 
     return LL
 
 def readH(prefix = "/tmp/", index = "000"):
+    '''Read a 3-components H-subbands (LH, HL and HH) from disk. Each
+    coefficient is an integer between [0, 65535] in disk.
+
+    Parameters
+    ----------
+
+        prefix : str.
+
+            Path to the H-subbands in the file system, without
+            extension.
+
+    Returns
+    -------
+
+        ([:,:,:], [:,:,:], [:,:,:]).
+
+            A tuple of color subbands, where each coefficient is in
+            the range [-32768, 32767].
+
+    '''
     fn = prefix + "LH" + index + ".png"
     LH = cv2.imread(fn, -1)
     if LH is None:
-        raise InputFileException('IO::decomposition:readH: {} not found'.format(fn))
+        #raise InputFileException('IO::decomposition:readH: {} not found'.format(fn))
+        print("IO::decomposition::readH: warning: subband {} does not exist".format(fn))
     else:
         if __debug__:
             print("IO::decomposition:readH: read {}".format(fn))
-    LH = LH.astype(np.float32)
-    LH -= 32768.0
-    LH = LH.astype(np.int16)
 
-    if __debug__:
-        cv2.imshow("IO::decomposition:readH: LH subband", normalize(LH))
+        LH = LH.astype(np.float32)
+        LH -= 32768.0
+        LH = LH.astype(np.int16)
+
+        if __debug__:
+            cv2.imshow("IO::decomposition:readH: LH subband", normalize(LH))
 
     fn = prefix + "HL" + index + ".png"
     HL = cv2.imread(fn, -1)
     if HL is None:
-        raise InputFileException('IO::decomposition:readH: {} not found'.format(fn))
+        #raise InputFileException('IO::decomposition:readH: {} not found'.format(fn))
+        print("IO::decomposition::readH: warning: subband {} does not exist".format(fn))
     else:
         if __debug__:
             print("IO::decomposition:readH: read {}".format(fn))
-    HL = HL.astype(np.float32)
-    HL -= 32768.0
-    HL = HL.astype(np.int16)
 
-    if __debug__:
-        cv2.imshow("IO::decomposition:readH: HL subband", normalize(HL))
+        HL = HL.astype(np.float32)
+        HL -= 32768.0
+        HL = HL.astype(np.int16)
+
+        if __debug__:
+            cv2.imshow("IO::decomposition:readH: HL subband", normalize(HL))
 
     fn = prefix + "HH" + index + ".png"
     HH = cv2.imread(fn, -1)
     if HH is None:
-        raise InputFileException('IO::decomposition:readH: {} not found'.format(fn))
+        #raise InputFileException('IO::decomposition:readH: {} not found'.format(fn))
+        print("IO::decomposition::readH: warning: subband {} does not exist".format(fn))
     else:
         if __debug__:
             print("IO::decomposition:readH: read {}".format(fn))
-    HH = HH.astype(np.float32)
-    HH -= 32768.0
-    HH = HH.astype(np.int16)
 
-    if __debug__:
-        cv2.imshow("IO::decomposition:readH: HH subband", normalize(HH))
+        HH = HH.astype(np.float32)
+        HH -= 32768.0
+        HH = HH.astype(np.int16)
 
-    if __debug__:
-        while cv2.waitKey(1) & 0xFF != ord('q'):
-            time.sleep(0.1)
+        if __debug__:
+            cv2.imshow("IO::decomposition:readH: HH subband", normalize(HH))
+
+        if __debug__:
+            while cv2.waitKey(1) & 0xFF != ord('q'):
+                time.sleep(0.1)
 
     return LH, HL, HH
 
 def read(prefix = "/tmp/", index = "000"):
-    '''Read a decomposition from disk. The coefficients must be in the range [0, 65535].
+    '''Read a decomposition from disk. The coefficients must be in the
+    range [0, 65535].
 
     Parameters
     ----------
