@@ -213,6 +213,8 @@ if __name__ == "__main__":
         import left_MC_prediction as predictor
     if args.predictor == 6:
         import right_MC_prediction as predictor
+    if args.predictor == 7:
+        import offset_prediction as predictor
 
     if args.backward:
         if __debug__:
