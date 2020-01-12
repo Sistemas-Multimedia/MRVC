@@ -152,6 +152,28 @@ def read(prefix = "/tmp/", index = "000"):
 
     LL = readL(prefix, index)
     LH, HL, HH = readH(prefix, index)
+
+    try:
+        if LL==None:
+            LL = np.zeros(LH.shape, np.float64)
+    except ValueError:
+        pass
+    try:
+        if LH==None:
+            LH = np.zeros(LL.shape, np.float64)
+    except ValueError:
+        pass
+    try:
+        if HL==None:
+            HL = np.zeros(LL.shape, np.float64)
+    except ValueError:
+        pass
+    try:
+        if HH==None:
+            HH = np.zeros(LL.shape, np.float64)
+    except ValueError:
+        pass
+
     return (LL, (LH, HL, HH))
 
 def writeL(LL, prefix = "/tmp/", index = "000"):

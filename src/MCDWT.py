@@ -98,8 +98,8 @@ class MCDWT:
 
              I : int
 
-                Number of iterations of the MCDWT (temporal scales). Controls
-                the GOP size.
+                Number of iterations of the MCDWT (temporal scales).
+                Controls the GOP size.
 
                   I | GOP_size
                 ----+----------
@@ -193,16 +193,26 @@ if __name__ == "__main__":
 
     parser.add_argument("-b", "--backward", action='store_true', help="Performs backward transform")
     parser.add_argument("-p", "--prefix", help="Dir where the files the I/O files are placed", default="/tmp/")
-    parser.add_argument("-N", help="Number of decompositions", default=5, type=int)
-    parser.add_argument("-I", help="Number of temporal iterations", default=2, type=int)
-    parser.add_argument("-P", help="Predictor to use (1=average, 2=weighted_average)", default=1, type=int)
+    parser.add_argument("-N", "--decompositions", help="Number of input decompositions", default=5, type=int)
+    parser.add_argument("-I", "--iterations", help="Number of temporal iterations", default=2, type=int)
+    parser.add_argument("-P", "--predictor", help="Predictor to use (0=none, 1=average, 2=weighted average, 3=left)", default=1, type=int)
 
     args = parser.parse_args()
 
-    if args.P == 1:
+    if args.predictor == 0:
+        import no_prediction as predictor
+    if args.predictor == 1:
         import simple_average as predictor
-    else:
+    if args.predictor == 2:
         import weighted_average as predictor
+    if args.predictor == 3:
+        import left_prediction as predictor
+    if args.predictor == 4:
+        import right_prediction as predictor
+    if args.predictor == 5:
+        import left_MC_prediction as predictor
+    if args.predictor == 6:
+        import right_MC_prediction as predictor
 
     if args.backward:
         if __debug__:
@@ -211,7 +221,7 @@ if __name__ == "__main__":
         p = decomposition.readL(args.prefix, "000")
         d = MCDWT(p.shape)
 
-        d.backward(args.prefix, args.N, args.I)
+        d.backward(args.prefix, args.decompositions, args.iterations)
     else:
         if __debug__:
             print("Forward transform")
@@ -219,4 +229,4 @@ if __name__ == "__main__":
         p = decomposition.readL(args.prefix, "000")
         d = MCDWT(p.shape)
 
-        p = d.forward(args.prefix, args.N, args.I)
+        p = d.forward(args.prefix, args.decompositions, args.iterations)

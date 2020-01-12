@@ -14,8 +14,8 @@ parser = argparse.ArgumentParser(description = "Displays information about an im
                                  formatter_class=CustomFormatter)
 
 parser.add_argument("-i", "--image", help="Input image", default="/tmp/stockholm/000.png")
-parser.add_argument("-o", "--offset", type=int, help="Offset", default=32768)
-parser.add_argument("-r", "--range", type=int, help="Range of max and min shown values", default=5)
+parser.add_argument("-o", "--offset", type=int, help="Offset used for representing the true values", default=32768)
+#parser.add_argument("-r", "--range", type=int, help="Range of max and min shown values", default=5)
 
 args = parser.parse_args()
 

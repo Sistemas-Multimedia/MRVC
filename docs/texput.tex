@@ -151,7 +151,9 @@ Y/2 |     L1      |
 \end{verbatim}
 \end{itemize}
 
-\subsection*{A 1-iteration 2D DWT example}
+\subsection*{Example: A 1-iteration 2D DWT}
+An image is transformed, generating four subbands $LL$, $LH$, $HL$ and
+$HH$.
 \begin{verbatim}
 # You must be in the 'src' directory.
 
@@ -179,7 +181,7 @@ display -normalize /tmp/000.png
 display -normalize /tmp/diffs.png
 \end{verbatim}
 
-\subsection*{A 2-iterations 2D DWT example}
+\subsection*{Example: A 2-iterations 2D DWT}
 \begin{verbatim}
 # You must be in the 'src' directory.
 
@@ -252,7 +254,7 @@ that MDWT provides \emph{fully} temporal scalability (we can access to
 the images randomly) because each image of the input sequence is
 transformed independently.
 
-\subsection*{1-iteration MDWT example}
+\subsection*{Example: 1-iteration MDWT}
 \begin{verbatim}
 # You must be in the 'src' directory.
 
@@ -280,7 +282,7 @@ rm /tmp/*.norm
 for i in /tmp/00?.png; do convert -normalize $i $i.norm; done; animate /tmp/00?.png.norm
 \end{verbatim}
 
-\subsection*{2-iterations MDWT example}
+\subsection*{Example: 2-iterations MDWT}
 \begin{verbatim}
 # You must be in the 'src' directory.
 
@@ -303,7 +305,7 @@ for i in /tmp/00?.png; do convert -normalize $i $i.norm; done; animate /tmp/00?.
 
 %}}}
 
-\subsection*{Interpolating with the 2D DWT}
+\subsection*{Example: Interpolating with the 2D DWT}
 If we apply an inversr 
 \begin{verbatim}
 # You must be in the 'src' directory.
@@ -316,12 +318,12 @@ for i in {0..4}; do
 done
 
 # Create the H subbands as zero images:
-for i in {0..4}; do
-  image_number=$(printf "%03d" $i)
-  bash ../tools/create_black_image.sh -w 1280 -h 768 -o /tmp/LH$image_number.png
-  bash ../tools/create_black_image.sh -w 1280 -h 768 -o /tmp/HL$image_number.png
-  bash ../tools/create_black_image.sh -w 1280 -h 768 -o /tmp/HH$image_number.png
-done
+#for i in {0..4}; do
+#  image_number=$(printf "%03d" $i)
+#  bash ../tools/create_black_image.sh -w 1280 -h 768 -o /tmp/LH$image_number.png
+#  bash ../tools/create_black_image.sh -w 1280 -h 768 -o /tmp/HL$image_number.png
+#  bash ../tools/create_black_image.sh -w 1280 -h 768 -o /tmp/HH$image_number.png
+#done
 
 # Apply the inverse DWT:
 python3 -O MDWT.py -b -p /tmp/ -N 5
@@ -480,7 +482,7 @@ images/decompositions in the GOP, i.e., the GOP size), except for the
 first and the last image of the sequence, all the $H$-subbands are
 temporally decorrelated.
 
-\subsection*{1-iteration MCDWT example}
+\subsection*{Example: 1-iteration MCDWT}
 In this example, a sequence of five images is transformed first with
 the (1-iteration) MDWT, producing 2 spatial resolution levels by
 image. Next, the $H$ subbands of the odd images (images 1 and 3) are
@@ -522,13 +524,17 @@ python3 -O MDWT.py -b -p /tmp/
 
 # Visualization of the reconstruction:
 for i in /tmp/???.png; do python3 ../tools/substract_offset.py -i $i -o $i.png; done; animate /tmp/???.png.png
+
+# Note: Substracting the offset 32768 to reconstructed images is more
+# suitable than normalize them because the dynamic range is conserved.
 \end{verbatim}
 
-\subsection*{2-iterations MCDWT example}
+\subsection*{Example: 2-iterations MCDWT}
 This example is similar to the previous, but now the number of
 iterations of MCDWT is $I=2$. Now, the second iteration of MCDWT
 compensates also the $H$ subband of the image 2. This example matches
-exactly with the described in the Fig~\ref{fig:MCDWT}.
+exactly with the described in the Fig~\ref{fig:MCDWT}. Notice that the
+GOP size is $4$ and the number of spatial resolution levels is $2$.
 
 \begin{verbatim}
 # You must be in the 'src' directory.
@@ -575,7 +581,33 @@ for i in /tmp/HH00?.png; do convert -normalize $i $i.png; done; animate /tmp/HH0
 # previous visualization, when only the MDWT has been applied.
 \end{verbatim}
 
-\subsection*{Increasing the accuracy of the MC}
+\subsection*{Example: 3-iterations MDWT+MCDWT}
+GOP size is $4$. $4$ are the spatial resolution levels.
+\begin{verbatim}
+# You must be in the 'src' directory.
+
+yes | cp ../sequences/stockholm/* /tmp
+predictor=5
+python3 -O MDWT.py  -p /tmp/
+python3 -O MCDWT.py -p /tmp/     -P $predictor
+python3 -O MDWT.py  -p /tmp/LL
+python3 -O MCDWT.py -p /tmp/LL   -P $predictor
+python3 -O MDWT.py  -p /tmp/LLLL
+python3 -O MCDWT.py -p /tmp/LLLL -P $predictor
+
+rm /tmp/00?.png
+
+python3 -O MCDWT.py -p /tmp/LLLL -P $predictor -b
+python3 -O MDWT.py  -p /tmp/LLLL               -b
+python3 -O MCDWT.py -p /tmp/LL   -P $predictor -b
+python3 -O MDWT.py  -p /tmp/LL                 -b
+python3 -O MCDWT.py -p /tmp/     -P $predictor -b
+python3 -O MDWT.py  -p /tmp/                   -b
+
+for i in /tmp/00?.png; do python ../tools/substract_offset.py -i $i -o $i.png; done; animate /tmp/00?.png.png
+\end{verbatim}
+
+\subsection{Accuracy of the MC (TO BE IMPLEMENTED)}
 The movement of the objects in the scene captured by a video is a
 continuous event. Conversely, the digital images taken from such
 objects are discrete in the time and the space domains. This means
@@ -628,12 +660,12 @@ one\footnote{\texttt{pywt.idwt([0,0,128,128,0,0,0],None,'bior3.5',
 \end{verbatim}
 that is more suitable for determining the sub-pixel accuracy motion.
 
-So, to increase the accuracy of the MC step to 1/2 sub-pixel accuracy,
-we can interpolate\footnote{Considering the unkown high-frequency
-  information as zero.} all the subbands that are involved in the MC
-process by means of a 2-iterations iDWT, generating $[a.L]^2$,
-$[c.L]^2$, $[a.H]^2$, $[b.H]^2$ and $[c.H]^2$, and finally, using a
-2-iterations DWT, to obtain $\tilde{b}$.
+So, to increase the accuracy of the MC step to 1/2 sub-pixel accuracy
+(for example), we can interpolate\footnote{Considering the unkown
+  high-frequency information as zero.} all the subbands that are
+involved in the MC process by means of a 2-iterations iDWT, generating
+$[a.L]^2$, $[c.L]^2$, $[a.H]^2$, $[b.H]^2$ and $[c.H]^2$, and finally,
+using a 2-iterations DWT, to obtain $\tilde{b}$.
 
 \subsection{Scalability provided by MCDWT}
 MCDWT preserves the dyadic spatial decomposition generated by MDWT,
@@ -734,7 +766,7 @@ $[\hat{b.H}]_{x,y}=\frac{[b_a.H]+[b_c.H]}{2}$ (even if both similarities are sma
 \end{figure}
 %}}}
 
-\subsection{Filtering the MC subbands}
+\subsection*{Example: Filtering the MC subbands}
 \begin{verbatim}
 # You must be in the 'src' directory.
 
@@ -749,19 +781,29 @@ python3 -O MCDWT.py -p /tmp/
 # Let's clear the motion compensated subbands and reconstruct the sequence ...
 
 # Create a zero subband:
-bash ../tools/create_black_image.sh; python ../tools/add_offset.py -i /tmp/zero.png -o /tmp/zero16.png -f 32768
-python3 ../tools/show_statistics.py -i /tmp/zero16.png
+#bash ../tools/create_black_image.sh; python ../tools/add_offset.py -i /tmp/zero.png -o /tmp/zero16.png -f 32768
+#python3 ../tools/show_statistics.py -i /tmp/zero16.png
 
 # "Delete" the motion compensated subbands:
-yes | cp /tmp/zero16.png /tmp/LH001.png
-yes | cp /tmp/zero16.png /tmp/HL001.png
-yes | cp /tmp/zero16.png /tmp/HH001.png
-yes | cp /tmp/zero16.png /tmp/LH002.png
-yes | cp /tmp/zero16.png /tmp/HL002.png
-yes | cp /tmp/zero16.png /tmp/HH002.png
-yes | cp /tmp/zero16.png /tmp/LH003.png
-yes | cp /tmp/zero16.png /tmp/HL003.png
-yes | cp /tmp/zero16.png /tmp/HH003.png
+#yes | cp /tmp/zero16.png /tmp/LH001.png
+#yes | cp /tmp/zero16.png /tmp/HL001.png
+#yes | cp /tmp/zero16.png /tmp/HH001.png
+#yes | cp /tmp/zero16.png /tmp/LH002.png
+#yes | cp /tmp/zero16.png /tmp/HL002.png
+#yes | cp /tmp/zero16.png /tmp/HH002.png
+#yes | cp /tmp/zero16.png /tmp/LH003.png
+#yes | cp /tmp/zero16.png /tmp/HL003.png
+#yes | cp /tmp/zero16.png /tmp/HH003.png
+
+yes | rm /tmp/LH001.png
+yes | rm /tmp/HL001.png
+yes | rm /tmp/HH001.png
+yes | rm /tmp/LH002.png
+yes | rm /tmp/HL002.png
+yes | rm /tmp/HH002.png
+yes | rm /tmp/LH003.png
+yes | rm /tmp/HL003.png
+yes | rm /tmp/HH003.png
 
 # 1D 1-iteration iMCDWT:
 python3 -O MCDWT.py -b -p /tmp/
@@ -775,117 +817,6 @@ for i in /tmp/00?.png; do python ../tools/substract_offset.py -i $i -o $i.png; d
 # Visualization of the differences with the original sequence:
 rm -f /tmp/diff*.png; for i in {0..4}; do ii=$(printf "%03d" $i); bash ../tools/show_differences.sh -1 /tmp/$ii.png -2 ../sequences/stockholm/$ii.png -o /tmp/diff_$ii.png; done; animate /tmp/diff*.png
 \end{verbatim}
-
-\subsection{2D-MDWT-MCDWT 2-levels example}
-\begin{verbatim}
-# You must be in the 'src' directory.
-
-yes | cp ../sequences/stockholm/* /tmp
-python3 -O MDWT.py -p /tmp/
-python3 -O MCDWT.py -p /tmp/
-python3 -O MDWT.py -p /tmp/LL
-python3 -O MCDWT.py -p /tmp/LL
-
-rm /tmp/00?.png
-
-python3 -O MCDWT.py -p /tmp/LL -b
-python3 -O MDWT.py -p /tmp/LL -b
-python3 -O MCDWT.py -p /tmp/ -b
-python3 -O MDWT.py -p /tmp/ -b
-
-for i in /tmp/00?.png; do python ../tools/substract_offset.py -i $i -o $i.png; done; animate /tmp/00?.png.png
-\end{verbatim}
-
-%}}}
-
-
-\section{Orthogonal, orthonormal, and biorthogonal transforms}
-%{{{
-
-In signal processing\footnote{In mathemathics the definition of
-  orthogonality refers to characteristics such as the basis of the
-  transform forms an orthogonal espace, where it is impossible to
-  represent one of the basis as a linear combination of the rest of
-  basis (or in other words, if the inner product is zero).}, a
-transform (such as the
-\href{https://en.wikipedia.org/wiki/Discrete_cosine_transform}{Discrete
-  Cosine Transform}, the
-\href{https://en.wikipedia.org/wiki/Hadamard_transform}{Walsh-Hadamard
-  Transform} or the
-\href{https://en.wikipedia.org/wiki/Karhunen%E2%80%93Lo%C3%A8ve_theorem}{Karhunen-Loève
-  Transform}) is orthogonal when the coefficients generated by the
-transform are uncorrelated (there is no way to infer one coefficient
-from another).
-
-If the \href{https://en.wikipedia.org/wiki/Norm_(mathematics)}{norm}
-of all the basis of an orthogonal transform is one, then the transform
-is said
-\href{https://en.wikipedia.org/wiki/Orthonormal_basis}{orthonormal}. Orthonormal
-transforms are interesting because of their:
-\begin{enumerate}
-\item
-  \textbf{\href{https://en.wikipedia.org/wiki/Energy_(signal_processing)}{Energy}
-    preservation}: The energy of the output is the same than the
-  energy of the input. This means that, for example, a quantization
-  error produced in a coefficient of the transform will generate the
-  same quantization error at the output (the complete signal) of the
-  inverse transform. The same holds by the forward transform.
-\item \textbf{Implementation}: The transform matrix of the
-  inverse transform is the transpose of the forward transform. In
-  orthogonal transforms, the transform matrix of the inverse transform
-  is the inverse of the transform matrix of the forward transform.
-\end{enumerate}
-
-Biorthogonal transforms (and in particular,
-\href{https://en.wikipedia.org/wiki/Biorthogonal_wavelet}{biorthogonal
-  wavelets}) do no satisfy any of these features: they are not energy
-preserving (this can be also observed because the frequency-domain
-responses of the analysis and synthesis filters are not symmetric),
-and there is not an algebraic way (matrix transposition/inversion) to
-compute the backward transform from the forward one, and
-viceversa. This, that can be considered as a drawback, gives an extra
-degree of freedom to design the analysis and the synthesis filters
-(whose only requirement is that transform pair to be reversible),
-providing in general the possibility of using more sofisticated
-filters such as those based on non-linear filtering, as for example,
-those that use motion estimation algorithms.
-
-In general, each subband $b$ of a decomposition generated by a
-biorthogonal 2D-DWT transform have a different subband gain
-$\alpha_b$. Usually, the lower the frequency of the subband, the
-higher the gain. Notice also, that these gains also are different for
-each transform.
-
-Subband gains are important in lossy signal compression because they
-quantify the relative importance of the wavelet coefficients of the
-different subbands when we introduce distortion in the wavelet
-domain. Thus, for example, if we decide to quantize a wavelet
-coefficient, the amount of distortion that we are generating in the
-signal domain will depend on the subband where that coefficient is
-localized. In general, low-frequency coefficients are more
-``important'' that high-frequency ones.
-
-To compute the subband gains we have two options:
-\begin{enumerate}
-\item The algebraic way. We will need the expressions of the four
-  filters (two anaylsis filters and two synthesis filters) and deduce
-  the gains.
-\item The algorithmic way. We will need to compute the energy of the
-  impulse response of the inverse transform, when we apply such
-  impulse to each one of the subbands of the decomposition. Supposing
-  that, after appliying the DWT to an image, the coefficients of the
-  subband HH are the least energetic with an energy $x$, the subband
-  gain for subband $b$ is computed as
-  \begin{equation}
-    \alpha_b = E_b/x,
-  \end{equation}
-  where $E_b$ is the energy of the reconstruction when the
-  impulse signal is localized at $b$. Notice that all the gains should
-  be larger than one.
-\end{enumerate}
-
-This computation can be also applied to MCDWT, by computing the subband
-gains as a function of the number $T$ of temporal decompositions.
 
 %}}}
 
