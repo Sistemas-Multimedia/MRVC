@@ -213,7 +213,6 @@ display -normalize /tmp/LL000.png
 
 # Reverse first iteration:
 python3 -O DWT.py -b -p /tmp/ -i 000
-#display -normalize /tmp/000.png
 python3 ../tools/substract_offset.py -i /tmp/000.png -o /tmp/1.png
 display /tmp/1.png
 
@@ -281,11 +280,15 @@ animate /tmp/HH*.norm
 python3 -O MDWT.py -b -p /tmp/ -N 5
 
 # Visualization of the reconstruction:
-rm /tmp/*.norm
-for i in /tmp/00?.png; do convert -normalize $i $i.norm; done; animate /tmp/00?.png.norm
+#rm /tmp/*.norm
+#for i in /tmp/00?.png; do convert -normalize $i $i.norm; done; animate /tmp/00?.png.norm
+for i in /tmp/???.png; do python3 ../tools/substract_offset.py -i $i -o $i.png; done
+animate /tmp/???.png.png
 
 # Visualization of the residue:
-for i in {0..4}; do ii=$(printf "%03d" $i); bash ../tools/show_differences.sh -1 /tmp/$ii.png -2 ../sequences/stockholm/$ii.png -o /tmp/diff_$ii.png; done; animate /tmp/diff*.png
+for i in {0..4}; do ii=$(printf "%03d" $i); bash
+../tools/show_differences.sh -1 /tmp/$ii.png -2 ../sequences/stockholm/$ii.png -o /tmp/diff_$ii.png; done
+animate /tmp/diff*.png
 \end{verbatim}
 
 \subsection*{Example: 2-iterations MDWT}
@@ -531,7 +534,8 @@ python3 -O MCDWT.py -b -p /tmp/ -I 1
 python3 -O MDWT.py -b -p /tmp/
 
 # Visualization of the reconstruction:
-for i in /tmp/???.png; do python3 ../tools/substract_offset.py -i $i -o $i.png; done; animate /tmp/???.png.png
+for i in /tmp/???.png; do python3 ../tools/substract_offset.py -i $i -o $i.png; done
+animate /tmp/???.png.png
 
 # Note: Substracting the offset 32768 to reconstructed images is more
 # suitable than normalize them because the dynamic range is conserved.
