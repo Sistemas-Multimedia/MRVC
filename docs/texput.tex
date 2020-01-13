@@ -174,7 +174,9 @@ display -normalize /tmp/HH000.png # <- HH1
 python3 -O DWT.py -b -p /tmp/ -i 000
 
 # Visualize the reconstruction:
-display -normalize /tmp/000.png 
+python3 ../tools/substract_offset.py -i /tmp/000.png -o /tmp/1.png
+#display -normalize /tmp/000.png 
+display /tmp/1.png
 
 # Show diferences (PyWavelets uses floating point arithmetic):
 ../tools/show_differences.sh -1 /tmp/000.png -2 ../sequences/stockholm/000.png -o /tmp/diffs.png

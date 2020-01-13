@@ -24,16 +24,17 @@ args = parser.parse_args()
 image = cv2.imread(args.input, -1)
 
 if __debug__:
+    print("Image depth: {}".format(image.dtype))
     print("Max value at input: {}".format(np.amax(image)))
     print("Min value at input: {}".format(np.amin(image)))
 
 image = np.clip(image, args.offset, args.offset+255)
+image = image.astype(np.float32)
 image -= args.offset
+image = image.astype(np.uint8)
 
 if __debug__:
-    print("Substracting {}".format(32768))
-
-if __debug__:
+    print("Substracting {}".format(args.offset))
     print("Max value at output: {}".format(np.amax(image)))
     print("Min value at output: {}".format(np.amin(image)))
 
