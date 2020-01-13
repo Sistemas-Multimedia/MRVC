@@ -280,6 +280,9 @@ python3 -O MDWT.py -b -p /tmp/ -N 5
 # Visualization of the reconstruction:
 rm /tmp/*.norm
 for i in /tmp/00?.png; do convert -normalize $i $i.norm; done; animate /tmp/00?.png.norm
+
+# Visualization of the residue:
+for i in {0..4}; do ii=$(printf "%03d" $i); bash ../tools/show_differences.sh -1 /tmp/$ii.png -2 ../sequences/stockholm/$ii.png -o /tmp/diff_$ii.png; done; animate /tmp/diff*.png
 \end{verbatim}
 
 \subsection*{Example: 2-iterations MDWT}
@@ -300,6 +303,9 @@ python3 -O MDWT.py -b -p /tmp/ -N 5
 # Visualization of the reconstruction:
 rm /tmp/*.norm
 for i in /tmp/00?.png; do convert -normalize $i $i.norm; done; animate /tmp/00?.png.norm
+
+# Visualization of the residue:
+for i in {0..4}; do ii=$(printf "%03d" $i); bash ../tools/show_differences.sh -1 /tmp/$ii.png -2 ../sequences/stockholm/$ii.png -o /tmp/diff_$ii.png; done; animate /tmp/diff*.png
 \end{verbatim}
 
 %}}}
@@ -526,6 +532,9 @@ for i in /tmp/???.png; do python3 ../tools/substract_offset.py -i $i -o $i.png; 
 
 # Note: Substracting the offset 32768 to reconstructed images is more
 # suitable than normalize them because the dynamic range is conserved.
+
+# Visualization of the residue:
+for i in {0..4}; do ii=$(printf "%03d" $i); bash ../tools/show_differences.sh -1 /tmp/$ii.png -2 ../sequences/stockholm/$ii.png -o /tmp/diff_$ii.png; done; animate /tmp/diff*.png
 \end{verbatim}
 
 \subsection*{Example: 2-iterations MCDWT}
@@ -586,7 +595,7 @@ GOP size is $4$. $4$ are the spatial resolution levels.
 # You must be in the 'src' directory.
 
 yes | cp ../sequences/stockholm/* /tmp
-predictor=5
+predictor=7
 python3 -O MDWT.py  -p /tmp/
 python3 -O MCDWT.py -p /tmp/     -P $predictor
 python3 -O MDWT.py  -p /tmp/LL
