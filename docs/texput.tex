@@ -179,8 +179,7 @@ display /tmp/1.png
 
 # Show diferences (PyWavelets uses floating point arithmetic):
 ../tools/show_differences.sh -1 /tmp/000.png -2 ../sequences/stockholm/000.png -o /tmp/diffs.png
-../tools/substract_offset.py -f -128 -i /tmp/diffs.png -o /tmp/1.png
-display /tmp/1.png
+display /tmp/diffs.png
 \end{verbatim}
 
 \subsection*{Example: A 2-iterations 2D DWT}
@@ -214,11 +213,13 @@ display -normalize /tmp/LL000.png
 
 # Reverse first iteration:
 python3 -O DWT.py -b -p /tmp/ -i 000
-display -normalize /tmp/000.png
+#display -normalize /tmp/000.png
+pyhon3 ../tools/substract_offset.py -i /tmp/000.png -o /tmp/1.png
+display /tmp/1.png
 
 # Show diferences:
 ../tools/show_differences.sh -1 /tmp/000.png -2 ../sequences/stockholm/000.png -o /tmp/diffs.png
-display -normalize /tmp/diffs.png
+display /tmp/diffs.png
 \end{verbatim}
 
 %}}}
