@@ -570,38 +570,50 @@ cp /tmp/*.png /tmp/tmp
 # 2-iterations MCDWT.
 python3 -O MCDWT.py -I 2 -p /tmp/ -I $iterations
 
-# Comparing LH001.
+# Is the content of the subbands different?
+for i in {0..4}; do ii=$(printf "%03d" $i); ls -l /tmp/LL$ii.png /tmp/tmp/LL$ii.png;echo; done
+for i in {0..4}; do ii=$(printf "%03d" $i); ls -l /tmp/LH$ii.png /tmp/tmp/LH$ii.png;echo;  done
+for i in {0..4}; do ii=$(printf "%03d" $i); ls -l /tmp/HL$ii.png /tmp/tmp/HL$ii.png;echo; done
+for i in {0..4}; do ii=$(printf "%03d" $i); ls -l /tmp/HH$ii.png /tmp/tmp/HH$ii.png;echo; done
+
+# Comparing LH.
 for i in {0..4}; do ii=$(printf "%03d" $i); convert -normalize /tmp/tmp/LH$ii.png /tmp/tmp/MDWT_LH$ii.png; done
 for i in {0..4}; do ii=$(printf "%03d" $i); convert -normalize /tmp/LH$ii.png /tmp/MCDWT_LH$ii.png; done
 animate /tmp/tmp/MDWT_LH00?.png &
 animate /tmp/MCDWT_LH00?.png &
+
+# Comparing LH002.
 echo MDWT > /tmp/1
 printf "%61s\n" MCDWT > /tmp/2
-python3 ../tools/show_statistics.py -i /tmp/tmp/LH001.png >> /tmp/1
-python3 ../tools/show_statistics.py -i /tmp/LH001.png >> /tmp/2
-paste /tmp/1 /tmp/2 | less
+python3 ../tools/show_statistics.py -i /tmp/tmp/LH002.png >> /tmp/1
+python3 ../tools/show_statistics.py -i /tmp/LH002.png >> /tmp/2
+paste /tmp/1 /tmp/2
 
-# Comparing HL001.
+# Comparing HL.
 for i in {0..4}; do ii=$(printf "%03d" $i); convert -normalize /tmp/tmp/HL$ii.png /tmp/tmp/MDWT_HL$ii.png; done
 for i in {0..4}; do ii=$(printf "%03d" $i); convert -normalize /tmp/HL$ii.png /tmp/MCDWT_HL$ii.png; done
 animate /tmp/tmp/MDWT_HL00?.png &
 animate /tmp/MCDWT_HL00?.png &
+
+# Comparing HL002.
 echo MDWT > /tmp/1
 printf "%61s\n" MCDWT > /tmp/2
-python3 ../tools/show_statistics.py -i /tmp/tmp/HL001.png >> /tmp/1
-python3 ../tools/show_statistics.py -i /tmp/HL001.png >> /tmp/2
-paste /tmp/1 /tmp/2 | less
+python3 ../tools/show_statistics.py -i /tmp/tmp/HL002.png >> /tmp/1
+python3 ../tools/show_statistics.py -i /tmp/HL002.png >> /tmp/2
+paste /tmp/1 /tmp/2
 
-# Comparing HH001.
+# Comparing HH.
 for i in {0..4}; do ii=$(printf "%03d" $i); convert -normalize /tmp/tmp/HH$ii.png /tmp/tmp/MDWT_HH$ii.png; done
 for i in {0..4}; do ii=$(printf "%03d" $i); convert -normalize /tmp/HH$ii.png /tmp/MCDWT_HH$ii.png; done
 animate /tmp/tmp/MDWT_HH00?.png &
 animate /tmp/MCDWT_HH00?.png &
+
+# Comparing HH002.
 echo MDWT > /tmp/1
 printf "%61s\n" MCDWT > /tmp/2
-python3 ../tools/show_statistics.py -i /tmp/tmp/HH001.png >> /tmp/1
-python3 ../tools/show_statistics.py -i /tmp/HH001.png >> /tmp/2
-paste /tmp/1 /tmp/2 | less
+python3 ../tools/show_statistics.py -i /tmp/tmp/HH002.png >> /tmp/1
+python3 ../tools/show_statistics.py -i /tmp/HH002.png >> /tmp/2
+paste /tmp/1 /tmp/2
 
 # Now we recover the original video.
 
@@ -618,32 +630,42 @@ animate /tmp/???.png.png
 # Visualization of the residue.
 for i in {0..4}; do ii=$(printf "%03d" $i); bash ../tools/show_differences.sh -1 /tmp/$ii.png -2 ../sequences/stockholm/$ii.png -o /tmp/diff_$ii.png; done
 animate /tmp/diff*.png
+
+python3 ../tools/show_statistics.py -i /tmp/diff_002.png
 \end{verbatim}
 
-\subsection*{Example: 3-iterations MDWT+MCDWT}
-GOP size is $4$. $4$ are the spatial resolution levels.
+\subsection*{Example: 3-iterations (1-iter MDWT + 2-iters MCDWT)}
+GOP size is $4$ ($3$ temporal resolution levels). $4$ is the number of
+spatial resolution levels.
 \begin{verbatim}
-# You must be in the 'src' directory.
+predictor=1
+iterations=2
 
-yes | cp ../sequences/stockholm/* /tmp
-predictor=7
+# You must be in the 'src' directory.
+rm /tmp/*.png
+cp ../sequences/stockholm/* /tmp
+
+predictor=1
 python3 -O MDWT.py  -p /tmp/
-python3 -O MCDWT.py -p /tmp/     -P $predictor
+python3 -O MCDWT.py -p /tmp/     -P $predictor -I $iterations
 python3 -O MDWT.py  -p /tmp/LL
-python3 -O MCDWT.py -p /tmp/LL   -P $predictor
+python3 -O MCDWT.py -p /tmp/LL   -P $predictor -I $iterations
 python3 -O MDWT.py  -p /tmp/LLLL
-python3 -O MCDWT.py -p /tmp/LLLL -P $predictor
+python3 -O MCDWT.py -p /tmp/LLLL -P $predictor -I $iterations
 
 rm /tmp/00?.png
 
-python3 -O MCDWT.py -p /tmp/LLLL -P $predictor -b
+python3 -O MCDWT.py -p /tmp/LLLL -P $predictor -b -I $iterations
 python3 -O MDWT.py  -p /tmp/LLLL               -b
-python3 -O MCDWT.py -p /tmp/LL   -P $predictor -b
+python3 -O MCDWT.py -p /tmp/LL   -P $predictor -b -I $iterations
 python3 -O MDWT.py  -p /tmp/LL                 -b
-python3 -O MCDWT.py -p /tmp/     -P $predictor -b
+python3 -O MCDWT.py -p /tmp/     -P $predictor -b -I $iterations
 python3 -O MDWT.py  -p /tmp/                   -b
 
 for i in /tmp/00?.png; do python ../tools/substract_offset.py -i $i -o $i.png; done; animate /tmp/00?.png.png
+
+for i in {0..4}; do ii=$(printf "%03d" $i); bash ../tools/show_differences.sh -1 /tmp/$ii.png -2 ../sequences/stockholm/$ii.png -o /tmp/diff_$ii.png; done
+animate /tmp/diff*.png
 \end{verbatim}
 
 \subsection{Accuracy of the MC (TO BE IMPLEMENTED)}
