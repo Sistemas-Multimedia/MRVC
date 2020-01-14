@@ -197,7 +197,7 @@ def writeL(LL, prefix = "/tmp/", index = "000"):
 
     '''
 
-    LL = LL.astype(np.float32)
+    #LL = LL.astype(np.float32)
     LL += 32768.0
     LL = LL.astype(np.uint16)
     if __debug__:
@@ -227,7 +227,7 @@ def writeH(H, prefix = "/tmp/", index = "000"):
         None
 
     '''
-    LH = H[0].astype(np.float32)
+    LH = H[0]#.astype(np.float32)
     LH += 32768.0
     LH = LH.astype(np.uint16)
     if __debug__:
@@ -237,7 +237,7 @@ def writeH(H, prefix = "/tmp/", index = "000"):
     if __debug__:
         print("IO::decomposition:writeH: written {}".format(fn))
 
-    HL = H[1].astype(np.float32)
+    HL = H[1]#.astype(np.float32)
     HL += 32768.0
     HL = HL.astype(np.uint16)
     if __debug__:
@@ -247,7 +247,7 @@ def writeH(H, prefix = "/tmp/", index = "000"):
     if __debug__:
         print("IO::decomposition:writeH: written {}".format(fn))
 
-    HH = H[2].astype(np.float32)
+    HH = H[2]#.astype(np.float32)
     HH += 32768.0
     HH = HH.astype(np.uint16)
     if __debug__:

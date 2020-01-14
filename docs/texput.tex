@@ -277,7 +277,7 @@ animate /tmp/HL*.norm
 for i in /tmp/HH00?.png; do convert -normalize $i $i.norm; done
 animate /tmp/HH*.norm
 
-# 2D 1-iteration iMDWT:
+# 1-iteration iMDWT:
 python3 -O MDWT.py -b -p /tmp/ -N 5
 
 # Visualization of the reconstruction:
@@ -297,11 +297,11 @@ rm /tmp/*.png
 # Create the output directory for the 1st-level decompositions:
 yes | cp ../sequences/stockholm/*.png /tmp
 
-# 2D 2-iterations MDWT:
+# 2-iterations MDWT:
 python3 -O MDWT.py -p /tmp/ -N 5
 python3 -O MDWT.py -p /tmp/LL -N 5
 
-# 2D 2-iterations iMDWT:
+# 2-iterations iMDWT:
 python3 -O MDWT.py -b -p /tmp/LL -N 5
 python3 -O MDWT.py -b -p /tmp/ -N 5
 
@@ -493,7 +493,7 @@ images/decompositions in the GOP, i.e., the GOP size), except for the
 first and the last image of the sequence, all the $H$-subbands are
 temporally decorrelated.
 
-\subsection*{Example: 1-iteration MCDWT}
+\subsection*{Example: 1-iteration MDWT + 1-iteration MCDWT}
 In this example, a sequence of five images is transformed first with
 the (1-iteration) MDWT, producing 2 spatial resolution levels by
 image. Next, the $H$ subbands of the odd images (images 1 and 3) are
@@ -501,13 +501,13 @@ motion compensated using the (1-iteration) MCDWT.
 
 \begin{verbatim}
 predictor=1
+iterations=1
 
 # You must be in the 'src' directory.
 rm /tmp/*.png
+cp ../sequences/stockholm/*.png /tmp
 
-yes | cp ../sequences/stockholm/*.png /tmp
-
-# 1D 1-iteration MDWT.
+# 1-iteration MDWT.
 python3 -O MDWT.py -p /tmp/
 
 # Show the length of the subbands.
@@ -516,8 +516,8 @@ for i in /tmp/LH???.png; do ls -l $i; done
 for i in /tmp/HL???.png; do ls -l $i; done
 for i in /tmp/HH???.png; do ls -l $i; done
 
-# 1D 1-iteration MCDWT.
-python3 -O MCDWT.py -P $predictor -p /tmp/ -I 1
+# 1-iteration MCDWT.
+python3 -O MCDWT.py -P $predictor -p /tmp/ -I $iterations
 
 # Show the length of the subbands.
 for i in /tmp/LL???.png; do ls -l $i; done
@@ -529,10 +529,10 @@ for i in /tmp/HH???.png; do ls -l $i; done
 # implies a change in content.
 rm /tmp/???.png
 
-# 1D 1-iteration iMCDWT.
-python3 -O MCDWT.py -P $predictor -b -p /tmp/ -I 1
+# 1-iteration iMCDWT.
+python3 -O MCDWT.py -P $predictor -b -p /tmp/ -I $iterations
 
-# 1D 1-iteration iMDWT.
+# 1-iteration iMDWT.
 python3 -O MDWT.py -b -p /tmp/
 
 # Visualization of the reconstruction.
@@ -544,7 +544,7 @@ for i in {0..4}; do ii=$(printf "%03d" $i); bash ../tools/show_differences.sh -1
 animate /tmp/diff*.png
 \end{verbatim}
 
-\subsection*{Example: 2-iterations MCDWT}
+\subsection*{Example: 1-iteration MDWT + 2-iterations MCDWT}
 This example is similar to the previous, but now the number of
 iterations of MCDWT is $I=2$. Now, the second iteration of MCDWT
 compensates also the $H$ subband of the image 2. This example matches
@@ -552,48 +552,72 @@ exactly with the described in the Fig~\ref{fig:MCDWT}. Notice that the
 GOP size is $4$ and the number of spatial resolution levels is $2$.
 
 \begin{verbatim}
-# You must be in the 'src' directory.
+predictor=1
+iterations=2
 
+# You must be in the 'src' directory.
+rm /tmp/*.png
 cp ../sequences/stockholm/*.png /tmp
 
-# 1-iteration MDWT
+# 1D 1-iteration MDWT.
 python3 -O MDWT.py -p /tmp/
 
-# Showing some statistics before using the MCDWT
-python3 ../tools/show_statistics.py -i /tmp/LH001.png
-python3 ../tools/show_statistics.py -i /tmp/HL001.png
-python3 ../tools/show_statistics.py -i /tmp/HH001.png
-python3 ../tools/show_statistics.py -i /tmp/LH002.png
-python3 ../tools/show_statistics.py -i /tmp/HL002.png
-python3 ../tools/show_statistics.py -i /tmp/HH002.png
-
-# Save a copy
+# Save a copy of the MDWT subbands (for comparing later).
+rm -rf /tmp/tmp
 mkdir /tmp/tmp
 cp /tmp/*.png /tmp/tmp
 
-# Visualization of the H-subbands
-for i in /tmp/tmp/LH00?.png; do convert -normalize $i $i.png; done; animate /tmp/tmp/LH00?.png.png
-for i in /tmp/tmp/HL00?.png; do convert -normalize $i $i.png; done; animate /tmp/tmp/HL00?.png.png
-for i in /tmp/tmp/HH00?.png; do convert -normalize $i $i.png; done; animate /tmp/tmp/HH00?.png.png 
+# 2-iterations MCDWT.
+python3 -O MCDWT.py -I 2 -p /tmp/ -I $iterations
 
-# 2-iterations MCDWT
-python3 -O MCDWT.py -I 2 -p /tmp/
+# Comparing LH001.
+for i in {0..4}; do ii=$(printf "%03d" $i); convert -normalize /tmp/tmp/LH$ii.png /tmp/tmp/MDWT_LH$ii.png; done
+for i in {0..4}; do ii=$(printf "%03d" $i); convert -normalize /tmp/LH$ii.png /tmp/MCDWT_LH$ii.png; done
+animate /tmp/tmp/MDWT_LH00?.png &
+animate /tmp/MCDWT_LH00?.png &
+echo MDWT > /tmp/1
+printf "%61s\n" MCDWT > /tmp/2
+python3 ../tools/show_statistics.py -i /tmp/tmp/LH001.png >> /tmp/1
+python3 ../tools/show_statistics.py -i /tmp/LH001.png >> /tmp/2
+paste /tmp/1 /tmp/2 | less
 
-# Showing statistics after using the MCDWT
-python3 ../tools/show_statistics.py -i /tmp/LH001.png
-python3 ../tools/show_statistics.py -i /tmp/HL001.png
-python3 ../tools/show_statistics.py -i /tmp/HH001.png
-python3 ../tools/show_statistics.py -i /tmp/LH002.png
-python3 ../tools/show_statistics.py -i /tmp/HL002.png
-python3 ../tools/show_statistics.py -i /tmp/HH002.png
+# Comparing HL001.
+for i in {0..4}; do ii=$(printf "%03d" $i); convert -normalize /tmp/tmp/HL$ii.png /tmp/tmp/MDWT_HL$ii.png; done
+for i in {0..4}; do ii=$(printf "%03d" $i); convert -normalize /tmp/HL$ii.png /tmp/MCDWT_HL$ii.png; done
+animate /tmp/tmp/MDWT_HL00?.png &
+animate /tmp/MCDWT_HL00?.png &
+echo MDWT > /tmp/1
+printf "%61s\n" MCDWT > /tmp/2
+python3 ../tools/show_statistics.py -i /tmp/tmp/HL001.png >> /tmp/1
+python3 ../tools/show_statistics.py -i /tmp/HL001.png >> /tmp/2
+paste /tmp/1 /tmp/2 | less
 
-# Visualization of the H-subbands
-for i in /tmp/LH00?.png; do convert -normalize $i $i.png; done; animate /tmp/LH00?.png.png
-for i in /tmp/HL00?.png; do convert -normalize $i $i.png; done; animate /tmp/HL00?.png.png
-for i in /tmp/HH00?.png; do convert -normalize $i $i.png; done; animate /tmp/HH00?.png.png
+# Comparing HH001.
+for i in {0..4}; do ii=$(printf "%03d" $i); convert -normalize /tmp/tmp/HH$ii.png /tmp/tmp/MDWT_HH$ii.png; done
+for i in {0..4}; do ii=$(printf "%03d" $i); convert -normalize /tmp/HH$ii.png /tmp/MCDWT_HH$ii.png; done
+animate /tmp/tmp/MDWT_HH00?.png &
+animate /tmp/MCDWT_HH00?.png &
+echo MDWT > /tmp/1
+printf "%61s\n" MCDWT > /tmp/2
+python3 ../tools/show_statistics.py -i /tmp/tmp/HH001.png >> /tmp/1
+python3 ../tools/show_statistics.py -i /tmp/HH001.png >> /tmp/2
+paste /tmp/1 /tmp/2 | less
 
-# The residues should have now less visual "information" than in the
-# previous visualization, when only the MDWT has been applied.
+# Now we recover the original video.
+
+# 2-iterations iMCDWT.
+python3 -O MCDWT.py -P $predictor -b -p /tmp/ -I $iterations
+
+# 1-iteration iMDWT
+python3 -O MDWT.py -b -p /tmp/
+
+# Visualization of the reconstruction.
+for i in /tmp/???.png; do python3 ../tools/substract_offset.py -i $i -o $i.png; done
+animate /tmp/???.png.png
+
+# Visualization of the residue.
+for i in {0..4}; do ii=$(printf "%03d" $i); bash ../tools/show_differences.sh -1 /tmp/$ii.png -2 ../sequences/stockholm/$ii.png -o /tmp/diff_$ii.png; done
+animate /tmp/diff*.png
 \end{verbatim}
 
 \subsection*{Example: 3-iterations MDWT+MCDWT}

@@ -5,6 +5,10 @@ import numpy as np
 import math
 import argparse
 
+columns_format = 60
+def myprint(str):
+        print(str.ljust(columns_format))
+    
 class CustomFormatter(argparse.ArgumentDefaultsHelpFormatter, argparse.RawDescriptionHelpFormatter):
         pass
 
@@ -19,7 +23,8 @@ parser.add_argument("-o", "--offset", type=int, help="Offset used for representi
 
 args = parser.parse_args()
 
-print("Offset = {}".format(args.offset))
+myprint("Filename = {}".format(args.image))
+myprint("Offset = {}".format(args.offset))
 
 def compute_entropy(d, counter):
     for x in d:
@@ -69,40 +74,40 @@ for c in range(components):
     dynamic_range[c] = max[c] - min[c]
     mean[c] = np.mean(image[:,:,c])
 
-print("Image: {}".format(args.image))
-print("Width: {}".format(width))
-print("Height: {}".format(height))
-print("Components: {}".format(components))
-print("Component depth: {}".format(component_depth))
-print("Number of pixels: {}".format(number_of_pixels))
+myprint("Image: {}".format(args.image))
+myprint("Width: {}".format(width))
+myprint("Height: {}".format(height))
+myprint("Components: {}".format(components))
+myprint("Component depth: {}".format(component_depth))
+myprint("Number of pixels: {}".format(number_of_pixels))
 for c in range(components):
-    print("Max value of component {}: {} ({})".format(c, max[c], max[c]-args.offset))
+    myprint("Max value of component {}: {} ({})".format(c, max[c], max[c]-args.offset))
 for c in range(components):
-    print("Min value of component {}: {} ({})".format(c, min[c], min[c]-args.offset))
+    myprint("Min value of component {}: {} ({})".format(c, min[c], min[c]-args.offset))
 for c in range(components):
-    print("Dynamic range of component {}: {}".format(c, dynamic_range[c]))
+    myprint("Dynamic range of component {}: {}".format(c, dynamic_range[c]))
 for c in range(components):
-    print("Mean of component {}: {} ({})".format(c, mean[c], mean[c]-args.offset))
+    myprint("Mean of component {}: {} ({})".format(c, mean[c], mean[c]-args.offset))
 for c in range(components):
-    print("Entropy of component {}: {}".format(c, entropy[c]))
+    myprint("Entropy of component {}: {}".format(c, entropy[c]))
 
 indices = [None] * components
 for c in range(components):
-    print("Component {}".format(c))
-    print("{0: <8} {1: <10} {2: <10}".format("position", "coordinates", "value"))
+    myprint("Component {}".format(c))
+    myprint("{0: <8} {1: <10} {2: <10}".format("position", "coordinates", "value"))
     # https://stackoverflow.com/questions/30577375/have-numpy-argsort-return-an-array-of-2d-indices
     indices[c] = np.dstack(np.unravel_index(np.argsort(abs(image[:,:,c]).ravel()), (width, height)))
-    #print(indices[c].shape)
+    #myprint(indices[c].shape)
     counter = 1
     while counter <= 10:
         coordinates = indices[c][0][counter]
         val = image[indices[c][0][indices[c].shape[1]-counter][0], indices[c][0][indices[c].shape[1]-counter][1], c]
-        print("{:8d}   {} {} ({})".format(counter, coordinates, val, val-args.offset))
+        myprint("{:8d}   {} {} ({})".format(counter, coordinates, val, val-args.offset))
         counter += 1
     counter = number_of_pixels - 1 - 10
     while counter <= number_of_pixels - 1:
         coordinates = indices[c][0][counter]
         val = image[indices[c][0][indices[c].shape[1]-counter][0], indices[c][0][indices[c].shape[1]-counter][1], c]
-        print("{:8d}   {} {} ({})".format(counter, coordinates, val, val-args.offset))
+        myprint("{:8d}   {} {} ({})".format(counter, coordinates, val, val-args.offset))
         counter += 1
 
