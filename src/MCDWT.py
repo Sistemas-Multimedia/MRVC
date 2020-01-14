@@ -17,7 +17,7 @@ class MCDWT:
 
     def __init__(self, shape):
         self.zero_L = np.zeros(shape, np.float64)
-        self.zero_H = (self.zero_L, self.zero_L, self.zero_L)
+        self.zero_H = (np.zeros(shape, np.float64), np.zeros(shape, np.float64), np.zeros(shape, np.float64))
         self.dwt = DWT()
 
     def __forward_butterfly(self, aL, aH, bL, bH, cL, cH):
@@ -124,8 +124,8 @@ class MCDWT:
             while i < (N//x):
                 bL, bH = decomposition.read(prefix, "{:03d}".format(x*i+x//2))
                 cL, cH = decomposition.read(prefix, "{:03d}".format(x*i+x))
-                bH = self.__forward_butterfly(aL, aH, bL, bH, cL, cH)
-                decomposition.writeH(bH, prefix, "{:03d}".format(x*i+x//2))
+                residue_bH = self.__forward_butterfly(aL, aH, bL, bH, cL, cH)
+                decomposition.writeH(residue_bH, prefix, "{:03d}".format(x*i+x//2))
                 aL, aH = cL, cH
                 i += 1
             x *= 2
@@ -165,10 +165,10 @@ class MCDWT:
             i = 0
             aL, aH = decomposition.read(prefix, "{:03d}".format(0))
             while i < (N//x):
-                bL, bH = decomposition.read(prefix, "{:03d}".format(x*i+x//2))
+                bL, residue_bH = decomposition.read(prefix, "{:03d}".format(x*i+x//2))
                 cL, cH = decomposition.read(prefix, "{:03d}".format(x*i+x))
-                bH = self.__backward_butterfly(aL, aH, bL, bH, cL, cH)
-                decomposition.writeH(bH, "{:03d}".format(x*i+x//2))
+                bH = self.__backward_butterfly(aL, aH, bL, residue_bH, cL, cH)
+                decomposition.writeH(bH, prefix, "{:03d}".format(x*i+x//2))
                 aL, aH = cL, cH
                 i += 1
             x //=2
@@ -195,7 +195,7 @@ if __name__ == "__main__":
     parser.add_argument("-p", "--prefix", help="Dir where the files the I/O files are placed", default="/tmp/")
     parser.add_argument("-N", "--decompositions", help="Number of input decompositions", default=5, type=int)
     parser.add_argument("-I", "--iterations", help="Number of temporal iterations", default=2, type=int)
-    parser.add_argument("-P", "--predictor", help="Predictor to use (0=none, 1=average, 2=weighted average, 3=left)", default=1, type=int)
+    parser.add_argument("-P", "--predictor", help="Predictor to use (0=none, 1=MC average, 2=MC weighted average, 3=left, 4=right, 5=MC left, 6=MC right, 7=offset)", default=1, type=int)
 
     args = parser.parse_args()
 
@@ -220,6 +220,8 @@ if __name__ == "__main__":
         if __debug__:
             print("Backward transform")
 
+        # The first image is read only for knowing the dimenssions of
+        # the images.
         p = decomposition.readL(args.prefix, "000")
         d = MCDWT(p.shape)
 

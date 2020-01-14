@@ -17,6 +17,9 @@ from src.IO import decomposition
 
 class DWT:
 
+    def __init__(self, wavelet = "bior3.5"):
+        self.wavelet = wavelet
+    
     def forward(self, image):
         '''1-iteration 2D-DWT of a color image.
 
@@ -73,7 +76,7 @@ class DWT:
         if __debug__:
             print("image: max={} min={}".format(np.amax(image), np.amin(image)))
         for c in range(3):
-            LL[:,:,c], (LH[:,:,c], HL[:,:,c], HH[:,:,c]) = pywt.dwt2(image[:,:,c], 'bior3.5', mode='per')
+            LL[:,:,c], (LH[:,:,c], HL[:,:,c], HH[:,:,c]) = pywt.dwt2(image[:,:,c], self.wavelet, mode='per')
         if __debug__:
             print("DWT::forward: LL: max={} min={}".format(np.amax(LL), np.amin(LL)))
             print("DWT::forward: LH: max={} min={}".format(np.amax(LH), np.amin(LH)))
@@ -103,7 +106,7 @@ class DWT:
         HH = decomposition[1][2]        
         image = np.ndarray((LL.shape[0]*2, LL.shape[1]*2, 3), np.float64)
         for c in range(3):
-            image[:,:,c] = pywt.idwt2((LL[:,:,c], (LH[:,:,c], HL[:,:,c], HH[:,:,c])), 'bior3.5', mode='per')
+            image[:,:,c] = pywt.idwt2((LL[:,:,c], (LH[:,:,c], HL[:,:,c], HH[:,:,c])), self.wavelet, mode='per')
         return image
 
 if __name__ == "__main__":
