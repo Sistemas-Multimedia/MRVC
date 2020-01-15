@@ -146,7 +146,7 @@ representation to a pyramid representation and viceversa</a>.
  id="x1-40002.1"></a>Implementation of the 3 components (color) DWT step</h4>
 <!--l. 71--><p class="noindent" ><a 
 href="https://github.com/Sistemas-Multimedia/MCDWT/blob/master/src/DWT.py" >DWT.py</a> (see Fig. <a 
-href="#x1-40941">1<!--tex4ht:ref: fig:DWT --></a>) implements the forward (DWT) and backward 1-iteration
+href="#x1-40951">1<!--tex4ht:ref: fig:DWT --></a>) implements the forward (DWT) and backward 1-iteration
 (step) 2D DWT (iDWT) for color images.
 </p>
    <hr class="figure" /><div class="figure" 
@@ -155,7 +155,7 @@ href="#x1-40941">1<!--tex4ht:ref: fig:DWT --></a>) implements the forward (DWT) 
 
                                                                   
 <a 
- id="x1-40941"></a>
+ id="x1-40951"></a>
                                                                   
 
                                                                   
@@ -2032,25 +2032,7 @@ class="ectt-1000"> </span><span
 class="ectt-1000">np</span><span 
 class="ectt-1000">.</span><span 
 class="ectt-1000">float64</span><span 
-class="ectt-1000">)</span><span 
-class="ectt-1000"> </span><br /><span class="label"><a 
- id="x1-4093r22"></a></span><span 
-class="ectt-1000"> </span><span 
-class="ectt-1000"> </span><span 
-class="ectt-1000"> </span><span 
-class="ectt-1000"> </span><span 
-class="ectt-1000"> </span><span 
-class="ectt-1000"> </span><span 
-class="ectt-1000"> </span><span 
-class="ectt-1000"> </span><span 
-class="ectt-1000">for</span><span 
-class="ectt-1000"> </span><span 
-class="ectt-1000">c</span><span 
-class="ectt-1000"> </span><span 
-class="ectt-1000">in</span><span 
-class="ectt-1000"> </span><span 
-class="ectt-1000">range</span><span 
-class="ectt-1000">(3):</span>
+class="ectt-1000">)</span>
 </div>
 <br /> <div class="caption" 
 ><span class="id">Figure 1: </span><span  
@@ -2068,7 +2050,7 @@ stands   for   <span
 class="ecti-1000">low-pass  ﬁltering   </span>and   <span 
 class="ecti-1000">high-pass  ﬁltering</span>,   respectively.   More
 information about the implementation can be found at <a 
-href="https://pywavelets.readthedocs.io/en/latest/index.html" >PyWavelets</a>.</span></div><!--tex4ht:label?: x1-40941 -->
+href="https://pywavelets.readthedocs.io/en/latest/index.html" >PyWavelets</a>.</span></div><!--tex4ht:label?: x1-40951 -->
                                                                   
 
                                                                   
@@ -7338,7 +7320,7 @@ class="MathClass-punc">.</mo><mi
 class="MathClass-close">]</mo></mrow><mo 
 class="MathClass-punc">.</mo> </mtd></mtr><!--l--></mtable>
 </math></td><td class="eq-no">(2)</td></tr></table>
-<!--l. 935--><p class="indent" >   Now, we deﬁne the similarity matrices as </p><table class="equation"><tr><td> <a 
+<!--l. 935--><p class="indent" >   We deﬁne the similarity matrices as </p><table class="equation"><tr><td> <a 
  id="x1-22003r3"></a>
 <!--l. 936--><math 
  xmlns="http://www.w3.org/1998/Math/MathML"  
@@ -7440,9 +7422,7 @@ class="MathClass-punc">,</mo><mi
 > <mo 
 class="MathClass-rel">=</mo> <mn>1</mn></math>
 (the maximum similarity), and if the error is high, the similarity tends to be
-<!--l. 945--><math 
- xmlns="http://www.w3.org/1998/Math/MathML"  
-display="inline" ><mn>0</mn></math>.
+low.
                                                                   
 
                                                                   
@@ -7903,12 +7883,83 @@ class="content">Computation of the weighted average prediction.</span></div><!--
                                                                   
    </div><hr class="endfigure" />
    <h4 class="likesubsectionHead"><a 
- id="x1-230006"></a>Example: Filtering the MC subbands</h4>
+ id="x1-230006"></a>Example: 1-iteration MDWT + 1-iteration MCDWT</h4>
+<!--l. 970--><p class="noindent" >In this example, a sequence of ﬁve images is transformed ﬁrst with the
+(1-iteration) MDWT, producing 2 spatial resolution levels by image. Next, the
+<!--l. 972--><math 
+ xmlns="http://www.w3.org/1998/Math/MathML"  
+display="inline" ><mi 
+>H</mi></math>
+subbands of the odd images (images 1 and 3) are motion compensated using the
+(1-iteration) MCDWT.
                                                                   
 
                                                                   
+</p>
    <div class="verbatim" id="verbatim-14">
-# You must be in the ’src’ directory.
+predictor=2
+ <br />iterations=1
+ <br />
+ <br /># You must be in the ’src’ directory.
+ <br />rm /tmp/*.png
+ <br />cp ../sequences/stockholm/*.png /tmp
+ <br />
+ <br /># 1-iteration MDWT.
+ <br />python3 -O MDWT.py -p /tmp/
+ <br />
+ <br /># Show the length of the subbands.
+ <br />for i in /tmp/LL???.png; do ls -l $i; done
+ <br />for i in /tmp/LH???.png; do ls -l $i; done
+ <br />for i in /tmp/HL???.png; do ls -l $i; done
+ <br />for i in /tmp/HH???.png; do ls -l $i; done
+ <br />
+ <br /># 1-iteration MCDWT.
+ <br />python3 -O MCDWT.py -P $predictor -p /tmp/ -I $iterations
+ <br />
+ <br /># Show the length of the subbands.
+ <br />for i in /tmp/LL???.png; do ls -l $i; done
+ <br />for i in /tmp/LH???.png; do ls -l $i; done
+ <br />for i in /tmp/HL???.png; do ls -l $i; done
+ <br />for i in /tmp/HH???.png; do ls -l $i; done
+ <br />
+ <br /># Has changed in length any of them? Remember that a change in lenght
+ <br /># implies a change in content.
+ <br />rm /tmp/???.png
+ <br />
+ <br /># 1-iteration iMCDWT.
+ <br />python3 -O MCDWT.py -P $predictor -b -p /tmp/ -I $iterations
+ <br />
+ <br /># 1-iteration iMDWT.
+ <br />python3 -O MDWT.py -b -p /tmp/
+ <br />
+ <br /># Visualization of the reconstruction.
+ <br />for i in /tmp/???.png; do python3 ../tools/substract_offset.py -i $i -o $i.png; done
+ <br />animate /tmp/???.png.png
+ <br />
+ <br /># Visualization of the residue.
+ <br />for i in {0..4}; do ii=$(printf &#x0022;%03d&#x0022; $i); bash ../tools/show_differences.sh -1 /tmp/$ii.png -2 ../sequences/stockholm/$ii.png -o /tmp/diff_$ii.png; done
+                                                                  
+
+                                                                  
+ <br />animate /tmp/diff*.png
+</div>
+<!--l. 1018--><p class="nopar" >
+</p><!--l. 1020--><p class="noindent" >
+</p>
+   <h4 class="likesubsectionHead"><a 
+ id="x1-240006"></a>Example: Eﬀects caused by the total attenuation of the temporal
+<!--l. 1020--><math 
+ xmlns="http://www.w3.org/1998/Math/MathML"  
+display="inline" ><mi 
+>H</mi></math>
+subbands</h4>
+                                                                  
+
+                                                                  
+   <div class="verbatim" id="verbatim-15">
+predictor=2
+ <br />
+ <br /># You must be in the ’src’ directory.
  <br />
  <br />yes | cp ../sequences/stockholm/*.png /tmp
  <br />
@@ -7919,40 +7970,21 @@ class="content">Computation of the weighted average prediction.</span></div><!--
  <br />python3 -O MCDWT.py -p /tmp/
  <br />
  <br /># Let’s clear the motion compensated subbands and reconstruct the sequence ...
- <br />
- <br /># Create a zero subband:
- <br />#bash ../tools/create_black_image.sh; python ../tools/add_offset.py -i /tmp/zero.png -o /tmp/zero16.png -f 32768
- <br />#python3 ../tools/show_statistics.py -i /tmp/zero16.png
- <br />
- <br /># &#x0022;Delete&#x0022; the motion compensated subbands:
- <br />#yes | cp /tmp/zero16.png /tmp/LH001.png
- <br />#yes | cp /tmp/zero16.png /tmp/HL001.png
- <br />#yes | cp /tmp/zero16.png /tmp/HH001.png
- <br />#yes | cp /tmp/zero16.png /tmp/LH002.png
- <br />#yes | cp /tmp/zero16.png /tmp/HL002.png
- <br />#yes | cp /tmp/zero16.png /tmp/HH002.png
- <br />#yes | cp /tmp/zero16.png /tmp/LH003.png
- <br />#yes | cp /tmp/zero16.png /tmp/HL003.png
- <br />#yes | cp /tmp/zero16.png /tmp/HH003.png
- <br />
- <br />yes | rm /tmp/LH001.png
- <br />yes | rm /tmp/HL001.png
- <br />yes | rm /tmp/HH001.png
- <br />yes | rm /tmp/LH002.png
- <br />yes | rm /tmp/HL002.png
- <br />yes | rm /tmp/HH002.png
- <br />yes | rm /tmp/LH003.png
- <br />yes | rm /tmp/HL003.png
- <br />yes | rm /tmp/HH003.png
+ <br />rm -f /tmp/LH001.png
+ <br />rm -f /tmp/HL001.png
+ <br />rm -f /tmp/HH001.png
+ <br />rm -f /tmp/LH002.png
+ <br />rm -f /tmp/HL002.png
+ <br />rm -f /tmp/HH002.png
+ <br />rm -f /tmp/LH003.png
+ <br />rm -f /tmp/HL003.png
+ <br />rm -f /tmp/HH003.png
  <br />
  <br /># 1D 1-iteration iMCDWT:
- <br />python3 -O MCDWT.py -b -p /tmp/
+ <br />python3 -O MCDWT.py -P $predictor -b -p /tmp/
  <br />
  <br /># 1D 1-iteration iMDWT:
  <br />python3 -O MDWT.py -b -p /tmp/
-                                                                  
-
-                                                                  
  <br />
  <br /># Visualization of the reconstruction:
  <br />for i in /tmp/00?.png; do python ../tools/substract_offset.py -i $i -o $i.png; done; animate /tmp/00?.png.png
@@ -7960,46 +7992,12 @@ class="content">Computation of the weighted average prediction.</span></div><!--
  <br /># Visualization of the differences with the original sequence:
  <br />rm -f /tmp/diff*.png; for i in {0..4}; do ii=$(printf &#x0022;%03d&#x0022; $i); bash ../tools/show_differences.sh -1 /tmp/$ii.png -2 ../sequences/stockholm/$ii.png -o /tmp/diff_$ii.png; done; animate /tmp/diff*.png
 </div>
-<!--l. 1019--><p class="nopar" >
-</p><!--l. 1023--><p class="noindent" >
-</p>
-   <h3 class="likesectionHead"><a 
- id="x1-240006"></a>Quantization eﬀects</h3>
-<!--l. 1025--><p class="noindent" >
+<!--l. 1057--><p class="nopar" >
+</p><!--l. 1062--><p class="noindent" >
 </p>
    <h4 class="likesubsectionHead"><a 
- id="x1-250006"></a>Quantization of (<!--l. 1025--><math 
- xmlns="http://www.w3.org/1998/Math/MathML"  
-display="inline" ><mi 
->H</mi></math>)
-MC subbands</h4>
-                                                                  
-
-                                                                  
-   <div class="verbatim" id="verbatim-15">
-# You must be in the ’src’ directory.
- <br />
- <br />yes | cp ../sequences/stockholm/* /tmp
- <br />python3 -O MDWT.py -p /tmp/ -N 3
- <br />python3 -O MCDWT.py -p /tmp/ -N 3
- <br />
- <br />q_step=32
- <br />python3 ../tools/show_statistics.py -i /tmp/LH001.png
- <br />python3 ../tools/quantize.py -i /tmp/LH001.png -o /tmp/LH001.png -q $q_step
- <br />python3 ../tools/show_statistics.py -i /tmp/LH001.png
- <br />python3 ../tools/quantize.py -i /tmp/HL001.png -o /tmp/HL001.png -q $q_step
- <br />python3 ../tools/quantize.py -i /tmp/HH001.png -o /tmp/HH001.png -q $q_step
- <br />
- <br />python3 -O MCDWT.py -p /tmp/ -b -N 3
- <br />python3 -O MDWT.py -p /tmp/ -b -N 3
- <br />
- <br />for i in /tmp/00?.png; do python ../tools/substract_offset.py -i $i -o $i.png; done; animate /tmp/00?.png.png
-</div>
-<!--l. 1044--><p class="nopar" >
-</p><!--l. 1046--><p class="noindent" >
-</p>
-   <h4 class="likesubsectionHead"><a 
- id="x1-260006"></a>Quantization of all <!--l. 1046--><math 
+ id="x1-250006"></a>Example: Efects of the quantization of temporal
+<!--l. 1062--><math 
  xmlns="http://www.w3.org/1998/Math/MathML"  
 display="inline" ><mi 
 >H</mi></math>
@@ -8008,11 +8006,48 @@ subbands</h4>
 
                                                                   
    <div class="verbatim" id="verbatim-16">
-# You must be in the ’src’ directory.
+predictor=2
+ <br />
+ <br /># You must be in the ’src’ directory.
  <br />
  <br />yes | cp ../sequences/stockholm/* /tmp
  <br />python3 -O MDWT.py -p /tmp/ -N 3
- <br />python3 -O MCDWT.py -p /tmp/ -N 3
+ <br />python3 -O MCDWT.py -P $predictor -p /tmp/ -N 3
+ <br />
+ <br />q_step=32
+ <br />python3 ../tools/show_statistics.py -i /tmp/LH001.png
+ <br />python3 ../tools/quantize.py -i /tmp/LH001.png -o /tmp/LH001.png -q $q_step
+ <br />python3 ../tools/show_statistics.py -i /tmp/LH001.png
+ <br />python3 ../tools/quantize.py -i /tmp/HL001.png -o /tmp/HL001.png -q $q_step
+ <br />python3 ../tools/quantize.py -i /tmp/HH001.png -o /tmp/HH001.png -q $q_step
+ <br />
+ <br />python3 -O MCDWT.py -P $predictor -p /tmp/ -b -N 3
+ <br />python3 -O MDWT.py -p /tmp/ -b -N 3
+ <br />
+ <br />for i in /tmp/00?.png; do python ../tools/substract_offset.py -i $i -o $i.png; done; animate /tmp/00?.png.png
+ <br />
+ <br />rm -f /tmp/diff*.png; for i in {0..2}; do ii=$(printf &#x0022;%03d&#x0022; $i); bash ../tools/show_differences.sh -1 /tmp/$ii.png -2 ../sequences/stockholm/$ii.png -o /tmp/diff_$ii.png; done; animate /tmp/diff*.png
+</div>
+<!--l. 1085--><p class="nopar" >
+</p><!--l. 1087--><p class="noindent" >
+</p>
+   <h4 class="likesubsectionHead"><a 
+ id="x1-260006"></a>Example: Quantization of all <!--l. 1087--><math 
+ xmlns="http://www.w3.org/1998/Math/MathML"  
+display="inline" ><mi 
+>H</mi></math>
+subbands</h4>
+                                                                  
+
+                                                                  
+   <div class="verbatim" id="verbatim-17">
+predictor=2
+ <br />
+ <br /># You must be in the ’src’ directory.
+ <br />
+ <br />yes | cp ../sequences/stockholm/* /tmp
+ <br />python3 -O MDWT.py -p /tmp/ -N 3
+ <br />python3 -O MCDWT.py -P $predictor -p /tmp/ -N 3
  <br />
  <br />q_step=32
  <br />python3 ../tools/quantize.py -i /tmp/LH000.png -o /tmp/LH000.png -q $q_step
@@ -8025,16 +8060,18 @@ subbands</h4>
  <br />python3 ../tools/quantize.py -i /tmp/HL002.png -o /tmp/HL002.png -q $q_step
  <br />python3 ../tools/quantize.py -i /tmp/HH002.png -o /tmp/HH002.png -q $q_step
  <br />
- <br />python3 -O MCDWT.py -p /tmp/ -b -N 3
+ <br />python3 -O MCDWT.py -P $predictor -p /tmp/ -b -N 3
  <br />python3 -O MDWT.py -p /tmp/ -b -N 3
  <br />
  <br />for i in /tmp/00?.png; do python ../tools/substract_offset.py -i $i -o $i.png; done; animate /tmp/00?.png.png
+ <br />
+ <br />rm -f /tmp/diff*.png; for i in {0..2}; do ii=$(printf &#x0022;%03d&#x0022; $i); bash ../tools/show_differences.sh -1 /tmp/$ii.png -2 ../sequences/stockholm/$ii.png -o /tmp/diff_$ii.png; done; animate /tmp/diff*.png
 </div>
-<!--l. 1069--><p class="nopar" >
-</p><!--l. 1082--><p class="noindent" >
+<!--l. 1114--><p class="nopar" >
+</p><!--l. 1127--><p class="noindent" >
 </p>
    <h4 class="likesubsectionHead"><a 
- id="x1-270006"></a>Quantization of all <!--l. 1082--><math 
+ id="x1-270006"></a>Quantization of all <!--l. 1127--><math 
  xmlns="http://www.w3.org/1998/Math/MathML"  
 display="inline" ><mi 
 >H</mi></math>
@@ -8042,7 +8079,7 @@ subbands</h4>
                                                                   
 
                                                                   
-   <div class="verbatim" id="verbatim-17">
+   <div class="verbatim" id="verbatim-18">
 # You must be in the ’src’ directory.
  <br />
  <br />yes | cp ../sequences/stockholm/* /tmp
@@ -8068,15 +8105,15 @@ subbands</h4>
  <br />
  <br />for i in /tmp/00?.png; do python ../tools/substract_offset.py -i $i -o $i.png; done; animate /tmp/00?.png.png
 </div>
-<!--l. 1108--><p class="nopar" >
-</p><!--l. 1112--><p class="noindent" >
+<!--l. 1153--><p class="nopar" >
+</p><!--l. 1157--><p class="noindent" >
 </p>
    <h3 class="likesectionHead"><a 
  id="x1-280006"></a>Lossy compression eﬀects</h3>
-<!--l. 1115--><p class="noindent" >
+<!--l. 1160--><p class="noindent" >
 </p>
    <h4 class="likesubsectionHead"><a 
- id="x1-290006"></a>Compression of (<!--l. 1115--><math 
+ id="x1-290006"></a>Compression of (<!--l. 1160--><math 
  xmlns="http://www.w3.org/1998/Math/MathML"  
 display="inline" ><mi 
 >H</mi></math>)
@@ -8084,7 +8121,7 @@ MC subbands</h4>
                                                                   
 
                                                                   
-   <div class="verbatim" id="verbatim-18">
+   <div class="verbatim" id="verbatim-19">
 # You must be in the ’src’ directory.
  <br />
  <br />yes | cp ../sequences/stockholm/* /tmp
@@ -8107,11 +8144,11 @@ MC subbands</h4>
  <br />
  <br />for i in /tmp/00?.png; do python ../tools/substract_offset.py -i $i -o $i.png; done; animate /tmp/00?.png.png
 </div>
-<!--l. 1138--><p class="nopar" >
-</p><!--l. 1140--><p class="noindent" >
+<!--l. 1183--><p class="nopar" >
+</p><!--l. 1185--><p class="noindent" >
 </p>
    <h4 class="likesubsectionHead"><a 
- id="x1-300006"></a>Quantization of all <!--l. 1140--><math 
+ id="x1-300006"></a>Quantization of all <!--l. 1185--><math 
  xmlns="http://www.w3.org/1998/Math/MathML"  
 display="inline" ><mi 
 >H</mi></math>
@@ -8119,7 +8156,7 @@ subbands</h4>
                                                                   
 
                                                                   
-   <div class="verbatim" id="verbatim-19">
+   <div class="verbatim" id="verbatim-20">
 # You must be in the ’src’ directory.
  <br />
  <br />yes | cp ../sequences/stockholm/* /tmp
@@ -8151,11 +8188,11 @@ subbands</h4>
  <br />
  <br />for i in /tmp/00?.png; do python ../tools/substract_offset.py -i $i -o $i.png; done; animate /tmp/00?.png.png
 </div>
-<!--l. 1172--><p class="nopar" >
-</p><!--l. 1174--><p class="noindent" >
+<!--l. 1217--><p class="nopar" >
+</p><!--l. 1219--><p class="noindent" >
 </p>
    <h4 class="likesubsectionHead"><a 
- id="x1-310006"></a>Quantization of all <!--l. 1174--><math 
+ id="x1-310006"></a>Quantization of all <!--l. 1219--><math 
  xmlns="http://www.w3.org/1998/Math/MathML"  
 display="inline" ><mi 
 >H</mi></math>
@@ -8163,7 +8200,7 @@ subbands</h4>
                                                                   
 
                                                                   
-   <div class="verbatim" id="verbatim-20">
+   <div class="verbatim" id="verbatim-21">
 # You must be in the ’src’ directory.
  <br />
  <br />yes | cp ../sequences/stockholm/* /tmp
@@ -8201,7 +8238,7 @@ subbands</h4>
  <br />
  <br />for i in /tmp/00?.png; do python ../tools/substract_offset.py -i $i -o $i.png; done; animate /tmp/00?.png.png
 </div>
-<!--l. 1212--><p class="nopar" >
+<!--l. 1257--><p class="nopar" >
 <a 
  id="Q1-1-47"></a>
 </p>
