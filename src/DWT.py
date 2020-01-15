@@ -105,6 +105,7 @@ class DWT:
         HL = decomposition[1][1]
         HH = decomposition[1][2]        
         image = np.ndarray((LL.shape[0]*2, LL.shape[1]*2, 3), np.float64)
+
         for c in range(3):
             image[:,:,c] = pywt.idwt2((LL[:,:,c], (LH[:,:,c], HL[:,:,c], HH[:,:,c])), self.wavelet, mode='per')
         return image

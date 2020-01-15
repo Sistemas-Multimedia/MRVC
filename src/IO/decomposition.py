@@ -154,22 +154,26 @@ def read(prefix = "/tmp/", index = "000"):
     LH, HL, HH = readH(prefix, index)
 
     try:
-        if LL==None:
+        if LL == None:
+            #if LH != None:
             LL = np.zeros(LH.shape, np.float64)
     except ValueError:
         pass
     try:
-        if LH==None:
+        if LH == None:
+            #if LL != None:
             LH = np.zeros(LL.shape, np.float64)
     except ValueError:
         pass
     try:
-        if HL==None:
+        if HL == None:
+            #if LL != None:
             HL = np.zeros(LL.shape, np.float64)
     except ValueError:
         pass
     try:
-        if HH==None:
+        if HH == None:
+            #if LL != None:
             HH = np.zeros(LL.shape, np.float64)
     except ValueError:
         pass
