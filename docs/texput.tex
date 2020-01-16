@@ -317,7 +317,11 @@ animate /tmp/diff*.png
 %}}}
 
 \subsection*{Example: Interpolating with the 2D DWT}
-If we apply an inversr 
+If we apply an inverse transform to the original images, supposing
+that they are the low-frequency subbands of the input decomposition,
+and that the high-frequency subbands are zero, we can interpolate each
+image of the original sequence by a factor of $2$ in each direction.
+
 \begin{verbatim}
 # You must be in the 'src' directory.
 rm /tmp/*.png
