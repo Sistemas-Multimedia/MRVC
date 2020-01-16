@@ -157,27 +157,27 @@ $HH$.
 \begin{verbatim}
 # You must be in the 'src' directory.
 
-# Copy an image (the output directory must be the same as the input one):
+# Copy an image (the output directory must be the same as the input one).
 rm /tmp/*.png
 cp ../sequences/stockholm/000.png /tmp
 
-# 1-iteration 2D DWT:
+# 1-iteration 2D DWT.
 python3 -O DWT.py -p /tmp/ -i 000
 
-# Visualize the subbands:
+# Visualize the subbands.
 display -normalize /tmp/LL000.png # <- LL1
 display -normalize /tmp/LH000.png # <- LH1
 display -normalize /tmp/HL000.png # <- HL1
 display -normalize /tmp/HH000.png # <- HH1
 
-# 1-iteration 2D iDWT:
+# 1-iteration 2D iDWT.
 python3 -O DWT.py -b -p /tmp/ -i 000
 
-# Visualize the reconstruction:
+# Visualize the reconstruction.
 python3 ../tools/substract_offset.py -i /tmp/000.png -o /tmp/1.png
 display /tmp/1.png
 
-# Show diferences (PyWavelets uses floating point arithmetic):
+# Show diferences (PyWavelets uses floating point arithmetic).
 ../tools/show_differences.sh -1 /tmp/000.png -2 ../sequences/stockholm/000.png -o /tmp/diffs.png
 display /tmp/diffs.png
 \end{verbatim}
@@ -186,17 +186,17 @@ display /tmp/diffs.png
 \begin{verbatim}
 # You must be in the 'src' directory.
 
-# Copy a image (the output directory must be the same than the input one):
+# Copy a image (the output directory must be the same than the input one).
 rm /tmp/*.png
 cp ../sequences/stockholm/000.png /tmp
 
-# First iteration:
+# First iteration.
 python3 -O DWT.py -p /tmp/ -i 000
 
-# Second iteration:
+# Second iteration.
 python3 -O DWT.py -p /tmp/LL -i 000
 
-# Visualize the subbands:
+# Visualize the subbands.
 ls -l /tmp/*.png
 display -normalize /tmp/LL000.png # <- LL1  
 display -normalize /tmp/LH000.png # <- LH1  
@@ -207,16 +207,16 @@ display -normalize /tmp/LLLH000.png # <- LH2
 display -normalize /tmp/LLHL000.png # <- HL2
 display -normalize /tmp/LLHH000.png # <- HH2
 
-# Reverse second iteration:
+# Reverse second iteration.
 python3 -O DWT.py -b -p /tmp/LL -i 000
 display -normalize /tmp/LL000.png
 
-# Reverse first iteration:
+# Reverse first iteration.
 python3 -O DWT.py -b -p /tmp/ -i 000
 python3 ../tools/substract_offset.py -i /tmp/000.png -o /tmp/1.png
 display /tmp/1.png
 
-# Show diferences:
+# Show diferences.
 ../tools/show_differences.sh -1 /tmp/000.png -2 ../sequences/stockholm/000.png -o /tmp/diffs.png
 display /tmp/diffs.png
 \end{verbatim}
@@ -261,13 +261,13 @@ transformed independently.
 # You must be in the 'src' directory.
 rm /tmp/*.png
 
-# Create the output directory for the 1st-level decompositions:
+# Create the output directory for the 1st-level decompositions.
 yes | cp ../sequences/stockholm/*.png /tmp
 
-# 2D 1-iteration MDWT:
+# 2D 1-iteration MDWT.
 python3 -O MDWT.py -p /tmp/ -N 5
 
-# Visualize the subbands:
+# Visualize the subbands.
 for i in /tmp/LL00?.png; do convert -normalize $i $i.norm; done
 animate /tmp/LL*.norm
 for i in /tmp/LH00?.png; do convert -normalize $i $i.norm; done
@@ -277,14 +277,14 @@ animate /tmp/HL*.norm
 for i in /tmp/HH00?.png; do convert -normalize $i $i.norm; done
 animate /tmp/HH*.norm
 
-# 1-iteration iMDWT:
+# 1-iteration iMDWT.
 python3 -O MDWT.py -b -p /tmp/ -N 5
 
-# Visualization of the reconstruction:
+# Visualization of the reconstruction.
 for i in /tmp/???.png; do python3 ../tools/substract_offset.py -i $i -o $i.png; done
 animate /tmp/???.png.png
 
-# Visualization of the residue:
+# Visualization of the residue.
 for i in {0..4}; do ii=$(printf "%03d" $i); bash ../tools/show_differences.sh -1 /tmp/$ii.png -2 ../sequences/stockholm/$ii.png -o /tmp/diff_$ii.png; done
 animate /tmp/diff*.png
 \end{verbatim}
@@ -294,22 +294,22 @@ animate /tmp/diff*.png
 # You must be in the 'src' directory.
 rm /tmp/*.png
 
-# Create the output directory for the 1st-level decompositions:
+# Create the output directory for the 1st-level decompositions.
 yes | cp ../sequences/stockholm/*.png /tmp
 
-# 2-iterations MDWT:
+# 2-iterations MDWT.
 python3 -O MDWT.py -p /tmp/ -N 5
 python3 -O MDWT.py -p /tmp/LL -N 5
 
-# 2-iterations iMDWT:
+# 2-iterations iMDWT.
 python3 -O MDWT.py -b -p /tmp/LL -N 5
 python3 -O MDWT.py -b -p /tmp/ -N 5
 
-# Visualization of the reconstruction:
+# Visualization of the reconstruction.
 for i in /tmp/???.png; do python3 ../tools/substract_offset.py -i $i -o $i.png; done
 animate /tmp/???.png.png
 
-# Visualization of the residue:
+# Visualization of the residue.
 for i in {0..4}; do ii=$(printf "%03d" $i); bash ../tools/show_differences.sh -1 /tmp/$ii.png -2 ../sequences/stockholm/$ii.png -o /tmp/diff_$ii.png; done
 animate /tmp/diff*.png
 \end{verbatim}
@@ -322,17 +322,17 @@ If we apply an inversr
 # You must be in the 'src' directory.
 rm /tmp/*.png
 
-# Copy the current images as LL subbands:
+# Copy the current images as LL subbands.
 rm /tmp/*.png
 for i in {0..4}; do
   image_number=$(printf "%03d" $i)
   cp ../sequences/stockholm/$image_number.png /tmp/LL$image_number.png
 done
 
-# Apply the inverse DWT:
+# Apply the inverse DWT.
 python3 -O MDWT.py -b -p /tmp/ -N 5
 
-# Visualization of the reconstruction:
+# Visualization of the reconstruction.
 for i in /tmp/???.png; do python3 ../tools/substract_offset.py -i $i -o $i.png; done
 animate /tmp/???.png.png
 
@@ -1028,10 +1028,10 @@ predictor=2
 
 yes | cp ../sequences/stockholm/*.png /tmp
 
-# 1D 1-iteration MDWT:
+# 1D 1-iteration MDWT.
 python3 -O MDWT.py -p /tmp/
 
-# 1D 1-iteration MCDWT:
+# 1D 1-iteration MCDWT.
 python3 -O MCDWT.py -p /tmp/
 
 # Let's clear the motion compensated subbands and reconstruct the sequence ...
@@ -1045,16 +1045,16 @@ rm -f /tmp/LH003.png
 rm -f /tmp/HL003.png
 rm -f /tmp/HH003.png
 
-# 1D 1-iteration iMCDWT:
+# 1D 1-iteration iMCDWT.
 python3 -O MCDWT.py -P $predictor -b -p /tmp/
 
-# 1D 1-iteration iMDWT:
+# 1D 1-iteration iMDWT.
 python3 -O MDWT.py -b -p /tmp/
 
-# Visualization of the reconstruction:
+# Visualization of the reconstruction.
 for i in /tmp/00?.png; do python ../tools/substract_offset.py -i $i -o $i.png; done; animate /tmp/00?.png.png
 
-# Visualization of the differences with the original sequence:
+# Visualization of the differences with the original sequence.
 rm -f /tmp/diff*.png; for i in {0..4}; do ii=$(printf "%03d" $i); bash ../tools/show_differences.sh -1 /tmp/$ii.png -2 ../sequences/stockholm/$ii.png -o /tmp/diff_$ii.png; done; animate /tmp/diff*.png
 \end{verbatim}
 
