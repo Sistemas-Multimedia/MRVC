@@ -59,7 +59,7 @@ href="#x1-200005.3" id="QQ2-1-33">Scalability provided by MCDWT</a></span>
 <br />   <span class="sectionToc" >6 <a 
 href="#x1-220006" id="QQ2-1-35">Adaptive motion compensation based on the distortion of the prediction error</a></span>
 <br />   <span class="sectionToc" ><a 
-href="#Q1-1-47">References</a></span>
+href="#Q1-1-46">References</a></span>
    </div>
 <!--l. 8--><p class="noindent" >
 </p>
@@ -7970,8 +7970,9 @@ subbands</h4>
 predictor=2
  <br />
  <br /># You must be in the ’src’ directory.
+ <br />rm /tmp/*.png
+ <br />cp ../sequences/stockholm/*.png /tmp
  <br />
- <br />yes | cp ../sequences/stockholm/*.png /tmp
  <br />
  <br /># 1D 1-iteration MDWT.
  <br />python3 -O MDWT.py -p /tmp/
@@ -8002,12 +8003,15 @@ predictor=2
  <br /># Visualization of the differences with the original sequence.
  <br />rm -f /tmp/diff*.png; for i in {0..4}; do ii=$(printf &#x0022;%03d&#x0022; $i); bash ../tools/show_differences.sh -1 /tmp/$ii.png -2 ../sequences/stockholm/$ii.png -o /tmp/diff_$ii.png; done; animate /tmp/diff*.png
 </div>
-<!--l. 1063--><p class="nopar" >
-</p><!--l. 1068--><p class="noindent" >
+<!--l. 1064--><p class="nopar" >
+</p><!--l. 1069--><p class="noindent" >
 </p>
    <h4 class="likesubsectionHead"><a 
- id="x1-250006"></a>Example: Efects of the quantization of temporal
-<!--l. 1068--><math 
+ id="x1-250006"></a>Example: Eﬀects caused by the quantization of MC
+                                                                  
+
+                                                                  
+<!--l. 1069--><math 
  xmlns="http://www.w3.org/1998/Math/MathML"  
 display="inline" ><mi 
 >H</mi></math>
@@ -8019,34 +8023,43 @@ subbands</h4>
 predictor=2
  <br />
  <br /># You must be in the ’src’ directory.
+ <br />rm /tmp/*.png
+ <br />cp ../sequences/stockholm/* /tmp
  <br />
- <br />yes | cp ../sequences/stockholm/* /tmp
- <br />python3 -O MDWT.py -p /tmp/ -N 3
- <br />python3 -O MCDWT.py -P $predictor -p /tmp/ -N 3
+ <br />python3 -O MDWT.py -p /tmp/
+ <br />python3 -O MCDWT.py -P $predictor -p /tmp/
  <br />
  <br />q_step=32
- <br />python3 ../tools/show_statistics.py -i /tmp/LH001.png
+ <br />#python3 ../tools/show_statistics.py -i /tmp/LH001.png
  <br />python3 ../tools/quantize.py -i /tmp/LH001.png -o /tmp/LH001.png -q $q_step
- <br />python3 ../tools/show_statistics.py -i /tmp/LH001.png
+ <br />#python3 ../tools/show_statistics.py -i /tmp/LH001.png
  <br />python3 ../tools/quantize.py -i /tmp/HL001.png -o /tmp/HL001.png -q $q_step
  <br />python3 ../tools/quantize.py -i /tmp/HH001.png -o /tmp/HH001.png -q $q_step
  <br />
- <br />python3 -O MCDWT.py -P $predictor -p /tmp/ -b -N 3
- <br />python3 -O MDWT.py -p /tmp/ -b -N 3
+ <br />python3 ../tools/quantize.py -i /tmp/LH002.png -o /tmp/LH002.png -q $q_step
+ <br />python3 ../tools/quantize.py -i /tmp/HL002.png -o /tmp/HL002.png -q $q_step
+ <br />python3 ../tools/quantize.py -i /tmp/HH002.png -o /tmp/HH002.png -q $q_step
+ <br />
+ <br />python3 ../tools/quantize.py -i /tmp/LH003.png -o /tmp/LH003.png -q $q_step
+ <br />python3 ../tools/quantize.py -i /tmp/HL003.png -o /tmp/HL003.png -q $q_step
+ <br />python3 ../tools/quantize.py -i /tmp/HH003.png -o /tmp/HH003.png -q $q_step
+ <br />
+ <br />python3 -O MCDWT.py -P $predictor -p /tmp/ -b
+ <br />python3 -O MDWT.py -p /tmp/ -b
  <br />
  <br />for i in /tmp/00?.png; do python ../tools/substract_offset.py -i $i -o $i.png; done; animate /tmp/00?.png.png
  <br />
- <br />rm -f /tmp/diff*.png; for i in {0..2}; do ii=$(printf &#x0022;%03d&#x0022; $i); bash ../tools/show_differences.sh -1 /tmp/$ii.png -2 ../sequences/stockholm/$ii.png -o /tmp/diff_$ii.png; done; animate /tmp/diff*.png
+ <br />rm -f /tmp/diff*.png; for i in {0..4}; do ii=$(printf &#x0022;%03d&#x0022; $i); bash ../tools/show_differences.sh -1 /tmp/$ii.png -2 ../sequences/stockholm/$ii.png -o /tmp/diff_$ii.png; done; animate /tmp/diff*.png
 </div>
-<!--l. 1091--><p class="nopar" >
-</p><!--l. 1093--><p class="noindent" >
+<!--l. 1101--><p class="nopar" >
+</p><!--l. 1103--><p class="noindent" >
 </p>
    <h4 class="likesubsectionHead"><a 
- id="x1-260006"></a>Example: Quantization of all <!--l. 1093--><math 
+ id="x1-260006"></a>Example: Quantization of all <!--l. 1103--><math 
  xmlns="http://www.w3.org/1998/Math/MathML"  
 display="inline" ><mi 
 >H</mi></math>
-subbands</h4>
+subbands (MC and intra)</h4>
                                                                   
 
                                                                   
@@ -8054,34 +8067,103 @@ subbands</h4>
 predictor=2
  <br />
  <br /># You must be in the ’src’ directory.
+ <br />rm /tmp/*.png
+ <br />cp ../sequences/stockholm/* /tmp
  <br />
- <br />yes | cp ../sequences/stockholm/* /tmp
- <br />python3 -O MDWT.py -p /tmp/ -N 3
- <br />python3 -O MCDWT.py -P $predictor -p /tmp/ -N 3
+ <br />python3 -O MDWT.py -p /tmp/
+ <br />python3 -O MCDWT.py -P $predictor -p /tmp/
  <br />
  <br />q_step=32
  <br />python3 ../tools/quantize.py -i /tmp/LH000.png -o /tmp/LH000.png -q $q_step
  <br />python3 ../tools/quantize.py -i /tmp/HL000.png -o /tmp/HL000.png -q $q_step
  <br />python3 ../tools/quantize.py -i /tmp/HH000.png -o /tmp/HH000.png -q $q_step
+ <br />
  <br />python3 ../tools/quantize.py -i /tmp/LH001.png -o /tmp/LH001.png -q $q_step
  <br />python3 ../tools/quantize.py -i /tmp/HL001.png -o /tmp/HL001.png -q $q_step
  <br />python3 ../tools/quantize.py -i /tmp/HH001.png -o /tmp/HH001.png -q $q_step
+ <br />
  <br />python3 ../tools/quantize.py -i /tmp/LH002.png -o /tmp/LH002.png -q $q_step
  <br />python3 ../tools/quantize.py -i /tmp/HL002.png -o /tmp/HL002.png -q $q_step
  <br />python3 ../tools/quantize.py -i /tmp/HH002.png -o /tmp/HH002.png -q $q_step
  <br />
- <br />python3 -O MCDWT.py -P $predictor -p /tmp/ -b -N 3
- <br />python3 -O MDWT.py -p /tmp/ -b -N 3
+ <br />python3 ../tools/quantize.py -i /tmp/LH003.png -o /tmp/LH003.png -q $q_step
+ <br />python3 ../tools/quantize.py -i /tmp/HL003.png -o /tmp/HL003.png -q $q_step
+ <br />python3 ../tools/quantize.py -i /tmp/HH003.png -o /tmp/HH003.png -q $q_step
+ <br />
+ <br />python3 ../tools/quantize.py -i /tmp/LH004.png -o /tmp/LH004.png -q $q_step
+ <br />python3 ../tools/quantize.py -i /tmp/HL004.png -o /tmp/HL004.png -q $q_step
+ <br />python3 ../tools/quantize.py -i /tmp/HH004.png -o /tmp/HH004.png -q $q_step
+ <br />
+ <br />python3 -O MCDWT.py -P $predictor -p /tmp/ -b
+ <br />python3 -O MDWT.py -p /tmp/ -b
  <br />
  <br />for i in /tmp/00?.png; do python ../tools/substract_offset.py -i $i -o $i.png; done; animate /tmp/00?.png.png
  <br />
- <br />rm -f /tmp/diff*.png; for i in {0..2}; do ii=$(printf &#x0022;%03d&#x0022; $i); bash ../tools/show_differences.sh -1 /tmp/$ii.png -2 ../sequences/stockholm/$ii.png -o /tmp/diff_$ii.png; done; animate /tmp/diff*.png
+ <br />rm -f /tmp/diff*.png; for i in {0..4}; do ii=$(printf &#x0022;%03d&#x0022; $i); bash ../tools/show_differences.sh -1 /tmp/$ii.png -2 ../sequences/stockholm/$ii.png -o /tmp/diff_$ii.png; done; animate /tmp/diff*.png
 </div>
-<!--l. 1120--><p class="nopar" >
-</p><!--l. 1133--><p class="noindent" >
+<!--l. 1141--><p class="nopar" >
+</p><!--l. 1143--><p class="noindent" >
+</p>
+                                                                  
+
+                                                                  
+   <h4 class="likesubsectionHead"><a 
+ id="x1-270006"></a>Example: Quantization of all subbands</h4>
+                                                                  
+
+                                                                  
+   <div class="verbatim" id="verbatim-18">
+predictor=2
+ <br />
+ <br /># You must be in the ’src’ directory.
+ <br />rm /tmp/*.png
+ <br />cp ../sequences/stockholm/* /tmp
+ <br />
+ <br />python3 -O MDWT.py -p /tmp/
+ <br />python3 -O MCDWT.py -P $predictor -p /tmp/
+ <br />
+ <br />q_step=128
+ <br />python3 ../tools/quantize.py -i /tmp/LL000.png -o /tmp/LL000.png -q $q_step
+ <br />python3 ../tools/quantize.py -i /tmp/LH000.png -o /tmp/LH000.png -q $q_step
+ <br />python3 ../tools/quantize.py -i /tmp/HL000.png -o /tmp/HL000.png -q $q_step
+ <br />python3 ../tools/quantize.py -i /tmp/HH000.png -o /tmp/HH000.png -q $q_step
+ <br />
+ <br />python3 ../tools/quantize.py -i /tmp/LL001.png -o /tmp/LL001.png -q $q_step
+ <br />python3 ../tools/quantize.py -i /tmp/LH001.png -o /tmp/LH001.png -q $q_step
+ <br />python3 ../tools/quantize.py -i /tmp/HL001.png -o /tmp/HL001.png -q $q_step
+ <br />python3 ../tools/quantize.py -i /tmp/HH001.png -o /tmp/HH001.png -q $q_step
+ <br />
+ <br />python3 ../tools/quantize.py -i /tmp/LL002.png -o /tmp/LL002.png -q $q_step
+ <br />python3 ../tools/quantize.py -i /tmp/LH002.png -o /tmp/LH002.png -q $q_step
+ <br />python3 ../tools/quantize.py -i /tmp/HL002.png -o /tmp/HL002.png -q $q_step
+ <br />python3 ../tools/quantize.py -i /tmp/HH002.png -o /tmp/HH002.png -q $q_step
+ <br />
+ <br />python3 ../tools/quantize.py -i /tmp/LL003.png -o /tmp/LL003.png -q $q_step
+ <br />python3 ../tools/quantize.py -i /tmp/LH003.png -o /tmp/LH003.png -q $q_step
+ <br />python3 ../tools/quantize.py -i /tmp/HL003.png -o /tmp/HL003.png -q $q_step
+ <br />python3 ../tools/quantize.py -i /tmp/HH003.png -o /tmp/HH003.png -q $q_step
+ <br />
+ <br />python3 ../tools/quantize.py -i /tmp/LL004.png -o /tmp/LL004.png -q $q_step
+ <br />python3 ../tools/quantize.py -i /tmp/LH004.png -o /tmp/LH004.png -q $q_step
+ <br />python3 ../tools/quantize.py -i /tmp/HL004.png -o /tmp/HL004.png -q $q_step
+ <br />python3 ../tools/quantize.py -i /tmp/HH004.png -o /tmp/HH004.png -q $q_step
+ <br />
+ <br />python3 -O MCDWT.py -P $predictor -p /tmp/ -b
+ <br />python3 -O MDWT.py -p /tmp/ -b
+ <br />
+ <br />for i in /tmp/00?.png; do python ../tools/substract_offset.py -i $i -o $i.png; done; animate /tmp/00?.png.png
+ <br />
+ <br />rm -f /tmp/diff*.png; for i in {0..4}; do ii=$(printf &#x0022;%03d&#x0022; $i); bash ../tools/show_differences.sh -1 /tmp/$ii.png -2 ../sequences/stockholm/$ii.png -o /tmp/diff_$ii.png; done; animate /tmp/diff*.png
+</div>
+<!--l. 1186--><p class="nopar" >
+                                                                  
+
+                                                                  
+</p><!--l. 1191--><p class="noindent" >
 </p>
    <h4 class="likesubsectionHead"><a 
- id="x1-270006"></a>Quantization of all <!--l. 1133--><math 
+ id="x1-280006"></a>Example: Lossy compression of the MC
+<!--l. 1191--><math 
  xmlns="http://www.w3.org/1998/Math/MathML"  
 display="inline" ><mi 
 >H</mi></math>
@@ -8089,76 +8171,53 @@ subbands</h4>
                                                                   
 
                                                                   
-   <div class="verbatim" id="verbatim-18">
-# You must be in the ’src’ directory.
- <br />
- <br />yes | cp ../sequences/stockholm/* /tmp
- <br />python3 -O MDWT.py -p /tmp/ -N 3
- <br />python3 -O MCDWT.py -p /tmp/ -N 3
- <br />
- <br />q_step=128
- <br />python3 ../tools/quantize.py -i /tmp/LL000.png -o /tmp/LL000.png -q $q_step
- <br />python3 ../tools/quantize.py -i /tmp/LH000.png -o /tmp/LH000.png -q $q_step
- <br />python3 ../tools/quantize.py -i /tmp/HL000.png -o /tmp/HL000.png -q $q_step
- <br />python3 ../tools/quantize.py -i /tmp/HH000.png -o /tmp/HH000.png -q $q_step
- <br />python3 ../tools/quantize.py -i /tmp/LL001.png -o /tmp/LL001.png -q $q_step
- <br />python3 ../tools/quantize.py -i /tmp/LH001.png -o /tmp/LH001.png -q $q_step
- <br />python3 ../tools/quantize.py -i /tmp/HL001.png -o /tmp/HL001.png -q $q_step
- <br />python3 ../tools/quantize.py -i /tmp/HH001.png -o /tmp/HH001.png -q $q_step
- <br />python3 ../tools/quantize.py -i /tmp/LL002.png -o /tmp/LL002.png -q $q_step
- <br />python3 ../tools/quantize.py -i /tmp/LH002.png -o /tmp/LH002.png -q $q_step
- <br />python3 ../tools/quantize.py -i /tmp/HL002.png -o /tmp/HL002.png -q $q_step
- <br />python3 ../tools/quantize.py -i /tmp/HH002.png -o /tmp/HH002.png -q $q_step
- <br />
- <br />python3 -O MCDWT.py -p /tmp/ -b -N 3
- <br />python3 -O MDWT.py -p /tmp/ -b -N 3
- <br />
- <br />for i in /tmp/00?.png; do python ../tools/substract_offset.py -i $i -o $i.png; done; animate /tmp/00?.png.png
-</div>
-<!--l. 1159--><p class="nopar" >
-</p><!--l. 1163--><p class="noindent" >
-</p>
-   <h3 class="likesectionHead"><a 
- id="x1-280006"></a>Lossy compression eﬀects</h3>
-<!--l. 1166--><p class="noindent" >
-</p>
-   <h4 class="likesubsectionHead"><a 
- id="x1-290006"></a>Compression of (<!--l. 1166--><math 
- xmlns="http://www.w3.org/1998/Math/MathML"  
-display="inline" ><mi 
->H</mi></math>)
-MC subbands</h4>
-                                                                  
-
-                                                                  
    <div class="verbatim" id="verbatim-19">
-# You must be in the ’src’ directory.
+predictor=2
  <br />
- <br />yes | cp ../sequences/stockholm/* /tmp
- <br />python3 -O MDWT.py -p /tmp/ -N 3
- <br />python3 -O MCDWT.py -p /tmp/ -N 3
+ <br /># You must be in the ’src’ directory.
+ <br />rm /tmp/*.png
+ <br />cp ../sequences/stockholm/* /tmp
+ <br />
+ <br />python3 -O MDWT.py -p /tmp/
+ <br />python3 -O MCDWT.py -P $predictor -p /tmp/
  <br />
  <br />quality=50
- <br />#python3 ../tools/show_statistics.py -i /tmp/LH001.png
  <br />python3 ../tools/compress.py -i /tmp/LH001.png -o /tmp/LH001.png -q $quality
- <br />#python3 ../tools/show_statistics.py -i /tmp/LH001.png
  <br />python3 ../tools/add_offset.py -i /tmp/LH001.png -o /tmp/LH001.png -f 32640
- <br />#python3 ../tools/show_statistics.py -i /tmp/LH001.png
  <br />python3 ../tools/compress.py -i /tmp/HL001.png -o /tmp/HL001.png -q $quality
  <br />python3 ../tools/add_offset.py -i /tmp/HL001.png -o /tmp/HL001.png -f 32640
  <br />python3 ../tools/compress.py -i /tmp/HH001.png -o /tmp/HH001.png -q $quality
  <br />python3 ../tools/add_offset.py -i /tmp/HH001.png -o /tmp/HH001.png -f 32640
  <br />
- <br />python3 -O MCDWT.py -p /tmp/ -b -N 3
- <br />python3 -O MDWT.py -p /tmp/ -b -N 3
+ <br />python3 ../tools/compress.py -i /tmp/LH002.png -o /tmp/LH002.png -q $quality
+ <br />python3 ../tools/add_offset.py -i /tmp/LH002.png -o /tmp/LH002.png -f 32640
+ <br />python3 ../tools/compress.py -i /tmp/HL002.png -o /tmp/HL002.png -q $quality
+ <br />python3 ../tools/add_offset.py -i /tmp/HL002.png -o /tmp/HL002.png -f 32640
+ <br />python3 ../tools/compress.py -i /tmp/HH002.png -o /tmp/HH002.png -q $quality
+ <br />python3 ../tools/add_offset.py -i /tmp/HH002.png -o /tmp/HH002.png -f 32640
+ <br />
+ <br />python3 ../tools/compress.py -i /tmp/LH003.png -o /tmp/LH003.png -q $quality
+ <br />python3 ../tools/add_offset.py -i /tmp/LH003.png -o /tmp/LH003.png -f 32640
+ <br />python3 ../tools/compress.py -i /tmp/HL003.png -o /tmp/HL003.png -q $quality
+ <br />python3 ../tools/add_offset.py -i /tmp/HL003.png -o /tmp/HL003.png -f 32640
+ <br />python3 ../tools/compress.py -i /tmp/HH003.png -o /tmp/HH003.png -q $quality
+ <br />python3 ../tools/add_offset.py -i /tmp/HH003.png -o /tmp/HH003.png -f 32640
+ <br />
+ <br />python3 -O MCDWT.py -P $predictor -p /tmp/ -b
+ <br />python3 -O MDWT.py -p /tmp/ -b
  <br />
  <br />for i in /tmp/00?.png; do python ../tools/substract_offset.py -i $i -o $i.png; done; animate /tmp/00?.png.png
+ <br />
+ <br />rm -f /tmp/diff*.png; for i in {0..4}; do ii=$(printf &#x0022;%03d&#x0022; $i); bash ../tools/show_differences.sh -1 /tmp/$ii.png -2 ../sequences/stockholm/$ii.png -o /tmp/diff_$ii.png; done; animate /tmp/diff*.png
 </div>
-<!--l. 1189--><p class="nopar" >
-</p><!--l. 1191--><p class="noindent" >
+<!--l. 1230--><p class="nopar" >
+</p><!--l. 1232--><p class="noindent" >
+                                                                  
+
+                                                                  
 </p>
    <h4 class="likesubsectionHead"><a 
- id="x1-300006"></a>Quantization of all <!--l. 1191--><math 
+ id="x1-290006"></a>Example: Lossy compression of all <!--l. 1232--><math 
  xmlns="http://www.w3.org/1998/Math/MathML"  
 display="inline" ><mi 
 >H</mi></math>
@@ -8167,11 +8226,14 @@ subbands</h4>
 
                                                                   
    <div class="verbatim" id="verbatim-20">
-# You must be in the ’src’ directory.
+predictor=2
  <br />
- <br />yes | cp ../sequences/stockholm/* /tmp
- <br />python3 -O MDWT.py -p /tmp/ -N 3
- <br />python3 -O MCDWT.py -p /tmp/ -N 3
+ <br /># You must be in the ’src’ directory.
+ <br />rm /tmp/*.png
+ <br />cp ../sequences/stockholm/* /tmp
+ <br />
+ <br />python3 -O MDWT.py -p /tmp/
+ <br />python3 -O MCDWT.py -P $predictor -p /tmp/
  <br />
  <br />quality=10
  <br />python3 ../tools/compress.py -i /tmp/LH000.png -o /tmp/LH000.png -q $quality
@@ -8180,12 +8242,14 @@ subbands</h4>
  <br />python3 ../tools/add_offset.py -i /tmp/HL000.png -o /tmp/HL000.png -f 32640
  <br />python3 ../tools/compress.py -i /tmp/HH000.png -o /tmp/HH000.png -q $quality
  <br />python3 ../tools/add_offset.py -i /tmp/HH000.png -o /tmp/HH000.png -f 32640
+ <br />
  <br />python3 ../tools/compress.py -i /tmp/LH001.png -o /tmp/LH001.png -q $quality
  <br />python3 ../tools/add_offset.py -i /tmp/LH001.png -o /tmp/LH001.png -f 32640
  <br />python3 ../tools/compress.py -i /tmp/HL001.png -o /tmp/HL001.png -q $quality
  <br />python3 ../tools/add_offset.py -i /tmp/HL001.png -o /tmp/HL001.png -f 32640
  <br />python3 ../tools/compress.py -i /tmp/HH001.png -o /tmp/HH001.png -q $quality
  <br />python3 ../tools/add_offset.py -i /tmp/HH001.png -o /tmp/HH001.png -f 32640
+ <br />
  <br />python3 ../tools/compress.py -i /tmp/LH002.png -o /tmp/LH002.png -q $quality
  <br />python3 ../tools/add_offset.py -i /tmp/LH002.png -o /tmp/LH002.png -f 32640
  <br />python3 ../tools/compress.py -i /tmp/HL002.png -o /tmp/HL002.png -q $quality
@@ -8193,29 +8257,47 @@ subbands</h4>
  <br />python3 ../tools/compress.py -i /tmp/HH002.png -o /tmp/HH002.png -q $quality
  <br />python3 ../tools/add_offset.py -i /tmp/HH002.png -o /tmp/HH002.png -f 32640
  <br />
- <br />python3 -O MCDWT.py -p /tmp/ -b -N 3
- <br />python3 -O MDWT.py -p /tmp/ -b -N 3
+ <br />python3 ../tools/compress.py -i /tmp/LH003.png -o /tmp/LH003.png -q $quality
+ <br />python3 ../tools/add_offset.py -i /tmp/LH003.png -o /tmp/LH003.png -f 32640
+ <br />python3 ../tools/compress.py -i /tmp/HL003.png -o /tmp/HL003.png -q $quality
+ <br />python3 ../tools/add_offset.py -i /tmp/HL003.png -o /tmp/HL003.png -f 32640
+ <br />python3 ../tools/compress.py -i /tmp/HH003.png -o /tmp/HH003.png -q $quality
+ <br />python3 ../tools/add_offset.py -i /tmp/HH003.png -o /tmp/HH003.png -f 32640
+ <br />
+ <br />python3 ../tools/compress.py -i /tmp/LH004.png -o /tmp/LH004.png -q $quality
+ <br />python3 ../tools/add_offset.py -i /tmp/LH004.png -o /tmp/LH004.png -f 32640
+ <br />python3 ../tools/compress.py -i /tmp/HL004.png -o /tmp/HL004.png -q $quality
+ <br />python3 ../tools/add_offset.py -i /tmp/HL004.png -o /tmp/HL004.png -f 32640
+                                                                  
+
+                                                                  
+ <br />python3 ../tools/compress.py -i /tmp/HH004.png -o /tmp/HH004.png -q $quality
+ <br />python3 ../tools/add_offset.py -i /tmp/HH004.png -o /tmp/HH004.png -f 32640
+ <br />
+ <br />python3 -O MCDWT.py -P $predictor -p /tmp/ -b
+ <br />python3 -O MDWT.py -p /tmp/ -b
  <br />
  <br />for i in /tmp/00?.png; do python ../tools/substract_offset.py -i $i -o $i.png; done; animate /tmp/00?.png.png
+ <br />
+ <br />rm -f /tmp/diff*.png; for i in {0..4}; do ii=$(printf &#x0022;%03d&#x0022; $i); bash ../tools/show_differences.sh -1 /tmp/$ii.png -2 ../sequences/stockholm/$ii.png -o /tmp/diff_$ii.png; done; animate /tmp/diff*.png
 </div>
-<!--l. 1223--><p class="nopar" >
-</p><!--l. 1225--><p class="noindent" >
+<!--l. 1285--><p class="nopar" >
+</p><!--l. 1287--><p class="noindent" >
 </p>
    <h4 class="likesubsectionHead"><a 
- id="x1-310006"></a>Quantization of all <!--l. 1225--><math 
- xmlns="http://www.w3.org/1998/Math/MathML"  
-display="inline" ><mi 
->H</mi></math>
-subbands</h4>
+ id="x1-300006"></a>Example: Lossy compression of all subbands</h4>
                                                                   
 
                                                                   
    <div class="verbatim" id="verbatim-21">
-# You must be in the ’src’ directory.
+predictor=2
  <br />
- <br />yes | cp ../sequences/stockholm/* /tmp
- <br />python3 -O MDWT.py -p /tmp/ -N 3
- <br />python3 -O MCDWT.py -p /tmp/ -N 3
+ <br /># You must be in the ’src’ directory.
+ <br />rm /tmp/*.png
+ <br />cp ../sequences/stockholm/* /tmp
+ <br />
+ <br />python3 -O MDWT.py -p /tmp/
+ <br />python3 -O MCDWT.py -P $predictor -p /tmp/
  <br />
  <br />quality=10
  <br />python3 ../tools/compress.py -i /tmp/LL000.png -o /tmp/LL000.png -q $quality
@@ -8226,6 +8308,7 @@ subbands</h4>
  <br />python3 ../tools/add_offset.py -i /tmp/HL000.png -o /tmp/HL000.png -f 32640
  <br />python3 ../tools/compress.py -i /tmp/HH000.png -o /tmp/HH000.png -q $quality
  <br />python3 ../tools/add_offset.py -i /tmp/HH000.png -o /tmp/HH000.png -f 32640
+ <br />
  <br />python3 ../tools/compress.py -i /tmp/LL001.png -o /tmp/LL001.png -q $quality
  <br />python3 ../tools/add_offset.py -i /tmp/LL001.png -o /tmp/LL001.png -f 32640
  <br />python3 ../tools/compress.py -i /tmp/LH001.png -o /tmp/LH001.png -q $quality
@@ -8234,6 +8317,7 @@ subbands</h4>
  <br />python3 ../tools/add_offset.py -i /tmp/HL001.png -o /tmp/HL001.png -f 32640
  <br />python3 ../tools/compress.py -i /tmp/HH001.png -o /tmp/HH001.png -q $quality
  <br />python3 ../tools/add_offset.py -i /tmp/HH001.png -o /tmp/HH001.png -f 32640
+ <br />
  <br />python3 ../tools/compress.py -i /tmp/LL002.png -o /tmp/LL002.png -q $quality
  <br />python3 ../tools/add_offset.py -i /tmp/LL002.png -o /tmp/LL002.png -f 32640
  <br />python3 ../tools/compress.py -i /tmp/LH002.png -o /tmp/LH002.png -q $quality
@@ -8243,14 +8327,37 @@ subbands</h4>
  <br />python3 ../tools/compress.py -i /tmp/HH002.png -o /tmp/HH002.png -q $quality
  <br />python3 ../tools/add_offset.py -i /tmp/HH002.png -o /tmp/HH002.png -f 32640
  <br />
- <br />python3 -O MCDWT.py -p /tmp/ -b -N 3
- <br />python3 -O MDWT.py -p /tmp/ -b -N 3
+ <br />python3 ../tools/compress.py -i /tmp/LL003.png -o /tmp/LL003.png -q $quality
+ <br />python3 ../tools/add_offset.py -i /tmp/LL003.png -o /tmp/LL003.png -f 32640
+ <br />python3 ../tools/compress.py -i /tmp/LH003.png -o /tmp/LH003.png -q $quality
+ <br />python3 ../tools/add_offset.py -i /tmp/LH003.png -o /tmp/LH003.png -f 32640
+ <br />python3 ../tools/compress.py -i /tmp/HL003.png -o /tmp/HL003.png -q $quality
+                                                                  
+
+                                                                  
+ <br />python3 ../tools/add_offset.py -i /tmp/HL003.png -o /tmp/HL003.png -f 32640
+ <br />python3 ../tools/compress.py -i /tmp/HH003.png -o /tmp/HH003.png -q $quality
+ <br />python3 ../tools/add_offset.py -i /tmp/HH003.png -o /tmp/HH003.png -f 32640
+ <br />
+ <br />python3 ../tools/compress.py -i /tmp/LL004.png -o /tmp/LL004.png -q $quality
+ <br />python3 ../tools/add_offset.py -i /tmp/LL004.png -o /tmp/LL004.png -f 32640
+ <br />python3 ../tools/compress.py -i /tmp/LH004.png -o /tmp/LH004.png -q $quality
+ <br />python3 ../tools/add_offset.py -i /tmp/LH004.png -o /tmp/LH004.png -f 32640
+ <br />python3 ../tools/compress.py -i /tmp/HL004.png -o /tmp/HL004.png -q $quality
+ <br />python3 ../tools/add_offset.py -i /tmp/HL004.png -o /tmp/HL004.png -f 32640
+ <br />python3 ../tools/compress.py -i /tmp/HH004.png -o /tmp/HH004.png -q $quality
+ <br />python3 ../tools/add_offset.py -i /tmp/HH004.png -o /tmp/HH004.png -f 32640
+ <br />
+ <br />python3 -O MCDWT.py -P $predictor -p /tmp/ -b
+ <br />python3 -O MDWT.py -p /tmp/ -b
  <br />
  <br />for i in /tmp/00?.png; do python ../tools/substract_offset.py -i $i -o $i.png; done; animate /tmp/00?.png.png
+ <br />
+ <br />rm -f /tmp/diff*.png; for i in {0..4}; do ii=$(printf &#x0022;%03d&#x0022; $i); bash ../tools/show_differences.sh -1 /tmp/$ii.png -2 ../sequences/stockholm/$ii.png -o /tmp/diff_$ii.png; done; animate /tmp/diff*.png
 </div>
-<!--l. 1263--><p class="nopar" >
+<!--l. 1350--><p class="nopar" >
 <a 
- id="Q1-1-47"></a>
+ id="Q1-1-46"></a>
 </p>
     
 </body> 
