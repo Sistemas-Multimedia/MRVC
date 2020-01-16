@@ -3335,7 +3335,13 @@ independently.
 </p>
    <h4 class="likesubsectionHead"><a 
  id="x1-130003.1"></a>Example: Interpolating with the 2D DWT</h4>
-<!--l. 320--><p class="noindent" >If we apply an inversr
+<!--l. 320--><p class="noindent" >If we apply an inverse transform to the original images, supposing that they are the
+low-frequency subbands of the input decomposition, and that the high-frequency
+subbands are zero, we can interpolate each image of the original sequence by a factor
+of <!--l. 323--><math 
+ xmlns="http://www.w3.org/1998/Math/MathML"  
+display="inline" ><mn>2</mn></math> in
+each direction.
                                                                   
 
                                                                   
@@ -3365,12 +3371,12 @@ independently.
  <br />for i in /tmp/???.png; do convert -normalize $i $i.norm; done
  <br />animate /tmp/*.png.norm
 </div>
-<!--l. 345--><p class="nopar" >
-</p><!--l. 347--><p class="noindent" >
+<!--l. 349--><p class="nopar" >
+</p><!--l. 351--><p class="noindent" >
 </p>
    <h3 class="sectionHead"><span class="titlemark">4   </span> <a 
  id="x1-140004"></a>Video transform alternatives</h3>
-<!--l. 350--><p class="noindent" >To remove both, spatial and temporal redundancies, two diﬀerent alternatives are
+<!--l. 354--><p class="noindent" >To remove both, spatial and temporal redundancies, two diﬀerent alternatives are
 available:
      </p><ol  class="enumerate1" >
      <li 
@@ -3382,7 +3388,7 @@ href="https://en.wikipedia.org/wiki/Digital_filter#Analysis_techniques" >analyze
      <li 
   class="enumerate" id="x1-14004x2">A <span 
 class="ecbx-1000">2D+t transform </span>does just the opposite.</li></ol>
-<!--l. 358--><p class="noindent" >Each choice has a number of <span 
+<!--l. 362--><p class="noindent" >Each choice has a number of <span 
 class="ecti-1000">pros </span>and <span 
 class="ecti-1000">cons</span>. For example, in a t+2D transform we can
 apply directly any image predictor based on <a 
@@ -3404,7 +3410,7 @@ scalability (processing only those <a
 href="https://www.tutorialspoint.com/dip/spatial_resolution.htm" >spatial resolutions</a> (scales) necessary to get
 a spatially scaled of our video), a t+2D transformed video presents some
 drawbacks:
-</p><!--l. 379--><p class="indent" >
+</p><!--l. 383--><p class="indent" >
      </p><ol  class="enumerate1" >
      <li 
   class="enumerate" id="x1-14006x1">The perfect reconstruction of the original images only is possible of the t
@@ -3427,19 +3433,19 @@ href="https://en.wikipedia.org/wiki/Decoder" >decoder</a>. Therefore, if the
      for working in a diﬀerent spatial resolution of the images). Unfortunately,
      progressive representations usually need more data than non-progressive
      ones.</li></ol>
-<!--l. 399--><p class="indent" >   Finally, it is important to realize that the presence of the motion data in the
+<!--l. 403--><p class="indent" >   Finally, it is important to realize that the presence of the motion data in the
 code-stream introduces also complexity into the decoding process because, in a
 quality scalable scenario, for example, it is not trivial (specially when non-linear
 systems such as those based on <a 
 href="https://vicente-gonzalez-ruiz.github.io/video_compression/" >ME</a> are involved) to decide how to interleave the
 motion and the texture information in a code-stream that can be decoded partially,
 depending on the avaliable bandwidth.
-</p><!--l. 410--><p class="noindent" >
+</p><!--l. 414--><p class="noindent" >
 </p>
    <h3 class="sectionHead"><span class="titlemark">5   </span> <a 
  id="x1-150005"></a>Motion Compensated Discrete Wavelet Transform (MCDWT)</h3>
-<!--l. 411--><p class="noindent" >MCDWT is a 2D+t transform. The 2D stage is 1-iteration MDWT, and it is applied ﬁrst. The t
-stage is a <!--l. 412--><math 
+<!--l. 415--><p class="noindent" >MCDWT is a 2D+t transform. The 2D stage is 1-iteration MDWT, and it is applied ﬁrst. The t
+stage is a <!--l. 416--><math 
  xmlns="http://www.w3.org/1998/Math/MathML"  
 display="inline" ><mi 
 >I</mi></math>-iterations
@@ -3448,26 +3454,26 @@ display="inline" ><mi
                                                                   
 1D <a 
 href="https://en.wikipedia.org/wiki/Motion_compensation" >Motion Compensated (MC)</a> DWT, which removes the temporal redundancy between adjacent
-<!--l. 415--><math 
+<!--l. 419--><math 
  xmlns="http://www.w3.org/1998/Math/MathML"  
 display="inline" ><mi 
 >H</mi></math> subbands. The
-number of iterations <!--l. 415--><math 
+number of iterations <!--l. 419--><math 
  xmlns="http://www.w3.org/1998/Math/MathML"  
 display="inline" ><mi 
 >I</mi></math>
 determines the <a 
 href="https://en.wikipedia.org/wiki/Group_of_pictures" >GOP</a> size.
-</p><!--l. 418--><p class="indent" >   A special characteristic of MCDWT is that the motion information is not
+</p><!--l. 422--><p class="indent" >   A special characteristic of MCDWT is that the motion information is not
 transmitted from the encoder to the decoder, which must replicate it or at least,
 predict it. This is possible because to estimate de motion at the encoder, only the
 information that it is accesible by the decoder is used.
-</p><!--l. 424--><p class="noindent" >
+</p><!--l. 428--><p class="noindent" >
 </p>
    <h4 class="subsectionHead"><span class="titlemark">5.1   </span> <a 
  id="x1-160005.1"></a>The butterﬂy</h4>
-<!--l. 425--><p class="noindent" >MCDWT butterly inputs three decompositions
-<!--l. 425--><math 
+<!--l. 429--><p class="noindent" >MCDWT butterly inputs three decompositions
+<!--l. 429--><math 
  xmlns="http://www.w3.org/1998/Math/MathML"  
 display="inline" ><mi 
 >a</mi> <mo 
@@ -3481,7 +3487,7 @@ class="MathClass-punc">,</mo><mi
 class="MathClass-punc">.</mo><mi 
 >H</mi></mrow><mo 
 class="MathClass-close">}</mo></mrow></math>,
-<!--l. 425--><math 
+<!--l. 429--><math 
  xmlns="http://www.w3.org/1998/Math/MathML"  
 display="inline" ><mi 
 >b</mi> <mo 
@@ -3495,7 +3501,7 @@ class="MathClass-punc">,</mo><mi
 class="MathClass-punc">.</mo><mi 
 >H</mi></mrow><mo 
 class="MathClass-close">}</mo></mrow></math> and
-<!--l. 426--><math 
+<!--l. 430--><math 
  xmlns="http://www.w3.org/1998/Math/MathML"  
 display="inline" ><mi 
 >c</mi> <mo 
@@ -3509,7 +3515,7 @@ class="MathClass-punc">,</mo><mi
 class="MathClass-punc">.</mo><mi 
 >H</mi></mrow><mo 
 class="MathClass-close">}</mo></mrow></math>, and outputs a
-residue subband <!--l. 427--><math 
+residue subband <!--l. 431--><math 
  xmlns="http://www.w3.org/1998/Math/MathML"  
 display="inline" ><mover 
 accent="true"><mrow 
@@ -3518,23 +3524,23 @@ accent="true"><mrow
 class="MathClass-op">̃</mo></mover><mo 
 class="MathClass-punc">.</mo><mi 
 >H</mi></math>,
-which replaces to <!--l. 427--><math 
+which replaces to <!--l. 431--><math 
  xmlns="http://www.w3.org/1998/Math/MathML"  
 display="inline" ><mi 
 >b</mi><mo 
 class="MathClass-punc">.</mo><mi 
 >H</mi></math>
-in the original <!--l. 427--><math 
+in the original <!--l. 431--><math 
  xmlns="http://www.w3.org/1998/Math/MathML"  
 display="inline" ><mi 
 >b</mi></math>
 decomposition. Therefore, after the use of the buﬀerﬂy, we get
-<!--l. 429--><math 
+<!--l. 433--><math 
  xmlns="http://www.w3.org/1998/Math/MathML"  
 display="inline" ><mi 
 >a</mi></math> (an <a 
 href="https://en.wikipedia.org/wiki/Video_compression_picture_types" >intra-coded “I”
-image</a>), <!--l. 431--><math 
+image</a>), <!--l. 435--><math 
  xmlns="http://www.w3.org/1998/Math/MathML"  
 display="inline" ><mover 
 accent="true"><mrow 
@@ -3545,7 +3551,7 @@ href="https://en.wikipedia.org/wiki/Video_compression_picture_types" >bidirectio
 predicted “B” image</a><span class="footnote-mark"><a 
 href="index6.html#fn5x0"><sup class="textsuperscript">5</sup></a></span><a 
  id="x1-16001f5"></a> )
-and <!--l. 437--><math 
+and <!--l. 441--><math 
  xmlns="http://www.w3.org/1998/Math/MathML"  
 display="inline" ><mi 
 >c</mi></math>
@@ -3554,7 +3560,7 @@ the forward transform uses only the information that the inverse transform
 will have access to. Notice that the <a 
 href="http://www.vtvt.ece.vt.edu/research/references/video/DCT_Video_Compression/Zhang92a.pdf" >pyramid domain</a> (which is invariant to
 the pixels displacements) has been used to estimate and compensate the
-<!--l. 443--><math 
+<!--l. 447--><math 
  xmlns="http://www.w3.org/1998/Math/MathML"  
 display="inline" ><mi 
 >H</mi></math>
@@ -3570,7 +3576,7 @@ subbands.
                                                                   
 
                                                                   
-<!--l. 446--><p class="noindent" ><div style="text-align:center;"> <img width=1200 src="graphics/forward_butterfly.svg" /> </div>  </p><!--l. 449--><div class="lstinputlisting">
+<!--l. 450--><p class="noindent" ><div style="text-align:center;"> <img width=1200 src="graphics/forward_butterfly.svg" /> </div>  </p><!--l. 453--><div class="lstinputlisting">
 <a 
  id="x1-16002r5"></a>
 <a 
@@ -4068,7 +4074,7 @@ class="ectt-1000"> </span><span
 class="ectt-1000">residue_bH</span><span 
 class="ectt-1000">[1]</span>
 </div>
-<!--l. 452--><div class="lstinputlisting">
+<!--l. 456--><div class="lstinputlisting">
 <a 
  id="x1-16031r6"></a>
 <a 
@@ -4549,7 +4555,7 @@ class="ectt-1000"> </span><span
 class="ectt-1000">bH</span><span 
 class="ectt-1000">[1]</span>
 </div>
-<!--l. 455--><div class="lstinputlisting">
+<!--l. 459--><div class="lstinputlisting">
 <a 
  id="x1-16060r7"></a>
 <a 
@@ -4674,7 +4680,7 @@ class="content">MCDWT butterﬂies.</span></div><!--tex4ht:label?: x1-160683 -->
 
                                                                   
    </div><hr class="endfigure" />
-<!--l. 460--><p class="indent" >   The ME projections for <!--l. 460--><math 
+<!--l. 464--><p class="indent" >   The ME projections for <!--l. 464--><math 
  xmlns="http://www.w3.org/1998/Math/MathML"  
 display="inline" ><mrow ><mo 
 class="MathClass-open">[</mo><mrow><mi 
@@ -4682,7 +4688,7 @@ class="MathClass-open">[</mo><mrow><mi
 class="MathClass-punc">.</mo><mi 
 >L</mi></mrow><mo 
 class="MathClass-close">]</mo></mrow></math>
-are performed with <!--l. 460--><math 
+are performed with <!--l. 464--><math 
  xmlns="http://www.w3.org/1998/Math/MathML"  
 display="inline" ><mrow ><mo 
 class="MathClass-open">[</mo><mrow><mi 
@@ -4690,7 +4696,7 @@ class="MathClass-open">[</mo><mrow><mi
 class="MathClass-punc">.</mo><mi 
 >L</mi></mrow><mo 
 class="MathClass-close">]</mo></mrow></math>
-and <!--l. 460--><math 
+and <!--l. 464--><math 
  xmlns="http://www.w3.org/1998/Math/MathML"  
 display="inline" ><mrow ><mo 
 class="MathClass-open">[</mo><mrow><mi 
@@ -4698,24 +4704,24 @@ class="MathClass-open">[</mo><mrow><mi
 class="MathClass-punc">.</mo><mi 
 >L</mi></mrow><mo 
 class="MathClass-close">]</mo></mrow></math> instead
-of <!--l. 461--><math 
+of <!--l. 465--><math 
  xmlns="http://www.w3.org/1998/Math/MathML"  
 display="inline" ><mi 
 >a</mi></math> and
-<!--l. 461--><math 
+<!--l. 465--><math 
  xmlns="http://www.w3.org/1998/Math/MathML"  
 display="inline" ><mi 
 >c</mi></math> (that are available at
-the decoder) because, in <!--l. 462--><math 
+the decoder) because, in <!--l. 466--><math 
  xmlns="http://www.w3.org/1998/Math/MathML"  
 display="inline" ><mi 
 >a</mi></math>
-and <!--l. 462--><math 
+and <!--l. 466--><math 
  xmlns="http://www.w3.org/1998/Math/MathML"  
 display="inline" ><mi 
 >c</mi></math>
 there is high-frequency information that can diﬁcult the mappings
-<!--l. 463--><math 
+<!--l. 467--><math 
  xmlns="http://www.w3.org/1998/Math/MathML"  
 display="inline" ><mrow ><mo 
 class="MathClass-open">[</mo><mrow><mi 
@@ -4729,7 +4735,7 @@ class="MathClass-open">[</mo><mrow><mi
 class="MathClass-punc">.</mo><mi 
 >L</mi></mrow><mo 
 class="MathClass-close">]</mo></mrow></math> and
-<!--l. 463--><math 
+<!--l. 467--><math 
  xmlns="http://www.w3.org/1998/Math/MathML"  
 display="inline" ><mrow ><mo 
 class="MathClass-open">[</mo><mrow><mi 
@@ -4746,26 +4752,26 @@ class="MathClass-close">]</mo></mrow></math>.
 </p>
    <h4 class="subsectionHead"><span class="titlemark">5.2   </span> <a 
  id="x1-170005.2"></a>The transform</h4>
-<!--l. 476--><p class="noindent" >The <!--l. 476--><math 
+<!--l. 480--><p class="noindent" >The <!--l. 480--><math 
  xmlns="http://www.w3.org/1998/Math/MathML"  
 display="inline" ><mi 
 >I</mi></math>-iterations
 MCDWT is the result of applying the MCDWT butterﬂy to all the images of
-<!--l. 477--><math 
+<!--l. 481--><math 
  xmlns="http://www.w3.org/1998/Math/MathML"  
 display="inline" ><mi 
 >I</mi> <mo 
 class="MathClass-bin">+</mo> <mn>1</mn></math> diﬀerent
 temporal scales (see Fig. <a 
 href="#x1-171004">4<!--tex4ht:ref: fig:MCDWT --></a>). These scales are deﬁned by the images with number multiple
-of <!--l. 479--><math 
+of <!--l. 483--><math 
  xmlns="http://www.w3.org/1998/Math/MathML"  
 display="inline" ><msup><mrow 
 ><mn>2</mn></mrow><mrow 
 ><mi 
 >i</mi></mrow></msup 
 ></math>,
-where <!--l. 479--><math 
+where <!--l. 483--><math 
  xmlns="http://www.w3.org/1998/Math/MathML"  
 display="inline" ><mn>1</mn> <mo 
 class="MathClass-rel">≤</mo> <mi 
@@ -4784,7 +4790,7 @@ is the current iteration.
                                                                   
 
                                                                   
-<!--l. 484--><p class="noindent" ><div style="text-align:center;"> <img width=1200 src="graphics/temporal_decorrelation.svg" /> </div>  </p><!--l. 485--><div class="lstinputlisting">
+<!--l. 488--><p class="noindent" ><div style="text-align:center;"> <img width=1200 src="graphics/temporal_decorrelation.svg" /> </div>  </p><!--l. 489--><div class="lstinputlisting">
 <a 
  id="x1-17001r8"></a>
 <a 
@@ -5899,7 +5905,7 @@ class="ectt-1000">*=</span><span
 class="ectt-1000"> </span><span 
 class="ectt-1000">2</span>
 </div>
-<!--l. 486--><div class="lstinputlisting">
+<!--l. 490--><div class="lstinputlisting">
 <a 
  id="x1-17056r9"></a>
 <a 
@@ -6721,14 +6727,14 @@ class="content">Implementation of the MCDWT.</span></div><!--tex4ht:label?: x1-1
 
                                                                   
    </div><hr class="endfigure" />
-<!--l. 491--><p class="indent" >   Notice that, if <!--l. 491--><math 
+<!--l. 495--><p class="indent" >   Notice that, if <!--l. 495--><math 
  xmlns="http://www.w3.org/1998/Math/MathML"  
 display="inline" ><mi 
 >N</mi> <mo 
 class="MathClass-rel">=</mo> <mi 
 >G</mi> <mo 
 class="MathClass-bin">+</mo> <mn>1</mn></math>
-(where <!--l. 491--><math 
+(where <!--l. 495--><math 
  xmlns="http://www.w3.org/1998/Math/MathML"  
 display="inline" ><mi 
 >G</mi> <mo 
@@ -6739,7 +6745,7 @@ class="MathClass-rel">=</mo> <msup><mrow
 ></math>
 is the number of images/decompositions in the GOP, i.e., the GOP
 size), except for the ﬁrst and the last image of the sequence, all the
-<!--l. 493--><math 
+<!--l. 497--><math 
  xmlns="http://www.w3.org/1998/Math/MathML"  
 display="inline" ><mi 
 >H</mi></math>-subbands
@@ -6747,9 +6753,9 @@ are temporally decorrelated.
 </p>
    <h4 class="likesubsectionHead"><a 
  id="x1-180005.2"></a>Example: 1-iteration MDWT + 1-iteration MCDWT</h4>
-<!--l. 497--><p class="noindent" >In this example, a sequence of ﬁve images is transformed ﬁrst with
+<!--l. 501--><p class="noindent" >In this example, a sequence of ﬁve images is transformed ﬁrst with
 the (1-iteration) MDWT, producing 2 SRLs by image. Next, the
-<!--l. 498--><math 
+<!--l. 502--><math 
  xmlns="http://www.w3.org/1998/Math/MathML"  
 display="inline" ><mi 
 >H</mi></math>
@@ -6808,31 +6814,31 @@ predictor=1
  <br />for i in {0..4}; do ii=$(printf &#x0022;%03d&#x0022; $i); bash ../tools/show_differences.sh -1 /tmp/$ii.png -2 ../sequences/stockholm/$ii.png -o /tmp/diff_$ii.png; done
  <br />animate /tmp/diff*.png
 </div>
-<!--l. 547--><p class="nopar" >
-</p><!--l. 549--><p class="noindent" >
+<!--l. 551--><p class="nopar" >
+</p><!--l. 553--><p class="noindent" >
 </p>
    <h4 class="likesubsectionHead"><a 
  id="x1-190005.2"></a>Example: 1-iteration MDWT + 2-iterations MCDWT</h4>
-<!--l. 550--><p class="noindent" >This example is similar to the previous, but now the number of iterations of MCDWT is
-<!--l. 551--><math 
+<!--l. 554--><p class="noindent" >This example is similar to the previous, but now the number of iterations of MCDWT is
+<!--l. 555--><math 
  xmlns="http://www.w3.org/1998/Math/MathML"  
 display="inline" ><mi 
 >I</mi> <mo 
 class="MathClass-rel">=</mo> <mn>2</mn></math>.
 Now, the second iteration of MCDWT compensates also the
-<!--l. 552--><math 
+<!--l. 556--><math 
  xmlns="http://www.w3.org/1998/Math/MathML"  
 display="inline" ><mi 
 >H</mi></math> subband of
 the image 2. This example matches exactly with the described in the Fig <a 
 href="#x1-171004">4<!--tex4ht:ref: fig:MCDWT --></a>. Notice that the
-GOP size is <!--l. 554--><math 
+GOP size is <!--l. 558--><math 
  xmlns="http://www.w3.org/1998/Math/MathML"  
 display="inline" ><mn>4</mn></math>
-(<!--l. 554--><math 
+(<!--l. 558--><math 
  xmlns="http://www.w3.org/1998/Math/MathML"  
 display="inline" ><mn>3</mn></math> TRLs) and the
-number of SRLs is <!--l. 554--><math 
+number of SRLs is <!--l. 558--><math 
  xmlns="http://www.w3.org/1998/Math/MathML"  
 display="inline" ><mn>2</mn></math>.
                                                                   
@@ -6924,30 +6930,30 @@ predictor=1
  <br />
  <br />python3 ../tools/show_statistics.py -i /tmp/diff_002.png
 </div>
-<!--l. 637--><p class="nopar" >
-</p><!--l. 639--><p class="noindent" >
+<!--l. 641--><p class="nopar" >
+</p><!--l. 643--><p class="noindent" >
 </p>
    <h4 class="subsectionHead"><span class="titlemark">5.3   </span> <a 
  id="x1-200005.3"></a>Scalability provided by MCDWT</h4>
                                                                   
 
                                                                   
-<!--l. 640--><p class="noindent" >MCDWT preserves the dyadic spatial decomposition generated by MDWT, and
+<!--l. 644--><p class="noindent" >MCDWT preserves the dyadic spatial decomposition generated by MDWT, and
 therefore, MCDWT provides the same spatial scalability than MDWT.
-</p><!--l. 643--><p class="indent" >   Unfortunately, as the rest of video encoders based on MC, MCDWT
+</p><!--l. 647--><p class="indent" >   Unfortunately, as the rest of video encoders based on MC, MCDWT
 reduces the temporal scalability provided by MDWT, allowing only a dyadic
 access. For example, after applying each iteration of the inverse MCDWT, if
-<!--l. 646--><math 
+<!--l. 650--><math 
  xmlns="http://www.w3.org/1998/Math/MathML"  
 display="inline" ><mi 
 >I</mi> <mo 
 class="MathClass-rel">=</mo> <mn>3</mn></math> (the GOP
-size <!--l. 646--><math 
+size <!--l. 650--><math 
  xmlns="http://www.w3.org/1998/Math/MathML"  
 display="inline" ><mi 
 >G</mi> <mo 
 class="MathClass-rel">=</mo> <mn>8</mn></math>,
-i.e. <!--l. 646--><math 
+i.e. <!--l. 650--><math 
  xmlns="http://www.w3.org/1998/Math/MathML"  
 display="inline" ><mn>4</mn></math>
 temporal resolution levels (TRLs)), the images of the second GOP (GOP 1,
@@ -6966,11 +6972,11 @@ should be reconstructed in this order:
  <br />      s1    s3    s5    s7     &#x003C;- third iteration. Provides TRL0.
  <br />
 </div>
-<!--l. 660--><p class="nopar" >
-</p><!--l. 662--><p class="noindent" >
+<!--l. 664--><p class="nopar" >
+</p><!--l. 666--><p class="noindent" >
 </p>
    <h4 class="likesubsectionHead"><a 
- id="x1-210005.3"></a>Example: 3-iters <!--l. 662--><math 
+ id="x1-210005.3"></a>Example: 3-iters <!--l. 666--><math 
  xmlns="http://www.w3.org/1998/Math/MathML"  
 display="inline" ><mo 
 class="MathClass-bin">×</mo></math>
@@ -7008,14 +7014,14 @@ predictor=1
  <br />for i in {0..4}; do ii=$(printf &#x0022;%03d&#x0022; $i); bash ../tools/show_differences.sh -1 /tmp/$ii.png -2 ../sequences/stockholm/$ii.png -o /tmp/diff_$ii.png; done
  <br />animate /tmp/diff*.png
 </div>
-<!--l. 693--><p class="nopar" >
-</p><!--l. 695--><p class="indent" >   The GOP size is <!--l. 695--><math 
+<!--l. 697--><p class="nopar" >
+</p><!--l. 699--><p class="indent" >   The GOP size is <!--l. 699--><math 
  xmlns="http://www.w3.org/1998/Math/MathML"  
 display="inline" ><mn>4</mn></math>,
-providing <!--l. 695--><math 
+providing <!--l. 699--><math 
  xmlns="http://www.w3.org/1998/Math/MathML"  
 display="inline" ><mn>3</mn></math>
-TRLs. <!--l. 695--><math 
+TRLs. <!--l. 699--><math 
  xmlns="http://www.w3.org/1998/Math/MathML"  
 display="inline" ><mn>4</mn></math> is
 the number of SRLs.
@@ -7051,8 +7057,8 @@ the number of SRLs.
  <br />|                               |
  <br />+-------------------------------+
 </div>
-<!--l. 726--><p class="nopar" >
-</p><!--l. 728--><p class="indent" >   <!--l. 728--><math 
+<!--l. 730--><p class="nopar" >
+</p><!--l. 732--><p class="indent" >   <!--l. 732--><math 
  xmlns="http://www.w3.org/1998/Math/MathML"  
 display="inline" ><mn>3</mn> <mo 
 class="MathClass-bin">×</mo> <mn>4</mn> <mo 
@@ -7097,14 +7103,14 @@ diﬀerent possible reconstructions of the video:
      </li>
      <li 
   class="enumerate" id="x1-21024x12">s0.0, s4.0, s2.0, s1.0, s3.0.</li></ol>
-<!--l. 906--><p class="noindent" >
+<!--l. 910--><p class="noindent" >
 </p>
    <h3 class="sectionHead"><span class="titlemark">6   </span> <a 
  id="x1-220006"></a>Adaptive motion compensation based on the distortion of the prediction
 error</h3>
-<!--l. 909--><p class="noindent" >As can be seen in the MCDWT buﬀerﬂy (see Fig. <a 
+<!--l. 913--><p class="noindent" >As can be seen in the MCDWT buﬀerﬂy (see Fig. <a 
 href="#x1-160683">3<!--tex4ht:ref: fig:forward_butterflies --></a>), both predictions
-<!--l. 910--><math 
+<!--l. 914--><math 
  xmlns="http://www.w3.org/1998/Math/MathML"  
 display="inline" ><mrow ><mo 
 class="MathClass-open">[</mo><mrow><msub><mrow 
@@ -7116,7 +7122,7 @@ class="MathClass-open">[</mo><mrow><msub><mrow
 class="MathClass-punc">.</mo><mi 
 >H</mi></mrow><mo 
 class="MathClass-close">]</mo></mrow></math> and
-<!--l. 911--><math 
+<!--l. 915--><math 
  xmlns="http://www.w3.org/1998/Math/MathML"  
 display="inline" ><mrow ><mo 
 class="MathClass-open">[</mo><mrow><msub><mrow 
@@ -7130,7 +7136,7 @@ class="MathClass-punc">.</mo><mi
 class="MathClass-close">]</mo></mrow></math> have
 the same weight to build the prediction </p><table class="equation"><tr><td> <a 
  id="x1-22001r1"></a>
-<!--l. 912--><math 
+<!--l. 916--><math 
  xmlns="http://www.w3.org/1998/Math/MathML"  
 display="block" class="equation">
                       <mrow ><mo 
@@ -7170,7 +7176,7 @@ class="MathClass-punc">.</mo>
                                                                   
 
                                                                   
-<!--l. 915--><p class="indent" >   This simple computation, that can have very eﬀective for example in <a 
+<!--l. 919--><p class="indent" >   This simple computation, that can have very eﬀective for example in <a 
 href="https://biteable.com/blog/tips/video-transitions-effects-examples/" >dissolves</a>
 video transitions, can also be counterproductive when objects appear only in one of
 the reference images. For this reason, in this section a diﬀerent predictor is proposed,
@@ -7178,7 +7184,7 @@ based on the estimated prediction error generated throughout the ME process. To
 estimate this error, we will suppose that the prediction error generated for the high
 frequencies of an image is proportional to the prediction error generated for the low
 frequencies of such image.
-</p><!--l. 925--><p class="indent" >   Let <!--l. 925--><math 
+</p><!--l. 929--><p class="indent" >   Let <!--l. 929--><math 
  xmlns="http://www.w3.org/1998/Math/MathML"  
 display="inline" ><mrow ><mo 
 class="MathClass-open">[</mo><mrow><msub><mrow 
@@ -7190,7 +7196,7 @@ class="MathClass-open">[</mo><mrow><msub><mrow
 class="MathClass-punc">.</mo><mi 
 >L</mi></mrow><mo 
 class="MathClass-close">]</mo></mrow></math> the prediction
-generated for the subband <!--l. 925--><math 
+generated for the subband <!--l. 929--><math 
  xmlns="http://www.w3.org/1998/Math/MathML"  
 display="inline" ><mrow ><mo 
 class="MathClass-open">[</mo><mrow><mi 
@@ -7198,7 +7204,7 @@ class="MathClass-open">[</mo><mrow><mi
 class="MathClass-punc">.</mo><mi 
 >L</mi></mrow><mo 
 class="MathClass-close">]</mo></mrow></math>
-using <!--l. 926--><math 
+using <!--l. 930--><math 
  xmlns="http://www.w3.org/1998/Math/MathML"  
 display="inline" ><mrow ><mo 
 class="MathClass-open">[</mo><mrow><mi 
@@ -7206,7 +7212,7 @@ class="MathClass-open">[</mo><mrow><mi
 class="MathClass-punc">.</mo><mi 
 >L</mi></mrow><mo 
 class="MathClass-close">]</mo></mrow></math> as reference
-and <!--l. 926--><math 
+and <!--l. 930--><math 
  xmlns="http://www.w3.org/1998/Math/MathML"  
 display="inline" ><mrow ><mo 
 class="MathClass-open">[</mo><mrow><mi 
@@ -7220,7 +7226,7 @@ class="MathClass-open">[</mo><mrow><mi
 class="MathClass-punc">.</mo><mi 
 >L</mi></mrow><mo 
 class="MathClass-close">]</mo></mrow></math> as motion, and
-let <!--l. 927--><math 
+let <!--l. 931--><math 
  xmlns="http://www.w3.org/1998/Math/MathML"  
 display="inline" ><mrow ><mo 
 class="MathClass-open">[</mo><mrow><msub><mrow 
@@ -7232,7 +7238,7 @@ class="MathClass-open">[</mo><mrow><msub><mrow
 class="MathClass-punc">.</mo><mi 
 >L</mi></mrow><mo 
 class="MathClass-close">]</mo></mrow></math> the prediction
-generated for <!--l. 927--><math 
+generated for <!--l. 931--><math 
  xmlns="http://www.w3.org/1998/Math/MathML"  
 display="inline" ><mrow ><mo 
 class="MathClass-open">[</mo><mrow><mi 
@@ -7240,7 +7246,7 @@ class="MathClass-open">[</mo><mrow><mi
 class="MathClass-punc">.</mo><mi 
 >L</mi></mrow><mo 
 class="MathClass-close">]</mo></mrow></math>
-using <!--l. 927--><math 
+using <!--l. 931--><math 
  xmlns="http://www.w3.org/1998/Math/MathML"  
 display="inline" ><mrow ><mo 
 class="MathClass-open">[</mo><mrow><mi 
@@ -7248,7 +7254,7 @@ class="MathClass-open">[</mo><mrow><mi
 class="MathClass-punc">.</mo><mi 
 >L</mi></mrow><mo 
 class="MathClass-close">]</mo></mrow></math> as
-reference and <!--l. 928--><math 
+reference and <!--l. 932--><math 
  xmlns="http://www.w3.org/1998/Math/MathML"  
 display="inline" ><mrow ><mo 
 class="MathClass-open">[</mo><mrow><mi 
@@ -7264,7 +7270,7 @@ class="MathClass-punc">.</mo><mi
 class="MathClass-close">]</mo></mrow></math>
 as motion. We now compute the prediction errors </p><table class="equation"><tr><td> <a 
  id="x1-22002r2"></a>
-<!--l. 930--><math 
+<!--l. 934--><math 
  xmlns="http://www.w3.org/1998/Math/MathML"  
 display="block" class="equation">
  <mtable  align="axis" style=""  
@@ -7324,9 +7330,9 @@ class="MathClass-punc">.</mo><mi
 class="MathClass-close">]</mo></mrow><mo 
 class="MathClass-punc">.</mo> </mtd></mtr><!--l--></mtable>
 </math></td><td class="eq-no">(2)</td></tr></table>
-<!--l. 937--><p class="indent" >   We deﬁne the similarity matrices as </p><table class="equation"><tr><td> <a 
+<!--l. 941--><p class="indent" >   We deﬁne the similarity matrices as </p><table class="equation"><tr><td> <a 
  id="x1-22003r3"></a>
-<!--l. 938--><math 
+<!--l. 942--><math 
  xmlns="http://www.w3.org/1998/Math/MathML"  
 display="block" class="equation">
  <mtable  align="axis" style=""  
@@ -7386,8 +7392,8 @@ class="MathClass-close">]</mo></mrow><mo
 class="MathClass-rel">|</mo></mrow></mfrac><mo 
 class="MathClass-punc">.</mo> </mtd></mtr><!--l--></mtable>
 </math></td><td class="eq-no">(3)</td></tr></table>
-<!--l. 945--><p class="indent" >   Notice that, if (for example) the error
-<!--l. 945--><math 
+<!--l. 949--><p class="indent" >   Notice that, if (for example) the error
+<!--l. 949--><math 
  xmlns="http://www.w3.org/1998/Math/MathML"  
 display="inline" ><msub><mrow 
 ><mrow ><mo 
@@ -7406,7 +7412,7 @@ class="MathClass-punc">,</mo><mi
 >y</mi></mrow></msub 
 > <mo 
 class="MathClass-rel">=</mo> <mn>0</mn></math>, the
-similarity is <!--l. 946--><math 
+similarity is <!--l. 950--><math 
  xmlns="http://www.w3.org/1998/Math/MathML"  
 display="inline" ><msub><mrow 
 ><mrow ><mo 
@@ -7430,10 +7436,10 @@ low.
                                                                   
 
                                                                   
-</p><!--l. 949--><p class="indent" >   With this information, that can be recovered by the decoder, the improved
+</p><!--l. 953--><p class="indent" >   With this information, that can be recovered by the decoder, the improved
 prediction is deﬁned as </p><table class="equation"><tr><td> <a 
  id="x1-22004r4"></a>
-<!--l. 951--><math 
+<!--l. 955--><math 
  xmlns="http://www.w3.org/1998/Math/MathML"  
 display="block" class="equation">
                   <mrow ><mo 
@@ -7507,9 +7513,9 @@ class="MathClass-punc">.</mo><mi
 class="MathClass-close">]</mo></mrow></mrow></mfrac>        <mo 
 class="MathClass-punc">.</mo>
 </math></td><td class="eq-no">(4)</td></tr></table>
-<!--l. 954--><p class="indent" >   The Fig. <a 
+<!--l. 958--><p class="indent" >   The Fig. <a 
 href="#x1-220195">5<!--tex4ht:ref: fig:weighted_average --></a> shows an implementation of this equation.
-</p><!--l. 957--><p class="indent" >   Notice that, if (for example) <!--l. 957--><math 
+</p><!--l. 961--><p class="indent" >   Notice that, if (for example) <!--l. 961--><math 
  xmlns="http://www.w3.org/1998/Math/MathML"  
 display="inline" ><msub><mrow 
 ><mrow ><mo 
@@ -7528,7 +7534,7 @@ class="MathClass-punc">,</mo><mi
 >y</mi></mrow></msub 
 > <mo 
 class="MathClass-rel">=</mo> <mn>1</mn></math>
-and <!--l. 958--><math 
+and <!--l. 962--><math 
  xmlns="http://www.w3.org/1998/Math/MathML"  
 display="inline" ><msub><mrow 
 ><mrow ><mo 
@@ -7547,7 +7553,7 @@ class="MathClass-punc">,</mo><mi
 >y</mi></mrow></msub 
 > <mo 
 class="MathClass-rel">≈</mo> <mn>0</mn></math>, then
-<!--l. 959--><math 
+<!--l. 963--><math 
  xmlns="http://www.w3.org/1998/Math/MathML"  
 display="inline" ><msub><mrow 
 ><mrow ><mo 
@@ -7580,7 +7586,7 @@ class="MathClass-close">]</mo></mrow></mrow><mrow
 class="MathClass-punc">,</mo><mi 
 >y</mi></mrow></msub 
 ></math>, and
-viceversa. If <!--l. 960--><math 
+viceversa. If <!--l. 964--><math 
  xmlns="http://www.w3.org/1998/Math/MathML"  
 display="inline" ><msub><mrow 
 ><mrow ><mo 
@@ -7614,7 +7620,7 @@ class="MathClass-close">]</mo></mrow></mrow><mrow
 class="MathClass-punc">,</mo><mi 
 >y</mi></mrow></msub 
 ></math>,
-then <!--l. 961--><math 
+then <!--l. 965--><math 
  xmlns="http://www.w3.org/1998/Math/MathML"  
 display="inline" ><msub><mrow 
 ><mrow ><mo 
@@ -7666,7 +7672,7 @@ class="MathClass-close">]</mo></mrow></mrow>
                                                                   
 
                                                                   
-<!--l. 965--><div class="lstinputlisting">
+<!--l. 969--><div class="lstinputlisting">
 <a 
  id="x1-22005r10"></a>
 <a 
@@ -7888,9 +7894,9 @@ class="content">Computation of the weighted average prediction.</span></div><!--
    </div><hr class="endfigure" />
    <h4 class="likesubsectionHead"><a 
  id="x1-230006"></a>Example: 1-iteration MDWT + 1-iteration MCDWT</h4>
-<!--l. 972--><p class="noindent" >In this example, a sequence of ﬁve images is transformed ﬁrst with
+<!--l. 976--><p class="noindent" >In this example, a sequence of ﬁve images is transformed ﬁrst with
 the (1-iteration) MDWT, producing 2 SRLs by image. Next, the
-<!--l. 973--><math 
+<!--l. 977--><math 
  xmlns="http://www.w3.org/1998/Math/MathML"  
 display="inline" ><mi 
 >H</mi></math>
@@ -7947,12 +7953,12 @@ predictor=2
                                                                   
  <br />animate /tmp/diff*.png
 </div>
-<!--l. 1020--><p class="nopar" >
-</p><!--l. 1022--><p class="noindent" >
+<!--l. 1024--><p class="nopar" >
+</p><!--l. 1026--><p class="noindent" >
 </p>
    <h4 class="likesubsectionHead"><a 
  id="x1-240006"></a>Example: Eﬀects caused by the total attenuation of the temporal
-<!--l. 1022--><math 
+<!--l. 1026--><math 
  xmlns="http://www.w3.org/1998/Math/MathML"  
 display="inline" ><mi 
 >H</mi></math>
@@ -7996,12 +8002,12 @@ predictor=2
  <br /># Visualization of the differences with the original sequence.
  <br />rm -f /tmp/diff*.png; for i in {0..4}; do ii=$(printf &#x0022;%03d&#x0022; $i); bash ../tools/show_differences.sh -1 /tmp/$ii.png -2 ../sequences/stockholm/$ii.png -o /tmp/diff_$ii.png; done; animate /tmp/diff*.png
 </div>
-<!--l. 1059--><p class="nopar" >
-</p><!--l. 1064--><p class="noindent" >
+<!--l. 1063--><p class="nopar" >
+</p><!--l. 1068--><p class="noindent" >
 </p>
    <h4 class="likesubsectionHead"><a 
  id="x1-250006"></a>Example: Efects of the quantization of temporal
-<!--l. 1064--><math 
+<!--l. 1068--><math 
  xmlns="http://www.w3.org/1998/Math/MathML"  
 display="inline" ><mi 
 >H</mi></math>
@@ -8032,11 +8038,11 @@ predictor=2
  <br />
  <br />rm -f /tmp/diff*.png; for i in {0..2}; do ii=$(printf &#x0022;%03d&#x0022; $i); bash ../tools/show_differences.sh -1 /tmp/$ii.png -2 ../sequences/stockholm/$ii.png -o /tmp/diff_$ii.png; done; animate /tmp/diff*.png
 </div>
-<!--l. 1087--><p class="nopar" >
-</p><!--l. 1089--><p class="noindent" >
+<!--l. 1091--><p class="nopar" >
+</p><!--l. 1093--><p class="noindent" >
 </p>
    <h4 class="likesubsectionHead"><a 
- id="x1-260006"></a>Example: Quantization of all <!--l. 1089--><math 
+ id="x1-260006"></a>Example: Quantization of all <!--l. 1093--><math 
  xmlns="http://www.w3.org/1998/Math/MathML"  
 display="inline" ><mi 
 >H</mi></math>
@@ -8071,11 +8077,11 @@ predictor=2
  <br />
  <br />rm -f /tmp/diff*.png; for i in {0..2}; do ii=$(printf &#x0022;%03d&#x0022; $i); bash ../tools/show_differences.sh -1 /tmp/$ii.png -2 ../sequences/stockholm/$ii.png -o /tmp/diff_$ii.png; done; animate /tmp/diff*.png
 </div>
-<!--l. 1116--><p class="nopar" >
-</p><!--l. 1129--><p class="noindent" >
+<!--l. 1120--><p class="nopar" >
+</p><!--l. 1133--><p class="noindent" >
 </p>
    <h4 class="likesubsectionHead"><a 
- id="x1-270006"></a>Quantization of all <!--l. 1129--><math 
+ id="x1-270006"></a>Quantization of all <!--l. 1133--><math 
  xmlns="http://www.w3.org/1998/Math/MathML"  
 display="inline" ><mi 
 >H</mi></math>
@@ -8109,15 +8115,15 @@ subbands</h4>
  <br />
  <br />for i in /tmp/00?.png; do python ../tools/substract_offset.py -i $i -o $i.png; done; animate /tmp/00?.png.png
 </div>
-<!--l. 1155--><p class="nopar" >
-</p><!--l. 1159--><p class="noindent" >
+<!--l. 1159--><p class="nopar" >
+</p><!--l. 1163--><p class="noindent" >
 </p>
    <h3 class="likesectionHead"><a 
  id="x1-280006"></a>Lossy compression eﬀects</h3>
-<!--l. 1162--><p class="noindent" >
+<!--l. 1166--><p class="noindent" >
 </p>
    <h4 class="likesubsectionHead"><a 
- id="x1-290006"></a>Compression of (<!--l. 1162--><math 
+ id="x1-290006"></a>Compression of (<!--l. 1166--><math 
  xmlns="http://www.w3.org/1998/Math/MathML"  
 display="inline" ><mi 
 >H</mi></math>)
@@ -8148,11 +8154,11 @@ MC subbands</h4>
  <br />
  <br />for i in /tmp/00?.png; do python ../tools/substract_offset.py -i $i -o $i.png; done; animate /tmp/00?.png.png
 </div>
-<!--l. 1185--><p class="nopar" >
-</p><!--l. 1187--><p class="noindent" >
+<!--l. 1189--><p class="nopar" >
+</p><!--l. 1191--><p class="noindent" >
 </p>
    <h4 class="likesubsectionHead"><a 
- id="x1-300006"></a>Quantization of all <!--l. 1187--><math 
+ id="x1-300006"></a>Quantization of all <!--l. 1191--><math 
  xmlns="http://www.w3.org/1998/Math/MathML"  
 display="inline" ><mi 
 >H</mi></math>
@@ -8192,11 +8198,11 @@ subbands</h4>
  <br />
  <br />for i in /tmp/00?.png; do python ../tools/substract_offset.py -i $i -o $i.png; done; animate /tmp/00?.png.png
 </div>
-<!--l. 1219--><p class="nopar" >
-</p><!--l. 1221--><p class="noindent" >
+<!--l. 1223--><p class="nopar" >
+</p><!--l. 1225--><p class="noindent" >
 </p>
    <h4 class="likesubsectionHead"><a 
- id="x1-310006"></a>Quantization of all <!--l. 1221--><math 
+ id="x1-310006"></a>Quantization of all <!--l. 1225--><math 
  xmlns="http://www.w3.org/1998/Math/MathML"  
 display="inline" ><mi 
 >H</mi></math>
@@ -8242,7 +8248,7 @@ subbands</h4>
  <br />
  <br />for i in /tmp/00?.png; do python ../tools/substract_offset.py -i $i -o $i.png; done; animate /tmp/00?.png.png
 </div>
-<!--l. 1259--><p class="nopar" >
+<!--l. 1263--><p class="nopar" >
 <a 
  id="Q1-1-47"></a>
 </p>
