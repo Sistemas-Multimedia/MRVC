@@ -76,7 +76,7 @@ class MCDWT:
         bH = self.dwt.forward(BH)
         return bH[1]
 
-    def forward(self, prefix = "/tmp/", N=5, I=2):
+    def forward(self, prefix = "/tmp/", N=5, T=2):
         '''Forward MCDWT.
 
         Compute the MC 1D-DWT. The input video (as a sequence of
@@ -96,12 +96,12 @@ class MCDWT:
 
                 Number of decompositions to process.
 
-             I : int
+             T : int
 
                 Number of iterations of the MCDWT (temporal scales).
                 Controls the GOP size.
 
-                  I | GOP_size
+                  T | GOP_size
                 ----+----------
                   0 |        1
                   1 |        2
@@ -118,7 +118,7 @@ class MCDWT:
 
         '''
         x = 2
-        for t in range(I): # Temporal scale
+        for t in range(T): # Temporal scale
             i = 0
             aL, aH = decomposition.read(prefix, "{:03d}".format(0))
             while i < (N//x):
@@ -130,7 +130,7 @@ class MCDWT:
                 i += 1
             x *= 2
 
-    def backward(self, prefix = "/tmp/", N=5, I=2):
+    def backward(self, prefix = "/tmp/", N=5, T=2):
         '''Backward MCDWT.
 
         Compute the inverse MC 1D-DWT. The input sequence of
@@ -150,7 +150,7 @@ class MCDWT:
 
                 Number of decompositions to process.
 
-             I : int
+             T : int
 
                 Number of iterations of the MCDWT (temporal scales).
 
@@ -160,8 +160,8 @@ class MCDWT:
             The sequence of 1-iteration decompositions.
 
         '''
-        x = 2**I
-        for t in range(I): # Temporal scale
+        x = 2**T
+        for t in range(T): # Temporal scale
             i = 0
             aL, aH = decomposition.read(prefix, "{:03d}".format(0))
             while i < (N//x):
@@ -194,7 +194,7 @@ if __name__ == "__main__":
     parser.add_argument("-b", "--backward", action='store_true', help="Performs backward transform")
     parser.add_argument("-p", "--prefix", help="Dir where the files the I/O files are placed", default="/tmp/")
     parser.add_argument("-N", "--decompositions", help="Number of input decompositions", default=5, type=int)
-    parser.add_argument("-I", "--iterations", help="Number of temporal iterations", default=2, type=int)
+    parser.add_argument("-T", "--iterations", help="Number of temporal iterations", default=2, type=int)
     parser.add_argument("-P", "--predictor", help="Predictor to use (0=none, 1=MC average, 2=MC weighted average, 3=left, 4=right, 5=MC left, 6=MC right, 7=offset)", default=1, type=int)
 
     args = parser.parse_args()

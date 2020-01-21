@@ -413,11 +413,15 @@ that can be decoded partially, depending on the avaliable bandwidth.
 % Subband Motion Compensated Temporal Filtering (SMCTF) 
 \section{Motion Compensated Discrete Wavelet Transform (MCDWT)}
 MCDWT is a 2D+t transform. The 2D stage is 1-iteration MDWT, and it is
-applied first. The t stage is a $I$-iterations 1D
+applied first. The t stage is a $T$-iterations 1D
 \href{https://en.wikipedia.org/wiki/Motion_compensation}{Motion
   Compensated (MC)} DWT, which removes the temporal redundancy between
-adjacent $H$ subbands. The number of iterations $I$ determines the
-\href{https://en.wikipedia.org/wiki/Group_of_pictures}{GOP} size.
+adjacent $H$ subbands. The number of iterations $T$ determines the
+\href{https://en.wikipedia.org/wiki/Group_of_pictures}{GOP} size
+\begin{equation}
+  G=2^T.
+  \label{eq:GOP_size}
+\end{equation}
 
 A special characteristic of MCDWT is that the motion information is
 not transmitted from the encoder to the decoder, which must replicate
@@ -464,7 +468,8 @@ used to estimate and compensate the $H$ subbands.
 The ME projections for $[b.L]$ are performed with $[a.L]$ and $[c.L]$
 instead of $a$ and $c$ (that are available at the decoder) because, in
 $a$ and $c$ there is high-frequency information that can dificult the
-mappings $[a.L]\rightarrow [b.L]$ and $[c.L]\rightarrow [b.L]$.
+computation of the projections $[a.L]\rightarrow [b.L]$ and
+$[c.L]\rightarrow [b.L]$.
 
 %\subsection{The MCDWT step}
 
@@ -477,10 +482,10 @@ mappings $[a.L]\rightarrow [b.L]$ and $[c.L]\rightarrow [b.L]$.
 %\subsection{Forward and backward (inverse) transform}
 
 \subsection{The transform}
-The $I$-iterations MCDWT is the result of applying the MCDWT butterfly
-to all the images of $I+1$ different temporal scales (see
+The $T$-iterations MCDWT is the result of applying the MCDWT butterfly
+to all the images of $T+1$ different temporal scales (see
 Fig.~\ref{fig:MCDWT}). These scales are defined by the images with
-number multiple of $2^i$, where $1\leq i\leq I$ is the current
+number multiple of $2^t$, where $1\leq t\leq T$ is the current
 iteration.
 
 \begin{figure}
@@ -492,10 +497,9 @@ iteration.
   \label{fig:MCDWT}
 \end{figure}
 
-Notice that, if $N=G+1$ (where $G=2^I$ is the number of
-images/decompositions in the GOP, i.e., the GOP size), except for the
-first and the last image of the sequence, all the $H$-subbands are
-temporally decorrelated.
+Notice that, if $N=G+1$ (where $G$ is the GOP size, see
+Eq.~\ref{eq:GOP_size}), except for the first and the last image of the
+sequence, all the $H$-subbands are temporally decorrelated.
 
 \subsection*{Example: 1-iteration MDWT + 1-iteration MCDWT}
 In this example, a sequence of five images is transformed first with
@@ -521,7 +525,7 @@ for i in /tmp/HL???.png; do ls -l $i; done
 for i in /tmp/HH???.png; do ls -l $i; done
 
 # 1-iteration MCDWT.
-python3 -O MCDWT.py -P $predictor -p /tmp/ -I $iterations
+python3 -O MCDWT.py -P $predictor -p /tmp/ -T $iterations
 
 # Show the length of the subbands.
 for i in /tmp/LL???.png; do ls -l $i; done
@@ -536,7 +540,7 @@ for i in /tmp/HH???.png; do ls -l $i; done
 rm /tmp/???.png
 
 # 1-iteration iMCDWT.
-python3 -O MCDWT.py -P $predictor -b -p /tmp/ -I $iterations
+python3 -O MCDWT.py -P $predictor -b -p /tmp/ -T $iterations
 
 # 1-iteration iMDWT.
 python3 -O MDWT.py -b -p /tmp/
@@ -552,7 +556,7 @@ animate /tmp/diff*.png
 
 \subsection*{Example: 1-iteration MDWT + 2-iterations MCDWT}
 This example is similar to the previous, but now the number of
-iterations of MCDWT is $I=2$. Now, the second iteration of MCDWT
+iterations of MCDWT is $T=2$. Now, the second iteration of MCDWT
 compensates also the $H$ subband of the image 2. This example matches
 exactly with the described in the Fig~\ref{fig:MCDWT}. Notice that the
 GOP size is $4$ ($3$ TRLs) and the number of SRLs is $2$.
@@ -574,47 +578,47 @@ mkdir /tmp/tmp
 cp /tmp/*.png /tmp/tmp
 
 # 2-iterations MCDWT.
-python3 -O MCDWT.py -I 2 -p /tmp/ -I $iterations
+python3 -O MCDWT.py -p /tmp/ -T $iterations
 
-# Is the content of the subbands different?
+# Is the content of the MCDWT subbands different to the MDWT's output?
 for i in {0..4}; do ii=$(printf "%03d" $i); ls -l /tmp/LL$ii.png /tmp/tmp/LL$ii.png;echo; done
 for i in {0..4}; do ii=$(printf "%03d" $i); ls -l /tmp/LH$ii.png /tmp/tmp/LH$ii.png;echo;  done
 for i in {0..4}; do ii=$(printf "%03d" $i); ls -l /tmp/HL$ii.png /tmp/tmp/HL$ii.png;echo; done
 for i in {0..4}; do ii=$(printf "%03d" $i); ls -l /tmp/HH$ii.png /tmp/tmp/HH$ii.png;echo; done
 
-# Comparing LH.
+# Comparing LH visually.
 for i in {0..4}; do ii=$(printf "%03d" $i); convert -normalize /tmp/tmp/LH$ii.png /tmp/tmp/MDWT_LH$ii.png; done
 for i in {0..4}; do ii=$(printf "%03d" $i); convert -normalize /tmp/LH$ii.png /tmp/MCDWT_LH$ii.png; done
 animate /tmp/tmp/MDWT_LH00?.png &
 animate /tmp/MCDWT_LH00?.png &
 
-# Comparing LH002.
+# Comparing LH002 numerically.
 echo MDWT > /tmp/1
 printf "%61s\n" MCDWT > /tmp/2
 python3 ../tools/show_statistics.py -i /tmp/tmp/LH002.png >> /tmp/1
 python3 ../tools/show_statistics.py -i /tmp/LH002.png >> /tmp/2
 paste /tmp/1 /tmp/2
 
-# Comparing HL.
+# Comparing HL visually.
 for i in {0..4}; do ii=$(printf "%03d" $i); convert -normalize /tmp/tmp/HL$ii.png /tmp/tmp/MDWT_HL$ii.png; done
 for i in {0..4}; do ii=$(printf "%03d" $i); convert -normalize /tmp/HL$ii.png /tmp/MCDWT_HL$ii.png; done
 animate /tmp/tmp/MDWT_HL00?.png &
 animate /tmp/MCDWT_HL00?.png &
 
-# Comparing HL002.
+# Comparing HL002 numerically.
 echo MDWT > /tmp/1
 printf "%61s\n" MCDWT > /tmp/2
 python3 ../tools/show_statistics.py -i /tmp/tmp/HL002.png >> /tmp/1
 python3 ../tools/show_statistics.py -i /tmp/HL002.png >> /tmp/2
 paste /tmp/1 /tmp/2
 
-# Comparing HH.
+# Comparing HH visually.
 for i in {0..4}; do ii=$(printf "%03d" $i); convert -normalize /tmp/tmp/HH$ii.png /tmp/tmp/MDWT_HH$ii.png; done
 for i in {0..4}; do ii=$(printf "%03d" $i); convert -normalize /tmp/HH$ii.png /tmp/MCDWT_HH$ii.png; done
 animate /tmp/tmp/MDWT_HH00?.png &
 animate /tmp/MCDWT_HH00?.png &
 
-# Comparing HH002.
+# Comparing HH002 numerically.
 echo MDWT > /tmp/1
 printf "%61s\n" MCDWT > /tmp/2
 python3 ../tools/show_statistics.py -i /tmp/tmp/HH002.png >> /tmp/1
@@ -624,7 +628,7 @@ paste /tmp/1 /tmp/2
 # Now we recover the original video.
 
 # 2-iterations iMCDWT.
-python3 -O MCDWT.py -P $predictor -b -p /tmp/ -I $iterations
+python3 -O MCDWT.py -P $predictor -b -p /tmp/ -T $iterations
 
 # 1-iteration iMDWT
 python3 -O MDWT.py -b -p /tmp/
@@ -646,20 +650,21 @@ and therefore, MCDWT provides the same spatial scalability than MDWT.
 
 Unfortunately, as the rest of video encoders based on MC, MCDWT
 reduces the temporal scalability provided by MDWT, allowing only a
-dyadic access. For example, after applying each iteration of the
-inverse MCDWT, if $I=3$ (the GOP size $G=8$, i.e. $4$ temporal
-resolution levels (TRLs)), the images of the second GOP (GOP 1,
-considered the first GOP, GOP 0, only composed by the first image of
-the sequence) should be reconstructed in this order:
+dyadic access to the images. For example, after applying each
+iteration of the inverse MCDWT, if $T=3$ (the GOP size $G=8$, i.e. $4$
+temporal resolution levels (TRLs) have been generated), the images of
+the second GOP (GOP 1, considereing that the first GOP (GOP 0) is only
+composed by the first image of the sequence) should be reconstructed
+in this order:
 
 \begin{verbatim}
 
 GOP0          GOP 1
 ---- ------------------------
-  s0                       s8  <- output of the 3-iterations MCDWT. Provides TRL3.
-               s4              <- first iteration of the inverse MCDWT. Provides TRL2.
-         s2          s6        <- second iteration. Provides TRL1.
-      s1    s3    s5    s7     <- third iteration. Provides TRL0.
+  s0                       s8  <- output of the 3-iterations MCDWT. Provides TRL #3.
+               s4              <- first iteration of the inverse MCDWT. Provides TRL #2.
+         s2          s6        <- second iteration. Provides TRL #1.
+      s1    s3    s5    s7     <- third iteration. Provides TRL #0.
 
 \end{verbatim}
 
@@ -675,19 +680,19 @@ cp ../sequences/stockholm/* /tmp
 
 predictor=1
 python3 -O MDWT.py  -p /tmp/
-python3 -O MCDWT.py -p /tmp/     -P $predictor -I $iterations
+python3 -O MCDWT.py -p /tmp/     -P $predictor -T $iterations
 python3 -O MDWT.py  -p /tmp/LL
-python3 -O MCDWT.py -p /tmp/LL   -P $predictor -I $iterations
+python3 -O MCDWT.py -p /tmp/LL   -P $predictor -T $iterations
 python3 -O MDWT.py  -p /tmp/LLLL
-python3 -O MCDWT.py -p /tmp/LLLL -P $predictor -I $iterations
+python3 -O MCDWT.py -p /tmp/LLLL -P $predictor -T $iterations
 
 rm /tmp/00?.png
 
-python3 -O MCDWT.py -p /tmp/LLLL -P $predictor -b -I $iterations
+python3 -O MCDWT.py -p /tmp/LLLL -P $predictor -b -T $iterations
 python3 -O MDWT.py  -p /tmp/LLLL               -b
-python3 -O MCDWT.py -p /tmp/LL   -P $predictor -b -I $iterations
+python3 -O MCDWT.py -p /tmp/LL   -P $predictor -b -T $iterations
 python3 -O MDWT.py  -p /tmp/LL                 -b
-python3 -O MCDWT.py -p /tmp/     -P $predictor -b -I $iterations
+python3 -O MCDWT.py -p /tmp/     -P $predictor -b -T $iterations
 python3 -O MDWT.py  -p /tmp/                   -b
 
 for i in /tmp/00?.png; do python ../tools/substract_offset.py -i $i -o $i.png; done; animate /tmp/00?.png.png
@@ -696,7 +701,7 @@ for i in {0..4}; do ii=$(printf "%03d" $i); bash ../tools/show_differences.sh -1
 animate /tmp/diff*.png
 \end{verbatim}
 
-The GOP size is $4$, providing $3$ TRLs. $4$ is the number of
+The GOP size is $4$, producint in this case $3$ TRLs. $4$ is the number of
 SRLs.
 
 \begin{verbatim}
@@ -729,7 +734,7 @@ GOP0      GOP 1
 +-------------------------------+
 \end{verbatim}
 
-$3\times 4=12$ different possible reconstructions of the video:
+$3\times 4=12$ different possible reconstructions of the video are possible:
 \begin{enumerate}
 \item s0.3, s4.3.
 \item s0.2, s4.2.
@@ -760,7 +765,7 @@ cp ../sequences/stockholm/* /tmp
 
 predictor=1
 python3 -O MDWT.py  -p /tmp/
-python3 -O MCDWT.py -p /tmp/     -P $predictor -I 1
+python3 -O MCDWT.py -p /tmp/     -P $predictor -T 1
 
 rm /tmp/00?.png
 
@@ -781,7 +786,7 @@ mv /tmp/HH003.png /tmp/HH006.png
 mv /tmp/HH002.png /tmp/HH004.png
 mv /tmp/HH001.png /tmp/HH002.png
 
-python3 -O MCDWT.py -b -p /tmp/ -N 9 -P $predictor -I 2
+python3 -O MCDWT.py -b -p /tmp/ -N 9 -P $predictor -T 2
 python3 -O MDWT.py  -b -p /tmp/ -N 9
 
 for i in /tmp/00?.png; do python ../tools/substract_offset.py -i $i -o $i.png; done; animate /tmp/00?.png.png
@@ -799,11 +804,11 @@ cp ../sequences/stockholm/* /tmp
 
 predictor=1
 python3 -O MDWT.py  -p /tmp/
-python3 -O MCDWT.py -p /tmp/     -P $predictor -I 1
+python3 -O MCDWT.py -p /tmp/     -P $predictor -T 1
 
 rm /tmp/00?.png
 
-python3 -O MCDWT.py -p /tmp/     -P $predictor -b -I 2
+python3 -O MCDWT.py -p /tmp/     -P $predictor -b -T 2
 python3 -O MDWT.py  -p /tmp/                   -b
 
 for i in /tmp/00?.png; do python ../tools/substract_offset.py -i $i -o $i.png; done; animate /tmp/00?.png.png
@@ -996,7 +1001,7 @@ for i in /tmp/HL???.png; do ls -l $i; done
 for i in /tmp/HH???.png; do ls -l $i; done
 
 # 1-iteration MCDWT.
-python3 -O MCDWT.py -P $predictor -p /tmp/ -I $iterations
+python3 -O MCDWT.py -P $predictor -p /tmp/ -T $iterations
 
 # Show the length of the subbands.
 for i in /tmp/LL???.png; do ls -l $i; done
@@ -1009,7 +1014,7 @@ for i in /tmp/HH???.png; do ls -l $i; done
 rm /tmp/???.png
 
 # 1-iteration iMCDWT.
-python3 -O MCDWT.py -P $predictor -b -p /tmp/ -I $iterations
+python3 -O MCDWT.py -P $predictor -b -p /tmp/ -T $iterations
 
 # 1-iteration iMDWT.
 python3 -O MDWT.py -b -p /tmp/
@@ -1066,7 +1071,7 @@ rm -f /tmp/diff*.png; for i in {0..4}; do ii=$(printf "%03d" $i); bash ../tools/
 %}}}
 
 %{{{
-\subsection*{Example: Effects caused by the quantization of MC $H$ subbands}
+\subsection*{Example: Effects caused by the \mylink{quantization}{quantization} of MC $H$ subbands}
 \begin{verbatim}
 predictor=2
 
