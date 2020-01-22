@@ -462,7 +462,7 @@ used to estimate and compensate the $H$ subbands.
     caption={Computation of the prediction
       image (\href{https://github.com/Sistemas-Multimedia/MCDWT/blob/master/src/simple_average.py}{simple\_average.py}).}]{../src/simple_average.py}
   \caption{MCDWT butterflies.}
-  \label{fig:forward_butterflies}
+  \label{fig:forward_butterfly}
 \end{figure}
 
 The ME projections for $[b.L]$ are performed with $[a.L]$ and $[c.L]$
@@ -661,10 +661,10 @@ in this order:
 
 GOP0          GOP 1
 ---- ------------------------
-  s0                       s8  <- output of the 3-iterations MCDWT. Provides TRL #3.
-               s4              <- first iteration of the inverse MCDWT. Provides TRL #2.
-         s2          s6        <- second iteration. Provides TRL #1.
-      s1    s3    s5    s7     <- third iteration. Provides TRL #0.
+  s0                       s8  <- output of the 3-iterations MCDWT. Provides TRL3.
+               s4              <- first iteration of the inverse MCDWT. Provides TRL2.
+         s2          s6        <- second iteration. Provides TRL1.
+      s1    s3    s5    s7     <- third iteration. Provides TRL0.
 
 \end{verbatim}
 
@@ -701,16 +701,20 @@ for i in {0..4}; do ii=$(printf "%03d" $i); bash ../tools/show_differences.sh -1
 animate /tmp/diff*.png
 \end{verbatim}
 
-The GOP size is $4$, producint in this case $3$ TRLs. $4$ is the number of
+The GOP size is $4$, generating $3$ TRLs in this case. $4$ is the number of
 SRLs.
 
 \begin{verbatim}
 
+TRLs:
+
 GOP0      GOP 1
 ---- -------------
-  s0           s4
-         s2
-      s1    s3
+  s0           s4  <- TRL1 U {s0, s4} = TRL2
+         s2        <- TRL0 U s2 = TRL1
+      s1    s3     <- TRL0
+
+SRLs:
 
 +---+---+-------+---------------+
 | 3 | 2 |   1   |       0       |
@@ -916,7 +920,7 @@ using a 2-iterations DWT, to obtain $\tilde{b}$.
 %{{{
 
 As can be seen in the MCDWT bufferfly (see
-Fig.~\ref{fig:forward_butterflies}), both predictions $[b_a.H]$ and
+Fig.~\ref{fig:forward_butterfly}), both predictions $[b_a.H]$ and
 $[b_c.H]$ have the same weight to build the prediction
 \begin{equation}
   [\hat{b.H}] = \frac{[b_a.H] + [b_c.H]}{2}.
@@ -926,10 +930,11 @@ This simple computation, that can have very effective for example in
 video transitions, can also be counterproductive when objects appear
 only in one of the reference images. For this reason, in this section
 a different predictor is proposed, based on the estimated prediction
-error generated throughout the ME process. To estimate this error, we
-will suppose that the prediction error generated for the high
-frequencies of an image is proportional to the prediction error
-generated for the low frequencies of such image.
+error generated throughout the ME process ($[\tilde{b}.H]$ in the
+Fig.~\ref{fig:forward_butterfly}). To estimate this error, we will
+suppose that the prediction error generated for the high frequencies
+of an image is proportional to the prediction error generated for the
+low frequencies of such image.
 
 Let $[b_a.L]$ the prediction generated for the subband $[b.L]$ using
 $[a.L]$ as reference and $[a.L]\rightarrow [b.L]$ as motion, and let
@@ -952,8 +957,8 @@ We define the similarity matrices as
   \label{eq:weighted_prediction}
 \end{equation}
 Notice that, if (for example) the error $[e_a.L]_{x,y}=0$, the
-similarity is $[s_a.L]_{x,y}=1$ (the maximum similarity), and if the
-error is high, the similarity tends to be low.
+similarity is $[s_a.L]_{x,y}=1$ (the maximum similarity), if the error
+is high, the similarity tends to be low (but never $0$).
 
 With this information, that can be recovered by the decoder, the
 improved prediction is defined as
@@ -965,9 +970,9 @@ equation.
 
 Notice that, if (for example) $[s_a.L]_{x,y}=1$ and
 $[s_c.L]_{x,y}\approx 0$, then
-$[\hat{b.H}]_{x,y}\approx [b_a.H]_{x,y}$, and viceversa. If
+$[\hat{b.H}]_{x,y} \approx [b_a.H]_{x,y}$, and viceversa. If
 $[s_a.L]_{x,y}=[s_c.L]_{x,y}$, then
-$[\hat{b.H}]_{x,y}=\frac{[b_a.H]+[b_c.H]}{2}$ (even if both similarities are small).
+$[\hat{b.H}]_{x,y}=\frac{[b_a.H]_{x,y}+[b_c.H]_{x,y}}{2}$ (even if both similarities are small).
 
 \begin{figure}
   \centering \lstinputlisting[firstline=4, lastline=15,
@@ -977,58 +982,11 @@ $[\hat{b.H}]_{x,y}=\frac{[b_a.H]+[b_c.H]}{2}$ (even if both similarities are sma
 \end{figure}
 %}}}
 
-\subsection*{Example: 1-iteration MDWT + 1-iteration MCDWT}
-In this example, a sequence of five images is transformed first with
-the (1-iteration) MDWT, producing 2 SRLs by image. Next, the $H$
-subbands of the odd images (images 1 and 3) are motion compensated
-using the (1-iteration) MCDWT.
 
-\begin{verbatim}
-predictor=2
-iterations=1
+\section{Lossy compression: quantization}
+\mylink{quantization}{Quantization} allows to remove information from signals. We will use it in MCDWT to achieve higher compression ratios, but at the expense of losing visual information (ideally, the less relevant one for us).
 
-# You must be in the 'src' directory.
-rm /tmp/*.png
-cp ../sequences/stockholm/*.png /tmp
-
-# 1-iteration MDWT.
-python3 -O MDWT.py -p /tmp/
-
-# Show the length of the subbands.
-for i in /tmp/LL???.png; do ls -l $i; done
-for i in /tmp/LH???.png; do ls -l $i; done
-for i in /tmp/HL???.png; do ls -l $i; done
-for i in /tmp/HH???.png; do ls -l $i; done
-
-# 1-iteration MCDWT.
-python3 -O MCDWT.py -P $predictor -p /tmp/ -T $iterations
-
-# Show the length of the subbands.
-for i in /tmp/LL???.png; do ls -l $i; done
-for i in /tmp/LH???.png; do ls -l $i; done
-for i in /tmp/HL???.png; do ls -l $i; done
-for i in /tmp/HH???.png; do ls -l $i; done
-
-# Has changed in length any of them? Remember that a change in lenght
-# implies a change in content.
-rm /tmp/???.png
-
-# 1-iteration iMCDWT.
-python3 -O MCDWT.py -P $predictor -b -p /tmp/ -T $iterations
-
-# 1-iteration iMDWT.
-python3 -O MDWT.py -b -p /tmp/
-
-# Visualization of the reconstruction.
-for i in /tmp/???.png; do python3 ../tools/substract_offset.py -i $i -o $i.png; done
-animate /tmp/???.png.png
-
-# Visualization of the residue.
-for i in {0..4}; do ii=$(printf "%03d" $i); bash ../tools/show_differences.sh -1 /tmp/$ii.png -2 ../sequences/stockholm/$ii.png -o /tmp/diff_$ii.png; done
-animate /tmp/diff*.png
-\end{verbatim}
-
-\subsection*{Example: Effects caused by the total attenuation of the temporal $H$ subbands}
+\subsection*{Example: Effects caused by the total attenuation of the motion compendated (MCed) $H$ subbands}
 
 \begin{verbatim}
 predictor=2
@@ -1062,7 +1020,7 @@ python3 -O MCDWT.py -P $predictor -b -p /tmp/
 python3 -O MDWT.py -b -p /tmp/
 
 # Visualization of the reconstruction.
-for i in /tmp/00?.png; do python ../tools/substract_offset.py -i $i -o $i.png; done; animate /tmp/00?.png.png
+for i in /tmp/00?.png; do python3 ../tools/substract_offset.py -i $i -o $i.png; done; animate /tmp/00?.png.png
 
 # Visualization of the differences with the original sequence.
 rm -f /tmp/diff*.png; for i in {0..4}; do ii=$(printf "%03d" $i); bash ../tools/show_differences.sh -1 /tmp/$ii.png -2 ../sequences/stockholm/$ii.png -o /tmp/diff_$ii.png; done; animate /tmp/diff*.png
@@ -1071,8 +1029,9 @@ rm -f /tmp/diff*.png; for i in {0..4}; do ii=$(printf "%03d" $i); bash ../tools/
 %}}}
 
 %{{{
-\subsection*{Example: Effects caused by the \mylink{quantization}{quantization} of MC $H$ subbands}
+\subsection*{Example: Effects caused by the quantization of MCed $H$ subbands}
 \begin{verbatim}
+q_step=32
 predictor=2
 
 # You must be in the 'src' directory.
@@ -1082,7 +1041,6 @@ cp ../sequences/stockholm/* /tmp
 python3 -O MDWT.py -p /tmp/
 python3 -O MCDWT.py -P $predictor -p /tmp/
 
-q_step=32
 #python3 ../tools/show_statistics.py -i /tmp/LH001.png
 python3 ../tools/quantize.py -i /tmp/LH001.png -o /tmp/LH001.png -q $q_step
 #python3 ../tools/show_statistics.py -i /tmp/LH001.png
@@ -1100,13 +1058,14 @@ python3 ../tools/quantize.py -i /tmp/HH003.png -o /tmp/HH003.png -q $q_step
 python3 -O MCDWT.py -P $predictor -p /tmp/ -b
 python3 -O MDWT.py -p /tmp/ -b
 
-for i in /tmp/00?.png; do python ../tools/substract_offset.py -i $i -o $i.png; done; animate /tmp/00?.png.png
+for i in /tmp/00?.png; do python3 ../tools/substract_offset.py -i $i -o $i.png; done; animate /tmp/00?.png.png
 
 rm -f /tmp/diff*.png; for i in {0..4}; do ii=$(printf "%03d" $i); bash ../tools/show_differences.sh -1 /tmp/$ii.png -2 ../sequences/stockholm/$ii.png -o /tmp/diff_$ii.png; done; animate /tmp/diff*.png
 \end{verbatim}
 
-\subsection*{Example: Quantization of all $H$ subbands (MC and intra)}
+\subsection*{Example: Quantization of all $H$ subbands (MCed and intra)}
 \begin{verbatim}
+q_step=32
 predictor=2
 
 # You must be in the 'src' directory.
@@ -1116,7 +1075,6 @@ cp ../sequences/stockholm/* /tmp
 python3 -O MDWT.py -p /tmp/
 python3 -O MCDWT.py -P $predictor -p /tmp/
 
-q_step=32
 python3 ../tools/quantize.py -i /tmp/LH000.png -o /tmp/LH000.png -q $q_step
 python3 ../tools/quantize.py -i /tmp/HL000.png -o /tmp/HL000.png -q $q_step
 python3 ../tools/quantize.py -i /tmp/HH000.png -o /tmp/HH000.png -q $q_step
@@ -1140,13 +1098,14 @@ python3 ../tools/quantize.py -i /tmp/HH004.png -o /tmp/HH004.png -q $q_step
 python3 -O MCDWT.py -P $predictor -p /tmp/ -b
 python3 -O MDWT.py -p /tmp/ -b
 
-for i in /tmp/00?.png; do python ../tools/substract_offset.py -i $i -o $i.png; done; animate /tmp/00?.png.png
+for i in /tmp/00?.png; do python3 ../tools/substract_offset.py -i $i -o $i.png; done; animate /tmp/00?.png.png
 
 rm -f /tmp/diff*.png; for i in {0..4}; do ii=$(printf "%03d" $i); bash ../tools/show_differences.sh -1 /tmp/$ii.png -2 ../sequences/stockholm/$ii.png -o /tmp/diff_$ii.png; done; animate /tmp/diff*.png
 \end{verbatim}
 
 \subsection*{Example: Quantization of all subbands}
 \begin{verbatim}
+q_step=128
 predictor=2
 
 # You must be in the 'src' directory.
@@ -1156,7 +1115,6 @@ cp ../sequences/stockholm/* /tmp
 python3 -O MDWT.py -p /tmp/
 python3 -O MCDWT.py -P $predictor -p /tmp/
 
-q_step=128
 python3 ../tools/quantize.py -i /tmp/LL000.png -o /tmp/LL000.png -q $q_step
 python3 ../tools/quantize.py -i /tmp/LH000.png -o /tmp/LH000.png -q $q_step
 python3 ../tools/quantize.py -i /tmp/HL000.png -o /tmp/HL000.png -q $q_step
@@ -1185,12 +1143,14 @@ python3 ../tools/quantize.py -i /tmp/HH004.png -o /tmp/HH004.png -q $q_step
 python3 -O MCDWT.py -P $predictor -p /tmp/ -b
 python3 -O MDWT.py -p /tmp/ -b 
 
-for i in /tmp/00?.png; do python ../tools/substract_offset.py -i $i -o $i.png; done; animate /tmp/00?.png.png
+for i in /tmp/00?.png; do python3 ../tools/substract_offset.py -i $i -o $i.png; done; animate /tmp/00?.png.png
 
 rm -f /tmp/diff*.png; for i in {0..4}; do ii=$(printf "%03d" $i); bash ../tools/show_differences.sh -1 /tmp/$ii.png -2 ../sequences/stockholm/$ii.png -o /tmp/diff_$ii.png; done; animate /tmp/diff*.png
 \end{verbatim}
 
 %}}}
+
+\begin{comment}
 
 %{{{
 \subsection*{Example: Lossy compression of the MC $H$ subbands}
@@ -1229,7 +1189,7 @@ python3 ../tools/add_offset.py -i /tmp/HH003.png -o /tmp/HH003.png -f 32640
 python3 -O MCDWT.py -P $predictor -p /tmp/ -b
 python3 -O MDWT.py -p /tmp/ -b
 
-for i in /tmp/00?.png; do python ../tools/substract_offset.py -i $i -o $i.png; done; animate /tmp/00?.png.png
+for i in /tmp/00?.png; do python3 ../tools/substract_offset.py -i $i -o $i.png; done; animate /tmp/00?.png.png
 
 rm -f /tmp/diff*.png; for i in {0..4}; do ii=$(printf "%03d" $i); bash ../tools/show_differences.sh -1 /tmp/$ii.png -2 ../sequences/stockholm/$ii.png -o /tmp/diff_$ii.png; done; animate /tmp/diff*.png
 \end{verbatim}
@@ -1284,7 +1244,7 @@ python3 ../tools/add_offset.py -i /tmp/HH004.png -o /tmp/HH004.png -f 32640
 python3 -O MCDWT.py -P $predictor -p /tmp/ -b
 python3 -O MDWT.py -p /tmp/ -b
 
-for i in /tmp/00?.png; do python ../tools/substract_offset.py -i $i -o $i.png; done; animate /tmp/00?.png.png
+for i in /tmp/00?.png; do python3 ../tools/substract_offset.py -i $i -o $i.png; done; animate /tmp/00?.png.png
 
 rm -f /tmp/diff*.png; for i in {0..4}; do ii=$(printf "%03d" $i); bash ../tools/show_differences.sh -1 /tmp/$ii.png -2 ../sequences/stockholm/$ii.png -o /tmp/diff_$ii.png; done; animate /tmp/diff*.png
 \end{verbatim}
@@ -1349,12 +1309,14 @@ python3 ../tools/add_offset.py -i /tmp/HH004.png -o /tmp/HH004.png -f 32640
 python3 -O MCDWT.py -P $predictor -p /tmp/ -b
 python3 -O MDWT.py -p /tmp/ -b
 
-for i in /tmp/00?.png; do python ../tools/substract_offset.py -i $i -o $i.png; done; animate /tmp/00?.png.png
+for i in /tmp/00?.png; do python3 ../tools/substract_offset.py -i $i -o $i.png; done; animate /tmp/00?.png.png
 
 rm -f /tmp/diff*.png; for i in {0..4}; do ii=$(printf "%03d" $i); bash ../tools/show_differences.sh -1 /tmp/$ii.png -2 ../sequences/stockholm/$ii.png -o /tmp/diff_$ii.png; done; animate /tmp/diff*.png
 \end{verbatim}
 
 %}}}
+
+\end{comment}
 
 \begin{comment}
 \section{MCDWT decomposition}

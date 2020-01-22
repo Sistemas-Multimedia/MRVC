@@ -27,7 +27,7 @@ class="ecrm-1200">Vicente Gonz</span><span
 class="ecrm-1200">á</span><span 
 class="ecrm-1200">lez Ruiz</span></div><br />
 <div class="date" ><span 
-class="ecrm-1200">January 21, 2020</span></div>
+class="ecrm-1200">January 22, 2020</span></div>
    </div>
    <h3 class="likesectionHead"><a 
  id="x1-1000"></a>Contents</h3>
@@ -58,8 +58,10 @@ href="#x1-170005.2" id="QQ2-1-27">The transform</a></span>
 href="#x1-200005.3" id="QQ2-1-33">Scalability provided by MCDWT</a></span>
 <br />   <span class="sectionToc" >6 <a 
 href="#x1-220006" id="QQ2-1-35">Adaptive motion compensation based on the distortion of the prediction error</a></span>
+<br />   <span class="sectionToc" >7 <a 
+href="#x1-230007" id="QQ2-1-38">Lossy compression: quantization</a></span>
 <br />   <span class="sectionToc" ><a 
-href="#Q1-1-46">References</a></span>
+href="#Q1-1-43">References</a></span>
    </div>
 <!--l. 8--><p class="noindent" >
 </p>
@@ -6977,10 +6979,10 @@ image of the sequence) should be reconstructed in this order:
    <div class="verbatim" id="verbatim-11">
  <br />GOP0          GOP 1
  <br />---- ------------------------
- <br />  s0                       s8  &#x003C;- output of the 3-iterations MCDWT. Provides TRL #3.
- <br />               s4              &#x003C;- first iteration of the inverse MCDWT. Provides TRL #2.
- <br />         s2          s6        &#x003C;- second iteration. Provides TRL #1.
- <br />      s1    s3    s5    s7     &#x003C;- third iteration. Provides TRL #0.
+ <br />  s0                       s8  &#x003C;- output of the 3-iterations MCDWT. Provides TRL3.
+ <br />               s4              &#x003C;- first iteration of the inverse MCDWT. Provides TRL2.
+ <br />         s2          s6        &#x003C;- second iteration. Provides TRL1.
+ <br />      s1    s3    s5    s7     &#x003C;- third iteration. Provides TRL0.
  <br />
 </div>
 <!--l. 669--><p class="nopar" >
@@ -7029,23 +7031,27 @@ predictor=1
 </p><!--l. 704--><p class="indent" >   The GOP size is <!--l. 704--><math 
  xmlns="http://www.w3.org/1998/Math/MathML"  
 display="inline" ><mn>4</mn></math>,
-producint in this case <!--l. 704--><math 
+generating <!--l. 704--><math 
  xmlns="http://www.w3.org/1998/Math/MathML"  
-display="inline" ><mn>3</mn></math>
-TRLs. <!--l. 704--><math 
+display="inline" ><mn>3</mn></math> TRLs
+in this case. <!--l. 704--><math 
  xmlns="http://www.w3.org/1998/Math/MathML"  
-display="inline" ><mn>4</mn></math> is
-the number of SRLs.
+display="inline" ><mn>4</mn></math>
+is the number of SRLs.
                                                                   
 
                                                                   
 </p>
    <div class="verbatim" id="verbatim-13">
+ <br />TRLs:
+ <br />
  <br />GOP0      GOP 1
  <br />---- -------------
- <br />  s0           s4
- <br />         s2
- <br />      s1    s3
+ <br />  s0           s4  &#x003C;- TRL1 U {s0, s4} = TRL2
+ <br />         s2        &#x003C;- TRL0 U s2 = TRL1
+ <br />      s1    s3     &#x003C;- TRL0
+ <br />
+ <br />SRLs:
  <br />
  <br />+---+---+-------+---------------+
  <br />| 3 | 2 |   1   |       0       |
@@ -7068,8 +7074,8 @@ the number of SRLs.
  <br />|                               |
  <br />+-------------------------------+
 </div>
-<!--l. 735--><p class="nopar" >
-</p><!--l. 737--><p class="indent" >   <!--l. 737--><math 
+<!--l. 739--><p class="nopar" >
+</p><!--l. 741--><p class="indent" >   <!--l. 741--><math 
  xmlns="http://www.w3.org/1998/Math/MathML"  
 display="inline" ><mn>3</mn> <mo 
 class="MathClass-bin">×</mo> <mn>4</mn> <mo 
@@ -7081,15 +7087,15 @@ diﬀerent possible reconstructions of the video are possible:
      </li>
      <li 
   class="enumerate" id="x1-21004x2">s0.2, s4.2.
+                                                                  
+
+                                                                  
      </li>
      <li 
   class="enumerate" id="x1-21006x3">s0.1, s4.1.
      </li>
      <li 
   class="enumerate" id="x1-21008x4">s0.0, s4.0.
-                                                                  
-
-                                                                  
      </li>
      <li 
   class="enumerate" id="x1-21010x5">s0.3, s4.3, s2.3.
@@ -7114,14 +7120,14 @@ diﬀerent possible reconstructions of the video are possible:
      </li>
      <li 
   class="enumerate" id="x1-21024x12">s0.0, s4.0, s2.0, s1.0, s3.0.</li></ol>
-<!--l. 915--><p class="noindent" >
+<!--l. 919--><p class="noindent" >
 </p>
    <h3 class="sectionHead"><span class="titlemark">6   </span> <a 
  id="x1-220006"></a>Adaptive motion compensation based on the distortion of the prediction
 error</h3>
-<!--l. 918--><p class="noindent" >As can be seen in the MCDWT buﬀerﬂy (see Fig. <a 
-href="#x1-160683">3<!--tex4ht:ref: fig:forward_butterflies --></a>), both predictions
-<!--l. 919--><math 
+<!--l. 922--><p class="noindent" >As can be seen in the MCDWT buﬀerﬂy (see Fig. <a 
+href="#x1-160683">3<!--tex4ht:ref: fig:forward_butterfly --></a>), both predictions
+<!--l. 923--><math 
  xmlns="http://www.w3.org/1998/Math/MathML"  
 display="inline" ><mrow ><mo 
 class="MathClass-open">[</mo><mrow><msub><mrow 
@@ -7133,7 +7139,7 @@ class="MathClass-open">[</mo><mrow><msub><mrow
 class="MathClass-punc">.</mo><mi 
 >H</mi></mrow><mo 
 class="MathClass-close">]</mo></mrow></math> and
-<!--l. 920--><math 
+<!--l. 924--><math 
  xmlns="http://www.w3.org/1998/Math/MathML"  
 display="inline" ><mrow ><mo 
 class="MathClass-open">[</mo><mrow><msub><mrow 
@@ -7147,7 +7153,10 @@ class="MathClass-punc">.</mo><mi
 class="MathClass-close">]</mo></mrow></math> have
 the same weight to build the prediction </p><table class="equation"><tr><td> <a 
  id="x1-22001r2"></a>
-<!--l. 921--><math 
+                                                                  
+
+                                                                  
+<!--l. 925--><math 
  xmlns="http://www.w3.org/1998/Math/MathML"  
 display="block" class="equation">
                       <mrow ><mo 
@@ -7184,18 +7193,27 @@ class="MathClass-close">]</mo></mrow></mrow>
 ><mn>2</mn></mrow></mfrac>         <mo 
 class="MathClass-punc">.</mo>
 </math></td><td class="eq-no">(2)</td></tr></table>
-                                                                  
-
-                                                                  
-<!--l. 924--><p class="indent" >   This simple computation, that can have very eﬀective for example in <a 
+<!--l. 928--><p class="indent" >   This simple computation, that can have very eﬀective for example in <a 
 href="https://biteable.com/blog/tips/video-transitions-effects-examples/" >dissolves</a>
 video transitions, can also be counterproductive when objects appear only in one of
 the reference images. For this reason, in this section a diﬀerent predictor is proposed,
-based on the estimated prediction error generated throughout the ME process. To
-estimate this error, we will suppose that the prediction error generated for the high
-frequencies of an image is proportional to the prediction error generated for the low
-frequencies of such image.
-</p><!--l. 934--><p class="indent" >   Let <!--l. 934--><math 
+based on the estimated prediction error generated throughout the ME process
+(<!--l. 933--><math 
+ xmlns="http://www.w3.org/1998/Math/MathML"  
+display="inline" ><mrow ><mo 
+class="MathClass-open">[</mo><mrow><mover 
+accent="true"><mrow 
+><mi 
+>b</mi></mrow><mo 
+class="MathClass-op">̃</mo></mover><mo 
+class="MathClass-punc">.</mo><mi 
+>H</mi></mrow><mo 
+class="MathClass-close">]</mo></mrow></math> in
+the Fig. <a 
+href="#x1-160683">3<!--tex4ht:ref: fig:forward_butterfly --></a>). To estimate this error, we will suppose that the prediction error
+generated for the high frequencies of an image is proportional to the prediction error
+generated for the low frequencies of such image.
+</p><!--l. 939--><p class="indent" >   Let <!--l. 939--><math 
  xmlns="http://www.w3.org/1998/Math/MathML"  
 display="inline" ><mrow ><mo 
 class="MathClass-open">[</mo><mrow><msub><mrow 
@@ -7207,7 +7225,7 @@ class="MathClass-open">[</mo><mrow><msub><mrow
 class="MathClass-punc">.</mo><mi 
 >L</mi></mrow><mo 
 class="MathClass-close">]</mo></mrow></math> the prediction
-generated for the subband <!--l. 934--><math 
+generated for the subband <!--l. 939--><math 
  xmlns="http://www.w3.org/1998/Math/MathML"  
 display="inline" ><mrow ><mo 
 class="MathClass-open">[</mo><mrow><mi 
@@ -7215,7 +7233,7 @@ class="MathClass-open">[</mo><mrow><mi
 class="MathClass-punc">.</mo><mi 
 >L</mi></mrow><mo 
 class="MathClass-close">]</mo></mrow></math>
-using <!--l. 935--><math 
+using <!--l. 940--><math 
  xmlns="http://www.w3.org/1998/Math/MathML"  
 display="inline" ><mrow ><mo 
 class="MathClass-open">[</mo><mrow><mi 
@@ -7223,7 +7241,7 @@ class="MathClass-open">[</mo><mrow><mi
 class="MathClass-punc">.</mo><mi 
 >L</mi></mrow><mo 
 class="MathClass-close">]</mo></mrow></math> as reference
-and <!--l. 935--><math 
+and <!--l. 940--><math 
  xmlns="http://www.w3.org/1998/Math/MathML"  
 display="inline" ><mrow ><mo 
 class="MathClass-open">[</mo><mrow><mi 
@@ -7237,7 +7255,7 @@ class="MathClass-open">[</mo><mrow><mi
 class="MathClass-punc">.</mo><mi 
 >L</mi></mrow><mo 
 class="MathClass-close">]</mo></mrow></math> as motion, and
-let <!--l. 936--><math 
+let <!--l. 941--><math 
  xmlns="http://www.w3.org/1998/Math/MathML"  
 display="inline" ><mrow ><mo 
 class="MathClass-open">[</mo><mrow><msub><mrow 
@@ -7249,7 +7267,7 @@ class="MathClass-open">[</mo><mrow><msub><mrow
 class="MathClass-punc">.</mo><mi 
 >L</mi></mrow><mo 
 class="MathClass-close">]</mo></mrow></math> the prediction
-generated for <!--l. 936--><math 
+generated for <!--l. 941--><math 
  xmlns="http://www.w3.org/1998/Math/MathML"  
 display="inline" ><mrow ><mo 
 class="MathClass-open">[</mo><mrow><mi 
@@ -7257,7 +7275,7 @@ class="MathClass-open">[</mo><mrow><mi
 class="MathClass-punc">.</mo><mi 
 >L</mi></mrow><mo 
 class="MathClass-close">]</mo></mrow></math>
-using <!--l. 936--><math 
+using <!--l. 941--><math 
  xmlns="http://www.w3.org/1998/Math/MathML"  
 display="inline" ><mrow ><mo 
 class="MathClass-open">[</mo><mrow><mi 
@@ -7265,7 +7283,7 @@ class="MathClass-open">[</mo><mrow><mi
 class="MathClass-punc">.</mo><mi 
 >L</mi></mrow><mo 
 class="MathClass-close">]</mo></mrow></math> as
-reference and <!--l. 937--><math 
+reference and <!--l. 942--><math 
  xmlns="http://www.w3.org/1998/Math/MathML"  
 display="inline" ><mrow ><mo 
 class="MathClass-open">[</mo><mrow><mi 
@@ -7281,7 +7299,7 @@ class="MathClass-punc">.</mo><mi
 class="MathClass-close">]</mo></mrow></math>
 as motion. We now compute the prediction errors </p><table class="equation"><tr><td> <a 
  id="x1-22002r3"></a>
-<!--l. 939--><math 
+<!--l. 944--><math 
  xmlns="http://www.w3.org/1998/Math/MathML"  
 display="block" class="equation">
  <mtable  align="axis" style=""  
@@ -7341,9 +7359,12 @@ class="MathClass-punc">.</mo><mi
 class="MathClass-close">]</mo></mrow><mo 
 class="MathClass-punc">.</mo> </mtd></mtr><!--l--></mtable>
 </math></td><td class="eq-no">(3)</td></tr></table>
-<!--l. 946--><p class="indent" >   We deﬁne the similarity matrices as </p><table class="equation"><tr><td> <a 
+<!--l. 951--><p class="indent" >   We deﬁne the similarity matrices as </p><table class="equation"><tr><td> <a 
  id="x1-22003r4"></a>
-<!--l. 947--><math 
+                                                                  
+
+                                                                  
+<!--l. 952--><math 
  xmlns="http://www.w3.org/1998/Math/MathML"  
 display="block" class="equation">
  <mtable  align="axis" style=""  
@@ -7403,8 +7424,8 @@ class="MathClass-close">]</mo></mrow><mo
 class="MathClass-rel">|</mo></mrow></mfrac><mo 
 class="MathClass-punc">.</mo> </mtd></mtr><!--l--></mtable>
 </math></td><td class="eq-no">(4)</td></tr></table>
-<!--l. 954--><p class="indent" >   Notice that, if (for example) the error
-<!--l. 954--><math 
+<!--l. 959--><p class="indent" >   Notice that, if (for example) the error
+<!--l. 959--><math 
  xmlns="http://www.w3.org/1998/Math/MathML"  
 display="inline" ><msub><mrow 
 ><mrow ><mo 
@@ -7423,7 +7444,7 @@ class="MathClass-punc">,</mo><mi
 >y</mi></mrow></msub 
 > <mo 
 class="MathClass-rel">=</mo> <mn>0</mn></math>, the
-similarity is <!--l. 955--><math 
+similarity is <!--l. 960--><math 
  xmlns="http://www.w3.org/1998/Math/MathML"  
 display="inline" ><msub><mrow 
 ><mrow ><mo 
@@ -7442,15 +7463,14 @@ class="MathClass-punc">,</mo><mi
 >y</mi></mrow></msub 
 > <mo 
 class="MathClass-rel">=</mo> <mn>1</mn></math>
-(the maximum similarity), and if the error is high, the similarity tends to be
-low.
-                                                                  
-
-                                                                  
-</p><!--l. 958--><p class="indent" >   With this information, that can be recovered by the decoder, the improved
+(the maximum similarity), if the error is high, the similarity tends to be low (but never
+<!--l. 961--><math 
+ xmlns="http://www.w3.org/1998/Math/MathML"  
+display="inline" ><mn>0</mn></math>).
+</p><!--l. 963--><p class="indent" >   With this information, that can be recovered by the decoder, the improved
 prediction is deﬁned as </p><table class="equation"><tr><td> <a 
  id="x1-22004r5"></a>
-<!--l. 960--><math 
+<!--l. 965--><math 
  xmlns="http://www.w3.org/1998/Math/MathML"  
 display="block" class="equation">
                   <mrow ><mo 
@@ -7524,9 +7544,9 @@ class="MathClass-punc">.</mo><mi
 class="MathClass-close">]</mo></mrow></mrow></mfrac>        <mo 
 class="MathClass-punc">.</mo>
 </math></td><td class="eq-no">(5)</td></tr></table>
-<!--l. 963--><p class="indent" >   The Fig. <a 
+<!--l. 968--><p class="indent" >   The Fig. <a 
 href="#x1-220195">5<!--tex4ht:ref: fig:weighted_average --></a> shows an implementation of this equation.
-</p><!--l. 966--><p class="indent" >   Notice that, if (for example) <!--l. 966--><math 
+</p><!--l. 971--><p class="indent" >   Notice that, if (for example) <!--l. 971--><math 
  xmlns="http://www.w3.org/1998/Math/MathML"  
 display="inline" ><msub><mrow 
 ><mrow ><mo 
@@ -7545,7 +7565,7 @@ class="MathClass-punc">,</mo><mi
 >y</mi></mrow></msub 
 > <mo 
 class="MathClass-rel">=</mo> <mn>1</mn></math>
-and <!--l. 967--><math 
+and <!--l. 972--><math 
  xmlns="http://www.w3.org/1998/Math/MathML"  
 display="inline" ><msub><mrow 
 ><mrow ><mo 
@@ -7564,7 +7584,7 @@ class="MathClass-punc">,</mo><mi
 >y</mi></mrow></msub 
 > <mo 
 class="MathClass-rel">≈</mo> <mn>0</mn></math>, then
-<!--l. 968--><math 
+<!--l. 973--><math 
  xmlns="http://www.w3.org/1998/Math/MathML"  
 display="inline" ><msub><mrow 
 ><mrow ><mo 
@@ -7597,7 +7617,7 @@ class="MathClass-close">]</mo></mrow></mrow><mrow
 class="MathClass-punc">,</mo><mi 
 >y</mi></mrow></msub 
 ></math>, and
-viceversa. If <!--l. 969--><math 
+viceversa. If <!--l. 974--><math 
  xmlns="http://www.w3.org/1998/Math/MathML"  
 display="inline" ><msub><mrow 
 ><mrow ><mo 
@@ -7631,7 +7651,7 @@ class="MathClass-close">]</mo></mrow></mrow><mrow
 class="MathClass-punc">,</mo><mi 
 >y</mi></mrow></msub 
 ></math>,
-then <!--l. 970--><math 
+then <!--l. 975--><math 
  xmlns="http://www.w3.org/1998/Math/MathML"  
 display="inline" ><msub><mrow 
 ><mrow ><mo 
@@ -7649,6 +7669,7 @@ class="MathClass-punc">,</mo><mi
 >y</mi></mrow></msub 
 > <mo 
 class="MathClass-rel">=</mo> <mfrac><mrow 
+><msub><mrow 
 ><mrow ><mo 
 class="MathClass-open">[</mo><mrow><msub><mrow 
 ><mi 
@@ -7658,8 +7679,14 @@ class="MathClass-open">[</mo><mrow><msub><mrow
 ><mo 
 class="MathClass-punc">.</mo><mi 
 >H</mi></mrow><mo 
-class="MathClass-close">]</mo></mrow><mo 
-class="MathClass-bin">+</mo><mrow ><mo 
+class="MathClass-close">]</mo></mrow></mrow><mrow 
+><mi 
+>x</mi><mo 
+class="MathClass-punc">,</mo><mi 
+>y</mi></mrow></msub 
+><mo 
+class="MathClass-bin">+</mo><msub><mrow 
+><mrow ><mo 
 class="MathClass-open">[</mo><mrow><msub><mrow 
 ><mi 
 >b</mi></mrow><mrow 
@@ -7668,9 +7695,14 @@ class="MathClass-open">[</mo><mrow><msub><mrow
 ><mo 
 class="MathClass-punc">.</mo><mi 
 >H</mi></mrow><mo 
-class="MathClass-close">]</mo></mrow></mrow> 
-        <mrow 
-><mn>2</mn></mrow></mfrac>         </math>
+class="MathClass-close">]</mo></mrow></mrow><mrow 
+><mi 
+>x</mi><mo 
+class="MathClass-punc">,</mo><mi 
+>y</mi></mrow></msub 
+></mrow> 
+           <mrow 
+><mn>2</mn></mrow></mfrac>             </math>
 (even if both similarities are small).
 </p>
    <hr class="figure" /><div class="figure" 
@@ -7683,7 +7715,7 @@ class="MathClass-close">]</mo></mrow></mrow>
                                                                   
 
                                                                   
-<!--l. 974--><div class="lstinputlisting">
+<!--l. 979--><div class="lstinputlisting">
 <a 
  id="x1-22005r10"></a>
 <a 
@@ -7903,73 +7935,17 @@ class="content">Computation of the weighted average prediction.</span></div><!--
 
                                                                   
    </div><hr class="endfigure" />
-   <h4 class="likesubsectionHead"><a 
- id="x1-230006"></a>Example: 1-iteration MDWT + 1-iteration MCDWT</h4>
-<!--l. 981--><p class="noindent" >In this example, a sequence of ﬁve images is transformed ﬁrst with
-the (1-iteration) MDWT, producing 2 SRLs by image. Next, the
-<!--l. 982--><math 
- xmlns="http://www.w3.org/1998/Math/MathML"  
-display="inline" ><mi 
->H</mi></math>
-subbands of the odd images (images 1 and 3) are motion compensated using the
-(1-iteration) MCDWT.
-                                                                  
-
-                                                                  
-</p>
-   <div class="verbatim" id="verbatim-14">
-predictor=2
- <br />iterations=1
- <br />
- <br /># You must be in the ’src’ directory.
- <br />rm /tmp/*.png
- <br />cp ../sequences/stockholm/*.png /tmp
- <br />
- <br /># 1-iteration MDWT.
- <br />python3 -O MDWT.py -p /tmp/
- <br />
- <br /># Show the length of the subbands.
- <br />for i in /tmp/LL???.png; do ls -l $i; done
- <br />for i in /tmp/LH???.png; do ls -l $i; done
- <br />for i in /tmp/HL???.png; do ls -l $i; done
- <br />for i in /tmp/HH???.png; do ls -l $i; done
- <br />
- <br /># 1-iteration MCDWT.
- <br />python3 -O MCDWT.py -P $predictor -p /tmp/ -T $iterations
- <br />
- <br /># Show the length of the subbands.
- <br />for i in /tmp/LL???.png; do ls -l $i; done
- <br />for i in /tmp/LH???.png; do ls -l $i; done
- <br />for i in /tmp/HL???.png; do ls -l $i; done
- <br />for i in /tmp/HH???.png; do ls -l $i; done
- <br />
- <br /># Has changed in length any of them? Remember that a change in lenght
- <br /># implies a change in content.
- <br />rm /tmp/???.png
- <br />
- <br /># 1-iteration iMCDWT.
- <br />python3 -O MCDWT.py -P $predictor -b -p /tmp/ -T $iterations
- <br />
- <br /># 1-iteration iMDWT.
- <br />python3 -O MDWT.py -b -p /tmp/
- <br />
- <br /># Visualization of the reconstruction.
- <br />for i in /tmp/???.png; do python3 ../tools/substract_offset.py -i $i -o $i.png; done
- <br />animate /tmp/???.png.png
- <br />
- <br /># Visualization of the residue.
- <br />for i in {0..4}; do ii=$(printf &#x0022;%03d&#x0022; $i); bash ../tools/show_differences.sh -1 /tmp/$ii.png -2 ../sequences/stockholm/$ii.png -o /tmp/diff_$ii.png; done
-                                                                  
-
-                                                                  
- <br />animate /tmp/diff*.png
-</div>
-<!--l. 1029--><p class="nopar" >
-</p><!--l. 1031--><p class="noindent" >
+   <h3 class="sectionHead"><span class="titlemark">7   </span> <a 
+ id="x1-230007"></a>Lossy compression: quantization</h3>
+<!--l. 987--><p class="noindent" ><a 
+href="https://vicente-gonzalez-ruiz.github.io/quantization/" >Quantization</a> allows to remove information from signals. We will use it in MCDWT
+to achieve higher compression ratios, but at the expense of losing visual information
+(ideally, the less relevant one for us).
+</p><!--l. 989--><p class="noindent" >
 </p>
    <h4 class="likesubsectionHead"><a 
- id="x1-240006"></a>Example: Eﬀects caused by the total attenuation of the temporal
-<!--l. 1031--><math 
+ id="x1-240007"></a>Example: Eﬀects caused by the total attenuation of the motion compendated (MCed)
+<!--l. 989--><math 
  xmlns="http://www.w3.org/1998/Math/MathML"  
 display="inline" ><mi 
 >H</mi></math>
@@ -7977,7 +7953,7 @@ subbands</h4>
                                                                   
 
                                                                   
-   <div class="verbatim" id="verbatim-15">
+   <div class="verbatim" id="verbatim-14">
 predictor=2
  <br />
  <br /># You must be in the ’src’ directory.
@@ -8009,21 +7985,20 @@ predictor=2
  <br />python3 -O MDWT.py -b -p /tmp/
  <br />
  <br /># Visualization of the reconstruction.
- <br />for i in /tmp/00?.png; do python ../tools/substract_offset.py -i $i -o $i.png; done; animate /tmp/00?.png.png
+ <br />for i in /tmp/00?.png; do python3 ../tools/substract_offset.py -i $i -o $i.png; done; animate /tmp/00?.png.png
  <br />
  <br /># Visualization of the differences with the original sequence.
  <br />rm -f /tmp/diff*.png; for i in {0..4}; do ii=$(printf &#x0022;%03d&#x0022; $i); bash ../tools/show_differences.sh -1 /tmp/$ii.png -2 ../sequences/stockholm/$ii.png -o /tmp/diff_$ii.png; done; animate /tmp/diff*.png
 </div>
-<!--l. 1069--><p class="nopar" >
-</p><!--l. 1074--><p class="noindent" >
+<!--l. 1027--><p class="nopar" >
+</p><!--l. 1032--><p class="noindent" >
 </p>
    <h4 class="likesubsectionHead"><a 
- id="x1-250006"></a>Example: Eﬀects caused by the <a 
-href="https://vicente-gonzalez-ruiz.github.io/quantization/" >quantization</a> of MC
+ id="x1-250007"></a>Example: Eﬀects caused by the quantization of MCed
                                                                   
 
                                                                   
-<!--l. 1074--><math 
+<!--l. 1032--><math 
  xmlns="http://www.w3.org/1998/Math/MathML"  
 display="inline" ><mi 
 >H</mi></math>
@@ -8031,8 +8006,9 @@ subbands</h4>
                                                                   
 
                                                                   
-   <div class="verbatim" id="verbatim-16">
-predictor=2
+   <div class="verbatim" id="verbatim-15">
+q_step=32
+ <br />predictor=2
  <br />
  <br /># You must be in the ’src’ directory.
  <br />rm /tmp/*.png
@@ -8041,7 +8017,6 @@ predictor=2
  <br />python3 -O MDWT.py -p /tmp/
  <br />python3 -O MCDWT.py -P $predictor -p /tmp/
  <br />
- <br />q_step=32
  <br />#python3 ../tools/show_statistics.py -i /tmp/LH001.png
  <br />python3 ../tools/quantize.py -i /tmp/LH001.png -o /tmp/LH001.png -q $q_step
  <br />#python3 ../tools/show_statistics.py -i /tmp/LH001.png
@@ -8059,24 +8034,25 @@ predictor=2
  <br />python3 -O MCDWT.py -P $predictor -p /tmp/ -b
  <br />python3 -O MDWT.py -p /tmp/ -b
  <br />
- <br />for i in /tmp/00?.png; do python ../tools/substract_offset.py -i $i -o $i.png; done; animate /tmp/00?.png.png
+ <br />for i in /tmp/00?.png; do python3 ../tools/substract_offset.py -i $i -o $i.png; done; animate /tmp/00?.png.png
  <br />
  <br />rm -f /tmp/diff*.png; for i in {0..4}; do ii=$(printf &#x0022;%03d&#x0022; $i); bash ../tools/show_differences.sh -1 /tmp/$ii.png -2 ../sequences/stockholm/$ii.png -o /tmp/diff_$ii.png; done; animate /tmp/diff*.png
 </div>
-<!--l. 1106--><p class="nopar" >
-</p><!--l. 1108--><p class="noindent" >
+<!--l. 1064--><p class="nopar" >
+</p><!--l. 1066--><p class="noindent" >
 </p>
    <h4 class="likesubsectionHead"><a 
- id="x1-260006"></a>Example: Quantization of all <!--l. 1108--><math 
+ id="x1-260007"></a>Example: Quantization of all <!--l. 1066--><math 
  xmlns="http://www.w3.org/1998/Math/MathML"  
 display="inline" ><mi 
 >H</mi></math>
-subbands (MC and intra)</h4>
+subbands (MCed and intra)</h4>
                                                                   
 
                                                                   
-   <div class="verbatim" id="verbatim-17">
-predictor=2
+   <div class="verbatim" id="verbatim-16">
+q_step=32
+ <br />predictor=2
  <br />
  <br /># You must be in the ’src’ directory.
  <br />rm /tmp/*.png
@@ -8085,7 +8061,6 @@ predictor=2
  <br />python3 -O MDWT.py -p /tmp/
  <br />python3 -O MCDWT.py -P $predictor -p /tmp/
  <br />
- <br />q_step=32
  <br />python3 ../tools/quantize.py -i /tmp/LH000.png -o /tmp/LH000.png -q $q_step
  <br />python3 ../tools/quantize.py -i /tmp/HL000.png -o /tmp/HL000.png -q $q_step
  <br />python3 ../tools/quantize.py -i /tmp/HH000.png -o /tmp/HH000.png -q $q_step
@@ -8109,23 +8084,24 @@ predictor=2
  <br />python3 -O MCDWT.py -P $predictor -p /tmp/ -b
  <br />python3 -O MDWT.py -p /tmp/ -b
  <br />
- <br />for i in /tmp/00?.png; do python ../tools/substract_offset.py -i $i -o $i.png; done; animate /tmp/00?.png.png
+ <br />for i in /tmp/00?.png; do python3 ../tools/substract_offset.py -i $i -o $i.png; done; animate /tmp/00?.png.png
  <br />
  <br />rm -f /tmp/diff*.png; for i in {0..4}; do ii=$(printf &#x0022;%03d&#x0022; $i); bash ../tools/show_differences.sh -1 /tmp/$ii.png -2 ../sequences/stockholm/$ii.png -o /tmp/diff_$ii.png; done; animate /tmp/diff*.png
 </div>
-<!--l. 1146--><p class="nopar" >
-</p><!--l. 1148--><p class="noindent" >
+<!--l. 1104--><p class="nopar" >
+</p><!--l. 1106--><p class="noindent" >
 </p>
                                                                   
 
                                                                   
    <h4 class="likesubsectionHead"><a 
- id="x1-270006"></a>Example: Quantization of all subbands</h4>
+ id="x1-270007"></a>Example: Quantization of all subbands</h4>
                                                                   
 
                                                                   
-   <div class="verbatim" id="verbatim-18">
-predictor=2
+   <div class="verbatim" id="verbatim-17">
+q_step=128
+ <br />predictor=2
  <br />
  <br /># You must be in the ’src’ directory.
  <br />rm /tmp/*.png
@@ -8134,7 +8110,6 @@ predictor=2
  <br />python3 -O MDWT.py -p /tmp/
  <br />python3 -O MCDWT.py -P $predictor -p /tmp/
  <br />
- <br />q_step=128
  <br />python3 ../tools/quantize.py -i /tmp/LL000.png -o /tmp/LL000.png -q $q_step
  <br />python3 ../tools/quantize.py -i /tmp/LH000.png -o /tmp/LH000.png -q $q_step
  <br />python3 ../tools/quantize.py -i /tmp/HL000.png -o /tmp/HL000.png -q $q_step
@@ -8163,213 +8138,16 @@ predictor=2
  <br />python3 -O MCDWT.py -P $predictor -p /tmp/ -b
  <br />python3 -O MDWT.py -p /tmp/ -b
  <br />
- <br />for i in /tmp/00?.png; do python ../tools/substract_offset.py -i $i -o $i.png; done; animate /tmp/00?.png.png
+ <br />for i in /tmp/00?.png; do python3 ../tools/substract_offset.py -i $i -o $i.png; done; animate /tmp/00?.png.png
  <br />
  <br />rm -f /tmp/diff*.png; for i in {0..4}; do ii=$(printf &#x0022;%03d&#x0022; $i); bash ../tools/show_differences.sh -1 /tmp/$ii.png -2 ../sequences/stockholm/$ii.png -o /tmp/diff_$ii.png; done; animate /tmp/diff*.png
 </div>
-<!--l. 1191--><p class="nopar" >
+<!--l. 1149--><p class="nopar" >
                                                                   
 
                                                                   
-</p><!--l. 1196--><p class="noindent" >
-</p>
-   <h4 class="likesubsectionHead"><a 
- id="x1-280006"></a>Example: Lossy compression of the MC
-<!--l. 1196--><math 
- xmlns="http://www.w3.org/1998/Math/MathML"  
-display="inline" ><mi 
->H</mi></math>
-subbands</h4>
-                                                                  
-
-                                                                  
-   <div class="verbatim" id="verbatim-19">
-predictor=2
- <br />
- <br /># You must be in the ’src’ directory.
- <br />rm /tmp/*.png
- <br />cp ../sequences/stockholm/* /tmp
- <br />
- <br />python3 -O MDWT.py -p /tmp/
- <br />python3 -O MCDWT.py -P $predictor -p /tmp/
- <br />
- <br />quality=50
- <br />python3 ../tools/compress.py -i /tmp/LH001.png -o /tmp/LH001.png -q $quality
- <br />python3 ../tools/add_offset.py -i /tmp/LH001.png -o /tmp/LH001.png -f 32640
- <br />python3 ../tools/compress.py -i /tmp/HL001.png -o /tmp/HL001.png -q $quality
- <br />python3 ../tools/add_offset.py -i /tmp/HL001.png -o /tmp/HL001.png -f 32640
- <br />python3 ../tools/compress.py -i /tmp/HH001.png -o /tmp/HH001.png -q $quality
- <br />python3 ../tools/add_offset.py -i /tmp/HH001.png -o /tmp/HH001.png -f 32640
- <br />
- <br />python3 ../tools/compress.py -i /tmp/LH002.png -o /tmp/LH002.png -q $quality
- <br />python3 ../tools/add_offset.py -i /tmp/LH002.png -o /tmp/LH002.png -f 32640
- <br />python3 ../tools/compress.py -i /tmp/HL002.png -o /tmp/HL002.png -q $quality
- <br />python3 ../tools/add_offset.py -i /tmp/HL002.png -o /tmp/HL002.png -f 32640
- <br />python3 ../tools/compress.py -i /tmp/HH002.png -o /tmp/HH002.png -q $quality
- <br />python3 ../tools/add_offset.py -i /tmp/HH002.png -o /tmp/HH002.png -f 32640
- <br />
- <br />python3 ../tools/compress.py -i /tmp/LH003.png -o /tmp/LH003.png -q $quality
- <br />python3 ../tools/add_offset.py -i /tmp/LH003.png -o /tmp/LH003.png -f 32640
- <br />python3 ../tools/compress.py -i /tmp/HL003.png -o /tmp/HL003.png -q $quality
- <br />python3 ../tools/add_offset.py -i /tmp/HL003.png -o /tmp/HL003.png -f 32640
- <br />python3 ../tools/compress.py -i /tmp/HH003.png -o /tmp/HH003.png -q $quality
- <br />python3 ../tools/add_offset.py -i /tmp/HH003.png -o /tmp/HH003.png -f 32640
- <br />
- <br />python3 -O MCDWT.py -P $predictor -p /tmp/ -b
- <br />python3 -O MDWT.py -p /tmp/ -b
- <br />
- <br />for i in /tmp/00?.png; do python ../tools/substract_offset.py -i $i -o $i.png; done; animate /tmp/00?.png.png
- <br />
- <br />rm -f /tmp/diff*.png; for i in {0..4}; do ii=$(printf &#x0022;%03d&#x0022; $i); bash ../tools/show_differences.sh -1 /tmp/$ii.png -2 ../sequences/stockholm/$ii.png -o /tmp/diff_$ii.png; done; animate /tmp/diff*.png
-</div>
-<!--l. 1235--><p class="nopar" >
-</p><!--l. 1237--><p class="noindent" >
-                                                                  
-
-                                                                  
-</p>
-   <h4 class="likesubsectionHead"><a 
- id="x1-290006"></a>Example: Lossy compression of all <!--l. 1237--><math 
- xmlns="http://www.w3.org/1998/Math/MathML"  
-display="inline" ><mi 
->H</mi></math>
-subbands</h4>
-                                                                  
-
-                                                                  
-   <div class="verbatim" id="verbatim-20">
-predictor=2
- <br />
- <br /># You must be in the ’src’ directory.
- <br />rm /tmp/*.png
- <br />cp ../sequences/stockholm/* /tmp
- <br />
- <br />python3 -O MDWT.py -p /tmp/
- <br />python3 -O MCDWT.py -P $predictor -p /tmp/
- <br />
- <br />quality=10
- <br />python3 ../tools/compress.py -i /tmp/LH000.png -o /tmp/LH000.png -q $quality
- <br />python3 ../tools/add_offset.py -i /tmp/LH000.png -o /tmp/LH000.png -f 32640
- <br />python3 ../tools/compress.py -i /tmp/HL000.png -o /tmp/HL000.png -q $quality
- <br />python3 ../tools/add_offset.py -i /tmp/HL000.png -o /tmp/HL000.png -f 32640
- <br />python3 ../tools/compress.py -i /tmp/HH000.png -o /tmp/HH000.png -q $quality
- <br />python3 ../tools/add_offset.py -i /tmp/HH000.png -o /tmp/HH000.png -f 32640
- <br />
- <br />python3 ../tools/compress.py -i /tmp/LH001.png -o /tmp/LH001.png -q $quality
- <br />python3 ../tools/add_offset.py -i /tmp/LH001.png -o /tmp/LH001.png -f 32640
- <br />python3 ../tools/compress.py -i /tmp/HL001.png -o /tmp/HL001.png -q $quality
- <br />python3 ../tools/add_offset.py -i /tmp/HL001.png -o /tmp/HL001.png -f 32640
- <br />python3 ../tools/compress.py -i /tmp/HH001.png -o /tmp/HH001.png -q $quality
- <br />python3 ../tools/add_offset.py -i /tmp/HH001.png -o /tmp/HH001.png -f 32640
- <br />
- <br />python3 ../tools/compress.py -i /tmp/LH002.png -o /tmp/LH002.png -q $quality
- <br />python3 ../tools/add_offset.py -i /tmp/LH002.png -o /tmp/LH002.png -f 32640
- <br />python3 ../tools/compress.py -i /tmp/HL002.png -o /tmp/HL002.png -q $quality
- <br />python3 ../tools/add_offset.py -i /tmp/HL002.png -o /tmp/HL002.png -f 32640
- <br />python3 ../tools/compress.py -i /tmp/HH002.png -o /tmp/HH002.png -q $quality
- <br />python3 ../tools/add_offset.py -i /tmp/HH002.png -o /tmp/HH002.png -f 32640
- <br />
- <br />python3 ../tools/compress.py -i /tmp/LH003.png -o /tmp/LH003.png -q $quality
- <br />python3 ../tools/add_offset.py -i /tmp/LH003.png -o /tmp/LH003.png -f 32640
- <br />python3 ../tools/compress.py -i /tmp/HL003.png -o /tmp/HL003.png -q $quality
- <br />python3 ../tools/add_offset.py -i /tmp/HL003.png -o /tmp/HL003.png -f 32640
- <br />python3 ../tools/compress.py -i /tmp/HH003.png -o /tmp/HH003.png -q $quality
- <br />python3 ../tools/add_offset.py -i /tmp/HH003.png -o /tmp/HH003.png -f 32640
- <br />
- <br />python3 ../tools/compress.py -i /tmp/LH004.png -o /tmp/LH004.png -q $quality
- <br />python3 ../tools/add_offset.py -i /tmp/LH004.png -o /tmp/LH004.png -f 32640
- <br />python3 ../tools/compress.py -i /tmp/HL004.png -o /tmp/HL004.png -q $quality
- <br />python3 ../tools/add_offset.py -i /tmp/HL004.png -o /tmp/HL004.png -f 32640
-                                                                  
-
-                                                                  
- <br />python3 ../tools/compress.py -i /tmp/HH004.png -o /tmp/HH004.png -q $quality
- <br />python3 ../tools/add_offset.py -i /tmp/HH004.png -o /tmp/HH004.png -f 32640
- <br />
- <br />python3 -O MCDWT.py -P $predictor -p /tmp/ -b
- <br />python3 -O MDWT.py -p /tmp/ -b
- <br />
- <br />for i in /tmp/00?.png; do python ../tools/substract_offset.py -i $i -o $i.png; done; animate /tmp/00?.png.png
- <br />
- <br />rm -f /tmp/diff*.png; for i in {0..4}; do ii=$(printf &#x0022;%03d&#x0022; $i); bash ../tools/show_differences.sh -1 /tmp/$ii.png -2 ../sequences/stockholm/$ii.png -o /tmp/diff_$ii.png; done; animate /tmp/diff*.png
-</div>
-<!--l. 1290--><p class="nopar" >
-</p><!--l. 1292--><p class="noindent" >
-</p>
-   <h4 class="likesubsectionHead"><a 
- id="x1-300006"></a>Example: Lossy compression of all subbands</h4>
-                                                                  
-
-                                                                  
-   <div class="verbatim" id="verbatim-21">
-predictor=2
- <br />
- <br /># You must be in the ’src’ directory.
- <br />rm /tmp/*.png
- <br />cp ../sequences/stockholm/* /tmp
- <br />
- <br />python3 -O MDWT.py -p /tmp/
- <br />python3 -O MCDWT.py -P $predictor -p /tmp/
- <br />
- <br />quality=10
- <br />python3 ../tools/compress.py -i /tmp/LL000.png -o /tmp/LL000.png -q $quality
- <br />python3 ../tools/add_offset.py -i /tmp/LL000.png -o /tmp/LL000.png -f 32640
- <br />python3 ../tools/compress.py -i /tmp/LH000.png -o /tmp/LH000.png -q $quality
- <br />python3 ../tools/add_offset.py -i /tmp/LH000.png -o /tmp/LH000.png -f 32640
- <br />python3 ../tools/compress.py -i /tmp/HL000.png -o /tmp/HL000.png -q $quality
- <br />python3 ../tools/add_offset.py -i /tmp/HL000.png -o /tmp/HL000.png -f 32640
- <br />python3 ../tools/compress.py -i /tmp/HH000.png -o /tmp/HH000.png -q $quality
- <br />python3 ../tools/add_offset.py -i /tmp/HH000.png -o /tmp/HH000.png -f 32640
- <br />
- <br />python3 ../tools/compress.py -i /tmp/LL001.png -o /tmp/LL001.png -q $quality
- <br />python3 ../tools/add_offset.py -i /tmp/LL001.png -o /tmp/LL001.png -f 32640
- <br />python3 ../tools/compress.py -i /tmp/LH001.png -o /tmp/LH001.png -q $quality
- <br />python3 ../tools/add_offset.py -i /tmp/LH001.png -o /tmp/LH001.png -f 32640
- <br />python3 ../tools/compress.py -i /tmp/HL001.png -o /tmp/HL001.png -q $quality
- <br />python3 ../tools/add_offset.py -i /tmp/HL001.png -o /tmp/HL001.png -f 32640
- <br />python3 ../tools/compress.py -i /tmp/HH001.png -o /tmp/HH001.png -q $quality
- <br />python3 ../tools/add_offset.py -i /tmp/HH001.png -o /tmp/HH001.png -f 32640
- <br />
- <br />python3 ../tools/compress.py -i /tmp/LL002.png -o /tmp/LL002.png -q $quality
- <br />python3 ../tools/add_offset.py -i /tmp/LL002.png -o /tmp/LL002.png -f 32640
- <br />python3 ../tools/compress.py -i /tmp/LH002.png -o /tmp/LH002.png -q $quality
- <br />python3 ../tools/add_offset.py -i /tmp/LH002.png -o /tmp/LH002.png -f 32640
- <br />python3 ../tools/compress.py -i /tmp/HL002.png -o /tmp/HL002.png -q $quality
- <br />python3 ../tools/add_offset.py -i /tmp/HL002.png -o /tmp/HL002.png -f 32640
- <br />python3 ../tools/compress.py -i /tmp/HH002.png -o /tmp/HH002.png -q $quality
- <br />python3 ../tools/add_offset.py -i /tmp/HH002.png -o /tmp/HH002.png -f 32640
- <br />
- <br />python3 ../tools/compress.py -i /tmp/LL003.png -o /tmp/LL003.png -q $quality
- <br />python3 ../tools/add_offset.py -i /tmp/LL003.png -o /tmp/LL003.png -f 32640
- <br />python3 ../tools/compress.py -i /tmp/LH003.png -o /tmp/LH003.png -q $quality
- <br />python3 ../tools/add_offset.py -i /tmp/LH003.png -o /tmp/LH003.png -f 32640
- <br />python3 ../tools/compress.py -i /tmp/HL003.png -o /tmp/HL003.png -q $quality
-                                                                  
-
-                                                                  
- <br />python3 ../tools/add_offset.py -i /tmp/HL003.png -o /tmp/HL003.png -f 32640
- <br />python3 ../tools/compress.py -i /tmp/HH003.png -o /tmp/HH003.png -q $quality
- <br />python3 ../tools/add_offset.py -i /tmp/HH003.png -o /tmp/HH003.png -f 32640
- <br />
- <br />python3 ../tools/compress.py -i /tmp/LL004.png -o /tmp/LL004.png -q $quality
- <br />python3 ../tools/add_offset.py -i /tmp/LL004.png -o /tmp/LL004.png -f 32640
- <br />python3 ../tools/compress.py -i /tmp/LH004.png -o /tmp/LH004.png -q $quality
- <br />python3 ../tools/add_offset.py -i /tmp/LH004.png -o /tmp/LH004.png -f 32640
- <br />python3 ../tools/compress.py -i /tmp/HL004.png -o /tmp/HL004.png -q $quality
- <br />python3 ../tools/add_offset.py -i /tmp/HL004.png -o /tmp/HL004.png -f 32640
- <br />python3 ../tools/compress.py -i /tmp/HH004.png -o /tmp/HH004.png -q $quality
- <br />python3 ../tools/add_offset.py -i /tmp/HH004.png -o /tmp/HH004.png -f 32640
- <br />
- <br />python3 -O MCDWT.py -P $predictor -p /tmp/ -b
- <br />python3 -O MDWT.py -p /tmp/ -b
- <br />
- <br />for i in /tmp/00?.png; do python ../tools/substract_offset.py -i $i -o $i.png; done; animate /tmp/00?.png.png
- <br />
- <br />rm -f /tmp/diff*.png; for i in {0..4}; do ii=$(printf &#x0022;%03d&#x0022; $i); bash ../tools/show_differences.sh -1 /tmp/$ii.png -2 ../sequences/stockholm/$ii.png -o /tmp/diff_$ii.png; done; animate /tmp/diff*.png
-</div>
-<!--l. 1355--><p class="nopar" >
 <a 
- id="Q1-1-46"></a>
+ id="Q1-1-43"></a>
 </p>
     
 </body> 
