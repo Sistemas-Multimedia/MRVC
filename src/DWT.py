@@ -12,8 +12,8 @@ import math
 import sys
 
 sys.path.insert(0, "..")
-from src.IO import image
-from src.IO import decomposition
+from IO import image
+from IO import decomposition
 
 class DWT:
 

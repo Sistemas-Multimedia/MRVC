@@ -10,8 +10,8 @@ import sys
 
 from DWT import DWT
 sys.path.insert(0, "..")
-from src.IO import image
-from src.IO import decomposition
+from IO import image
+from IO import decomposition
 
 class MDWT:
 
@@ -20,44 +20,32 @@ class MDWT:
 
     def forward(self, prefix="/tmp/", N=5):
         '''1-iteration Motion 2D DWT of a sequence of images.
-
         Compute the forward 2D-DWT of each image of the sequence
         placed at <prefix>.
-
         Input
         -----
-
             prefix: the sequence of images to be transformed.
             N: number of images.
-
         Output
         ------
-
             (disk): the sequence of decompositions.
-
         '''
         for i in range(N):
-            img = image.read(prefix, "{:03d}".format(i))
+            img = image.read(prefix, "{:04d}".format(i))
             pyr = self.dwt.forward(img)
-            decomposition.write(pyr, prefix, "{:03d}".format(i))
+            decomposition.write(pyr, prefix,"{:04d}".format(i))
 
     def backward(self, prefix="/tmp/", N=5):
         '''1-iteration Inverse Motion 2D DWT of a sequence of decompositions.
-
         Compute the inverse 2D-DWT of each decomposition of the
         sequence of decompositions placed at <prefix>.
-
         Input:
         -----
-
             prefix: the sequence of decompositions to be transformed.
             N: the number of decompositions.
-
         Output:
         ------
-
             (disk): the sequence of images.
-
         '''
 
         for i in range(N):
@@ -71,7 +59,7 @@ if __name__ == "__main__":
 
     class CustomFormatter(argparse.ArgumentDefaultsHelpFormatter, argparse.RawDescriptionHelpFormatter):
         pass
-    
+
     parser = argparse.ArgumentParser(
         description = "Motion 2D Discrete Wavelet Transform\n\n"
         "Examples:\n\n"
