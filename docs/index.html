@@ -7941,11 +7941,14 @@ class="content">Computation of the weighted average prediction.</span></div><!--
 href="https://vicente-gonzalez-ruiz.github.io/quantization/" >Quantization</a> allows to remove information from signals. We will use it in MCDWT
 to achieve higher compression ratios, but at the expense of losing visual information
 (ideally, the less relevant one for us).
-</p><!--l. 989--><p class="noindent" >
+</p><!--l. 989--><p class="indent" >   When the signal cannot be recoverd perfectly, we can apply a <a 
+href="https://vicente-gonzalez-ruiz.github.io/distortion_metrics/" >distortion metric</a> to
+ﬁnd how much error has been generated.
+</p><!--l. 991--><p class="noindent" >
 </p>
    <h4 class="likesubsectionHead"><a 
  id="x1-240007"></a>Example: Eﬀects caused by the total attenuation of the motion compendated (MCed)
-<!--l. 989--><math 
+<!--l. 991--><math 
  xmlns="http://www.w3.org/1998/Math/MathML"  
 display="inline" ><mi 
 >H</mi></math>
@@ -7990,15 +7993,15 @@ predictor=2
  <br /># Visualization of the differences with the original sequence.
  <br />rm -f /tmp/diff*.png; for i in {0..4}; do ii=$(printf &#x0022;%03d&#x0022; $i); bash ../tools/show_differences.sh -1 /tmp/$ii.png -2 ../sequences/stockholm/$ii.png -o /tmp/diff_$ii.png; done; animate /tmp/diff*.png
 </div>
-<!--l. 1027--><p class="nopar" >
-</p><!--l. 1032--><p class="noindent" >
+<!--l. 1029--><p class="nopar" >
+</p><!--l. 1034--><p class="noindent" >
 </p>
    <h4 class="likesubsectionHead"><a 
  id="x1-250007"></a>Example: Eﬀects caused by the quantization of MCed
                                                                   
 
                                                                   
-<!--l. 1032--><math 
+<!--l. 1034--><math 
  xmlns="http://www.w3.org/1998/Math/MathML"  
 display="inline" ><mi 
 >H</mi></math>
@@ -8038,11 +8041,11 @@ q_step=32
  <br />
  <br />rm -f /tmp/diff*.png; for i in {0..4}; do ii=$(printf &#x0022;%03d&#x0022; $i); bash ../tools/show_differences.sh -1 /tmp/$ii.png -2 ../sequences/stockholm/$ii.png -o /tmp/diff_$ii.png; done; animate /tmp/diff*.png
 </div>
-<!--l. 1064--><p class="nopar" >
-</p><!--l. 1066--><p class="noindent" >
+<!--l. 1066--><p class="nopar" >
+</p><!--l. 1068--><p class="noindent" >
 </p>
    <h4 class="likesubsectionHead"><a 
- id="x1-260007"></a>Example: Quantization of all <!--l. 1066--><math 
+ id="x1-260007"></a>Example: Quantization of all <!--l. 1068--><math 
  xmlns="http://www.w3.org/1998/Math/MathML"  
 display="inline" ><mi 
 >H</mi></math>
@@ -8088,8 +8091,8 @@ q_step=32
  <br />
  <br />rm -f /tmp/diff*.png; for i in {0..4}; do ii=$(printf &#x0022;%03d&#x0022; $i); bash ../tools/show_differences.sh -1 /tmp/$ii.png -2 ../sequences/stockholm/$ii.png -o /tmp/diff_$ii.png; done; animate /tmp/diff*.png
 </div>
-<!--l. 1104--><p class="nopar" >
-</p><!--l. 1106--><p class="noindent" >
+<!--l. 1106--><p class="nopar" >
+</p><!--l. 1108--><p class="noindent" >
 </p>
                                                                   
 
@@ -8142,7 +8145,7 @@ q_step=128
  <br />
  <br />rm -f /tmp/diff*.png; for i in {0..4}; do ii=$(printf &#x0022;%03d&#x0022; $i); bash ../tools/show_differences.sh -1 /tmp/$ii.png -2 ../sequences/stockholm/$ii.png -o /tmp/diff_$ii.png; done; animate /tmp/diff*.png
 </div>
-<!--l. 1149--><p class="nopar" >
+<!--l. 1151--><p class="nopar" >
                                                                   
 
                                                                   
