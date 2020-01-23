@@ -119,16 +119,20 @@ class MCDWT:
         '''
         x = 2
         for t in range(T): # Temporal scale
+            #print("a={}".format(0), end=' ')
             i = 0
             aL, aH = decomposition.read(prefix, "{:03d}".format(0))
             while i < (N//x):
+                #print("b={} c={}".format(x*i+x//2, x*i+x))
                 bL, bH = decomposition.read(prefix, "{:03d}".format(x*i+x//2))
                 cL, cH = decomposition.read(prefix, "{:03d}".format(x*i+x))
                 residue_bH = self.__forward_butterfly(aL, aH, bL, bH, cL, cH)
                 decomposition.writeH(residue_bH, prefix, "{:03d}".format(x*i+x//2))
                 aL, aH = cL, cH
+                print("a={}".format(x*i+x), end=' ')
                 i += 1
             x *= 2
+            #print('\n')
 
     def backward(self, prefix = "/tmp/", N=5, T=2):
         '''Backward MCDWT.

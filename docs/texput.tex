@@ -663,18 +663,23 @@ animate /tmp/diff*.png
 python3 ../tools/show_statistics.py -i /tmp/diff_002.png
 \end{verbatim}
 
-\subsection*{Example: 1-iteration MDWT + 3-iterations MCDWT}
-A exaple with $G=2^3=8$.
+\subsection*{Example: 1-iteration MDWT + 4-iterations MCDWT}
+A exaple with $G=2^3=16$.
 
 \begin{verbatim}
 # You must be in the 'src' directory.
 rm /tmp/*.png
-wget https://media.xiph.org/video/derf/y4m/akiyo_cif.y4m -O /tmp/akiyo_cif.y4m
+video_file=/tmp/akiyo_cif.y4m
+if test -f $video_file; then
+  print akiyo exists
+else
+  wget https://media.xiph.org/video/derf/y4m/akiyo_cif.y4m -O /tmp/akiyo_cif.y4m
+fi
 mplayer /tmp/akiyo_cif.y4m
-ffmpeg -i /tmp/akiyo_cif.y4m -vframes 15 -start_number 0 /tmp/%03d.png
+ffmpeg -i /tmp/akiyo_cif.y4m -vframes 17 -start_number 0 /tmp/%03d.png
 
 # 1D 1-iteration MDWT.
-python3 -O MDWT.py -p /tmp/ -N 15
+python3 -O MDWT.py -p /tmp/ -N 17
 
 # Save a copy of the MDWT subbands (for comparing later).
 rm -rf /tmp/tmp
@@ -685,11 +690,37 @@ cp /tmp/HL*.png /tmp/tmp
 cp /tmp/HH*.png /tmp/tmp
 
 # 4-iterations MCDWT.
-python3 -O MCDWT.py -p /tmp/ -T 5 -N 15
+python3 -O MCDWT.py -p /tmp/ -T 4 -N 17
 
 ls -l /tmp/LH*.png > /tmp/1
 ls -l /tmp/tmp/LH*.png > /tmp/2
 paste /tmp/1 /tmp/2
+
+ls -l /tmp/HL*.png > /tmp/1
+ls -l /tmp/tmp/HL*.png > /tmp/2
+paste /tmp/1 /tmp/2
+
+ls -l /tmp/HH*.png > /tmp/1
+ls -l /tmp/tmp/HH*.png > /tmp/2
+paste /tmp/1 /tmp/2
+
+# Now we recover the original video.
+
+# 4-iterations iMCDWT.
+python3 -O MCDWT.py -b -p /tmp/ -T 4 -N 17
+
+# 1-iteration iMDWT
+python3 -O MDWT.py -b -p /tmp/ -N 17
+
+# Visualization of the reconstruction.
+for i in /tmp/???.png; do python3 ../tools/substract_offset.py -i $i -o $i.png; done
+animate /tmp/???.png.png
+
+# Visualization of the residue.
+for i in {0..16}; do ii=$(printf "%03d" $i); bash ../tools/show_differences.sh -1 /tmp/$ii.png -2 ../sequences/stockholm/$ii.png -o /tmp/diff_$ii.png; done
+animate /tmp/diff*.png
+
+python3 ../tools/show_statistics.py -i /tmp/diff_002.png
 \end{verbatim}
 
 \subsection{Scalability provided by MCDWT}
