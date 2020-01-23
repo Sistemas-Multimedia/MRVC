@@ -27,7 +27,7 @@ class="ecrm-1200">Vicente Gonz</span><span
 class="ecrm-1200">á</span><span 
 class="ecrm-1200">lez Ruiz</span></div><br />
 <div class="date" ><span 
-class="ecrm-1200">January 22, 2020</span></div>
+class="ecrm-1200">January 23, 2020</span></div>
    </div>
    <h3 class="likesectionHead"><a 
  id="x1-1000"></a>Contents</h3>
@@ -55,13 +55,13 @@ href="#x1-160005.1" id="QQ2-1-22">The butterﬂy</a></span>
 <br />    <span class="subsectionToc" >5.2 <a 
 href="#x1-170005.2" id="QQ2-1-27">The transform</a></span>
 <br />    <span class="subsectionToc" >5.3 <a 
-href="#x1-200005.3" id="QQ2-1-33">Scalability provided by MCDWT</a></span>
+href="#x1-210005.3" id="QQ2-1-34">Scalability provided by MCDWT</a></span>
 <br />   <span class="sectionToc" >6 <a 
-href="#x1-220006" id="QQ2-1-35">Adaptive motion compensation based on the distortion of the prediction error</a></span>
+href="#x1-230006" id="QQ2-1-36">Adaptive motion compensation based on the distortion of the prediction error</a></span>
 <br />   <span class="sectionToc" >7 <a 
-href="#x1-230007" id="QQ2-1-38">Lossy compression: quantization</a></span>
+href="#x1-240007" id="QQ2-1-39">Lossy compression: quantization</a></span>
 <br />   <span class="sectionToc" ><a 
-href="#Q1-1-43">References</a></span>
+href="#Q1-1-44">References</a></span>
    </div>
 <!--l. 8--><p class="noindent" >
 </p>
@@ -6860,7 +6860,6 @@ display="inline" ><mn>2</mn></math>.
 </p>
    <div class="verbatim" id="verbatim-10">
 predictor=1
- <br />iterations=2
  <br />
  <br /># You must be in the ’src’ directory.
  <br />rm /tmp/*.png
@@ -6874,13 +6873,36 @@ predictor=1
  <br />mkdir /tmp/tmp
  <br />cp /tmp/*.png /tmp/tmp
  <br />
- <br /># 2-iterations MCDWT.
- <br />python3 -O MCDWT.py -p /tmp/ -T $iterations
+ <br /># 1-iteration MCDWT.
+ <br />python3 -O MCDWT.py -p /tmp/ -T 1
  <br />
  <br /># Is the content of the MCDWT subbands different to the MDWT’s output?
  <br />for i in {0..4}; do ii=$(printf &#x0022;%03d&#x0022; $i); ls -l /tmp/LL$ii.png /tmp/tmp/LL$ii.png;echo; done
- <br />for i in {0..4}; do ii=$(printf &#x0022;%03d&#x0022; $i); ls -l /tmp/LH$ii.png /tmp/tmp/LH$ii.png;echo;  done
+ <br />for i in {0..4}; do ii=$(printf &#x0022;%03d&#x0022; $i); ls -l /tmp/LH$ii.png /tmp/tmp/LH$ii.png;echo; done
  <br />for i in {0..4}; do ii=$(printf &#x0022;%03d&#x0022; $i); ls -l /tmp/HL$ii.png /tmp/tmp/HL$ii.png;echo; done
+ <br />for i in {0..4}; do ii=$(printf &#x0022;%03d&#x0022; $i); ls -l /tmp/HH$ii.png /tmp/tmp/HH$ii.png;echo; done
+ <br />
+ <br />rm /tmp/*.png
+ <br />cp ../sequences/stockholm/*.png /tmp
+ <br />
+ <br /># 1D 1-iteration MDWT.
+ <br />python3 -O MDWT.py -p /tmp/
+ <br />
+ <br /># Save a copy of the MDWT subbands (for comparing later).
+ <br />rm -rf /tmp/tmp
+ <br />mkdir /tmp/tmp
+ <br />cp /tmp/*.png /tmp/tmp
+ <br />
+ <br /># 2-iterations MCDWT.
+ <br />python3 -O MCDWT.py -p /tmp/ -T 2
+ <br />
+ <br /># Is the content of the MCDWT subbands different to the MDWT’s output?
+ <br />for i in {0..4}; do ii=$(printf &#x0022;%03d&#x0022; $i); ls -l /tmp/LL$ii.png /tmp/tmp/LL$ii.png;echo; done
+ <br />for i in {0..4}; do ii=$(printf &#x0022;%03d&#x0022; $i); ls -l /tmp/LH$ii.png /tmp/tmp/LH$ii.png;echo; done
+ <br />for i in {0..4}; do ii=$(printf &#x0022;%03d&#x0022; $i); ls -l /tmp/HL$ii.png /tmp/tmp/HL$ii.png;echo; done
+                                                                  
+
+                                                                  
  <br />for i in {0..4}; do ii=$(printf &#x0022;%03d&#x0022; $i); ls -l /tmp/HH$ii.png /tmp/tmp/HH$ii.png;echo; done
  <br />
  <br /># Comparing LH visually.
@@ -6900,9 +6922,6 @@ predictor=1
  <br />for i in {0..4}; do ii=$(printf &#x0022;%03d&#x0022; $i); convert -normalize /tmp/tmp/HL$ii.png /tmp/tmp/MDWT_HL$ii.png; done
  <br />for i in {0..4}; do ii=$(printf &#x0022;%03d&#x0022; $i); convert -normalize /tmp/HL$ii.png /tmp/MCDWT_HL$ii.png; done
  <br />animate /tmp/tmp/MDWT_HL00?.png &#x0026;
-                                                                  
-
-                                                                  
  <br />animate /tmp/MCDWT_HL00?.png &#x0026;
  <br />
  <br /># Comparing HL002 numerically.
@@ -6930,6 +6949,9 @@ predictor=1
  <br /># 2-iterations iMCDWT.
  <br />python3 -O MCDWT.py -P $predictor -b -p /tmp/ -T $iterations
  <br />
+                                                                  
+
+                                                                  
  <br /># 1-iteration iMDWT
  <br />python3 -O MDWT.py -b -p /tmp/
  <br />
@@ -6943,30 +6965,70 @@ predictor=1
  <br />
  <br />python3 ../tools/show_statistics.py -i /tmp/diff_002.png
 </div>
-<!--l. 645--><p class="nopar" >
-</p><!--l. 647--><p class="noindent" >
+<!--l. 664--><p class="nopar" >
+</p><!--l. 666--><p class="noindent" >
 </p>
-   <h4 class="subsectionHead"><span class="titlemark">5.3   </span> <a 
- id="x1-200005.3"></a>Scalability provided by MCDWT</h4>
+   <h4 class="likesubsectionHead"><a 
+ id="x1-200005.2"></a>Example: 1-iteration MDWT + 3-iterations MCDWT</h4>
+<!--l. 667--><p class="noindent" >A exaple with <!--l. 667--><math 
+ xmlns="http://www.w3.org/1998/Math/MathML"  
+display="inline" ><mi 
+>G</mi> <mo 
+class="MathClass-rel">=</mo> <msup><mrow 
+><mn>2</mn></mrow><mrow 
+><mn>3</mn></mrow></msup 
+> <mo 
+class="MathClass-rel">=</mo> <mn>8</mn></math>.
                                                                   
 
                                                                   
-<!--l. 648--><p class="noindent" >MCDWT preserves the dyadic spatial decomposition generated by MDWT, and
+</p>
+   <div class="verbatim" id="verbatim-11">
+# You must be in the ’src’ directory.
+ <br />rm /tmp/*.png
+ <br />wget https://media.xiph.org/video/derf/y4m/akiyo_cif.y4m -O /tmp/akiyo_cif.y4m
+ <br />mplayer /tmp/akiyo_cif.y4m
+ <br />ffmpeg -i /tmp/akiyo_cif.y4m -vframes 15 -start_number 0 /tmp/%03d.png
+ <br />
+ <br /># 1D 1-iteration MDWT.
+ <br />python3 -O MDWT.py -p /tmp/ -N 15
+ <br />
+ <br /># Save a copy of the MDWT subbands (for comparing later).
+ <br />rm -rf /tmp/tmp
+ <br />mkdir /tmp/tmp
+ <br />cp /tmp/LL*.png /tmp/tmp
+ <br />cp /tmp/LH*.png /tmp/tmp
+ <br />cp /tmp/HL*.png /tmp/tmp
+ <br />cp /tmp/HH*.png /tmp/tmp
+ <br />
+ <br /># 4-iterations MCDWT.
+ <br />python3 -O MCDWT.py -p /tmp/ -T 5 -N 15
+ <br />
+ <br />ls -l /tmp/LH*.png &#x003E; /tmp/1
+ <br />ls -l /tmp/tmp/LH*.png &#x003E; /tmp/2
+ <br />paste /tmp/1 /tmp/2
+</div>
+<!--l. 693--><p class="nopar" >
+</p><!--l. 695--><p class="noindent" >
+</p>
+   <h4 class="subsectionHead"><span class="titlemark">5.3   </span> <a 
+ id="x1-210005.3"></a>Scalability provided by MCDWT</h4>
+<!--l. 696--><p class="noindent" >MCDWT preserves the dyadic spatial decomposition generated by MDWT, and
 therefore, MCDWT provides the same spatial scalability than MDWT.
-</p><!--l. 651--><p class="indent" >   Unfortunately, as the rest of video encoders based on MC, MCDWT reduces the
+</p><!--l. 699--><p class="indent" >   Unfortunately, as the rest of video encoders based on MC, MCDWT reduces the
 temporal scalability provided by MDWT, allowing only a dyadic access to the
 images. For example, after applying each iteration of the inverse MCDWT, if
-<!--l. 654--><math 
+<!--l. 702--><math 
  xmlns="http://www.w3.org/1998/Math/MathML"  
 display="inline" ><mi 
 >T</mi> <mo 
 class="MathClass-rel">=</mo> <mn>3</mn></math> (the GOP
-size <!--l. 654--><math 
+size <!--l. 702--><math 
  xmlns="http://www.w3.org/1998/Math/MathML"  
 display="inline" ><mi 
 >G</mi> <mo 
 class="MathClass-rel">=</mo> <mn>8</mn></math>,
-i.e. <!--l. 654--><math 
+i.e. <!--l. 702--><math 
  xmlns="http://www.w3.org/1998/Math/MathML"  
 display="inline" ><mn>4</mn></math>
 temporal resolution levels (TRLs) have been generated), the images of the second
@@ -6976,7 +7038,7 @@ image of the sequence) should be reconstructed in this order:
 
                                                                   
 </p>
-   <div class="verbatim" id="verbatim-11">
+   <div class="verbatim" id="verbatim-12">
  <br />GOP0          GOP 1
  <br />---- ------------------------
  <br />  s0                       s8  &#x003C;- output of the 3-iterations MCDWT. Provides TRL3.
@@ -6985,11 +7047,11 @@ image of the sequence) should be reconstructed in this order:
  <br />      s1    s3    s5    s7     &#x003C;- third iteration. Provides TRL0.
  <br />
 </div>
-<!--l. 669--><p class="nopar" >
-</p><!--l. 671--><p class="noindent" >
+<!--l. 717--><p class="nopar" >
+</p><!--l. 719--><p class="noindent" >
 </p>
    <h4 class="likesubsectionHead"><a 
- id="x1-210005.3"></a>Example: 3-iters <!--l. 671--><math 
+ id="x1-220005.3"></a>Example: 3-iters <!--l. 719--><math 
  xmlns="http://www.w3.org/1998/Math/MathML"  
 display="inline" ><mo 
 class="MathClass-bin">×</mo></math>
@@ -6997,7 +7059,7 @@ class="MathClass-bin">×</mo></math>
                                                                   
 
                                                                   
-   <div class="verbatim" id="verbatim-12">
+   <div class="verbatim" id="verbatim-13">
 predictor=1
  <br />iterations=2
  <br />
@@ -7027,14 +7089,14 @@ predictor=1
  <br />for i in {0..4}; do ii=$(printf &#x0022;%03d&#x0022; $i); bash ../tools/show_differences.sh -1 /tmp/$ii.png -2 ../sequences/stockholm/$ii.png -o /tmp/diff_$ii.png; done
  <br />animate /tmp/diff*.png
 </div>
-<!--l. 702--><p class="nopar" >
-</p><!--l. 704--><p class="indent" >   The GOP size is <!--l. 704--><math 
+<!--l. 750--><p class="nopar" >
+</p><!--l. 752--><p class="indent" >   The GOP size is <!--l. 752--><math 
  xmlns="http://www.w3.org/1998/Math/MathML"  
 display="inline" ><mn>4</mn></math>,
-generating <!--l. 704--><math 
+generating <!--l. 752--><math 
  xmlns="http://www.w3.org/1998/Math/MathML"  
 display="inline" ><mn>3</mn></math> TRLs
-in this case. <!--l. 704--><math 
+in this case. <!--l. 752--><math 
  xmlns="http://www.w3.org/1998/Math/MathML"  
 display="inline" ><mn>4</mn></math>
 is the number of SRLs.
@@ -7042,7 +7104,7 @@ is the number of SRLs.
 
                                                                   
 </p>
-   <div class="verbatim" id="verbatim-13">
+   <div class="verbatim" id="verbatim-14">
  <br />TRLs:
  <br />
  <br />GOP0      GOP 1
@@ -7074,8 +7136,8 @@ is the number of SRLs.
  <br />|                               |
  <br />+-------------------------------+
 </div>
-<!--l. 739--><p class="nopar" >
-</p><!--l. 741--><p class="indent" >   <!--l. 741--><math 
+<!--l. 787--><p class="nopar" >
+</p><!--l. 789--><p class="indent" >   <!--l. 789--><math 
  xmlns="http://www.w3.org/1998/Math/MathML"  
 display="inline" ><mn>3</mn> <mo 
 class="MathClass-bin">×</mo> <mn>4</mn> <mo 
@@ -7083,51 +7145,51 @@ class="MathClass-rel">=</mo> <mn>1</mn><mn>2</mn></math>
 diﬀerent possible reconstructions of the video are possible:
      </p><ol  class="enumerate1" >
      <li 
-  class="enumerate" id="x1-21002x1">s0.3, s4.3.
+  class="enumerate" id="x1-22002x1">s0.3, s4.3.
      </li>
      <li 
-  class="enumerate" id="x1-21004x2">s0.2, s4.2.
+  class="enumerate" id="x1-22004x2">s0.2, s4.2.
                                                                   
 
                                                                   
      </li>
      <li 
-  class="enumerate" id="x1-21006x3">s0.1, s4.1.
+  class="enumerate" id="x1-22006x3">s0.1, s4.1.
      </li>
      <li 
-  class="enumerate" id="x1-21008x4">s0.0, s4.0.
+  class="enumerate" id="x1-22008x4">s0.0, s4.0.
      </li>
      <li 
-  class="enumerate" id="x1-21010x5">s0.3, s4.3, s2.3.
+  class="enumerate" id="x1-22010x5">s0.3, s4.3, s2.3.
      </li>
      <li 
-  class="enumerate" id="x1-21012x6">s0.2, s4.2, s2.2.
+  class="enumerate" id="x1-22012x6">s0.2, s4.2, s2.2.
      </li>
      <li 
-  class="enumerate" id="x1-21014x7">s0.1, s4.1, s2.1.
+  class="enumerate" id="x1-22014x7">s0.1, s4.1, s2.1.
      </li>
      <li 
-  class="enumerate" id="x1-21016x8">s0.0, s4.0, s2.0.
+  class="enumerate" id="x1-22016x8">s0.0, s4.0, s2.0.
      </li>
      <li 
-  class="enumerate" id="x1-21018x9">s0.3, s4.3, s2.3, s1.3, s3.3.
+  class="enumerate" id="x1-22018x9">s0.3, s4.3, s2.3, s1.3, s3.3.
      </li>
      <li 
-  class="enumerate" id="x1-21020x10">s0.2, s4.2, s2.2, s1.2, s3.2.
+  class="enumerate" id="x1-22020x10">s0.2, s4.2, s2.2, s1.2, s3.2.
      </li>
      <li 
-  class="enumerate" id="x1-21022x11">s0.1, s4.1, s2.1, s1.1, s3.1.
+  class="enumerate" id="x1-22022x11">s0.1, s4.1, s2.1, s1.1, s3.1.
      </li>
      <li 
-  class="enumerate" id="x1-21024x12">s0.0, s4.0, s2.0, s1.0, s3.0.</li></ol>
-<!--l. 919--><p class="noindent" >
+  class="enumerate" id="x1-22024x12">s0.0, s4.0, s2.0, s1.0, s3.0.</li></ol>
+<!--l. 967--><p class="noindent" >
 </p>
    <h3 class="sectionHead"><span class="titlemark">6   </span> <a 
- id="x1-220006"></a>Adaptive motion compensation based on the distortion of the prediction
+ id="x1-230006"></a>Adaptive motion compensation based on the distortion of the prediction
 error</h3>
-<!--l. 922--><p class="noindent" >As can be seen in the MCDWT buﬀerﬂy (see Fig. <a 
+<!--l. 970--><p class="noindent" >As can be seen in the MCDWT buﬀerﬂy (see Fig. <a 
 href="#x1-160683">3<!--tex4ht:ref: fig:forward_butterfly --></a>), both predictions
-<!--l. 923--><math 
+<!--l. 971--><math 
  xmlns="http://www.w3.org/1998/Math/MathML"  
 display="inline" ><mrow ><mo 
 class="MathClass-open">[</mo><mrow><msub><mrow 
@@ -7139,7 +7201,7 @@ class="MathClass-open">[</mo><mrow><msub><mrow
 class="MathClass-punc">.</mo><mi 
 >H</mi></mrow><mo 
 class="MathClass-close">]</mo></mrow></math> and
-<!--l. 924--><math 
+<!--l. 972--><math 
  xmlns="http://www.w3.org/1998/Math/MathML"  
 display="inline" ><mrow ><mo 
 class="MathClass-open">[</mo><mrow><msub><mrow 
@@ -7152,11 +7214,11 @@ class="MathClass-punc">.</mo><mi
 >H</mi></mrow><mo 
 class="MathClass-close">]</mo></mrow></math> have
 the same weight to build the prediction </p><table class="equation"><tr><td> <a 
- id="x1-22001r2"></a>
+ id="x1-23001r2"></a>
                                                                   
 
                                                                   
-<!--l. 925--><math 
+<!--l. 973--><math 
  xmlns="http://www.w3.org/1998/Math/MathML"  
 display="block" class="equation">
                       <mrow ><mo 
@@ -7193,12 +7255,12 @@ class="MathClass-close">]</mo></mrow></mrow>
 ><mn>2</mn></mrow></mfrac>         <mo 
 class="MathClass-punc">.</mo>
 </math></td><td class="eq-no">(2)</td></tr></table>
-<!--l. 928--><p class="indent" >   This simple computation, that can have very eﬀective for example in <a 
+<!--l. 976--><p class="indent" >   This simple computation, that can have very eﬀective for example in <a 
 href="https://biteable.com/blog/tips/video-transitions-effects-examples/" >dissolves</a>
 video transitions, can also be counterproductive when objects appear only in one of
 the reference images. For this reason, in this section a diﬀerent predictor is proposed,
 based on the estimated prediction error generated throughout the ME process
-(<!--l. 933--><math 
+(<!--l. 981--><math 
  xmlns="http://www.w3.org/1998/Math/MathML"  
 display="inline" ><mrow ><mo 
 class="MathClass-open">[</mo><mrow><mover 
@@ -7213,7 +7275,7 @@ the Fig. <a
 href="#x1-160683">3<!--tex4ht:ref: fig:forward_butterfly --></a>). To estimate this error, we will suppose that the prediction error
 generated for the high frequencies of an image is proportional to the prediction error
 generated for the low frequencies of such image.
-</p><!--l. 939--><p class="indent" >   Let <!--l. 939--><math 
+</p><!--l. 987--><p class="indent" >   Let <!--l. 987--><math 
  xmlns="http://www.w3.org/1998/Math/MathML"  
 display="inline" ><mrow ><mo 
 class="MathClass-open">[</mo><mrow><msub><mrow 
@@ -7225,7 +7287,7 @@ class="MathClass-open">[</mo><mrow><msub><mrow
 class="MathClass-punc">.</mo><mi 
 >L</mi></mrow><mo 
 class="MathClass-close">]</mo></mrow></math> the prediction
-generated for the subband <!--l. 939--><math 
+generated for the subband <!--l. 987--><math 
  xmlns="http://www.w3.org/1998/Math/MathML"  
 display="inline" ><mrow ><mo 
 class="MathClass-open">[</mo><mrow><mi 
@@ -7233,7 +7295,7 @@ class="MathClass-open">[</mo><mrow><mi
 class="MathClass-punc">.</mo><mi 
 >L</mi></mrow><mo 
 class="MathClass-close">]</mo></mrow></math>
-using <!--l. 940--><math 
+using <!--l. 988--><math 
  xmlns="http://www.w3.org/1998/Math/MathML"  
 display="inline" ><mrow ><mo 
 class="MathClass-open">[</mo><mrow><mi 
@@ -7241,7 +7303,7 @@ class="MathClass-open">[</mo><mrow><mi
 class="MathClass-punc">.</mo><mi 
 >L</mi></mrow><mo 
 class="MathClass-close">]</mo></mrow></math> as reference
-and <!--l. 940--><math 
+and <!--l. 988--><math 
  xmlns="http://www.w3.org/1998/Math/MathML"  
 display="inline" ><mrow ><mo 
 class="MathClass-open">[</mo><mrow><mi 
@@ -7255,7 +7317,7 @@ class="MathClass-open">[</mo><mrow><mi
 class="MathClass-punc">.</mo><mi 
 >L</mi></mrow><mo 
 class="MathClass-close">]</mo></mrow></math> as motion, and
-let <!--l. 941--><math 
+let <!--l. 989--><math 
  xmlns="http://www.w3.org/1998/Math/MathML"  
 display="inline" ><mrow ><mo 
 class="MathClass-open">[</mo><mrow><msub><mrow 
@@ -7267,7 +7329,7 @@ class="MathClass-open">[</mo><mrow><msub><mrow
 class="MathClass-punc">.</mo><mi 
 >L</mi></mrow><mo 
 class="MathClass-close">]</mo></mrow></math> the prediction
-generated for <!--l. 941--><math 
+generated for <!--l. 989--><math 
  xmlns="http://www.w3.org/1998/Math/MathML"  
 display="inline" ><mrow ><mo 
 class="MathClass-open">[</mo><mrow><mi 
@@ -7275,7 +7337,7 @@ class="MathClass-open">[</mo><mrow><mi
 class="MathClass-punc">.</mo><mi 
 >L</mi></mrow><mo 
 class="MathClass-close">]</mo></mrow></math>
-using <!--l. 941--><math 
+using <!--l. 989--><math 
  xmlns="http://www.w3.org/1998/Math/MathML"  
 display="inline" ><mrow ><mo 
 class="MathClass-open">[</mo><mrow><mi 
@@ -7283,7 +7345,7 @@ class="MathClass-open">[</mo><mrow><mi
 class="MathClass-punc">.</mo><mi 
 >L</mi></mrow><mo 
 class="MathClass-close">]</mo></mrow></math> as
-reference and <!--l. 942--><math 
+reference and <!--l. 990--><math 
  xmlns="http://www.w3.org/1998/Math/MathML"  
 display="inline" ><mrow ><mo 
 class="MathClass-open">[</mo><mrow><mi 
@@ -7298,8 +7360,8 @@ class="MathClass-punc">.</mo><mi
 >L</mi></mrow><mo 
 class="MathClass-close">]</mo></mrow></math>
 as motion. We now compute the prediction errors </p><table class="equation"><tr><td> <a 
- id="x1-22002r3"></a>
-<!--l. 944--><math 
+ id="x1-23002r3"></a>
+<!--l. 992--><math 
  xmlns="http://www.w3.org/1998/Math/MathML"  
 display="block" class="equation">
  <mtable  align="axis" style=""  
@@ -7359,12 +7421,12 @@ class="MathClass-punc">.</mo><mi
 class="MathClass-close">]</mo></mrow><mo 
 class="MathClass-punc">.</mo> </mtd></mtr><!--l--></mtable>
 </math></td><td class="eq-no">(3)</td></tr></table>
-<!--l. 951--><p class="indent" >   We deﬁne the similarity matrices as </p><table class="equation"><tr><td> <a 
- id="x1-22003r4"></a>
+<!--l. 999--><p class="indent" >   We deﬁne the similarity matrices as </p><table class="equation"><tr><td> <a 
+ id="x1-23003r4"></a>
                                                                   
 
                                                                   
-<!--l. 952--><math 
+<!--l. 1000--><math 
  xmlns="http://www.w3.org/1998/Math/MathML"  
 display="block" class="equation">
  <mtable  align="axis" style=""  
@@ -7424,8 +7486,8 @@ class="MathClass-close">]</mo></mrow><mo
 class="MathClass-rel">|</mo></mrow></mfrac><mo 
 class="MathClass-punc">.</mo> </mtd></mtr><!--l--></mtable>
 </math></td><td class="eq-no">(4)</td></tr></table>
-<!--l. 959--><p class="indent" >   Notice that, if (for example) the error
-<!--l. 959--><math 
+<!--l. 1007--><p class="indent" >   Notice that, if (for example) the error
+<!--l. 1007--><math 
  xmlns="http://www.w3.org/1998/Math/MathML"  
 display="inline" ><msub><mrow 
 ><mrow ><mo 
@@ -7444,7 +7506,7 @@ class="MathClass-punc">,</mo><mi
 >y</mi></mrow></msub 
 > <mo 
 class="MathClass-rel">=</mo> <mn>0</mn></math>, the
-similarity is <!--l. 960--><math 
+similarity is <!--l. 1008--><math 
  xmlns="http://www.w3.org/1998/Math/MathML"  
 display="inline" ><msub><mrow 
 ><mrow ><mo 
@@ -7464,13 +7526,13 @@ class="MathClass-punc">,</mo><mi
 > <mo 
 class="MathClass-rel">=</mo> <mn>1</mn></math>
 (the maximum similarity), if the error is high, the similarity tends to be low (but never
-<!--l. 961--><math 
+<!--l. 1009--><math 
  xmlns="http://www.w3.org/1998/Math/MathML"  
 display="inline" ><mn>0</mn></math>).
-</p><!--l. 963--><p class="indent" >   With this information, that can be recovered by the decoder, the improved
+</p><!--l. 1011--><p class="indent" >   With this information, that can be recovered by the decoder, the improved
 prediction is deﬁned as </p><table class="equation"><tr><td> <a 
- id="x1-22004r5"></a>
-<!--l. 965--><math 
+ id="x1-23004r5"></a>
+<!--l. 1013--><math 
  xmlns="http://www.w3.org/1998/Math/MathML"  
 display="block" class="equation">
                   <mrow ><mo 
@@ -7544,9 +7606,9 @@ class="MathClass-punc">.</mo><mi
 class="MathClass-close">]</mo></mrow></mrow></mfrac>        <mo 
 class="MathClass-punc">.</mo>
 </math></td><td class="eq-no">(5)</td></tr></table>
-<!--l. 968--><p class="indent" >   The Fig. <a 
-href="#x1-220195">5<!--tex4ht:ref: fig:weighted_average --></a> shows an implementation of this equation.
-</p><!--l. 971--><p class="indent" >   Notice that, if (for example) <!--l. 971--><math 
+<!--l. 1016--><p class="indent" >   The Fig. <a 
+href="#x1-230195">5<!--tex4ht:ref: fig:weighted_average --></a> shows an implementation of this equation.
+</p><!--l. 1019--><p class="indent" >   Notice that, if (for example) <!--l. 1019--><math 
  xmlns="http://www.w3.org/1998/Math/MathML"  
 display="inline" ><msub><mrow 
 ><mrow ><mo 
@@ -7565,7 +7627,7 @@ class="MathClass-punc">,</mo><mi
 >y</mi></mrow></msub 
 > <mo 
 class="MathClass-rel">=</mo> <mn>1</mn></math>
-and <!--l. 972--><math 
+and <!--l. 1020--><math 
  xmlns="http://www.w3.org/1998/Math/MathML"  
 display="inline" ><msub><mrow 
 ><mrow ><mo 
@@ -7584,7 +7646,7 @@ class="MathClass-punc">,</mo><mi
 >y</mi></mrow></msub 
 > <mo 
 class="MathClass-rel">≈</mo> <mn>0</mn></math>, then
-<!--l. 973--><math 
+<!--l. 1021--><math 
  xmlns="http://www.w3.org/1998/Math/MathML"  
 display="inline" ><msub><mrow 
 ><mrow ><mo 
@@ -7617,7 +7679,7 @@ class="MathClass-close">]</mo></mrow></mrow><mrow
 class="MathClass-punc">,</mo><mi 
 >y</mi></mrow></msub 
 ></math>, and
-viceversa. If <!--l. 974--><math 
+viceversa. If <!--l. 1022--><math 
  xmlns="http://www.w3.org/1998/Math/MathML"  
 display="inline" ><msub><mrow 
 ><mrow ><mo 
@@ -7651,7 +7713,7 @@ class="MathClass-close">]</mo></mrow></mrow><mrow
 class="MathClass-punc">,</mo><mi 
 >y</mi></mrow></msub 
 ></math>,
-then <!--l. 975--><math 
+then <!--l. 1023--><math 
  xmlns="http://www.w3.org/1998/Math/MathML"  
 display="inline" ><msub><mrow 
 ><mrow ><mo 
@@ -7711,21 +7773,21 @@ class="MathClass-punc">,</mo><mi
 
                                                                   
 <a 
- id="x1-220195"></a>
+ id="x1-230195"></a>
                                                                   
 
                                                                   
-<!--l. 979--><div class="lstinputlisting">
+<!--l. 1027--><div class="lstinputlisting">
 <a 
- id="x1-22005r10"></a>
+ id="x1-23005r10"></a>
 <a 
- id="x1-22006"></a>
+ id="x1-23006"></a>
 <br /> <div class="caption" 
 ><span class="id">Listing 10: </span><span  
 class="content"><a 
-href="https://github.com/Sistemas-Multimedia/MCDWT/blob/master/src/weighted_average.py" >weighted_average.py</a>.</span></div><!--tex4ht:label?: x1-22005r6 --><span 
+href="https://github.com/Sistemas-Multimedia/MCDWT/blob/master/src/weighted_average.py" >weighted_average.py</a>.</span></div><!--tex4ht:label?: x1-23005r6 --><span 
 class="ectt-1000"> </span><br /><span class="label"><a 
- id="x1-22007r1"></a></span><span 
+ id="x1-23007r1"></a></span><span 
 class="ectt-1000">def</span><span 
 class="ectt-1000"> </span><span 
 class="ectt-1000">generate_prediction</span><span 
@@ -7745,7 +7807,7 @@ class="ectt-1000"> </span><span
 class="ectt-1000">CH</span><span 
 class="ectt-1000">):</span><span 
 class="ectt-1000"> </span><br /><span class="label"><a 
- id="x1-22008r2"></a></span><span 
+ id="x1-23008r2"></a></span><span 
 class="ectt-1000"> </span><span 
 class="ectt-1000"> </span><span 
 class="ectt-1000"> </span><span 
@@ -7762,7 +7824,7 @@ class="ectt-1000"> </span><span
 class="ectt-1000">BL</span><span 
 class="ectt-1000">)</span><span 
 class="ectt-1000"> </span><br /><span class="label"><a 
- id="x1-22009r3"></a></span><span 
+ id="x1-23009r3"></a></span><span 
 class="ectt-1000"> </span><span 
 class="ectt-1000"> </span><span 
 class="ectt-1000"> </span><span 
@@ -7779,7 +7841,7 @@ class="ectt-1000"> </span><span
 class="ectt-1000">BL</span><span 
 class="ectt-1000">)</span><span 
 class="ectt-1000"> </span><br /><span class="label"><a 
- id="x1-22010r4"></a></span><span 
+ id="x1-23010r4"></a></span><span 
 class="ectt-1000"> </span><span 
 class="ectt-1000"> </span><span 
 class="ectt-1000"> </span><span 
@@ -7796,7 +7858,7 @@ class="ectt-1000"> </span><span
 class="ectt-1000">flow_AL_BL</span><span 
 class="ectt-1000">)</span><span 
 class="ectt-1000"> </span><br /><span class="label"><a 
- id="x1-22011r5"></a></span><span 
+ id="x1-23011r5"></a></span><span 
 class="ectt-1000"> </span><span 
 class="ectt-1000"> </span><span 
 class="ectt-1000"> </span><span 
@@ -7813,7 +7875,7 @@ class="ectt-1000"> </span><span
 class="ectt-1000">flow_CL_BL</span><span 
 class="ectt-1000">)</span><span 
 class="ectt-1000"> </span><br /><span class="label"><a 
- id="x1-22012r6"></a></span><span 
+ id="x1-23012r6"></a></span><span 
 class="ectt-1000"> </span><span 
 class="ectt-1000"> </span><span 
 class="ectt-1000"> </span><span 
@@ -7830,7 +7892,7 @@ class="ectt-1000"> </span><span
 class="ectt-1000">flow_AL_BL</span><span 
 class="ectt-1000">)</span><span 
 class="ectt-1000"> </span><br /><span class="label"><a 
- id="x1-22013r7"></a></span><span 
+ id="x1-23013r7"></a></span><span 
 class="ectt-1000"> </span><span 
 class="ectt-1000"> </span><span 
 class="ectt-1000"> </span><span 
@@ -7847,7 +7909,7 @@ class="ectt-1000"> </span><span
 class="ectt-1000">flow_CL_BL</span><span 
 class="ectt-1000">)</span><span 
 class="ectt-1000"> </span><br /><span class="label"><a 
- id="x1-22014r8"></a></span><span 
+ id="x1-23014r8"></a></span><span 
 class="ectt-1000"> </span><span 
 class="ectt-1000"> </span><span 
 class="ectt-1000"> </span><span 
@@ -7862,7 +7924,7 @@ class="ectt-1000">-</span><span
 class="ectt-1000"> </span><span 
 class="ectt-1000">BAL</span><span 
 class="ectt-1000"> </span><br /><span class="label"><a 
- id="x1-22015r9"></a></span><span 
+ id="x1-23015r9"></a></span><span 
 class="ectt-1000"> </span><span 
 class="ectt-1000"> </span><span 
 class="ectt-1000"> </span><span 
@@ -7877,7 +7939,7 @@ class="ectt-1000">-</span><span
 class="ectt-1000"> </span><span 
 class="ectt-1000">BCL</span><span 
 class="ectt-1000"> </span><br /><span class="label"><a 
- id="x1-22016r10"></a></span><span 
+ id="x1-23016r10"></a></span><span 
 class="ectt-1000"> </span><span 
 class="ectt-1000"> </span><span 
 class="ectt-1000"> </span><span 
@@ -7892,7 +7954,7 @@ class="ectt-1000">(</span><span
 class="ectt-1000">EAL</span><span 
 class="ectt-1000">))</span><span 
 class="ectt-1000"> </span><br /><span class="label"><a 
- id="x1-22017r11"></a></span><span 
+ id="x1-23017r11"></a></span><span 
 class="ectt-1000"> </span><span 
 class="ectt-1000"> </span><span 
 class="ectt-1000"> </span><span 
@@ -7907,7 +7969,7 @@ class="ectt-1000">(</span><span
 class="ectt-1000">ECL</span><span 
 class="ectt-1000">))</span><span 
 class="ectt-1000"> </span><br /><span class="label"><a 
- id="x1-22018r12"></a></span><span 
+ id="x1-23018r12"></a></span><span 
 class="ectt-1000"> </span><span 
 class="ectt-1000"> </span><span 
 class="ectt-1000"> </span><span 
@@ -7930,25 +7992,25 @@ class="ectt-1000">)</span>
 </div>
 <br /> <div class="caption" 
 ><span class="id">Figure 5: </span><span  
-class="content">Computation of the weighted average prediction.</span></div><!--tex4ht:label?: x1-220195 -->
+class="content">Computation of the weighted average prediction.</span></div><!--tex4ht:label?: x1-230195 -->
                                                                   
 
                                                                   
    </div><hr class="endfigure" />
    <h3 class="sectionHead"><span class="titlemark">7   </span> <a 
- id="x1-230007"></a>Lossy compression: quantization</h3>
-<!--l. 987--><p class="noindent" ><a 
+ id="x1-240007"></a>Lossy compression: quantization</h3>
+<!--l. 1035--><p class="noindent" ><a 
 href="https://vicente-gonzalez-ruiz.github.io/quantization/" >Quantization</a> allows to remove information from signals. We will use it in MCDWT
 to achieve higher compression ratios, but at the expense of losing visual information
 (ideally, the less relevant one for us).
-</p><!--l. 989--><p class="indent" >   When the signal cannot be recoverd perfectly, we can apply a <a 
+</p><!--l. 1037--><p class="indent" >   When the signal cannot be recoverd perfectly, we can apply a <a 
 href="https://vicente-gonzalez-ruiz.github.io/distortion_metrics/" >distortion metric</a> to
 ﬁnd how much error has been generated.
-</p><!--l. 991--><p class="noindent" >
+</p><!--l. 1039--><p class="noindent" >
 </p>
    <h4 class="likesubsectionHead"><a 
- id="x1-240007"></a>Example: Eﬀects caused by the total attenuation of the motion compendated (MCed)
-<!--l. 991--><math 
+ id="x1-250007"></a>Example: Eﬀects caused by the total attenuation of the motion compendated (MCed)
+<!--l. 1039--><math 
  xmlns="http://www.w3.org/1998/Math/MathML"  
 display="inline" ><mi 
 >H</mi></math>
@@ -7956,7 +8018,7 @@ subbands</h4>
                                                                   
 
                                                                   
-   <div class="verbatim" id="verbatim-14">
+   <div class="verbatim" id="verbatim-15">
 predictor=2
  <br />
  <br /># You must be in the ’src’ directory.
@@ -7993,15 +8055,15 @@ predictor=2
  <br /># Visualization of the differences with the original sequence.
  <br />rm -f /tmp/diff*.png; for i in {0..4}; do ii=$(printf &#x0022;%03d&#x0022; $i); bash ../tools/show_differences.sh -1 /tmp/$ii.png -2 ../sequences/stockholm/$ii.png -o /tmp/diff_$ii.png; done; animate /tmp/diff*.png
 </div>
-<!--l. 1029--><p class="nopar" >
-</p><!--l. 1034--><p class="noindent" >
+<!--l. 1077--><p class="nopar" >
+</p><!--l. 1082--><p class="noindent" >
 </p>
    <h4 class="likesubsectionHead"><a 
- id="x1-250007"></a>Example: Eﬀects caused by the quantization of MCed
+ id="x1-260007"></a>Example: Eﬀects caused by the quantization of MCed
                                                                   
 
                                                                   
-<!--l. 1034--><math 
+<!--l. 1082--><math 
  xmlns="http://www.w3.org/1998/Math/MathML"  
 display="inline" ><mi 
 >H</mi></math>
@@ -8009,7 +8071,7 @@ subbands</h4>
                                                                   
 
                                                                   
-   <div class="verbatim" id="verbatim-15">
+   <div class="verbatim" id="verbatim-16">
 q_step=32
  <br />predictor=2
  <br />
@@ -8041,11 +8103,11 @@ q_step=32
  <br />
  <br />rm -f /tmp/diff*.png; for i in {0..4}; do ii=$(printf &#x0022;%03d&#x0022; $i); bash ../tools/show_differences.sh -1 /tmp/$ii.png -2 ../sequences/stockholm/$ii.png -o /tmp/diff_$ii.png; done; animate /tmp/diff*.png
 </div>
-<!--l. 1066--><p class="nopar" >
-</p><!--l. 1068--><p class="noindent" >
+<!--l. 1114--><p class="nopar" >
+</p><!--l. 1116--><p class="noindent" >
 </p>
    <h4 class="likesubsectionHead"><a 
- id="x1-260007"></a>Example: Quantization of all <!--l. 1068--><math 
+ id="x1-270007"></a>Example: Quantization of all <!--l. 1116--><math 
  xmlns="http://www.w3.org/1998/Math/MathML"  
 display="inline" ><mi 
 >H</mi></math>
@@ -8053,7 +8115,7 @@ subbands (MCed and intra)</h4>
                                                                   
 
                                                                   
-   <div class="verbatim" id="verbatim-16">
+   <div class="verbatim" id="verbatim-17">
 q_step=32
  <br />predictor=2
  <br />
@@ -8091,18 +8153,18 @@ q_step=32
  <br />
  <br />rm -f /tmp/diff*.png; for i in {0..4}; do ii=$(printf &#x0022;%03d&#x0022; $i); bash ../tools/show_differences.sh -1 /tmp/$ii.png -2 ../sequences/stockholm/$ii.png -o /tmp/diff_$ii.png; done; animate /tmp/diff*.png
 </div>
-<!--l. 1106--><p class="nopar" >
-</p><!--l. 1108--><p class="noindent" >
+<!--l. 1154--><p class="nopar" >
+</p><!--l. 1156--><p class="noindent" >
 </p>
                                                                   
 
                                                                   
    <h4 class="likesubsectionHead"><a 
- id="x1-270007"></a>Example: Quantization of all subbands</h4>
+ id="x1-280007"></a>Example: Quantization of all subbands</h4>
                                                                   
 
                                                                   
-   <div class="verbatim" id="verbatim-17">
+   <div class="verbatim" id="verbatim-18">
 q_step=128
  <br />predictor=2
  <br />
@@ -8145,12 +8207,12 @@ q_step=128
  <br />
  <br />rm -f /tmp/diff*.png; for i in {0..4}; do ii=$(printf &#x0022;%03d&#x0022; $i); bash ../tools/show_differences.sh -1 /tmp/$ii.png -2 ../sequences/stockholm/$ii.png -o /tmp/diff_$ii.png; done; animate /tmp/diff*.png
 </div>
-<!--l. 1151--><p class="nopar" >
+<!--l. 1199--><p class="nopar" >
                                                                   
 
                                                                   
 <a 
- id="Q1-1-43"></a>
+ id="Q1-1-44"></a>
 </p>
     
 </body> 

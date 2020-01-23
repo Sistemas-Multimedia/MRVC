@@ -563,7 +563,6 @@ GOP size is $4$ ($3$ TRLs) and the number of SRLs is $2$.
 
 \begin{verbatim}
 predictor=1
-iterations=2
 
 # You must be in the 'src' directory.
 rm /tmp/*.png
@@ -577,12 +576,32 @@ rm -rf /tmp/tmp
 mkdir /tmp/tmp
 cp /tmp/*.png /tmp/tmp
 
-# 2-iterations MCDWT.
-python3 -O MCDWT.py -p /tmp/ -T $iterations
+# 1-iteration MCDWT.
+python3 -O MCDWT.py -p /tmp/ -T 1
 
 # Is the content of the MCDWT subbands different to the MDWT's output?
 for i in {0..4}; do ii=$(printf "%03d" $i); ls -l /tmp/LL$ii.png /tmp/tmp/LL$ii.png;echo; done
-for i in {0..4}; do ii=$(printf "%03d" $i); ls -l /tmp/LH$ii.png /tmp/tmp/LH$ii.png;echo;  done
+for i in {0..4}; do ii=$(printf "%03d" $i); ls -l /tmp/LH$ii.png /tmp/tmp/LH$ii.png;echo; done
+for i in {0..4}; do ii=$(printf "%03d" $i); ls -l /tmp/HL$ii.png /tmp/tmp/HL$ii.png;echo; done
+for i in {0..4}; do ii=$(printf "%03d" $i); ls -l /tmp/HH$ii.png /tmp/tmp/HH$ii.png;echo; done
+
+rm /tmp/*.png
+cp ../sequences/stockholm/*.png /tmp
+
+# 1D 1-iteration MDWT.
+python3 -O MDWT.py -p /tmp/
+
+# Save a copy of the MDWT subbands (for comparing later).
+rm -rf /tmp/tmp
+mkdir /tmp/tmp
+cp /tmp/*.png /tmp/tmp
+
+# 2-iterations MCDWT.
+python3 -O MCDWT.py -p /tmp/ -T 2
+
+# Is the content of the MCDWT subbands different to the MDWT's output?
+for i in {0..4}; do ii=$(printf "%03d" $i); ls -l /tmp/LL$ii.png /tmp/tmp/LL$ii.png;echo; done
+for i in {0..4}; do ii=$(printf "%03d" $i); ls -l /tmp/LH$ii.png /tmp/tmp/LH$ii.png;echo; done
 for i in {0..4}; do ii=$(printf "%03d" $i); ls -l /tmp/HL$ii.png /tmp/tmp/HL$ii.png;echo; done
 for i in {0..4}; do ii=$(printf "%03d" $i); ls -l /tmp/HH$ii.png /tmp/tmp/HH$ii.png;echo; done
 
@@ -642,6 +661,35 @@ for i in {0..4}; do ii=$(printf "%03d" $i); bash ../tools/show_differences.sh -1
 animate /tmp/diff*.png
 
 python3 ../tools/show_statistics.py -i /tmp/diff_002.png
+\end{verbatim}
+
+\subsection*{Example: 1-iteration MDWT + 3-iterations MCDWT}
+A exaple with $G=2^3=8$.
+
+\begin{verbatim}
+# You must be in the 'src' directory.
+rm /tmp/*.png
+wget https://media.xiph.org/video/derf/y4m/akiyo_cif.y4m -O /tmp/akiyo_cif.y4m
+mplayer /tmp/akiyo_cif.y4m
+ffmpeg -i /tmp/akiyo_cif.y4m -vframes 15 -start_number 0 /tmp/%03d.png
+
+# 1D 1-iteration MDWT.
+python3 -O MDWT.py -p /tmp/ -N 15
+
+# Save a copy of the MDWT subbands (for comparing later).
+rm -rf /tmp/tmp
+mkdir /tmp/tmp
+cp /tmp/LL*.png /tmp/tmp
+cp /tmp/LH*.png /tmp/tmp
+cp /tmp/HL*.png /tmp/tmp
+cp /tmp/HH*.png /tmp/tmp
+
+# 4-iterations MCDWT.
+python3 -O MCDWT.py -p /tmp/ -T 5 -N 15
+
+ls -l /tmp/LH*.png > /tmp/1
+ls -l /tmp/tmp/LH*.png > /tmp/2
+paste /tmp/1 /tmp/2
 \end{verbatim}
 
 \subsection{Scalability provided by MCDWT}
