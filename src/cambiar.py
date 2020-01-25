@@ -8,8 +8,10 @@ def RenameFiles(path = "/tmp/"):
             oldName = os.path.join(path,file)
             numero = int(file[-8:][:-4])
             #anterior = numero - 1
-            newName = os.path.join(path,"{:04d}".format(contador)+".png")
+            newName = os.path.join(path,"{:03d}".format(contador)+".png")
             os.rename(oldName,newName)
+            if contador == 999:
+                break
             contador = contador + 1
 
 if __name__ =="__main__":
