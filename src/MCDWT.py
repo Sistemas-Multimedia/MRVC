@@ -11,7 +11,7 @@ import sys
 
 from DWT import DWT
 sys.path.insert(0, "..")
-from IO import decomposition
+from src.IO import decomposition
 
 class MCDWT:
 
@@ -21,6 +21,22 @@ class MCDWT:
         self.dwt = DWT()
 
     def __forward_butterfly(self, aL, aH, bL, bH, cL, cH):
+        '''Forward MCDWT butterfly.
+
+        Input:
+        -----
+
+        aL, aH, bL, bH, cL, cH: array[y, x, component], the decomposition of
+        the images a, b and c.
+
+        Output:
+        ------
+
+        residue_bH: array[y, x, component], the residue of the
+        high-requency information of the image b.
+
+        '''
+
         AL = self.dwt.backward((aL, self.zero_H))
         BL = self.dwt.backward((bL, self.zero_H))
         CL = self.dwt.backward((cL, self.zero_H))
@@ -33,6 +49,22 @@ class MCDWT:
         return residue_bH[1]
 
     def __backward_butterfly(self, aL, aH, bL, residue_bH, cL, cH):
+        '''Backward MCDWT butterfly.
+
+        Input:
+        -----
+
+        aL, aH, bL, residue_bH, cL, cH: array[y, x, component], the
+        \tilde{b} image.
+
+        Output:
+        ------
+
+        bH: array[y, x, component], the high-frequencies of the image
+        b.
+
+        '''
+
         AL = self.dwt.backward((aL, self.zero_H))
         BL = self.dwt.backward((bL, self.zero_H))
         CL = self.dwt.backward((cL, self.zero_H))
@@ -45,20 +77,93 @@ class MCDWT:
         return bH[1]
 
     def forward(self, prefix = "/tmp/", N=5, T=2):
+        '''Forward MCDWT.
+
+        Compute the MC 1D-DWT. The input video (as a sequence of
+        1-iteration decompositions) must be stored in disk in the
+        directory <prefix>, and the output (as a 1-iteration MC
+        decompositions) will generated in the same directory.
+
+        Input
+        -----
+
+            prefix : str
+
+                Localization of the input/output images. Example:
+                "/tmp/".
+
+             N : int
+
+                Number of decompositions to process.
+
+             T : int
+
+                Number of iterations of the MCDWT (temporal scales).
+                Controls the GOP size.
+
+                  T | GOP_size
+                ----+----------
+                  0 |        1
+                  1 |        2
+                  2 |        4
+                  3 |        8
+                  4 |       16
+                  5 |       32
+                  : |        :
+
+        Returns
+        -------
+
+            The output motion compensated decompositions.
+
+        '''
         x = 2
         for t in range(T): # Temporal scale
-            i = 1
-            aL, aH = decomposition.read(prefix, "{:04d}".format(0))
+            #print("a={}".format(0), end=' ')
+            i = 0
+            aL, aH = decomposition.read(prefix, "{:03d}".format(0))
             while i < (N//x):
-                bL, bH = decomposition.read(prefix, "{:04d}".format(x*i+x//2))
-                cL, cH = decomposition.read(prefix, "{:04d}".format(x*i+x))
+                #print("b={} c={}".format(x*i+x//2, x*i+x))
+                bL, bH = decomposition.read(prefix, "{:03d}".format(x*i+x//2))
+                cL, cH = decomposition.read(prefix, "{:03d}".format(x*i+x))
                 residue_bH = self.__forward_butterfly(aL, aH, bL, bH, cL, cH)
-                decomposition.writeH(residue_bH, prefix, "{:04d}".format(x*i+x//2))
+                decomposition.writeH(residue_bH, prefix, "{:03d}".format(x*i+x//2))
                 aL, aH = cL, cH
+                print("a={}".format(x*i+x), end=' ')
                 i += 1
             x *= 2
+            #print('\n')
 
     def backward(self, prefix = "/tmp/", N=5, T=2):
+        '''Backward MCDWT.
+
+        Compute the inverse MC 1D-DWT. The input sequence of
+        1-iteration MC decompositions must be stored in disk in the
+        directory <prefix>, and the output (as a 1-iteration
+        decompositions) will generated in the same directory.
+
+        Input
+        -----
+
+            prefix : str
+
+                Localization of the input/output images. Example:
+                "/tmp/".
+
+             N : int
+
+                Number of decompositions to process.
+
+             T : int
+
+                Number of iterations of the MCDWT (temporal scales).
+
+        Returns
+        -------
+
+            The sequence of 1-iteration decompositions.
+
+        '''
         x = 2**T
         for t in range(T): # Temporal scale
             i = 0
@@ -129,7 +234,7 @@ if __name__ == "__main__":
         if __debug__:
             print("Forward transform")
 
-        p = decomposition.readL(args.prefix, "0001")
+        p = decomposition.readL(args.prefix, "000")
         d = MCDWT(p.shape)
 
         p = d.forward(args.prefix, args.decompositions, args.iterations)
