@@ -1063,11 +1063,16 @@ $[\hat{b.H}]_{x,y}=\frac{[b_a.H]_{x,y}+[b_c.H]_{x,y}}{2}$ (even if both similari
 
 
 \section{Lossy compression: quantization}
-\mylink{quantization}{Quantization} allows to remove information from signals. We will use it in MCDWT to achieve higher compression ratios, but at the expense of losing visual information (ideally, the less relevant one for us).
+\mylink{quantization}{Quantization} allows to remove information from
+signals. We will use it in MCDWT to achieve higher compression ratios,
+but at the expense of losing visual information (ideally, the less
+relevant information should be removed first).
 
-When the signal cannot be recoverd perfectly, we can apply a \mylink{distortion_metrics}{distortion metric} to find how much error has been generated.
+When the signal cannot be recoverd perfectly, we can use a
+\mylink{distortion_metrics}{distortion metric} to find how much error
+has been generated.
 
-\subsection*{Example: Effects caused by the total attenuation of the motion compendated (MCed) $H$ subbands}
+\subsection*{Example: Effects caused by the total attenuation of the motion compensated (MCed) $H$ subbands}
 
 \begin{verbatim}
 predictor=2
