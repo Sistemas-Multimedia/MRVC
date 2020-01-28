@@ -1115,7 +1115,7 @@ rm -f /tmp/diff*.png; for i in {0..4}; do ii=$(printf "%03d" $i); bash ../tools/
 for i in {0..4}; do ii=$(printf "%03d" $i); MSE=`python3 -O ../tools/MSE.py -x ../sequences/stockholm/$ii.png -y /tmp/$ii.png`; printf "MSE(%s)=%s\n" $ii $MSE; done
 
 # PSNR per image
-for i in {0..4}; do ii=$(printf "%03d" $i); MSE=`python3 -O ../tools/PSNR.py -x ../sequences/stockholm/$ii.png -y /tmp/$ii.png`; printf "MSE(%s)=%s\n" $ii $MSE; done
+for i in {0..4}; do ii=$(printf "%03d" $i); PSNR=`python3 -O ../tools/PSNR.py -x ../sequences/stockholm/$ii.png -y /tmp/$ii.png`; printf "PSNR(%s)=%s\n" $ii $PSNR; done
 \end{verbatim}
 
 %}}}

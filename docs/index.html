@@ -8071,7 +8071,7 @@ predictor=2
  <br />for i in {0..4}; do ii=$(printf &#x0022;%03d&#x0022; $i); MSE=‘python3 -O ../tools/MSE.py -x ../sequences/stockholm/$ii.png -y /tmp/$ii.png‘; printf &#x0022;MSE(%s)=%s\n&#x0022; $ii $MSE; done
  <br />
  <br /># PSNR per image
- <br />for i in {0..4}; do ii=$(printf &#x0022;%03d&#x0022; $i); MSE=‘python3 -O ../tools/PSNR.py -x ../sequences/stockholm/$ii.png -y /tmp/$ii.png‘; printf &#x0022;MSE(%s)=%s\n&#x0022; $ii $MSE; done
+ <br />for i in {0..4}; do ii=$(printf &#x0022;%03d&#x0022; $i); PSNR=‘python3 -O ../tools/PSNR.py -x ../sequences/stockholm/$ii.png -y /tmp/$ii.png‘; printf &#x0022;PSNR(%s)=%s\n&#x0022; $ii $PSNR; done
 </div>
 <!--l. 1119--><p class="nopar" >
                                                                   
