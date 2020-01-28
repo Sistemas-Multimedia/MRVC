@@ -8011,17 +8011,18 @@ class="content">Computation of the weighted average prediction.</span></div><!--
    <h3 class="sectionHead"><span class="titlemark">7   </span> <a 
  id="x1-240007"></a>Lossy compression: quantization</h3>
 <!--l. 1066--><p class="noindent" ><a 
-href="https://vicente-gonzalez-ruiz.github.io/quantization/" >Quantization</a> allows to remove information from signals. We will use it in MCDWT
-to achieve higher compression ratios, but at the expense of losing visual information
-(ideally, the less relevant one for us).
-</p><!--l. 1068--><p class="indent" >   When the signal cannot be recoverd perfectly, we can apply a <a 
+href="https://vicente-gonzalez-ruiz.github.io/quantization/" >Quantization</a> allows to remove information from signals. We will use it in
+MCDWT to achieve higher compression ratios, but at the expense of losing
+visual information (ideally, the less relevant information should be removed
+ﬁrst).
+</p><!--l. 1071--><p class="indent" >   When the signal cannot be recoverd perfectly, we can use a <a 
 href="https://vicente-gonzalez-ruiz.github.io/distortion_metrics/" >distortion metric</a> to
 ﬁnd how much error has been generated.
-</p><!--l. 1070--><p class="noindent" >
+</p><!--l. 1075--><p class="noindent" >
 </p>
    <h4 class="likesubsectionHead"><a 
- id="x1-250007"></a>Example: Eﬀects caused by the total attenuation of the motion compendated (MCed)
-<!--l. 1070--><math 
+ id="x1-250007"></a>Example: Eﬀects caused by the total attenuation of the motion compensated (MCed)
+<!--l. 1075--><math 
  xmlns="http://www.w3.org/1998/Math/MathML"  
 display="inline" ><mi 
 >H</mi></math>
@@ -8043,7 +8044,7 @@ predictor=2
  <br /># 1D 1-iteration MCDWT.
  <br />python3 -O MCDWT.py -p /tmp/
  <br />
- <br /># Let’s clear the motion compensated subbands and reconstruct the sequence ...
+ <br /># Let’s delete the motion compensated subbands and reconstruct the sequence ...
  <br />rm -f /tmp/LH001.png
  <br />rm -f /tmp/HL001.png
  <br />rm -f /tmp/HH001.png
@@ -8065,16 +8066,22 @@ predictor=2
  <br />
  <br /># Visualization of the differences with the original sequence.
  <br />rm -f /tmp/diff*.png; for i in {0..4}; do ii=$(printf &#x0022;%03d&#x0022; $i); bash ../tools/show_differences.sh -1 /tmp/$ii.png -2 ../sequences/stockholm/$ii.png -o /tmp/diff_$ii.png; done; animate /tmp/diff*.png
+ <br />
+ <br /># MSE per image
+ <br />for i in {0..4}; do ii=$(printf &#x0022;%03d&#x0022; $i); MSE=‘python3 -O ../tools/MSE.py -x ../sequences/stockholm/$ii.png -y /tmp/$ii.png‘; printf &#x0022;MSE(%s)=%s\n&#x0022; $ii $MSE; done
+ <br />
+ <br /># PSNR per image
+ <br />for i in {0..4}; do ii=$(printf &#x0022;%03d&#x0022; $i); MSE=‘python3 -O ../tools/PSNR.py -x ../sequences/stockholm/$ii.png -y /tmp/$ii.png‘; printf &#x0022;MSE(%s)=%s\n&#x0022; $ii $MSE; done
 </div>
-<!--l. 1108--><p class="nopar" >
-</p><!--l. 1113--><p class="noindent" >
-</p>
-   <h4 class="likesubsectionHead"><a 
- id="x1-260007"></a>Example: Eﬀects caused by the quantization of MCed
+<!--l. 1119--><p class="nopar" >
                                                                   
 
                                                                   
-<!--l. 1113--><math 
+</p><!--l. 1124--><p class="noindent" >
+</p>
+   <h4 class="likesubsectionHead"><a 
+ id="x1-260007"></a>Example: Eﬀects caused by the quantization of MCed
+<!--l. 1124--><math 
  xmlns="http://www.w3.org/1998/Math/MathML"  
 display="inline" ><mi 
 >H</mi></math>
@@ -8113,12 +8120,14 @@ q_step=32
  <br />for i in /tmp/00?.png; do python3 ../tools/substract_offset.py -i $i -o $i.png; done; animate /tmp/00?.png.png
  <br />
  <br />rm -f /tmp/diff*.png; for i in {0..4}; do ii=$(printf &#x0022;%03d&#x0022; $i); bash ../tools/show_differences.sh -1 /tmp/$ii.png -2 ../sequences/stockholm/$ii.png -o /tmp/diff_$ii.png; done; animate /tmp/diff*.png
+ <br />
+ <br />for i in {0..4}; do ii=$(printf &#x0022;%03d&#x0022; $i); MSE=‘python3 -O ../tools/MSE.py -x ../sequences/stockholm/$ii.png -y /tmp/$ii.png‘; printf &#x0022;MSE(%s)=%s\n&#x0022; $ii $MSE; done
 </div>
-<!--l. 1145--><p class="nopar" >
-</p><!--l. 1147--><p class="noindent" >
+<!--l. 1158--><p class="nopar" >
+</p><!--l. 1160--><p class="noindent" >
 </p>
    <h4 class="likesubsectionHead"><a 
- id="x1-270007"></a>Example: Quantization of all <!--l. 1147--><math 
+ id="x1-270007"></a>Example: Quantization of all <!--l. 1160--><math 
  xmlns="http://www.w3.org/1998/Math/MathML"  
 display="inline" ><mi 
 >H</mi></math>
@@ -8163,13 +8172,15 @@ q_step=32
  <br />for i in /tmp/00?.png; do python3 ../tools/substract_offset.py -i $i -o $i.png; done; animate /tmp/00?.png.png
  <br />
  <br />rm -f /tmp/diff*.png; for i in {0..4}; do ii=$(printf &#x0022;%03d&#x0022; $i); bash ../tools/show_differences.sh -1 /tmp/$ii.png -2 ../sequences/stockholm/$ii.png -o /tmp/diff_$ii.png; done; animate /tmp/diff*.png
+ <br />
+ <br />for i in {0..4}; do ii=$(printf &#x0022;%03d&#x0022; $i); MSE=‘python3 -O ../tools/MSE.py -x ../sequences/stockholm/$ii.png -y /tmp/$ii.png‘; printf &#x0022;MSE(%s)=%s\n&#x0022; $ii $MSE; done
 </div>
-<!--l. 1185--><p class="nopar" >
-</p><!--l. 1187--><p class="noindent" >
-</p>
+<!--l. 1200--><p class="nopar" >
+</p><!--l. 1202--><p class="noindent" >
                                                                   
 
                                                                   
+</p>
    <h4 class="likesubsectionHead"><a 
  id="x1-280007"></a>Example: Quantization of all subbands</h4>
                                                                   
@@ -8217,11 +8228,13 @@ q_step=128
  <br />for i in /tmp/00?.png; do python3 ../tools/substract_offset.py -i $i -o $i.png; done; animate /tmp/00?.png.png
  <br />
  <br />rm -f /tmp/diff*.png; for i in {0..4}; do ii=$(printf &#x0022;%03d&#x0022; $i); bash ../tools/show_differences.sh -1 /tmp/$ii.png -2 ../sequences/stockholm/$ii.png -o /tmp/diff_$ii.png; done; animate /tmp/diff*.png
-</div>
-<!--l. 1230--><p class="nopar" >
+ <br />
                                                                   
 
                                                                   
+ <br />for i in {0..4}; do ii=$(printf &#x0022;%03d&#x0022; $i); MSE=‘python3 -O ../tools/MSE.py -x ../sequences/stockholm/$ii.png -y /tmp/$ii.png‘; printf &#x0022;MSE(%s)=%s\n&#x0022; $ii $MSE; done
+</div>
+<!--l. 1247--><p class="nopar" >
 <a 
  id="Q1-1-44"></a>
 </p>
