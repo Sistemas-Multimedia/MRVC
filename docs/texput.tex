@@ -1088,7 +1088,7 @@ python3 -O MDWT.py -p /tmp/
 # 1D 1-iteration MCDWT.
 python3 -O MCDWT.py -p /tmp/
 
-# Let's clear the motion compensated subbands and reconstruct the sequence ...
+# Let's delete the motion compensated subbands and reconstruct the sequence ...
 rm -f /tmp/LH001.png
 rm -f /tmp/HL001.png
 rm -f /tmp/HH001.png
@@ -1110,6 +1110,9 @@ for i in /tmp/00?.png; do python3 ../tools/substract_offset.py -i $i -o $i.png; 
 
 # Visualization of the differences with the original sequence.
 rm -f /tmp/diff*.png; for i in {0..4}; do ii=$(printf "%03d" $i); bash ../tools/show_differences.sh -1 /tmp/$ii.png -2 ../sequences/stockholm/$ii.png -o /tmp/diff_$ii.png; done; animate /tmp/diff*.png
+
+# Distortion per image
+
 \end{verbatim}
 
 %}}}
