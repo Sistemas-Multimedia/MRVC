@@ -1112,7 +1112,7 @@ for i in /tmp/00?.png; do python3 ../tools/substract_offset.py -i $i -o $i.png; 
 rm -f /tmp/diff*.png; for i in {0..4}; do ii=$(printf "%03d" $i); bash ../tools/show_differences.sh -1 /tmp/$ii.png -2 ../sequences/stockholm/$ii.png -o /tmp/diff_$ii.png; done; animate /tmp/diff*.png
 
 # Distortion per image
-
+for i in {0..4}; do ii=$(printf "%03d" $i); python3 -O ../tools/MSE.py -x ../sequences/stockholm/$ii.png -y /tmp/$ii.png; done
 \end{verbatim}
 
 %}}}
