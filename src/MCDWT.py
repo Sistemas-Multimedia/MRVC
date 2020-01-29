@@ -6,8 +6,12 @@
 #!/bin/sh
 ''''exec python3 -O -- "$0" ${1+"$@"} # '''
 
-import numpy as np
+import os
 import sys
+try:
+    import numpy as np
+except:
+    os.system("pip3 install numpy --user")
 
 from DWT import DWT
 sys.path.insert(0, "..")
@@ -129,7 +133,7 @@ class MCDWT:
                 residue_bH = self.__forward_butterfly(aL, aH, bL, bH, cL, cH)
                 decomposition.writeH(residue_bH, prefix, "{:03d}".format(x*i+x//2))
                 aL, aH = cL, cH
-                print("a={}".format(x*i+x), end=' ')
+                #print("a={}".format(x*i+x), end=' ')
                 i += 1
             x *= 2
             #print('\n')
