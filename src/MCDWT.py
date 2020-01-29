@@ -129,7 +129,7 @@ class MCDWT:
                 residue_bH = self.__forward_butterfly(aL, aH, bL, bH, cL, cH)
                 decomposition.writeH(residue_bH, prefix, "{:03d}".format(x*i+x//2))
                 aL, aH = cL, cH
-                print("a={}".format(x*i+x), end=' ')
+                #print("a={}".format(x*i+x), end=' ')
                 i += 1
             x *= 2
             #print('\n')
