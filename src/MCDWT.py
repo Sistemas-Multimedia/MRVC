@@ -6,8 +6,12 @@
 #!/bin/sh
 ''''exec python3 -O -- "$0" ${1+"$@"} # '''
 
-import numpy as np
+import os
 import sys
+try:
+    import numpy as np
+except:
+    os.system("pip3 install numpy --user")
 
 from DWT import DWT
 sys.path.insert(0, "..")

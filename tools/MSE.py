@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 
 import os
-
 try:
     import cv2
 except:
@@ -16,7 +15,7 @@ import argparse
 try:
     import skimage.metrics
 except:
-    os.system("install scikit-image --user")
+    os.system("pip3 install scikit-image --user")
 
 class CustomFormatter(argparse.ArgumentDefaultsHelpFormatter, argparse.RawDescriptionHelpFormatter):
     pass
