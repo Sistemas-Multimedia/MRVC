@@ -1259,6 +1259,29 @@ for i in /tmp/00?.png; do python ../tools/substract_offset.py -i $i -o $i.png; d
 %}}}
 
 \begin{comment}
+  % Libro vetterli
+
+  Perceptual quantization:
+  
+  An important consideration is the relative perceptual importance of
+  the subbands. This liead to a weighting of the MSE in the
+  subbands. This weighting function can be derived throudh perfectual
+  experiments by finding the level of ``just noticeable noise''. As
+  expected, high subbands tolerate more noise because the HVS becomes
+  less senitive at high frequencies.
+\end{comment}
+
+\begin{comment}
+  % Libro vetterli
+
+  Subbands are rarely independent (usually, some kind of prediction
+  can be applied between the different scales). However, because the
+  subbands are downsampled versions of the original subbands, the
+  coefficients are shift-variant. This reduces the effectiviness, for
+  example, of VQ applied across the subbands.
+\end{comment}
+
+\begin{comment}
 \section{MCDWT decomposition}
 %{{{
 
