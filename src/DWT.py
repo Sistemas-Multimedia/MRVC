@@ -6,10 +6,17 @@
 #!/bin/sh
 ''''exec python3 -O -- "$0" ${1+"$@"} # '''
 
-import numpy as np
-import pywt
 import math
 import sys
+import os
+try:
+    import numpy as np
+except:
+    os.system("pip3 install numpy --user")
+try:
+    import pywt
+except:
+    os.system("pip3 install pywavelets --user")
 
 sys.path.insert(0, "..")
 from src.IO import image

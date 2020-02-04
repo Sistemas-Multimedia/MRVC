@@ -1,5 +1,5 @@
 % Emacs, this is -*-latex-*-
-\title{Motion Compensated Discrete Wavelet Transform (MCDWT)}
+\title{\href{https://github.com/Sistemas-Multimedia/MCDWT}{Motion Compensated Discrete Wavelet Transform (MCDWT)}}
 \author{Vicente González Ruiz}
 %\makeglossaries
 \maketitle
@@ -20,7 +20,8 @@ two stages: (1) a transform stage in the
 \href{https://www.quora.com/What-is-spatial-domain-in-image-processing}{spatial}
 domains that produces a collection of
 \href{https://en.wikipedia.org/wiki/Decorrelation}{uncorrelated}
-\href{https://en.wikipedia.org/wiki/Discrete_wavelet_transform}{coefficients}, and (2) an
+\href{https://en.wikipedia.org/wiki/Discrete_wavelet_transform}{coefficients},
+and (2) an
 \href{https://en.wikipedia.org/wiki/Entropy_encoding}{entropy
   encoding} phase which removes the statistical redundancy that can
 still remains after the decorrelation (transform). These coefficients
@@ -1111,8 +1112,11 @@ for i in /tmp/00?.png; do python3 ../tools/substract_offset.py -i $i -o $i.png; 
 # Visualization of the differences with the original sequence.
 rm -f /tmp/diff*.png; for i in {0..4}; do ii=$(printf "%03d" $i); bash ../tools/show_differences.sh -1 /tmp/$ii.png -2 ../sequences/stockholm/$ii.png -o /tmp/diff_$ii.png; done; animate /tmp/diff*.png
 
-# Distortion per image
+# MSE per image
+for i in {0..4}; do ii=$(printf "%03d" $i); MSE=`python3 -O ../tools/MSE.py -x ../sequences/stockholm/$ii.png -y /tmp/$ii.png`; printf "MSE(%s)=%s\n" $ii $MSE; done
 
+# PSNR per image
+for i in {0..4}; do ii=$(printf "%03d" $i); PSNR=`python3 -O ../tools/PSNR.py -x ../sequences/stockholm/$ii.png -y /tmp/$ii.png`; printf "PSNR(%s)=%s\n" $ii $PSNR; done
 \end{verbatim}
 
 %}}}
@@ -1150,6 +1154,8 @@ python3 -O MDWT.py -p /tmp/ -b
 for i in /tmp/00?.png; do python3 ../tools/substract_offset.py -i $i -o $i.png; done; animate /tmp/00?.png.png
 
 rm -f /tmp/diff*.png; for i in {0..4}; do ii=$(printf "%03d" $i); bash ../tools/show_differences.sh -1 /tmp/$ii.png -2 ../sequences/stockholm/$ii.png -o /tmp/diff_$ii.png; done; animate /tmp/diff*.png
+
+for i in {0..4}; do ii=$(printf "%03d" $i); MSE=`python3 -O ../tools/MSE.py -x ../sequences/stockholm/$ii.png -y /tmp/$ii.png`; printf "MSE(%s)=%s\n" $ii $MSE; done
 \end{verbatim}
 
 \subsection*{Example: Quantization of all $H$ subbands (MCed and intra)}
@@ -1190,6 +1196,8 @@ python3 -O MDWT.py -p /tmp/ -b
 for i in /tmp/00?.png; do python3 ../tools/substract_offset.py -i $i -o $i.png; done; animate /tmp/00?.png.png
 
 rm -f /tmp/diff*.png; for i in {0..4}; do ii=$(printf "%03d" $i); bash ../tools/show_differences.sh -1 /tmp/$ii.png -2 ../sequences/stockholm/$ii.png -o /tmp/diff_$ii.png; done; animate /tmp/diff*.png
+
+for i in {0..4}; do ii=$(printf "%03d" $i); MSE=`python3 -O ../tools/MSE.py -x ../sequences/stockholm/$ii.png -y /tmp/$ii.png`; printf "MSE(%s)=%s\n" $ii $MSE; done
 \end{verbatim}
 
 \subsection*{Example: Quantization of all subbands}
@@ -1235,6 +1243,8 @@ python3 -O MDWT.py -p /tmp/ -b
 for i in /tmp/00?.png; do python3 ../tools/substract_offset.py -i $i -o $i.png; done; animate /tmp/00?.png.png
 
 rm -f /tmp/diff*.png; for i in {0..4}; do ii=$(printf "%03d" $i); bash ../tools/show_differences.sh -1 /tmp/$ii.png -2 ../sequences/stockholm/$ii.png -o /tmp/diff_$ii.png; done; animate /tmp/diff*.png
+
+for i in {0..4}; do ii=$(printf "%03d" $i); MSE=`python3 -O ../tools/MSE.py -x ../sequences/stockholm/$ii.png -y /tmp/$ii.png`; printf "MSE(%s)=%s\n" $ii $MSE; done
 \end{verbatim}
 
 %}}}

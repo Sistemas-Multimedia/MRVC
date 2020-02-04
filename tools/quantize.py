@@ -1,8 +1,15 @@
 #!/usr/bin/env python
 
-import cv2
-import numpy as np
+import os
 import argparse
+try:
+    import cv2
+except:
+    os.system("pip3 install opencv-python --user")
+try:
+    import numpy as np
+except:
+    os.system("pip3 install numpy -user")
 
 class CustomFormatter(argparse.ArgumentDefaultsHelpFormatter, argparse.RawDescriptionHelpFormatter):
     pass
