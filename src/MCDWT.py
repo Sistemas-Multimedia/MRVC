@@ -12,6 +12,10 @@ try:
     import numpy as np
 except:
     os.system("pip3 install numpy --user")
+try:
+    import pywt
+except:
+    os.system("pip3 install pywavelets --user")
 
 from DWT import DWT
 sys.path.insert(0, "..")
@@ -53,10 +57,14 @@ class MCDWT:
         #prediction_BH = predictor.generate_prediction(aL, bL, cL, aH, cH)
         flow_aL_bL = motion_estimation(aL, bL)
         flow_cL_bL = motion_estimation(cL, bL)
-        Flow_aL_bL = self.dwt.backward((flow_aL_bL, self.zero_H))
-        Flow_cL_bL = self.dwt.backward((flow_cL_bL, self.zero_H))
-        BAH = estimate_frame(AH, Flow_AL_BL)
-        BCH = estimate_frame(CH, Flow_CL_BL)
+        c1 = pywt.idwt2((flow_aL_bL[:,:,0], (None, None, None)), wavelet='haar', mode='per')
+        c2 = pywt.idwt2((flow_aL_bL[:,:,0], (None, None, None)), wavelet='haar', mode='per')
+        Flow_aL_bL = np.stack((c1, c2), axis=-1)
+        c1 = pywt.idwt2((flow_cL_bL[:,:,0], (None, None, None)), wavelet='haar', mode='per')
+        c2 = pywt.idwt2((flow_cL_bL[:,:,0], (None, None, None)), wavelet='haar', mode='per')
+        Flow_cL_bL = np.stack((c1, c2), axis=-1)
+        BAH = estimate_frame(AH, Flow_aL_bL)
+        BCH = estimate_frame(CH, Flow_cL_bL)
         prediction_BH = (BAH + BCH) / 2
         residue_BH = BH - prediction_BH
         residue_bH = self.dwt.forward(residue_BH)
@@ -90,7 +98,15 @@ class MCDWT:
         #prediction_BH = predictor.generate_rediction(aL, bL, cL, aH, cH)
         flow_aL_bL = motion_estimation(aL, bL)
         flow_cL_bL = motion_estimation(cL, bL)
-        Flow_aL_bL = self.dwt.backward((flow_aL_bL, ))
+        c1 = pywt.idwt2((flow_aL_bL[:,:,0], (None, None, None)), wavelet='haar', mode='per')
+        c2 = pywt.idwt2((flow_aL_bL[:,:,0], (None, None, None)), wavelet='haar', mode='per')
+        Flow_aL_bL = np.stack((c1, c2), axis=-1)
+        c1 = pywt.idwt2((flow_cL_bL[:,:,0], (None, None, None)), wavelet='haar', mode='per')
+        c2 = pywt.idwt2((flow_cL_bL[:,:,0], (None, None, None)), wavelet='haar', mode='per')
+        Flow_cL_bL = np.stack((c1, c2), axis=-1)
+        BAH = estimate_frame(AH, Flow_aL_bL)
+        BCH = estimate_frame(CH, Flow_cL_bL)
+        prediction_BH = (BAH + BCH) / 2
         BH = residue_BH + prediction_BH
         bH = self.dwt.forward(BH)
         return bH[1]
