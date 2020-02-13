@@ -16,6 +16,8 @@ except:
 from DWT import DWT
 sys.path.insert(0, "..")
 from src.IO import decomposition
+from MC.optical.motion import motion_estimation
+from MC.optical.motion import estimate_frame
 
 class MCDWT:
 
@@ -48,8 +50,14 @@ class MCDWT:
         BH = self.dwt.backward((self.zero_L, bH))
         CH = self.dwt.backward((self.zero_L, cH))
         #prediction_BH  = predictor.generate_prediction(AL, BL, CL, AH, CH)
-        prediction_bH = predictor.generate_prediction(aL, bL, cL, aH, cH)
-        prediction_BH = self.dwt.backward((self.zero, bH))
+        #prediction_BH = predictor.generate_prediction(aL, bL, cL, aH, cH)
+        flow_aL_bL = motion_estimation(aL, bL)
+        flow_cL_bL = motion_estimation(cL, bL)
+        Flow_aL_bL = self.dwt.backward((flow_aL_bL, self.zero_H))
+        Flow_cL_bL = self.dwt.backward((flow_cL_bL, self.zero_H))
+        BAH = estimate_frame(AH, Flow_AL_BL)
+        BCH = estimate_frame(CH, Flow_CL_BL)
+        prediction_BH = (BAH + BCH) / 2
         residue_BH = BH - prediction_BH
         residue_bH = self.dwt.forward(residue_BH)
         return residue_bH[1]
@@ -78,8 +86,11 @@ class MCDWT:
         residue_BH = self.dwt.backward((self.zero_L, residue_bH))
         CH = self.dwt.backward((self.zero_L, cH))
         #prediction_BH  = predictor.generate_prediction(AL, BL, CL, AH, CH)
-        prediction_bH = predictor.generate_rediction(aL, bL, cL, aH, cH)
-        prediction_BH = self.dwt.backward((self.zero, bH))
+        
+        #prediction_BH = predictor.generate_rediction(aL, bL, cL, aH, cH)
+        flow_aL_bL = motion_estimation(aL, bL)
+        flow_cL_bL = motion_estimation(cL, bL)
+        Flow_aL_bL = self.dwt.backward((flow_aL_bL, ))
         BH = residue_BH + prediction_BH
         bH = self.dwt.forward(BH)
         return bH[1]
