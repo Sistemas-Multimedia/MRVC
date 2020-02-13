@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 # Note: swap the above line with the following two ones to switch
 # between the standard and the optimized mode.
@@ -41,13 +41,15 @@ class MCDWT:
 
         '''
 
-        AL = self.dwt.backward((aL, self.zero_H))
-        BL = self.dwt.backward((bL, self.zero_H))
-        CL = self.dwt.backward((cL, self.zero_H))
+        #AL = self.dwt.backward((aL, self.zero_H))
+        #BL = self.dwt.backward((bL, self.zero_H))
+        #CL = self.dwt.backward((cL, self.zero_H))
         AH = self.dwt.backward((self.zero_L, aH))
         BH = self.dwt.backward((self.zero_L, bH))
         CH = self.dwt.backward((self.zero_L, cH))
-        prediction_BH  = predictor.generate_prediction(AL, BL, CL, AH, CH)
+        #prediction_BH  = predictor.generate_prediction(AL, BL, CL, AH, CH)
+        prediction_bH = predictor.generate_prediction(aL, bL, cL, aH, cH)
+        prediction_BH = self.dwt.backward((self.zero, bH))
         residue_BH = BH - prediction_BH
         residue_bH = self.dwt.forward(residue_BH)
         return residue_bH[1]
@@ -69,13 +71,15 @@ class MCDWT:
 
         '''
 
-        AL = self.dwt.backward((aL, self.zero_H))
-        BL = self.dwt.backward((bL, self.zero_H))
-        CL = self.dwt.backward((cL, self.zero_H))
+        #AL = self.dwt.backward((aL, self.zero_H))
+        #BL = self.dwt.backward((bL, self.zero_H))
+        #CL = self.dwt.backward((cL, self.zero_H))
         AH = self.dwt.backward((self.zero_L, aH))
         residue_BH = self.dwt.backward((self.zero_L, residue_bH))
         CH = self.dwt.backward((self.zero_L, cH))
-        prediction_BH  = predictor.generate_prediction(AL, BL, CL, AH, CH)
+        #prediction_BH  = predictor.generate_prediction(AL, BL, CL, AH, CH)
+        prediction_bH = predictor.generate_rediction(aL, bL, cL, aH, cH)
+        prediction_BH = self.dwt.backward((self.zero, bH))
         BH = residue_BH + prediction_BH
         bH = self.dwt.forward(BH)
         return bH[1]
