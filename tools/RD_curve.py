@@ -41,15 +41,13 @@ parser.add_argument("-T", "--iterations", help="Number of temporal iterations", 
 args = parser.parse_args()
 dwt = DWT()
 
-# GOP 0
-for q_step in [1 << i for i in range(10)]:
-    # LL
-    original_LL = cv2.imread(args.prefix + "LL000.png", -1)
-    original_LL = original_LL.astype(np.float32)
-    original_LL -= 32768
-    quantized_LL = quantize(original_LL, q_step)
-    zero = np.zeros((original_LL.shape[0], original_LL.shape[1], 3))
-    reconstruction = dwt.backward([quantized_LL, [zero, zero, zero]])
+def process_subband(subband, q_step):
+    original_sb = cv2.imread(args.prefix + subband + "000.png", -1)
+    original_sb = original_sb.astype(np.float32)
+    original_sb -= 32768
+    quantized_sb = quantize(original_sb, q_step)
+    zero = np.zeros((original_sb.shape[0], original_sb.shape[1], 3))
+    reconstruction = dwt.backward([quantized_sb, [zero, zero, zero]])
     if __debug__:
         cv2.imshow("reconstruction", normalize(reconstruction))
         while cv2.waitKey(1) & 0xFF != ord('q'):
@@ -62,6 +60,14 @@ for q_step in [1 << i for i in range(10)]:
     original -= 32768
     MSE = skimage.metrics.mean_squared_error(original, reconstruction)
     rate = os.path.getsize("/tmp/1.png")
-    print(MSE, rate)
-    
+    return (subband, MSE, rate)
+
+DR_points = []
+
+# GOP 0
+for q_step in [(1 << i) for i in range(9,-1,-1)]:
+    DR_points.append(process_subband("LL", q_step))
+    DR_points.append(process_subband("LH", q_step))
+
+print(DR_points)
 
