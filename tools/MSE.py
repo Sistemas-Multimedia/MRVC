@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 import os
 try:
@@ -35,4 +35,4 @@ y = cv2.imread(args.y, -1)
 
 MSE = skimage.metrics.mean_squared_error(x, y)
 
-print("{}".format(MSE))
+print(MSE)

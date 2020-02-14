@@ -7,9 +7,8 @@
 ''''exec python3 -O -- "$0" ${1+"$@"} # '''
 
 import sys
-
-from DWT import DWT
 sys.path.insert(0, "..")
+from DWT import DWT
 from src.IO import image
 from src.IO import decomposition
 

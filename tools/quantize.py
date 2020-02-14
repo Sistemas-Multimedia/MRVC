@@ -11,50 +11,49 @@ try:
 except:
     os.system("pip3 install numpy -user")
 
-class CustomFormatter(argparse.ArgumentDefaultsHelpFormatter, argparse.RawDescriptionHelpFormatter):
-    pass
+def quantize(input, q_step):
+    return (input/q_step).astype(np.int16)*q_step
 
-parser = argparse.ArgumentParser(description = "Quantize an image\n\n"
-                                 "Example:\n\n"
-                                 "  python -O quantize.py -i ../sequences/stockholm/000.png -o /tmp/000.png -q 64\n",
-                                 formatter_class=CustomFormatter)
+def run(input, output, q_step):
+    image = cv2.imread(input, -1)
+    tmp = image.astype(np.float32)
+    tmp -= 32768
 
-parser.add_argument("-i", "--input", help="Input image", default="../sequences/stockholm/000.png")
-parser.add_argument("-o", "--output", help="Output image", default="/tmp/000.png")
-parser.add_argument("-q", "--q_step", type=int, help="Quantization step", default=32)
+    if __debug__:
+        print("\nInput image = {}".format(input))
+        print("Output image = {}".format(output))
+        print("q_step = {}".format(q_step))
+        print("Max value at input = {}".format(np.amax(tmp)))
+        print("Min value at input = {}".format(np.amin(tmp)))
 
-args = parser.parse_args()
+    image = quantize(tmp, q_step)
 
-image = cv2.imread(args.input, -1)
+    if __debug__:
+        print("Max value at output = {}".format(np.amax(image)))
+        print("Min value at output = {}".format(np.amin(image)))
 
-if __debug__:
-    print("Quantizing with step {}".format(args.q_step))
+    tmp = image.astype(np.float32)
+    tmp += 32768
+    image = tmp.astype(np.uint16)
 
-tmp = image.astype(np.float32)
-tmp -= 32768
-#image = tmp.astype(np.int16)
+    cv2.imwrite(output, image)
 
-#if __debug__:
-#    print("Max value at input: {}".format(np.amax(image)))
-#    print("Min value at input: {}".format(np.amin(image)))
+def main():
 
-#image //= args.q_step
-#if __debug__:
-#    print("Max value at input: {}".format(np.amax(image)))
-#    print("Min value at input: {}".format(np.amin(image)))
+    class CustomFormatter(argparse.ArgumentDefaultsHelpFormatter, argparse.RawDescriptionHelpFormatter):
+        pass
 
-#image *= args.q_step
-#image += ((args.q_step//2)-1)
+    parser = argparse.ArgumentParser(description = "Quantize an image\n\n"
+                                     "Example:\n\n"
+                                     "  python -O quantize.py -i ../sequences/stockholm/000.png -o /tmp/000.png -q 64\n",
+                                     formatter_class=CustomFormatter)
 
-image = (tmp/args.q_step).astype(np.int16)*args.q_step
+    parser.add_argument("-i", "--input", help="Input image", default="../sequences/stockholm/000.png")
+    parser.add_argument("-o", "--output", help="Output image", default="/tmp/000.png")
+    parser.add_argument("-q", "--q_step", type=int, help="Quantization step", default=32)
 
-if __debug__:
-    print("Max value at output: {}".format(np.amax(image)))
-    print("Min value at output: {}".format(np.amin(image)))
+    args = parser.parse_args()
+    run(args.input, args.output, args.q_step)
 
-tmp = image.astype(np.float32)
-tmp += 32768
-image = tmp.astype(np.uint16)
-
-cv2.imwrite(args.output, image)
-
+if __name__ == "__main__":
+    main()
