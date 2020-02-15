@@ -12,7 +12,15 @@ except:
     os.system("pip3 install numpy -user")
 
 def quantize(input, q_step):
-    return (input/q_step).astype(np.int16)*q_step
+    if __debug__:
+        print("q_step = {}".format(q_step))
+        print("Max value at input = {}".format(np.amax(input)))
+        print("Min value at input = {}".format(np.amin(input)))
+    output = (input/q_step).astype(np.int16)*q_step
+    if __debug__:
+        print("Max value at output = {}".format(np.amax(output)))
+        print("Min value at output = {}".format(np.amin(output)))
+    return output
 
 def run(input, output, q_step):
     image = cv2.imread(input, -1)
@@ -22,15 +30,8 @@ def run(input, output, q_step):
     if __debug__:
         print("\nInput image = {}".format(input))
         print("Output image = {}".format(output))
-        print("q_step = {}".format(q_step))
-        print("Max value at input = {}".format(np.amax(tmp)))
-        print("Min value at input = {}".format(np.amin(tmp)))
 
     image = quantize(tmp, q_step)
-
-    if __debug__:
-        print("Max value at output = {}".format(np.amax(image)))
-        print("Min value at output = {}".format(np.amin(image)))
 
     tmp = image.astype(np.float32)
     tmp += 32768
