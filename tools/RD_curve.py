@@ -63,21 +63,65 @@ parser.add_argument("-T", "--iterations", help="Number of temporal iterations", 
 args = parser.parse_args()
 
 # 1. Create the black original sequence.
-os.system("rm -rf /tmp/zero")
-os.system("mkdir /tmp/zero")
-for i in range(N):
+os.system("rm -rf /tmp/zero/")
+os.system("mkdir /tmp/zero/")
+if __debug__:
+    print("Number of decompositions = {}".format(args.decompositions))
+    print("Number of iterations = {}".format(args.iterations))
+for i in range(args.decompositions):
     ii = "{:03d}".format(i)
-    os.system("bash ./create_black_image.sh -o /tmp/zero/" + str(ii) + ".png" +
-              " -w " + str(args.width) + " -h " + str(args.height))
-os.system("python3 ../src/MCDWT.py" + " -p /tmp/zero" + " -N " +
-          str(args.decompositions) + " -T " + str(args.iterations))
+    command = "bash ./create_black_image.sh -o /tmp/zero/" + str(ii) + ".png" + \
+              " -w " + str(args.width) + " -h " + str(args.height)
+    if __debug__:
+        print(command)
+    os.system(command)
+command = "python3 -O ../src/MDWT.py" + " -p /tmp/zero/" + " -N " + \
+  str(args.decompositions)
+if __debug__:
+    print(command)
+os.system(command)
+command = "python3 -O ../src/MCDWT.py" + " -p /tmp/zero/" + " -N " + \
+      str(args.decompositions) + " -T " + str(args.iterations)
+if __debug__:
+    print(command)
+os.system(command)
+os.system("rm /tmp/zero/???.png")
 
 # 2. Create the video structure.
-os.system("python3 ../src/MCDWT.py" + " -p " + args.prefix + " -N " +
-          str(args.decompositions) + " -T " + str(args.iterations))
+command = "python3 -O ../src/MDWT.py" + " -p " + args.prefix + " -N " + str(args.decompositions)
+if __debug__:
+    print(command)
+os.system(command)
+command = "python3 -O ../src/MCDWT.py" + " -p " + args.prefix + " -N " + \
+          str(args.decompositions) + " -T " + str(args.iterations)
+if __debug__:
+    print(command)
+os.system(command)
 
 # 3. For each subband in v:
 for s in os.listdir("/tmp/zero/"):
+    for q_step in [(1 << i) for i in range(10)]:
+        print(s, q_step)
+        # 3.1.1. Copy s to z.
+        os.system("cp /tmp/" + s + " /tmp/zero/")
+        # 3.1.2. Quantize s using q.
+        os.system("python3 quantize.py -i /tmp/zero/" + s + " -o " + "/tmp/zero/" + s + " -q " + str(q_step))
+        # 3.1.3. Reconstruct the video v'.
+        command = "python3 -O ../src/MCDWT.py" + " -p " + args.prefix + " -N " + \
+                  str(args.decompositions) + " -T " + str(args.iterations) + " -b"
+        if __debug__:
+            print(command)
+        os.system(command)
+        command = "python3 -O ../src/MDWT.py" + " -p " + args.prefix + " -N " + str(args.decompositions) + " -b"
+        if __debug__:
+            print(command)
+        os.system(command)
+        # 3.1.4. Compute the distortion between v and v'.
+        command = "python3 -O ./MSE.py" + " -x " + args.prefix + " -N " + str(args.decompositions) + " -b"
+        
+        
+        
+input()
 
 dwt = DWT()
               
