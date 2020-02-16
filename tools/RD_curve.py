@@ -1,7 +1,23 @@
 #!/usr/bin/env python3
 
 # Generates the RD points of MCDWT.
+#
+# Algorithm:
+#
+# 1. Create a zero structure z with MCDWT.
+# 2. Create a real video structure v with MCDWT.
+# 3. For each subband s in v:
+# 3.1. For each quantization step q in {1, 2, ..., infinite}:
+# 3.1.1. Copy s to z.
+# 3.1.2. Quantize s using q.
+# 3.1.3. Reconstruct the video v'.
+# 3.1.4. Compute the distortion between v and v'.
+#
+# Note: the last quantization step should be "infinite" in order to
+# restore the original zero subband in z for the next iteration of
+# loop of Step 3.
 
+import glob
 import sys
 sys.path.insert(0, "..")
 import os
@@ -35,13 +51,36 @@ parser = argparse.ArgumentParser(description = "Generates the RD points of a MCD
                                  "  python3 -O RD_curve.py -p /tmp/\n",
                                  formatter_class=CustomFormatter)
 
+N = 5
+iters = 2
+
+parser.add_argument("-w", "--width", help="Widht of the video", default="1280")
+parser.add_argument("-e", "--height", help="Height of the video", default="768")
 parser.add_argument("-p", "--prefix", help="Dir where the files the I/O files are placed", default="/tmp/")
-parser.add_argument("-N", "--decompositions", help="Number of input decompositions", default=5, type=int)
-parser.add_argument("-T", "--iterations", help="Number of temporal iterations", default=2, type=int)
+parser.add_argument("-N", "--decompositions", help="Number of input decompositions", default=N, type=int)
+parser.add_argument("-T", "--iterations", help="Number of temporal iterations", default=iters, type=int)
 
 args = parser.parse_args()
-dwt = DWT()
 
+# 1. Create the black original sequence.
+os.system("rm -rf /tmp/zero")
+os.system("mkdir /tmp/zero")
+for i in range(N):
+    ii = "{:03d}".format(i)
+    os.system("bash ./create_black_image.sh -o /tmp/zero/" + str(ii) + ".png" +
+              " -w " + str(args.width) + " -h " + str(args.height))
+os.system("python3 ../src/MCDWT.py" + " -p /tmp/zero" + " -N " +
+          str(args.decompositions) + " -T " + str(args.iterations))
+
+# 2. Create the video structure.
+os.system("python3 ../src/MCDWT.py" + " -p " + args.prefix + " -N " +
+          str(args.decompositions) + " -T " + str(args.iterations))
+
+# 3. For each subband in v:
+for s in os.listdir("/tmp/zero/"):
+
+dwt = DWT()
+              
 def process_subband2(subband, q_step):
     original_sb = cv2.imread(args.prefix + subband + "000.png", -1)
     original_sb = original_sb.astype(np.float32)
@@ -60,10 +99,10 @@ def process_subband2(subband, q_step):
         reconstruction = dwt.backward([zero, [zero, quantized_sb, zero]])
     else:
         reconstruction = dwt.backward([zero, [zero, zero, quantized_sb]])
-    if __debug__:
-        cv2.imshow("reconstruction", normalize(reconstruction))
-        while cv2.waitKey(1) & 0xFF != ord('q'):
-            time.sleep(0.1)
+        if __debug__:
+            cv2.imshow("reconstruction", normalize(reconstruction))
+            while cv2.waitKey(1) & 0xFF != ord('q'):
+                time.sleep(0.1)
     original = cv2.imread(args.prefix + "000.png", -1)
     original = original.astype(np.float32)
     original -= 32768
@@ -113,8 +152,9 @@ for q_step in [(1 << i) for i in range(9,-1,-1)]:
     DR_points.append(process_subband("HL", q_step))
     DR_points.append(process_subband("HH", q_step))
     DR_points.append("\n")
-
-for i in DR_points:
-    print(i, end='')
-#print(DR_points)
-
+    
+    for i in DR_points:
+        print(i, end='')
+        #print(DR_points)
+              
+              
