@@ -21,6 +21,8 @@ import glob
 import sys
 sys.path.insert(0, "..")
 import os
+#from os import listdir
+#from os.path import isfile, join
 import argparse
 from tools.quantize import quantize
 from src.DWT import DWT
@@ -53,72 +55,63 @@ parser = argparse.ArgumentParser(description = "Generates the RD points of a MCD
 
 N = 5
 iters = 2
+originals = "../sequences/stockholm/"
 
 parser.add_argument("-w", "--width", help="Widht of the video", default="1280")
 parser.add_argument("-e", "--height", help="Height of the video", default="768")
 parser.add_argument("-p", "--prefix", help="Dir where the files the I/O files are placed", default="/tmp/")
 parser.add_argument("-N", "--decompositions", help="Number of input decompositions", default=N, type=int)
 parser.add_argument("-T", "--iterations", help="Number of temporal iterations", default=iters, type=int)
+parser.add_argument("-O", "--originals", help="Original images", default=originals)
 
 args = parser.parse_args()
 
+def run(command):
+    if __debug__:
+        print(command)
+    return os.popen(command).read()
+
 # 1. Create the black original sequence.
-os.system("rm -rf /tmp/zero/")
-os.system("mkdir /tmp/zero/")
+run("rm -rf /tmp/zero/")
+run("mkdir /tmp/zero/")
 if __debug__:
     print("Number of decompositions = {}".format(args.decompositions))
     print("Number of iterations = {}".format(args.iterations))
 for i in range(args.decompositions):
     ii = "{:03d}".format(i)
-    command = "bash ./create_black_image.sh -o /tmp/zero/" + str(ii) + ".png" + \
-              " -w " + str(args.width) + " -h " + str(args.height)
-    if __debug__:
-        print(command)
-    os.system(command)
-command = "python3 -O ../src/MDWT.py" + " -p /tmp/zero/" + " -N " + \
-  str(args.decompositions)
-if __debug__:
-    print(command)
-os.system(command)
-command = "python3 -O ../src/MCDWT.py" + " -p /tmp/zero/" + " -N " + \
-      str(args.decompositions) + " -T " + str(args.iterations)
-if __debug__:
-    print(command)
-os.system(command)
-os.system("rm /tmp/zero/???.png")
+    run("bash ./create_black_image.sh -o /tmp/zero/" + str(ii) + ".png" + \
+        " -w " + str(args.width) + " -h " + str(args.height))
+run("python3 -O ../src/MDWT.py" + " -p /tmp/zero/" + " -N " + str(args.decompositions))
+run("python3 -O ../src/MCDWT.py" + " -p /tmp/zero/" + " -N " + str(args.decompositions) + " -T " + str(args.iterations))
+run("rm /tmp/zero/???.png") # Delete the images (keep the subbands)
 
 # 2. Create the video structure.
-command = "python3 -O ../src/MDWT.py" + " -p " + args.prefix + " -N " + str(args.decompositions)
-if __debug__:
-    print(command)
-os.system(command)
-command = "python3 -O ../src/MCDWT.py" + " -p " + args.prefix + " -N " + \
-          str(args.decompositions) + " -T " + str(args.iterations)
-if __debug__:
-    print(command)
-os.system(command)
+run("cp " + args.originals + "*.png /tmp/")
+run("python3 -O ../src/MDWT.py" + " -p " + args.prefix + " -N " + str(args.decompositions))
+run("python3 -O ../src/MCDWT.py" + " -p " + args.prefix + " -N " + str(args.decompositions) + " -T " + str(args.iterations))
+
+data = {}
 
 # 3. For each subband in v:
 for s in os.listdir("/tmp/zero/"):
     for q_step in [(1 << i) for i in range(10)]:
         print(s, q_step)
         # 3.1.1. Copy s to z.
-        os.system("cp /tmp/" + s + " /tmp/zero/")
+        run("cp /tmp/" + s + " /tmp/zero/")
         # 3.1.2. Quantize s using q.
-        os.system("python3 quantize.py -i /tmp/zero/" + s + " -o " + "/tmp/zero/" + s + " -q " + str(q_step))
+        run("python3 quantize.py -i /tmp/zero/" + s + " -o " + "/tmp/zero/" + s + " -q " + str(q_step))
         # 3.1.3. Reconstruct the video v'.
-        command = "python3 -O ../src/MCDWT.py" + " -p " + args.prefix + " -N " + \
-                  str(args.decompositions) + " -T " + str(args.iterations) + " -b"
-        if __debug__:
-            print(command)
-        os.system(command)
-        command = "python3 -O ../src/MDWT.py" + " -p " + args.prefix + " -N " + str(args.decompositions) + " -b"
-        if __debug__:
-            print(command)
-        os.system(command)
-        # 3.1.4. Compute the distortion between v and v'.
-        command = "python3 -O ./MSE.py" + " -x " + args.prefix + " -N " + str(args.decompositions) + " -b"
+        run("python3 -O ../src/MCDWT.py" + " -p " + args.prefix + " -N " + str(args.decompositions) + " -T " + str(args.iterations) + " -b")
+        run("python3 -O ../src/MDWT.py" + " -p " + args.prefix + " -N " + str(args.decompositions) + " -b")
         
+        # 3.1.4. Compute the distortion between v and v'.
+        for i in range(args.decompositions):
+            ii = "{:03d}".format(i)
+            original_image = args.originals + ii + ".png"
+            reconstructed_image = args.prefix + ii + ".png"
+            MSE = run("python3 -O ./MSE.py" + " -x " + original_image + " -y " + reconstructed_image)
+            
+            print(MSE)
         
         
 input()
