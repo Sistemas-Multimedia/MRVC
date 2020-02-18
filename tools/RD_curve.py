@@ -10,14 +10,15 @@
 # 3.1. For each quantization step q in {1, 2, ..., infinite}:
 # 3.1.1. Copy s to z.
 # 3.1.2. Quantize s using q.
-# 3.1.3. Reconstruct the video v'.
-# 3.1.4. Compute the distortion between v and v'.
+# 3.1.3. Compute the length of s.
+# 3.1.4. Reconstruct the video v'.
+# 3.1.5. Compute the distortion between v and v'.
 #
 # Note: the last quantization step should be "infinite" in order to
 # restore the original zero subband in z for the next iteration of
 # loop of Step 3.
 
-import glob
+import pandas as pd
 import sys
 sys.path.insert(0, "..")
 import os
@@ -90,30 +91,74 @@ run("cp " + args.originals + "*.png /tmp/")
 run("python3 -O ../src/MDWT.py" + " -p " + args.prefix + " -N " + str(args.decompositions))
 run("python3 -O ../src/MCDWT.py" + " -p " + args.prefix + " -N " + str(args.decompositions) + " -T " + str(args.iterations))
 
-data = {}
+def save_RD(RD):
+    print("#", end=' ')
+    for subband in RD:
+        print(subband, end='\t')
+    print()
+    print("subbands", RD.keys())
+    print("points", RD.values())
+    print("number of points for the first subband", len(list(RD.values())[0]))
+    for p in range(len(list(RD.values()))):
+        for s in range(len(list(RD.keys()))):
+            print(RD[list(RD.keys())[s]][p])
+        print('\t')
+    #    for i in range(len(list(RD.values())[s])):
+    #        for j in list(RD.values())[0]:
+    #            print(j, sep='\t')
+        #print(list(RD.values())[s])
+    #    print()
+#        for item in list(RD.keys())[i]:
+#            print(item)
+            #print("{}\t{}\t{}".format(item[0], item[1], item[2]), sep='\t', end='\t')
+#    subband = RD.keys()[0]
+#    for item in RD[subband]:
+#        while subband != None:
+#            print("{}\t{}\t{}".format(item[0], item[1], item[2]), sep='\t', end='\t')
+
+RD = {}
 
 # 3. For each subband in v:
-for s in os.listdir("/tmp/zero/"):
-    for q_step in [(1 << i) for i in range(10)]:
-        print(s, q_step)
-        # 3.1.1. Copy s to z.
+subbands = os.listdir("/tmp/zero/")
+for s in subbands:
+    RD[s] = []
+    for q_step in [(1 << i) for i in [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,30]]:
+
+        if __debug__:
+            print(s, "in", subbands, q_step, "i", [(1 << i) for i in range(10)])
+        
+        # 3.1.1. Copy the subband s to the zero MCDWT sequence z.
         run("cp /tmp/" + s + " /tmp/zero/")
-        # 3.1.2. Quantize s using q.
+        
+        # 3.1.2. Quantize the subband s using q_step.
         run("python3 quantize.py -i /tmp/zero/" + s + " -o " + "/tmp/zero/" + s + " -q " + str(q_step))
-        # 3.1.3. Reconstruct the video v'.
+
+        # 3.1.3. Compute the length of the subband s.
+        R = os.path.getsize("/tmp/zero/" + s)
+        
+        # 3.1.4. Reconstruct the video v'.
         run("python3 -O ../src/MCDWT.py" + " -p " + args.prefix + " -N " + str(args.decompositions) + " -T " + str(args.iterations) + " -b")
         run("python3 -O ../src/MDWT.py" + " -p " + args.prefix + " -N " + str(args.decompositions) + " -b")
         
-        # 3.1.4. Compute the distortion between v and v'.
+        # 3.1.5. Compute the distortion between v and v'.
+        D = 0.0
         for i in range(args.decompositions):
             ii = "{:03d}".format(i)
             original_image = args.originals + ii + ".png"
             reconstructed_image = args.prefix + ii + ".png"
-            MSE = run("python3 -O ./MSE.py" + " -x " + original_image + " -y " + reconstructed_image)
-            
-            print(MSE)
-        
-        
+            MSE = float(run("python3 -O ./MSE.py" + " -x " + original_image + " -y " + reconstructed_image))
+            D += MSE
+            if __debug__:
+                print(MSE)
+        D /= args.decompositions
+        RD[s].append((q_step, D,R))
+        if __debug__:
+            for i in RD:
+                print(i, RD[i])
+
+df = pd.DataFrame.from_dict(RD)
+print(df)
+df.to_csv("RD.csv")
 input()
 
 dwt = DWT()
