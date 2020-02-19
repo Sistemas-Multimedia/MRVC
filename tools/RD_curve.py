@@ -2,21 +2,37 @@
 
 # Generates the RD points of MCDWT.
 #
-# Algorithm:
+# Algorithm 1:
 #
 # 1. Create a zero structure z with MCDWT.
-# 2. Create a real video structure v with MCDWT.
+# 2. Create a video structure v with MCDWT.
 # 3. For each subband s in v:
-# 3.1. For each quantization step q in {1, 2, ..., infinite}:
+# 3.1. For each quantization step q in {2^0, 2^1, ..., 2^16}:
 # 3.1.1. Copy s to z.
-# 3.1.2. Quantize s using q.
-# 3.1.3. Compute the length of s.
-# 3.1.4. Reconstruct the video v'.
-# 3.1.5. Compute the distortion between v and v'.
+# 3.1.2. Quantize s (in z) using q.
+# 3.1.3. Compute the length of quantized subband s.
+# 3.1.4. Reconstruct the video from z.
+# 3.1.5. Compute the distortion between the original video and the reconstruction.
+# 3.1.6. Quantize by infinite all subbands of z.
 #
 # Note: the last quantization step should be "infinite" in order to
 # restore the original zero subband in z for the next iteration of
 # loop of Step 3.
+#
+# Algorithm 2:
+#
+# 1. Create a video structure v with MCDWT.
+# 2. Do a copy of v as w.
+# 3. For each subband s in v:
+# 3.1. For each quantization step q in {2^16, 2^15, ..., 2^0}:
+# 3.1.1. Copy v to w.
+# 3.1.2. Quantize s (in w) using q.
+# 3.1.3. Compute the length of the quantized subband s.
+# 3.1.4. Reconstruct the video from w.
+# 3.1.5. Compute the distortion between the original video and the reconstruction.
+#
+# Note: the last quantization step should be "1" in order to restore
+# the original subband in w' for the next iteration of the Step 3.
 
 import pandas as pd
 import sys
@@ -87,7 +103,7 @@ run("python3 -O ../src/MCDWT.py" + " -p /tmp/zero/" + " -N " + str(args.decompos
 run("rm /tmp/zero/???.png") # Delete the images (keep the subbands)
 
 # 2. Create the video structure.
-run("cp " + args.originals + "*.png /tmp/")
+run("cp " + args.originals + "*.png " + args.prefix)
 run("python3 -O ../src/MDWT.py" + " -p " + args.prefix + " -N " + str(args.decompositions))
 run("python3 -O ../src/MCDWT.py" + " -p " + args.prefix + " -N " + str(args.decompositions) + " -T " + str(args.iterations))
 
@@ -118,25 +134,88 @@ def save_RD(RD):
 
 RD = {}
 
-# 3. For each subband in v:
+# 3. For each subband in z (that is the same that in v):
 subbands = os.listdir("/tmp/zero/")
 for s in subbands:
     RD[s] = []
-    for q_step in [(1 << i) for i in [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,30]]:
+    rates = (0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16)
+    for q_step in [(1 << i) for i in rates]:
 
         if __debug__:
-            print(s, "in", subbands, q_step, "i", [(1 << i) for i in range(10)])
+            print(s, "in", subbands, q_step, "i", [(1 << i) for i in rates])
         
         # 3.1.1. Copy the subband s to the zero MCDWT sequence z.
-        run("cp /tmp/" + s + " /tmp/zero/")
+        run("cp " + args.prefix + s + " /tmp/zero/")
         
         # 3.1.2. Quantize the subband s using q_step.
         run("python3 quantize.py -i /tmp/zero/" + s + " -o " + "/tmp/zero/" + s + " -q " + str(q_step))
 
-        # 3.1.3. Compute the length of the subband s.
+        # 3.1.3. Compute the length of the subband quantized subband s.
         R = os.path.getsize("/tmp/zero/" + s)
         
-        # 3.1.4. Reconstruct the video v'.
+        # 3.1.4. Reconstruct the video from z.
+        run("python3 -O ../src/MCDWT.py -b -p /tmp/zero/ -N " + str(args.decompositions) + " -T " + str(args.iterations))
+        run("python3 -O ../src/MDWT.py -b -p /tmp/zero/ -N " + str(args.decompositions))
+        
+        # 3.1.5. Compute the distortion between the original video and the reconstruction.
+        D = 0.0
+        for i in range(args.decompositions):
+            ii = "{:03d}".format(i)
+            original_image = args.originals + ii + ".png"
+            reconstructed_image = "/tmp/zero/" + ii + ".png"
+            MSE = float(run("python3 -O ./MSE.py" + " -x " + original_image + " -y " + reconstructed_image))
+            D += MSE
+            if __debug__:
+                print(MSE)
+        run("rm /tmp/zero/???.png") # Delete the images (keep the subbands)
+
+        D /= args.decompositions
+        RD[s].append((q_step, D,R))
+        if __debug__:
+            for i in RD:
+                print(i, RD[i])
+
+        # 3.1.6. Set to zero all z subbands.
+        for ss in os.listdir("/tmp/zero/"):
+            run("python3 quantize.py -i /tmp/zero/" + ss + " -o " + "/tmp/zero/" + ss + " -q " + str(1<<30))
+
+df = pd.DataFrame.from_dict(RD)
+print(df)
+df.to_csv("RD_zero.csv")
+
+input()
+
+# 1. Create the video structure.
+run("mkdir " + args.prefix + "/original")
+run("cp " + args.originals + "*.png " + args.prefix + "original")
+run("python3 -O ../src/MDWT.py" + " -p " + args.prefix + "original -N " + str(args.decompositions))
+run("python3 -O ../src/MCDWT.py" + " -p " + args.prefix + "original -N " + str(args.decompositions) + " -T " + str(args.iterations))
+
+# 2. Do a copy (w) of the original video.
+run("cp -r " + args.prefix + "/original " + args.prefix)
+
+RD = {}
+
+# 3. For each subband in v:
+subbands = os.listdir("/tmp/original/")
+for s in subbands:
+    RD[s] = []
+    log2_rates = (16,15,14,13,12,11,10,9,8,7,6,5,4,3,2,1,0)
+    for q_step in [(1 << i) for i in log2_rates]:
+
+        if __debug__:
+            print(s, "in", subbands, q_step, "i", [(1 << i) for i in log2_rates])
+        
+        # 3.1.1. Restore the working copy.
+        run("cp /tmp/original/*" + s + " /tmp/")
+        
+        # 3.1.2. Quantize the subband s in w using q_step.
+        run("python3 quantize.py -i /tmp/" + s + " -o " + "/tmp/" + s + " -q " + str(q_step))
+
+        # 3.1.3. Compute the length of the quantized subband s.
+        R = os.path.getsize("/tmp/" + s)
+        
+        # 3.1.4. Reconstruct the video from w.
         run("python3 -O ../src/MCDWT.py" + " -p " + args.prefix + " -N " + str(args.decompositions) + " -T " + str(args.iterations) + " -b")
         run("python3 -O ../src/MDWT.py" + " -p " + args.prefix + " -N " + str(args.decompositions) + " -b")
         
@@ -158,7 +237,8 @@ for s in subbands:
 
 df = pd.DataFrame.from_dict(RD)
 print(df)
-df.to_csv("RD.csv")
+df.to_csv("RD_originals.csv")
+
 input()
 
 dwt = DWT()
