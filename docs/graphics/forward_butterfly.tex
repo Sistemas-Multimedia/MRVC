@@ -49,26 +49,26 @@
   node [draw, thick, rectangle, right of=bHa, node distance=3.5cm] (12a) {$1/2$}
   node [draw, thick, rectangle, left of=bHc, node distance=3.5cm] (12b) {$1/2$}
   node [block, below of=suma] (bHp) {$[\tilde{b}.H]$}
-  node [node distance=3.5cm, below of=bHp] (bHp2) {\DWT{0}{\tilde{b}.H}}
+  node [node distance=3.5cm, below of=bHp] (bHp2) {\DWT{b.L}{\tilde{b}.H}}
   %node [node distance=3.5cm, below of=bHp2] (out) {\DWT{b.L}{\tilde{b}.H}}
   node [below of=bHp2, node distance=1.2cm] (tildeb) {$\tilde{b}$}
   ;
   
-  \draw [->] ($(DWTa) + (-1cm,0.5cm)$) -- node[below] {iDWT} (aL);
-  \draw [->] ($(DWTb) + (-1cm,0.5cm)$) -- node[below] {iDWT} (bL);
-  \draw [->] ($(DWTc) + (-1cm,0.5cm)$) -- node[below] {iDWT} (cL);
+  \draw [->] ($(DWTa) + (-1cm,0.5cm)$) -- node[above] {iDWT} (aL);
+  \draw [->] ($(DWTb) + (-1cm,0.5cm)$) -- node[above] {iDWT} (bL);
+  \draw [->] ($(DWTc) + (-1cm,0.5cm)$) -- node[above] {iDWT} (cL);
   \draw [->] ($(DWTa) + (0.5cm,-1cm)$) -- node[left] {iDWT} (aH);
-  \draw [->] ($(DWTb) + (0.5cm,-1cm)$) -- node {iDWT} (bH);
-  \draw [->] ($(DWTc) + (0.5cm,-1cm)$) -- node {iDWT} (cH);
-  \draw [->] (aH) -- node {$[a.L]\rightarrow [b.L]$} (bHa);
+  \draw [->] ($(DWTb) + (0.5cm,-1cm)$) -- node[left] {iDWT} (bH);
+  \draw [->] ($(DWTc) + (0.5cm,-1cm)$) -- node[left] {iDWT} (cH);
+  \draw [->] (aH) -- node[left] {$[a.L]\rightarrow [b.L]$} (bHa);
   \draw [->] (bH) -- (suma);
-  \draw [->] (cH) -- node {$[c.L]\rightarrow [b.L]$} (bHc);
+  \draw [->] (cH) -- node[left] {$[c.L]\rightarrow [b.L]$} (bHc);
   \draw [->] (bHa) -- (12a);
   \draw [->] (bHc) -- (12b);
   \draw [->] (12a) -- node[pos=0.95] {$-$} (suma);
   \draw [->] (12b) -- node[pos=0.95] {$-$} (suma);
   \draw [->] (suma) -- (bHp);
-  \draw [->] (bHp) -- node {DWT} ($(bHp2) + (0,1cm)$);
+  \draw [->] (bHp) -- node[left] {DWT} ($(bHp2) + (0.5,1cm)$);
   %\draw [->] ($(bHp2) + (0.5cm,-0.8cm)$) -- ($(out) + (0.5cm,0.9cm)$);
   %\path [line,->] ($(DWTb.north) + (-0.5cm,-0.3cm)$) -| ($(DWTb.north) + (-0.5cm,0.5cm)$) -| ($(DWTb.north) + (-5cm,0.5cm)$) -- ($(DWTb.north) + (-5cm,-5cm)$) -- ($(DWTb.north) + (-2cm,-5cm)$) -- ($(DWTb.north) + (-2cm,-18.1cm)$) -- ($(DWTb.north) + (-0.85cm,-18.1cm)$);
   

@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 # Note: swap the above line with the following two ones to switch
 # between the standard and the optimized mode.
@@ -6,12 +6,22 @@
 #!/bin/sh
 ''''exec python3 -O -- "$0" ${1+"$@"} # '''
 
-import numpy as np
+import os
 import sys
+try:
+    import numpy as np
+except:
+    os.system("pip3 install numpy --user")
+try:
+    import pywt
+except:
+    os.system("pip3 install pywavelets --user")
 
 from DWT import DWT
 sys.path.insert(0, "..")
 from src.IO import decomposition
+from MC.optical.motion import motion_estimation
+from MC.optical.motion import estimate_frame
 
 class MCDWT:
 
@@ -37,13 +47,25 @@ class MCDWT:
 
         '''
 
-        AL = self.dwt.backward((aL, self.zero_H))
-        BL = self.dwt.backward((bL, self.zero_H))
-        CL = self.dwt.backward((cL, self.zero_H))
+        #AL = self.dwt.backward((aL, self.zero_H))
+        #BL = self.dwt.backward((bL, self.zero_H))
+        #CL = self.dwt.backward((cL, self.zero_H))
         AH = self.dwt.backward((self.zero_L, aH))
         BH = self.dwt.backward((self.zero_L, bH))
         CH = self.dwt.backward((self.zero_L, cH))
-        prediction_BH  = predictor.generate_prediction(AL, BL, CL, AH, CH)
+        #prediction_BH  = predictor.generate_prediction(AL, BL, CL, AH, CH)
+        #prediction_BH = predictor.generate_prediction(aL, bL, cL, aH, cH)
+        flow_aL_bL = motion_estimation(aL, bL)
+        flow_cL_bL = motion_estimation(cL, bL)
+        c1 = pywt.idwt2((flow_aL_bL[:,:,0], (None, None, None)), wavelet='haar', mode='per')
+        c2 = pywt.idwt2((flow_aL_bL[:,:,0], (None, None, None)), wavelet='haar', mode='per')
+        Flow_aL_bL = np.stack((c1, c2), axis=-1)
+        c1 = pywt.idwt2((flow_cL_bL[:,:,0], (None, None, None)), wavelet='haar', mode='per')
+        c2 = pywt.idwt2((flow_cL_bL[:,:,0], (None, None, None)), wavelet='haar', mode='per')
+        Flow_cL_bL = np.stack((c1, c2), axis=-1)
+        BAH = estimate_frame(AH, Flow_aL_bL)
+        BCH = estimate_frame(CH, Flow_cL_bL)
+        prediction_BH = (BAH + BCH) / 2
         residue_BH = BH - prediction_BH
         residue_bH = self.dwt.forward(residue_BH)
         return residue_bH[1]
@@ -65,18 +87,31 @@ class MCDWT:
 
         '''
 
-        AL = self.dwt.backward((aL, self.zero_H))
-        BL = self.dwt.backward((bL, self.zero_H))
-        CL = self.dwt.backward((cL, self.zero_H))
+        #AL = self.dwt.backward((aL, self.zero_H))
+        #BL = self.dwt.backward((bL, self.zero_H))
+        #CL = self.dwt.backward((cL, self.zero_H))
         AH = self.dwt.backward((self.zero_L, aH))
         residue_BH = self.dwt.backward((self.zero_L, residue_bH))
         CH = self.dwt.backward((self.zero_L, cH))
-        prediction_BH  = predictor.generate_prediction(AL, BL, CL, AH, CH)
+        #prediction_BH  = predictor.generate_prediction(AL, BL, CL, AH, CH)
+        
+        #prediction_BH = predictor.generate_rediction(aL, bL, cL, aH, cH)
+        flow_aL_bL = motion_estimation(aL, bL)
+        flow_cL_bL = motion_estimation(cL, bL)
+        c1 = pywt.idwt2((flow_aL_bL[:,:,0], (None, None, None)), wavelet='haar', mode='per')
+        c2 = pywt.idwt2((flow_aL_bL[:,:,0], (None, None, None)), wavelet='haar', mode='per')
+        Flow_aL_bL = np.stack((c1, c2), axis=-1)
+        c1 = pywt.idwt2((flow_cL_bL[:,:,0], (None, None, None)), wavelet='haar', mode='per')
+        c2 = pywt.idwt2((flow_cL_bL[:,:,0], (None, None, None)), wavelet='haar', mode='per')
+        Flow_cL_bL = np.stack((c1, c2), axis=-1)
+        BAH = estimate_frame(AH, Flow_aL_bL)
+        BCH = estimate_frame(CH, Flow_cL_bL)
+        prediction_BH = (BAH + BCH) / 2
         BH = residue_BH + prediction_BH
         bH = self.dwt.forward(BH)
         return bH[1]
 
-    def forward(self, prefix = "/tmp/", N=5, I=2):
+    def forward(self, prefix = "/tmp/", N=5, T=2):
         '''Forward MCDWT.
 
         Compute the MC 1D-DWT. The input video (as a sequence of
@@ -96,12 +131,12 @@ class MCDWT:
 
                 Number of decompositions to process.
 
-             I : int
+             T : int
 
                 Number of iterations of the MCDWT (temporal scales).
                 Controls the GOP size.
 
-                  I | GOP_size
+                  T | GOP_size
                 ----+----------
                   0 |        1
                   1 |        2
@@ -118,19 +153,23 @@ class MCDWT:
 
         '''
         x = 2
-        for t in range(I): # Temporal scale
+        for t in range(T): # Temporal scale
+            #print("a={}".format(0), end=' ')
             i = 0
             aL, aH = decomposition.read(prefix, "{:03d}".format(0))
             while i < (N//x):
+                #print("b={} c={}".format(x*i+x//2, x*i+x))
                 bL, bH = decomposition.read(prefix, "{:03d}".format(x*i+x//2))
                 cL, cH = decomposition.read(prefix, "{:03d}".format(x*i+x))
                 residue_bH = self.__forward_butterfly(aL, aH, bL, bH, cL, cH)
                 decomposition.writeH(residue_bH, prefix, "{:03d}".format(x*i+x//2))
                 aL, aH = cL, cH
+                #print("a={}".format(x*i+x), end=' ')
                 i += 1
             x *= 2
+            #print('\n')
 
-    def backward(self, prefix = "/tmp/", N=5, I=2):
+    def backward(self, prefix = "/tmp/", N=5, T=2):
         '''Backward MCDWT.
 
         Compute the inverse MC 1D-DWT. The input sequence of
@@ -150,7 +189,7 @@ class MCDWT:
 
                 Number of decompositions to process.
 
-             I : int
+             T : int
 
                 Number of iterations of the MCDWT (temporal scales).
 
@@ -160,8 +199,8 @@ class MCDWT:
             The sequence of 1-iteration decompositions.
 
         '''
-        x = 2**I
-        for t in range(I): # Temporal scale
+        x = 2**T
+        for t in range(T): # Temporal scale
             i = 0
             aL, aH = decomposition.read(prefix, "{:03d}".format(0))
             while i < (N//x):
@@ -194,7 +233,7 @@ if __name__ == "__main__":
     parser.add_argument("-b", "--backward", action='store_true', help="Performs backward transform")
     parser.add_argument("-p", "--prefix", help="Dir where the files the I/O files are placed", default="/tmp/")
     parser.add_argument("-N", "--decompositions", help="Number of input decompositions", default=5, type=int)
-    parser.add_argument("-I", "--iterations", help="Number of temporal iterations", default=2, type=int)
+    parser.add_argument("-T", "--iterations", help="Number of temporal iterations", default=2, type=int)
     parser.add_argument("-P", "--predictor", help="Predictor to use (0=none, 1=MC average, 2=MC weighted average, 3=left, 4=right, 5=MC left, 6=MC right, 7=offset)", default=1, type=int)
 
     args = parser.parse_args()
