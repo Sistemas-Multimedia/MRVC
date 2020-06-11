@@ -33,6 +33,9 @@
 #
 # Note: the last quantization step should be "1" in order to restore
 # the original subband in w' for the next iteration of the Step 3.
+#
+# Y the progression determined by both algorithms is the same, MCDWT
+# is biorthogonal.
 
 import pandas as pd
 import sys
