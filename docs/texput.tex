@@ -15,7 +15,7 @@ compress an input sequence of
 \href{https://en.wikipedia.org/wiki/Digital_image}{images}\footnote{Which
   from a pure mathematical point of view are matrices of
   \href{https://en.wikipedia.org/wiki/Pixel}{pixels}.}, basically, in
-two stages: (1) a transform stage in the
+two stages: (1) a transform in the
 \href{https://en.wikipedia.org/wiki/Time_domain}{time} and in the
 \href{https://www.quora.com/What-is-spatial-domain-in-image-processing}{spatial}
 domains that produces a collection of
@@ -23,7 +23,7 @@ domains that produces a collection of
 \href{https://en.wikipedia.org/wiki/Discrete_wavelet_transform}{coefficients},
 and (2) an
 \href{https://en.wikipedia.org/wiki/Entropy_encoding}{entropy
-  encoding} phase which removes the statistical redundancy that can
+  encoding} stage which removes the statistical redundancy that can
 still remains after the decorrelation (transform). These coefficients
 have two interesting features:
 \begin{enumerate}
@@ -37,7 +37,7 @@ have two interesting features:
       representation} (in space and time)} of the visual
   information. This provides the posibility of decoding the sequence
   of images using a smaller resolution (in space and time). This
-  feature is known as \mylink{video_compression}{spatial/temporal
+  feature is known as \mylink{video_compression}{spatio-temporal
     scalability in video}.
 \item Usually, \textbf{most of the
   \href{https://en.wikipedia.org/wiki/Energy_(signal_processing)}{energy}}
@@ -117,7 +117,7 @@ Y/4 |  L2  |
     +------+
        X/4
 \end{verbatim}
-\item Subband $s_1.L^1=s_1.L=\text{iDWT}(s_1.L^2, S_1.H^2)$
+\item Subband $s_1.L^1\coloneqq s_1.L=\text{iDWT}(s_1.L^2, S_1.H^2)$
   ($\text{iDWT}$) with the scale $1$.
 \begin{verbatim}
     +-------------+
