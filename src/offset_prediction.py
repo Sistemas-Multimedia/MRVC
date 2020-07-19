@@ -1,4 +1,4 @@
-# Designed for testing purposes, The result from MCDWT should the the
+# Designed for testing purposes, The result from MCOLP should the the
 # same that MDWT.
 
 import numpy as np

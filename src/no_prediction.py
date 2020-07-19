@@ -1,5 +1,5 @@
-# Designed for testing purposes, The result from MCDWT should the the
-# same that MDWT, because H-MCTF would substract zeros.
+# Designed for testing purposes, The result from MCOLP should the the
+# same that MDWT, because MCOLP would substract zeros.
 
 import numpy as np
 
