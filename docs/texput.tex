@@ -1,5 +1,5 @@
 % Emacs, this is -*-latex-*-
-\title{\href{https://github.com/Sistemas-Multimedia/MCOLP}{Motion Compensated Orthogonal Laplacian Pyramid (MCOLP)}}
+\title{\href{https://github.com/Sistemas-Multimedia/PRMC}{Progressive Resolution Motion Compensation (PRMC)}}
 \author{Vicente González Ruiz}
 %\makeglossaries
 \maketitle
@@ -24,8 +24,8 @@ domains that produces a collection of
 and (2) an
 \href{https://en.wikipedia.org/wiki/Entropy_encoding}{entropy
   encoding} stage which removes the statistical redundancy that can
-still remains after the decorrelation (transform). These coefficients
-have two interesting features:
+still remains after the decorrelation (transform). Usually, these
+coefficients have two interesting features:
 \begin{enumerate}
 \item Usually, a \textbf{
   \href{https://vicente-gonzalez-ruiz.github.io/symbol_compression/}{smaller
@@ -40,9 +40,9 @@ have two interesting features:
   feature is known as \mylink{video_compression}{spatio-temporal
     scalability in video}.
 \item Usually, \textbf{most of the
-  \href{https://en.wikipedia.org/wiki/Energy_(signal_processing)}{energy}}
-  (and therefore, generally, most of the information interesting for
-  the humans) \textbf{is represented by
+  \href{https://en.wikipedia.org/wiki/Energy_(signal_processing)}{signal
+    energy}} (and therefore, generally, most of the information
+  interesting for the humans) \textbf{is represented by
     \href{https://vicente-gonzalez-ruiz.github.io/image_transformations_for_coding}{a
       small number of coefficients}}. This helps to improve the
   compression ratio and to prioritize the data in
@@ -69,16 +69,16 @@ equivalence between DWT subbands and
   representation and viceversa}.
 
 \subsection{Implementation of the 3 components (color) DWT step}
-\href{https://github.com/Sistemas-Multimedia/MCOLP/blob/master/src/DWT.py}{DWT.py}
-(see Fig.~\ref{fig:DWT}) implements the forward (DWT) and backward
-1-iteration (step) 2D DWT (iDWT) for color images.
+\href{https://github.com/Sistemas-Multimedia/PRMC/blob/master/src/DWT.py}{DWT.py}
+(see Listing.~\ref{fig:DWT}) implements the forward (DWT) and backward
+(iDWT) 1-iteration (step) 2D DWT for color images.
 
 \begin{figure}
-  \lstinputlisting[firstline=20, lastline=85, language=python, caption=1-iteration DWT
-    (\href{https://github.com/Sistemas-Multimedia/MCOLP/blob/master/src/DWT.py}{DWT.py}).]{../src/DWT.py}
-  \lstinputlisting[firstline=87, lastline=108, language=python,
+  \lstinputlisting[firstline=25, lastline=94, language=python, caption=1-iteration DWT
+    (\href{https://github.com/Sistemas-Multimedia/PRMC/blob/master/src/DWT.py}{DWT.py}).]{../src/DWT.py}
+  \lstinputlisting[firstline=96, lastline=118, language=python,
     caption=1-iteration iDWT
-    (\href{https://github.com/Sistemas-Multimedia/MCOLP/blob/master/src/DWT.py}{DWT.py}).]{../src/DWT.py}
+    (\href{https://github.com/Sistemas-Multimedia/PRMC/blob/master/src/DWT.py}{DWT.py}).]{../src/DWT.py}
   \caption{Implementation of the color DWT step (forward and
     backward). $L$ and $H$ stands for \emph{low-pass filtering} and
     \emph{high-pass filtering}, respectively.  More information about the
@@ -96,41 +96,42 @@ A dyadic DWT is a recursive use of the
   resolution levels.}) DWT applied to the $LL$ subband. For example,
 if the DWT is applied $k$-times to the $LL$ subband, recursively, a
 decomposition of spatial resolution $(k+1)$ levels (SRLs) is generated. For
-the sake of simplicity, we will denote the subbands $\{LH^k, HL^k,
-HH^k\}$ as only $H^k$, and $LL^k$ as only $L^k$. See
-\href{https://nbviewer.jupyter.org/github/Sistemas-Multimedia/MCOLP/blob/master/docs/DWT_vs_LPT.ipynb}{DWT
+the sake of simplicity, we will denote the subbands $\{LH_k, HL_k,
+HH_k\}$ as only $H_k$, and $LL_k$ as only $L_k$. See
+\href{https://nbviewer.jupyter.org/github/Sistemas-Multimedia/PRMC/blob/master/docs/DWT_vs_LPT.ipynb}{DWT
   versus LPT}.
 
 \subsection{Scalability provided by the 2D DWT}
 Depending on the number of subband levels (pyramid levels in the
 \mylink{pyramids-and-wavelets}{pyramid representation}), we can
-reconstruct an image at different spatial scales (resolutions). For
-example, if an image $s_1$ has been transformed using the DWT of 2
-iterations, we get:
+reconstruct a frame\footnote{``Frame'' is the name that most video
+  coding standards use for reffering to a single image of the video.}
+at different spatial scales (resolutions). For example, if a frame
+$F_1$ has been transformed using the DWT of 2 iterations, we get:
 \begin{itemize}
-\item Subband $s_1.L^2$ with the scale 2.
+\item Subband $F_1.L_2$ with the scale 2.
 \begin{verbatim}
     +------+
     |      |
-Y/4 |  L2  |
+Y/4 |  L_2 |
     |      |
     +------+
        X/4
 \end{verbatim}
-\item Subband $s_1.L^1\coloneqq s_1.L=\text{iDWT}(s_1.L^2, S_1.H^2)$
-  ($\text{iDWT}$) with the scale $1$.
+\item Subband $F_1.L_1\coloneqq F_1.L=\text{iDWT}(F_1.L_2, F_1.H_2)$
+  with the scale $1$.
 \begin{verbatim}
     +-------------+
     |             |
     |             |
-Y/2 |     L1      |
+Y/2 |     L_1     |
     |             | 
     |             |
     +-------------+
           X/2
 \end{verbatim}
   
-\item $s_1.L^0=\text{iDWT}(s_1.L, s_1.H)$ (the original image) with
+\item $F_1.L_0=\text{iDWT}(F_1.L, F_1.H)$ (the original image) with
   the scale $0$.
 \begin{verbatim}
     +---------------------------+
@@ -140,7 +141,7 @@ Y/2 |     L1      |
     |                           |
     |                           |
     |                           |
-  Y |            L0             |
+  Y |            L_0            |
     |                           | 
     |                           |
     |                           | 
@@ -166,10 +167,10 @@ cp ../sequences/stockholm/000.png /tmp
 python3 -O DWT.py -p /tmp/ -i 000
 
 # Visualize the subbands.
-display -normalize /tmp/LL000.png # <- LL1
-display -normalize /tmp/LH000.png # <- LH1
-display -normalize /tmp/HL000.png # <- HL1
-display -normalize /tmp/HH000.png # <- HH1
+display -normalize /tmp/LL000.png # <- LL_1
+display -normalize /tmp/LH000.png # <- LH_1
+display -normalize /tmp/HL000.png # <- HL_1
+display -normalize /tmp/HH000.png # <- HH_1
 
 # 1-iteration 2D iDWT.
 python3 -O DWT.py -b -p /tmp/ -i 000
@@ -199,14 +200,14 @@ python3 -O DWT.py -p /tmp/LL -i 000
 
 # Visualize the subbands.
 ls -l /tmp/*.png
-display -normalize /tmp/LL000.png # <- LL1  
-display -normalize /tmp/LH000.png # <- LH1  
-display -normalize /tmp/HL000.png # <- HL1  
-display -normalize /tmp/HH000.png # <- HH1  
-display -normalize /tmp/LLLL000.png # <- LL2
-display -normalize /tmp/LLLH000.png # <- LH2
-display -normalize /tmp/LLHL000.png # <- HL2
-display -normalize /tmp/LLHH000.png # <- HH2
+display -normalize /tmp/LL000.png # <- LL_1
+display -normalize /tmp/LH000.png # <- LH_1
+display -normalize /tmp/HL000.png # <- HL_1
+display -normalize /tmp/HH000.png # <- HH_1
+display -normalize /tmp/LLLL000.png # <- LL_2
+display -normalize /tmp/LLLH000.png # <- LH_2
+display -normalize /tmp/LLHL000.png # <- HL_2
+display -normalize /tmp/LLHH000.png # <- HH_2
 
 # Reverse second iteration.
 python3 -O DWT.py -b -p /tmp/LL -i 000
@@ -225,25 +226,25 @@ display /tmp/diffs.png
 %}}}
 
 \section{Motion DWT (MDWT)}
-The DWT can be applied to a sequence of images by simply transforming
-each image of the sequence independently. This is done, for example,
-in the \mylink{JPEG2000}{Motion JPEG2000 video compression
-  standard}. Notice that only the spatial redundancy is exploited in
-MDWT. All the temporal redundancy still remains in the video. The
-decomposition structure generated by MDWT is shown in the
+The 2D-DWT can be applied to a sequence of frames by simply
+transforming each frame of the sequence independently. This is done,
+for example, in the \mylink{JPEG2000}{Motion JPEG2000 video
+  compression standard}. Notice that only the spatial redundancy is
+exploited in MDWT (all the temporal redundancy still remains in the
+video). The decomposition structure generated by MDWT is shown in the
 Fig~\ref{fig:forward_MDWT}. 1-iteration MDWT inputs a sequence of
-images $\{s_i\}$ and outputs a sequence of decompositions $\{S_i\}$,
+frames $\{s_i\}$ and outputs a sequence of decompositions $\{S_i\}$,
 each one providing 2 SRLs ($\{s_i.L\}$ and $\{s_i.L^0\}=\{s_i\}$) of
-the image sequence.
+the frames sequence.
 
 \begin{figure}
   \centering \myfig{graphics/forward_MDWT}{8cm}{800}
   \lstinputlisting[firstline=21, lastline=42, language=python,
     caption=MDWT
-    (\href{https://github.com/Sistemas-Multimedia/MCOLP/blob/master/src/MDWT.py}{MDWT.py}).]{../src/MDWT.py}.
+    (\href{https://github.com/Sistemas-Multimedia/PRMC/blob/master/src/MDWT.py}{MDWT.py}).]{../src/MDWT.py}.
   \lstinputlisting[firstline=44, lastline=66, language=python,
     caption=iMDWT
-    (\href{https://github.com/Sistemas-Multimedia/MCOLP/blob/master/src/MDWT.py}{MDWT.py}).]{../src/MDWT.py}.
+    (\href{https://github.com/Sistemas-Multimedia/PRMC/blob/master/src/MDWT.py}{MDWT.py}).]{../src/MDWT.py}.
   \caption{Implementation of the MDWT.} %
   \label{fig:forward_MDWT}
 \end{figure}
@@ -254,7 +255,7 @@ in time. Spatial scalability is a direct consequence of the 2D DWT
 (the number of SRLs can be generated bycontrolled by the number of
 iterations of DWT). On the other hand, it is trivial to observe that
 MDWT provides \emph{fully} temporal scalability (we can access to the
-images randomly) because each image of the input sequence is
+frames randomly) because each frame of the input sequence is
 transformed independently.
 
 \subsection*{Example: 1-iteration MDWT}
@@ -318,20 +319,20 @@ animate /tmp/diff*.png
 %}}}
 
 \subsection*{Example: Interpolating with the 2D DWT}
-If we apply an inverse transform to the original images, supposing
+If we apply an inverse transform to the original frames, supposing
 that they are the low-frequency subbands of the input decomposition,
 and that the high-frequency subbands are zero, we can interpolate each
-image of the original sequence by a factor of $2$ in each direction.
+frame of the original sequence by a factor of $2$ in each direction.
 
 \begin{verbatim}
 # You must be in the 'src' directory.
 rm /tmp/*.png
 
-# Copy the current images as LL subbands.
+# Copy the current frames as LL subbands.
 rm /tmp/*.png
 for i in {0..4}; do
-  image_number=$(printf "%03d" $i)
-  cp ../sequences/stockholm/$image_number.png /tmp/LL$image_number.png
+  frame_number=$(printf "%03d" $i)
+  cp ../sequences/stockholm/$frame_number.png /tmp/LL$frame_number.png
 done
 
 # Apply the inverse DWT.
@@ -342,7 +343,7 @@ for i in /tmp/???.png; do python3 ../tools/substract_offset.py -i $i -o $i.png; 
 animate /tmp/???.png.png
 
 # Notice that the dynamic range of the sequence could be changed (the
-# images could appear brighter of darker). This is consequence of the
+# frames could appear brighter of darker). This is consequence of the
 # relative gain of the LL subband in respect of the rest of subbands.
 rm /tmp/*.norm
 for i in /tmp/???.png; do convert -normalize $i $i.norm; done
@@ -361,7 +362,7 @@ alternatives are available:
 \item A \textbf{2D+t transform} does just the opposite.
 \end{enumerate}
 Each choice has a number of \emph{pros} and \emph{cons}. For example,
-in a t+2D transform we can apply directly any image predictor based on
+in a t+2D transform we can apply directly any frame predictor based on
 \href{https://en.wikipedia.org/wiki/Motion_estimation}{motion
   estimation} because the input is a normal video. However, if we
 implement a 2D+t transform, the input to the motion estimator is a
@@ -370,10 +371,10 @@ sequence decompositions.
   majority of DWT's} are not
 \href{http://www.polyvalens.com/blog/wavelets/theory}{shift
   invariant}, which basically means that, exactly the same object
-placed in two different images in different positions will generate
+placed in two different frames in different positions will generate
 different wavelet coefficients, even if the displacement is an integer
 number of pixels and therefore, the pixels of the object in both
-images are identical.  Therefore, motion estimators which compare
+frames are identical.  Therefore, motion estimators which compare
 coefficient values will not work with accuracy on the decomposition
 domain. On the other hand, if we want to provide true spatial
 scalability (processing only those
@@ -382,13 +383,13 @@ scalability (processing only those
 video), a t+2D transformed video presents some drawbacks:
 
 \begin{enumerate}
-\item The perfect reconstruction of the original images only is
+\item The perfect reconstruction of the original frames only is
   possible of the t stage is identical at both, the
   \href{https://en.wikipedia.org/wiki/Encoder}{encoder} and the
   \href{https://en.wikipedia.org/wiki/Decoder}{decoder}. Therefore, if
   the encoder applies t at the full resolution (scale 0), the decoder
   must also apply t at full resolution, even if the resolution of the
-  reconstructed images were smaller. This could be unfeasible for
+  reconstructed frames were smaller. This could be unfeasible for
   receivers with low computational resourcers.
 \item Perfect reconstruction can be sacrified using a quantized
   version of the motion information, but the rate/distortion (R/D)
@@ -396,8 +397,8 @@ video), a t+2D transformed video presents some drawbacks:
   wasting motion information.
 \item This last problem (the waste of motion information) could be
   avoided if the motion data were encoded in a progressive
-  representation ( suitable for working in a different spatial
-  resolution of the images). Unfortunately, progressive
+  representation (suitable for working in a different spatial
+  resolution of the frames). Unfortunately, progressive
   representations usually need more data than non-progressive ones.
 \end{enumerate}
 
@@ -411,10 +412,9 @@ that can be decoded partially, depending on the avaliable bandwidth.
 
 %}}}
 
-% Subband Motion Compensated Temporal Filtering (SMCTF) 
-\section{Motion Compensated Discrete Wavelet Transform (MCOLP)}
+\section{Motion Compensated Orthogonal Laplacian Pyramid (MCOLP)}
 MCOLP is a 2D+t transform. The 2D stage is 1-iteration MDWT, and it is
-applied first. The t stage is a $T$-iterations 1D
+applied first. Basically, the t stage is a $T$-iterations 1D
 \href{https://en.wikipedia.org/wiki/Motion_compensation}{Motion
   Compensated (MC)} DWT, which removes the temporal redundancy between
 adjacent $H$ subbands. The number of iterations $T$ determines the
@@ -430,6 +430,12 @@ it or at least, predict it. This is possible because to estimate de
 motion at the encoder, only the information that it is accesible by
 the decoder is used.
 
+The predict step implemented by the MCOLP is performed in the
+Orthogonal Laplacian Pyramid domain, where the coefficients have not
+been subsampled as in the DWT domain. The advantage of using the OLP
+domain over the DWT domain is that the OLP representation is
+shift-invariant.
+
 \subsection{The butterfly}
 MCOLP butterly inputs three decompositions $a=\{a.L, a.H\}$, $b=\{b.L,
 b.H\}$ and $c=\{c.L, c.H\}$, and outputs a residue subband
@@ -437,14 +443,14 @@ $\tilde{b}.H$, which replaces to $b.H$ in the original $b$
 decomposition. Therefore, after the use of the bufferfly,
 we get $a$ (an
 \href{https://en.wikipedia.org/wiki/Video_compression_picture_types}{intra-coded
-  ``I'' image}), $\tilde{b}$ (a
+  ``I'' frame}), $\tilde{b}$ (a
 \href{https://en.wikipedia.org/wiki/Video_compression_picture_types}{bidirectionally
-  predicted ``B'' image}\footnote{$\tilde{b}$ can be considered a
-  B-type image. However, notice that only the high-frequency
+  predicted ``B'' frame}\footnote{$\tilde{b}$ can be considered a
+  B-type frame. However, notice that only the high-frequency
   information of $\tilde{b}$ has been compensated with the
-  high-freq. information of the neighbor images. In a normal B image,
+  high-freq. information of the neighbor frames. In a normal B frame,
   all the frequencies are compensated.}) and $c$ (another intra-coded
-``I'' image). This replacement is fully reversible because the forward
+``I'' frame). This replacement is fully reversible because the forward
 transform uses only the information that the inverse transform will
 have access to. Notice that the
 \href{http://www.vtvt.ece.vt.edu/research/references/video/DCT_Video_Compression/Zhang92a.pdf}{pyramid
@@ -455,13 +461,13 @@ used to estimate and compensate the $H$ subbands.
   \centering \myfig{graphics/forward_butterfly}{12cm}{1200}
   \lstinputlisting[firstline=23, lastline=49, language=python,
     caption={MCOLP butterfly
-      (\href{https://github.com/Sistemas-Multimedia/MCOLP/blob/master/src/MCOLP.py}{MCOLP.py}).}]{../src/MCOLP.py}
+      (\href{https://github.com/Sistemas-Multimedia/PRMC/blob/master/src/MCOLP.py}{MCOLP.py}).}]{../src/MCOLP.py}
   \lstinputlisting[firstline=51, lastline=77, language=python,
     caption={Inverse MCOLP butterfly
-      (\href{https://github.com/Sistemas-Multimedia/MCOLP/blob/master/src/MCOLP.py}{MCOLP.py}).}]{../src/MCOLP.py}
+      (\href{https://github.com/Sistemas-Multimedia/PRMC/blob/master/src/MCOLP.py}{MCOLP.py}).}]{../src/MCOLP.py}
   \lstinputlisting[firstline=4, lastline=9, language=python,
     caption={Computation of the prediction
-      image (\href{https://github.com/Sistemas-Multimedia/MCOLP/blob/master/src/simple_average.py}{simple\_average.py}).}]{../src/simple_average.py}
+      frame (\href{https://github.com/Sistemas-Multimedia/PRMC/blob/master/src/simple_average.py}{simple\_average.py}).}]{../src/simple_average.py}
   \caption{MCOLP butterflies.}
   \label{fig:forward_butterfly}
 \end{figure}
@@ -484,28 +490,28 @@ $[c.L]\rightarrow [b.L]$.
 
 \subsection{The transform}
 The $T$-iterations MCOLP is the result of applying the MCOLP butterfly
-to all the images of $T+1$ different temporal scales (see
-Fig.~\ref{fig:MCOLP}). These scales are defined by the images with
+to all the frames of $T+1$ different temporal scales (see
+Fig.~\ref{fig:MCOLP}). These scales are defined by the frames with
 number multiple of $2^t$, where $1\leq t\leq T$ is the current
 iteration.
 
 \begin{figure}
   \centering
   \myfig{graphics/temporal_decorrelation}{12cm}{1200}
-  \lstinputlisting[firstline=79, lastline=131, language=python, caption={MCOLP (\href{https://github.com/Sistemas-Multimedia/MCOLP/blob/master/src/MCOLP.py}{MCOLP.py}).}]{../src/MCOLP.py}
-  \lstinputlisting[firstline=133, lastline=174, language=python, caption={iMCOLP (\href{https://github.com/Sistemas-Multimedia/MCOLP/blob/master/src/MCOLP.py}{MCOLP.py}).}]{../src/MCOLP.py}
+  \lstinputlisting[firstline=79, lastline=131, language=python, caption={MCOLP (\href{https://github.com/Sistemas-Multimedia/PRMC/blob/master/src/MCOLP.py}{MCOLP.py}).}]{../src/MCOLP.py}
+  \lstinputlisting[firstline=133, lastline=174, language=python, caption={iMCOLP (\href{https://github.com/Sistemas-Multimedia/PRMC/blob/master/src/MCOLP.py}{MCOLP.py}).}]{../src/MCOLP.py}
   \caption{Implementation of the MCOLP.}
   \label{fig:MCOLP}
 \end{figure}
 
 Notice that, if $N=G+1$ (where $G$ is the GOP size, see
-Eq.~\ref{eq:GOP_size}), except for the first and the last image of the
+Eq.~\ref{eq:GOP_size}), except for the first and the last frame of the
 sequence, all the $H$-subbands are temporally decorrelated.
 
 \subsection*{Example: 1-iteration MDWT + 1-iteration MCOLP}
-In this example, a sequence of five images is transformed first with
-the (1-iteration) MDWT, producing 2 SRLs by image. Next, the $H$
-subbands of the odd images (images 1 and 3) are motion compensated
+In this example, a sequence of five frames is transformed first with
+the (1-iteration) MDWT, producing 2 SRLs by frame. Next, the $H$
+subbands of the odd frames (frames 1 and 3) are motion compensated
 using the (1-iteration) MCOLP.
 
 \begin{verbatim}
@@ -558,7 +564,7 @@ animate /tmp/diff*.png
 \subsection*{Example: 1-iteration MDWT + 2-iterations MCOLP}
 This example is similar to the previous, but now the number of
 iterations of MCOLP is $T=2$. Now, the second iteration of MCOLP
-compensates also the $H$ subband of the image 2. This example matches
+compensates also the $H$ subband of the frame 2. This example matches
 exactly with the described in the Fig~\ref{fig:MCOLP}. Notice that the
 GOP size is $4$ ($3$ TRLs) and the number of SRLs is $2$.
 
@@ -730,11 +736,11 @@ and therefore, MCOLP provides the same spatial scalability than MDWT.
 
 Unfortunately, as the rest of video encoders based on MC, MCOLP
 reduces the temporal scalability provided by MDWT, allowing only a
-dyadic access to the images. For example, after applying each
+dyadic access to the frames. For example, after applying each
 iteration of the inverse MCOLP, if $T=3$ (the GOP size $G=8$, i.e. $4$
-temporal resolution levels (TRLs) have been generated), the images of
-the second GOP (GOP 1, considereing that the first GOP (GOP 0) is only
-composed by the first image of the sequence) should be reconstructed
+temporal resolution levels (TRLs) have been generated), the frames of
+the second GOP (GOP 1, considering that the first GOP (GOP 0) is only
+composed by the first frame of the sequence) should be reconstructed
 in this order:
 
 \begin{verbatim}
@@ -920,11 +926,11 @@ python3 -O MCOLP.py -p /tmp/ -N 9 -b
 \begin{comment}
 \subsection{Accuracy of the motion compensation (TO BE IMPLEMENTED)}
 The movement of the objects in the scene captured by a video is a
-continuous event. Conversely, the digital images taken from such
+continuous event. Conversely, the digital frames taken from such
 objects are discrete in the time and the space domains. This means
 that, in general, two different positions of an object in two
-different images is not going to match with a distance that can be
-measured by an integer number of pixels. For example, lets suppose that the content of the image $s_0$ is:
+different frames is not going to match with a distance that can be
+measured by an integer number of pixels. For example, lets suppose that the content of the frame $s_0$ is:
 \begin{verbatim}
   0   0   0 255   0   0   0
   0   0   0 255   0   0   0
@@ -934,7 +940,7 @@ measured by an integer number of pixels. For example, lets suppose that the cont
   0   0   0 255   0   0   0
 \end{verbatim}
 and that the camera has moved, following a parallel movement to the
-surface of the object of 1/2 pixels. In this case, the image $s_1$
+surface of the object of 1/2 pixels. In this case, the frame $s_1$
 taken from such object would be:
 \begin{verbatim}
   0   0 128 128   0   0   0
@@ -946,9 +952,9 @@ taken from such object would be:
 \end{verbatim}
 and it can be seen, it is difficult to determine that the object has
 been moved, because the values of the pixels have changed
-significantly. However, if we interpolate both images using the
+significantly. However, if we interpolate both frames using the
 wavelet ``bior3.5'' of PyWavelets, we obtain for the first
-image\footnote{\texttt{pywt.idwt([0,0,0,255,0,0,0],None,'bior3.5',
+frame\footnote{\texttt{pywt.idwt([0,0,0,255,0,0,0],None,'bior3.5',
     'per')}}:
 \begin{verbatim}
   0   0   0   0   0  45 135 135  45   0   0   0   0   0
@@ -1008,13 +1014,13 @@ $[b_c.H]$ have the same weight to build the prediction
 This simple computation, that can have very effective for example in
 \href{https://biteable.com/blog/tips/video-transitions-effects-examples/}{dissolves}
 video transitions, can also be counterproductive when objects appear
-only in one of the reference images. For this reason, in this section
+only in one of the reference frames. For this reason, in this section
 a different predictor is proposed, based on the estimated prediction
 error generated throughout the ME process ($[\tilde{b}.H]$ in the
 Fig.~\ref{fig:forward_butterfly}). To estimate this error, we will
 suppose that the prediction error generated for the high frequencies
-of an image is proportional to the prediction error generated for the
-low frequencies of such image.
+of an frame is proportional to the prediction error generated for the
+low frequencies of such frame.
 
 Let $[b_a.L]$ the prediction generated for the subband $[b.L]$ using
 $[a.L]$ as reference and $[a.L]\rightarrow [b.L]$ as motion, and let
@@ -1112,10 +1118,10 @@ for i in /tmp/00?.png; do python3 ../tools/substract_offset.py -i $i -o $i.png; 
 # Visualization of the differences with the original sequence.
 rm -f /tmp/diff*.png; for i in {0..4}; do ii=$(printf "%03d" $i); bash ../tools/show_differences.sh -1 /tmp/$ii.png -2 ../sequences/stockholm/$ii.png -o /tmp/diff_$ii.png; done; animate /tmp/diff*.png
 
-# MSE per image
+# MSE per frame
 for i in {0..4}; do ii=$(printf "%03d" $i); MSE=`python3 -O ../tools/MSE.py -x ../sequences/stockholm/$ii.png -y /tmp/$ii.png`; printf "MSE(%s)=%s\n" $ii $MSE; done
 
-# PSNR per image
+# PSNR per frame
 for i in {0..4}; do ii=$(printf "%03d" $i); PSNR=`python3 -O ../tools/PSNR.py -x ../sequences/stockholm/$ii.png -y /tmp/$ii.png`; printf "PSNR(%s)=%s\n" $ii $PSNR; done
 \end{verbatim}
 
@@ -1428,15 +1434,15 @@ rm -f /tmp/diff*.png; for i in {0..4}; do ii=$(printf "%03d" $i); bash ../tools/
   \centering %
   \myfig{graphics/MCOLP_decomposition}{12cm}{1200} %
   \caption{MCOLP($S=1$, $T=3$) decomposition (notice that
-    $\text{GOP\_size}=8=2^T$). The arrows indicate image dependencies
-    (for example, to decode image 1, images 0 and 2 should have been
+    $\text{GOP\_size}=8=2^T$). The arrows indicate frame dependencies
+    (for example, to decode frame 1, frames 0 and 2 should have been
     decoded.} %
   \label{fig:MCOLP_decomposition}
 \end{figure}
 
 MCOLP($S$, $T$), where $S$ is the number of levels of the spatial
 transform and $T$ is the number of levels of the temporal transform,
-decomposes a sequence of images into a sequence of subbands organized
+decomposes a sequence of frames into a sequence of subbands organized
 in $T+1$ of temporal scales of $S+1$ spatial scales (see
 Fig.~\ref{fig:MCOLP_decomposition}).
 
@@ -1452,7 +1458,7 @@ Sec.~\ref{sec:butterfly}) is no longer needed for applying the
 butterfly to different decompositions and scales. For this reason, we
 can compress this subband. As a result, after using the butterfly to
 <<<<<<< all the decompositions of the sequence and all the scales, all the $H$
-subbands can be compressed, excepting the intra-coded image of each
+subbands can be compressed, excepting the intra-coded frame of each
 GOP. Notice that the redundancy exploited in B-type $H$ subbands is
 temporal.
 
@@ -1528,14 +1534,14 @@ where (see Eq.~\ref{eq:weighted_prediction})
 After a $T$-levels MCOLP transform of a sequence, $T+1$ temporal
 subbands are generated, and the temporal subband $L^{T+1}$ has a one
 I-type subband for each GOP (see
-Fig~\ref{fig:MCOLP_decomposition}). Notice that, in a I-type image,
+Fig~\ref{fig:MCOLP_decomposition}). Notice that, in a I-type frame,
 the redundancy exploited to accumulate the visual information in the
 $L$ subband (or to remove the visual information in the $H$ subbands)
 is spatial.
 
-After using MCOLP, I-type images are decomposed into
+After using MCOLP, I-type frames are decomposed into
 the four subbands $LL$ (low-frequencies), $LH$, $HL$ and $HH$
-(high-frequencies). Depending on the image content and wavelets used
+(high-frequencies). Depending on the frame content and wavelets used
 in the 2D-DWT, $H$ subbands contain a certain amount of \emph{visual
   information}\footnote{Any visual stimulus that provides information
   to humans}. The key here is to reduce as much as possible such
@@ -1670,7 +1676,7 @@ Introduced such ideas, to compress the $H$ subbands of a 1-level
   \end{equation}
 
 \item Sort $\hat{H}$ by magnitude in descending order. For most
-  images, $\hat{H}\approx H$ and therefore, the most significant
+  frames, $\hat{H}\approx H$ and therefore, the most significant
   coefficients in both structures should be placed in the same
   coordinates.
   \begin{equation}
@@ -1789,7 +1795,7 @@ the same way the low and the high frequencies of $b$. Then, the sorted
 coefficients are DPCM encoded, quantized, and entropy encoded.
 
 \section{Multilevel MCLT}
-The distance between images $a$, $b$ and $c$ should decrease the
+The distance between frames $a$, $b$ and $c$ should decrease the
 efficiency of the predictions, generating more energy in the
 low-frequency subbands. Therefore, the quantization when $T>1$ should
 transmit more information of the low-frequency subbands than of the
