@@ -31,21 +31,21 @@
 \begin{tikzpicture}[auto, >=triangle 45]
 
   \draw
-  node [block] (s1) {$s_1$}
-  node [block, right of=s1] (s2) {$s_2$}
-  node [right of=s2, node distance=1.8cm] (cdots) {$\cdots$}
-  node [block, right of=s2] (sN) {$s_N$}
-  node [below of=s1, node distance=2.8cm] (DWT1) {\DWT{\scriptstyle s_1.L}{\scriptstyle s_1.H}}
-  node [below of=s2, node distance=2.8cm] (DWT2) {\DWT{\scriptstyle s_2.L}{\scriptstyle s_2.H}}
-  node [below of=sN, node distance=2.8cm] (DWTN) {\DWT{\scriptstyle s_N.L}{\scriptstyle s_N.H}}
-  node [below of=DWT1, node distance=1.4cm] (S0) {$S_1$}
-  node [below of=DWT2, node distance=1.4cm] (S0) {$S_2$}
-  node [below of=DWTN, node distance=1.4cm] (SN) {$S_N$}
+  node [block] (F1) {$F_1$}
+  node [block, right of=F1] (F2) {$F_2$}
+  node [right of=F2, node distance=1.8cm] (cdots) {$\cdots$}
+  node [block, right of=F2] (FN) {$F_N$}
+  node [below of=F1, node distance=2.8cm] (DWT1) {\DWT{\scriptstyle F_1.L}{\scriptstyle F_1.H}}
+  node [below of=F2, node distance=2.8cm] (DWT2) {\DWT{\scriptstyle F_2.L}{\scriptstyle F_2.H}}
+  node [below of=FN, node distance=2.8cm] (DWTN) {\DWT{\scriptstyle F_N.L}{\scriptstyle F_N.H}}
+  % node [below of=DWT1, node distance=1.4cm] (S0) {$S_1$}
+  % node [below of=DWT2, node distance=1.4cm] (S0) {$S_2$}
+  % node [below of=DWTN, node distance=1.4cm] (SN) {$S_N$}
   ;
 
-  \draw [->] (s1) -- (DWT1);
-  \draw [->] (s2) -- (DWT2);
-  \draw [->] (sN) -- (DWTN);
+  \draw [->] (F1) -- (DWT1);
+  \draw [->] (F2) -- (DWT2);
+  \draw [->] (FN) -- (DWTN);
 
 \end{tikzpicture}
 \end{document}
