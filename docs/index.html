@@ -1,6 +1,6 @@
 <!DOCTYPE html> 
 <html> 
-<head> <title>Motion Compensated Discrete Wavelet Transform (MCDWT)</title> 
+<head> <title>Motion Compensated Orthogonal Laplacian Pyramid (MCOLP)</title> 
 <meta charset="UTF-8" /> 
 <meta name="generator" content="TeX4ht (http://www.cse.ohio-state.edu/~gurari/TeX4ht/)" /> 
 <link rel="stylesheet" type="text/css" href="index.css" /> 
@@ -21,14 +21,14 @@ src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLor
                                                                   
 
 <h2 class="titleHead"><a 
-href="https://github.com/Sistemas-Multimedia/MCDWT" >Motion Compensated Discrete Wavelet
-Transform (MCDWT)</a></h2>
+href="https://github.com/Sistemas-Multimedia/MCOLP" >Motion Compensated Orthogonal Laplacian
+Pyramid (MCOLP)</a></h2>
  <div class="author" ><span 
 class="ecrm-1200">Vicente Gonz</span><span 
 class="ecrm-1200">á</span><span 
 class="ecrm-1200">lez Ruiz</span></div><br />
 <div class="date" ><span 
-class="ecrm-1200">January 29, 2020</span></div>
+class="ecrm-1200">July 21, 2020</span></div>
    </div>
    <h3 class="likesectionHead"><a 
  id="x1-1000"></a>Contents</h3>
@@ -50,27 +50,29 @@ href="#x1-100003.1" id="QQ2-1-16">Scalability provided by MDWT</a></span>
 <br />   <span class="sectionToc" >4 <a 
 href="#x1-140004" id="QQ2-1-20">Video transform alternatives</a></span>
 <br />   <span class="sectionToc" >5 <a 
-href="#x1-150005" id="QQ2-1-21">Motion Compensated Discrete Wavelet Transform (MCDWT)</a></span>
+href="#x1-150005" id="QQ2-1-21">Motion Compensated Discrete Wavelet Transform (MCOLP)</a></span>
 <br />    <span class="subsectionToc" >5.1 <a 
 href="#x1-160005.1" id="QQ2-1-22">The butterﬂy</a></span>
 <br />    <span class="subsectionToc" >5.2 <a 
 href="#x1-170005.2" id="QQ2-1-27">The transform</a></span>
 <br />    <span class="subsectionToc" >5.3 <a 
-href="#x1-210005.3" id="QQ2-1-34">Scalability provided by MCDWT</a></span>
+href="#x1-210005.3" id="QQ2-1-34">Scalability provided by MCOLP</a></span>
 <br />   <span class="sectionToc" >6 <a 
 href="#x1-230006" id="QQ2-1-36">Adaptive motion compensation based on the distortion of the prediction error</a></span>
 <br />   <span class="sectionToc" >7 <a 
 href="#x1-240007" id="QQ2-1-39">Lossy compression: quantization</a></span>
+<br />   <span class="sectionToc" >8 <a 
+href="#x1-290008" id="QQ2-1-44">Bit allocation</a></span>
 <br />   <span class="sectionToc" ><a 
-href="#Q1-1-44">References</a></span>
+href="#Q1-1-45">References</a></span>
    </div>
 <!--l. 8--><p class="noindent" >
 </p>
-   <h3 class="sectionHead"><span class="titlemark">1   </span> <a 
- id="x1-20001"></a>Intro</h3>
                                                                   
 
                                                                   
+   <h3 class="sectionHead"><span class="titlemark">1   </span> <a 
+ id="x1-20001"></a>Intro</h3>
 <!--l. 11--><p class="noindent" ><a 
 href="https://en.wikipedia.org/wiki/Video" >Video</a> data contain high amounts of <a 
 href="https://vicente-gonzalez-ruiz.github.io/redundancy/" >redundancy</a>, spatial and temporal.
@@ -80,14 +82,14 @@ href="https://vicente-gonzalez-ruiz.github.io/video_compression/" >video encoder
 href="https://en.wikipedia.org/wiki/Digital_image" >images</a><span class="footnote-mark"><a 
 href="index2.html#fn1x0"><sup class="textsuperscript">1</sup></a></span><a 
  id="x1-2001f1"></a> ,
-basically, in two stages: (1) a transform stage in the <a 
+basically, in two stages: (1) a transform in the <a 
 href="https://en.wikipedia.org/wiki/Time_domain" >time</a> and in the <a 
 href="https://www.quora.com/What-is-spatial-domain-in-image-processing" >spatial</a> domains
 that produces a collection of <a 
 href="https://en.wikipedia.org/wiki/Decorrelation" >uncorrelated</a> <a 
 href="https://en.wikipedia.org/wiki/Discrete_wavelet_transform" >coeﬃcients</a>, and (2) an <a 
 href="https://en.wikipedia.org/wiki/Entropy_encoding" >entropy
-encoding</a> phase which removes the statistical redundancy that can still remains
+encoding</a> stage which removes the statistical redundancy that can still remains
 after the decorrelation (transform). These coeﬃcients have two interesting
 features:
      </p><ol  class="enumerate1" >
@@ -106,7 +108,7 @@ class="ecbx-1000">(in space and time) </span>of the visual
      information.  This  provides  the  posibility  of  decoding  the  sequence  of
      images using a smaller resolution (in space and time). This feature is
      known as <a 
-href="https://vicente-gonzalez-ruiz.github.io/video_compression/" >spatial/temporal scalability in video</a>.
+href="https://vicente-gonzalez-ruiz.github.io/video_compression/" >spatio-temporal scalability in video</a>.
      </li>
      <li 
   class="enumerate" id="x1-2007x3">Usually,  <span 
@@ -148,7 +150,7 @@ representation to a pyramid representation and viceversa</a>.
    <h4 class="subsectionHead"><span class="titlemark">2.1   </span> <a 
  id="x1-40002.1"></a>Implementation of the 3 components (color) DWT step</h4>
 <!--l. 72--><p class="noindent" ><a 
-href="https://github.com/Sistemas-Multimedia/MCDWT/blob/master/src/DWT.py" >DWT.py</a> (see Fig. <a 
+href="https://github.com/Sistemas-Multimedia/MCOLP/blob/master/src/DWT.py" >DWT.py</a> (see Fig. <a 
 href="#x1-40941">1<!--tex4ht:ref: fig:DWT --></a>) implements the forward (DWT) and backward 1-iteration
 (step) 2D DWT (iDWT) for color images.
 </p>
@@ -170,7 +172,7 @@ href="#x1-40941">1<!--tex4ht:ref: fig:DWT --></a>) implements the forward (DWT) 
 <br /> <div class="caption" 
 ><span class="id">Listing 1: </span><span  
 class="content">1-iteration DWT (<a 
-href="https://github.com/Sistemas-Multimedia/MCDWT/blob/master/src/DWT.py" >DWT.py</a>).</span></div><!--tex4ht:label?: x1-4001r2 --><span 
+href="https://github.com/Sistemas-Multimedia/MCOLP/blob/master/src/DWT.py" >DWT.py</a>).</span></div><!--tex4ht:label?: x1-4001r2 --><span 
 class="ectt-1000"> </span><br /><span class="label"><a 
  id="x1-4003r1"></a></span><span 
 class="ectt-1000"> </span><br /><span class="label"><a 
@@ -1535,7 +1537,7 @@ class="ectt-1000">(3):</span>
 <br /><div class="caption" 
 ><span class="id">Listing 2: </span><span  
 class="content">1-iteration iDWT (<a 
-href="https://github.com/Sistemas-Multimedia/MCDWT/blob/master/src/DWT.py" >DWT.py</a>).</span></div><!--tex4ht:label?: x1-4069r2 --><span 
+href="https://github.com/Sistemas-Multimedia/MCOLP/blob/master/src/DWT.py" >DWT.py</a>).</span></div><!--tex4ht:label?: x1-4069r2 --><span 
 class="ectt-1000"> </span><br /><span class="label"><a 
  id="x1-4071r1"></a></span><span 
 class="ectt-1000"> </span><span 
@@ -2046,7 +2048,7 @@ display="inline" ><msup><mrow
 >k</mi></mrow></msup 
 ></math>.
 See <a 
-href="https://nbviewer.jupyter.org/github/Sistemas-Multimedia/MCDWT/blob/master/docs/DWT_vs_LPT.ipynb" >DWT versus LPT</a>.
+href="https://nbviewer.jupyter.org/github/Sistemas-Multimedia/MCOLP/blob/master/docs/DWT_vs_LPT.ipynb" >DWT versus LPT</a>.
 </p>
    <h4 class="subsectionHead"><span class="titlemark">2.3   </span> <a 
  id="x1-60002.3"></a>Scalability provided by the 2D DWT</h4>
@@ -2099,7 +2101,8 @@ class="MathClass-punc">.</mo><msup><mrow
 ><mi 
 >L</mi></mrow><mrow 
 ><mn>1</mn></mrow></msup 
-> <mo 
+><mo 
+class="MathClass-rel"> :</mo><mo 
 class="MathClass-rel">=</mo> <msub><mrow 
 ><mi 
 >s</mi></mrow><mrow 
@@ -2322,7 +2325,7 @@ href="https://vicente-gonzalez-ruiz.github.io/JPEG2000/" >Motion JPEG2000 video 
 spatial redundancy is exploited in MDWT. All the temporal redundancy still
 remains in the video. The decomposition structure generated by MDWT
 is shown in the Fig <a 
-href="#x1-90502">2<!--tex4ht:ref: fig:forward_MDWT --></a>. 1-iteration MDWT inputs a sequence of images
+href="#x1-90522">2<!--tex4ht:ref: fig:forward_MDWT --></a>. 1-iteration MDWT inputs a sequence of images
 <!--l. 235--><math 
  xmlns="http://www.w3.org/1998/Math/MathML"  
 display="inline" ><mrow ><mo 
@@ -2386,7 +2389,7 @@ of the image sequence.
 
                                                                   
 <a 
- id="x1-90502"></a>
+ id="x1-90522"></a>
                                                                   
 
                                                                   
@@ -2398,33 +2401,9 @@ of the image sequence.
 <br /> <div class="caption" 
 ><span class="id">Listing 3: </span><span  
 class="content">MDWT (<a 
-href="https://github.com/Sistemas-Multimedia/MCDWT/blob/master/src/MDWT.py" >MDWT.py</a>).</span></div><!--tex4ht:label?: x1-9001r3 --><span 
+href="https://github.com/Sistemas-Multimedia/MCOLP/blob/master/src/MDWT.py" >MDWT.py</a>).</span></div><!--tex4ht:label?: x1-9001r3 --><span 
 class="ectt-1000"> </span><br /><span class="label"><a 
  id="x1-9003r1"></a></span><span 
-class="ectt-1000"> </span><span 
-class="ectt-1000"> </span><span 
-class="ectt-1000"> </span><span 
-class="ectt-1000"> </span><span 
-class="ectt-1000">def</span><span 
-class="ectt-1000"> </span><span 
-class="ectt-1000">forward</span><span 
-class="ectt-1000">(</span><span 
-class="ectt-1000">self</span><span 
-class="ectt-1000">,</span><span 
-class="ectt-1000"> </span><span 
-class="ectt-1000">prefix</span><span 
-class="ectt-1000">=</span><span 
-class="ectt-1000">&#x0022;</span><span 
-class="ectt-1000">/</span><span 
-class="ectt-1000">tmp</span><span 
-class="ectt-1000">/</span><span 
-class="ectt-1000">&#x0022;</span><span 
-class="ectt-1000">,</span><span 
-class="ectt-1000"> </span><span 
-class="ectt-1000">N</span><span 
-class="ectt-1000">=5):</span><span 
-class="ectt-1000"> </span><br /><span class="label"><a 
- id="x1-9004r2"></a></span><span 
 class="ecit-1000"> </span><span 
 class="ecit-1000"> </span><span 
 class="ecit-1000"> </span><span 
@@ -2455,9 +2434,9 @@ class="ecit-1000"> </span><span
 class="ecit-1000">images</span><span 
 class="ecit-1000">.</span><span 
 class="ectt-1000"> </span><br /><span class="label"><a 
- id="x1-9005r3"></a></span><span 
+ id="x1-9004r2"></a></span><span 
 class="ectt-1000"> </span><br /><span class="label"><a 
- id="x1-9006r4"></a></span><span 
+ id="x1-9005r3"></a></span><span 
 class="ecit-1000"> </span><span 
 class="ecit-1000"> </span><span 
 class="ecit-1000"> </span><span 
@@ -2489,7 +2468,7 @@ class="ecit-1000">the</span><span
 class="ecit-1000"> </span><span 
 class="ecit-1000">sequence</span><span 
 class="ectt-1000"> </span><br /><span class="label"><a 
- id="x1-9007r5"></a></span><span 
+ id="x1-9006r4"></a></span><span 
 class="ecit-1000"> </span><span 
 class="ecit-1000"> </span><span 
 class="ecit-1000"> </span><span 
@@ -2506,9 +2485,9 @@ class="ecit-1000">&#x003C;</span><span
 class="ecit-1000">prefix</span><span 
 class="ecit-1000">&#x003E;.</span><span 
 class="ectt-1000"> </span><br /><span class="label"><a 
- id="x1-9008r6"></a></span><span 
+ id="x1-9007r5"></a></span><span 
 class="ectt-1000"> </span><br /><span class="label"><a 
- id="x1-9009r7"></a></span><span 
+ id="x1-9008r6"></a></span><span 
 class="ecit-1000"> </span><span 
 class="ecit-1000"> </span><span 
 class="ecit-1000"> </span><span 
@@ -2519,7 +2498,7 @@ class="ecit-1000"> </span><span
 class="ecit-1000"> </span><span 
 class="ecit-1000">Input</span><span 
 class="ectt-1000"> </span><br /><span class="label"><a 
- id="x1-9010r8"></a></span><span 
+ id="x1-9009r7"></a></span><span 
 class="ecit-1000"> </span><span 
 class="ecit-1000"> </span><span 
 class="ecit-1000"> </span><span 
@@ -2530,9 +2509,9 @@ class="ecit-1000"> </span><span
 class="ecit-1000"> </span><span 
 class="ecit-1000">-----</span><span 
 class="ectt-1000"> </span><br /><span class="label"><a 
- id="x1-9011r9"></a></span><span 
+ id="x1-9010r8"></a></span><span 
 class="ectt-1000"> </span><br /><span class="label"><a 
- id="x1-9012r10"></a></span><span 
+ id="x1-9011r9"></a></span><span 
 class="ecit-1000"> </span><span 
 class="ecit-1000"> </span><span 
 class="ecit-1000"> </span><span 
@@ -2563,7 +2542,7 @@ class="ecit-1000"> </span><span
 class="ecit-1000">transformed</span><span 
 class="ecit-1000">.</span><span 
 class="ectt-1000"> </span><br /><span class="label"><a 
- id="x1-9013r11"></a></span><span 
+ id="x1-9012r10"></a></span><span 
 class="ecit-1000"> </span><span 
 class="ecit-1000"> </span><span 
 class="ecit-1000"> </span><span 
@@ -2586,9 +2565,9 @@ class="ecit-1000"> </span><span
 class="ecit-1000">images</span><span 
 class="ecit-1000">.</span><span 
 class="ectt-1000"> </span><br /><span class="label"><a 
- id="x1-9014r12"></a></span><span 
+ id="x1-9013r11"></a></span><span 
 class="ectt-1000"> </span><br /><span class="label"><a 
- id="x1-9015r13"></a></span><span 
+ id="x1-9014r12"></a></span><span 
 class="ecit-1000"> </span><span 
 class="ecit-1000"> </span><span 
 class="ecit-1000"> </span><span 
@@ -2599,7 +2578,7 @@ class="ecit-1000"> </span><span
 class="ecit-1000"> </span><span 
 class="ecit-1000">Output</span><span 
 class="ectt-1000"> </span><br /><span class="label"><a 
- id="x1-9016r14"></a></span><span 
+ id="x1-9015r13"></a></span><span 
 class="ecit-1000"> </span><span 
 class="ecit-1000"> </span><span 
 class="ecit-1000"> </span><span 
@@ -2610,9 +2589,9 @@ class="ecit-1000"> </span><span
 class="ecit-1000"> </span><span 
 class="ecit-1000">------</span><span 
 class="ectt-1000"> </span><br /><span class="label"><a 
- id="x1-9017r15"></a></span><span 
+ id="x1-9016r14"></a></span><span 
 class="ectt-1000"> </span><br /><span class="label"><a 
- id="x1-9018r16"></a></span><span 
+ id="x1-9017r15"></a></span><span 
 class="ecit-1000"> </span><span 
 class="ecit-1000"> </span><span 
 class="ecit-1000"> </span><span 
@@ -2638,9 +2617,9 @@ class="ecit-1000"> </span><span
 class="ecit-1000">decompositions</span><span 
 class="ecit-1000">.</span><span 
 class="ectt-1000"> </span><br /><span class="label"><a 
- id="x1-9019r17"></a></span><span 
+ id="x1-9018r16"></a></span><span 
 class="ectt-1000"> </span><br /><span class="label"><a 
- id="x1-9020r18"></a></span><span 
+ id="x1-9019r17"></a></span><span 
 class="ecit-1000"> </span><span 
 class="ecit-1000"> </span><span 
 class="ecit-1000"> </span><span 
@@ -2651,7 +2630,7 @@ class="ecit-1000"> </span><span
 class="ecit-1000"> </span><span 
 class="ecit-1000">’’’</span><span 
 class="ectt-1000"> </span><br /><span class="label"><a 
- id="x1-9021r19"></a></span><span 
+ id="x1-9020r18"></a></span><span 
 class="ectt-1000"> </span><span 
 class="ectt-1000"> </span><span 
 class="ectt-1000"> </span><span 
@@ -2671,7 +2650,7 @@ class="ectt-1000">(</span><span
 class="ectt-1000">N</span><span 
 class="ectt-1000">):</span><span 
 class="ectt-1000"> </span><br /><span class="label"><a 
- id="x1-9022r20"></a></span><span 
+ id="x1-9021r19"></a></span><span 
 class="ectt-1000"> </span><span 
 class="ectt-1000"> </span><span 
 class="ectt-1000"> </span><span 
@@ -2706,7 +2685,7 @@ class="ectt-1000">(</span><span
 class="ectt-1000">i</span><span 
 class="ectt-1000">))</span><span 
 class="ectt-1000"> </span><br /><span class="label"><a 
- id="x1-9023r21"></a></span><span 
+ id="x1-9022r20"></a></span><span 
 class="ectt-1000"> </span><span 
 class="ectt-1000"> </span><span 
 class="ectt-1000"> </span><span 
@@ -2732,7 +2711,7 @@ class="ectt-1000">(</span><span
 class="ectt-1000">img</span><span 
 class="ectt-1000">)</span><span 
 class="ectt-1000"> </span><br /><span class="label"><a 
- id="x1-9024r22"></a></span><span 
+ id="x1-9023r21"></a></span><span 
 class="ectt-1000"> </span><span 
 class="ectt-1000"> </span><span 
 class="ectt-1000"> </span><span 
@@ -2768,39 +2747,15 @@ class="ectt-1000">))</span>
 </div>
 <!--l. 243--><p class="noindent" >. </p><!--l. 246--><div class="lstinputlisting">
 <a 
- id="x1-9025r4"></a>
+ id="x1-9026r4"></a>
 <a 
- id="x1-9026"></a>
+ id="x1-9027"></a>
 <br /> <div class="caption" 
 ><span class="id">Listing 4: </span><span  
 class="content">iMDWT (<a 
-href="https://github.com/Sistemas-Multimedia/MCDWT/blob/master/src/MDWT.py" >MDWT.py</a>).</span></div><!--tex4ht:label?: x1-9025r3 --><span 
+href="https://github.com/Sistemas-Multimedia/MCOLP/blob/master/src/MDWT.py" >MDWT.py</a>).</span></div><!--tex4ht:label?: x1-9026r3 --><span 
 class="ectt-1000"> </span><br /><span class="label"><a 
- id="x1-9027r1"></a></span><span 
-class="ectt-1000"> </span><span 
-class="ectt-1000"> </span><span 
-class="ectt-1000"> </span><span 
-class="ectt-1000"> </span><span 
-class="ectt-1000">def</span><span 
-class="ectt-1000"> </span><span 
-class="ectt-1000">backward</span><span 
-class="ectt-1000">(</span><span 
-class="ectt-1000">self</span><span 
-class="ectt-1000">,</span><span 
-class="ectt-1000"> </span><span 
-class="ectt-1000">prefix</span><span 
-class="ectt-1000">=</span><span 
-class="ectt-1000">&#x0022;</span><span 
-class="ectt-1000">/</span><span 
-class="ectt-1000">tmp</span><span 
-class="ectt-1000">/</span><span 
-class="ectt-1000">&#x0022;</span><span 
-class="ectt-1000">,</span><span 
-class="ectt-1000"> </span><span 
-class="ectt-1000">N</span><span 
-class="ectt-1000">=5):</span><span 
-class="ectt-1000"> </span><br /><span class="label"><a 
- id="x1-9028r2"></a></span><span 
+ id="x1-9028r1"></a></span><span 
 class="ecit-1000"> </span><span 
 class="ecit-1000"> </span><span 
 class="ecit-1000"> </span><span 
@@ -2833,9 +2788,9 @@ class="ecit-1000"> </span><span
 class="ecit-1000">decompositions</span><span 
 class="ecit-1000">.</span><span 
 class="ectt-1000"> </span><br /><span class="label"><a 
- id="x1-9029r3"></a></span><span 
+ id="x1-9029r2"></a></span><span 
 class="ectt-1000"> </span><br /><span class="label"><a 
- id="x1-9030r4"></a></span><span 
+ id="x1-9030r3"></a></span><span 
 class="ecit-1000"> </span><span 
 class="ecit-1000"> </span><span 
 class="ecit-1000"> </span><span 
@@ -2865,7 +2820,7 @@ class="ecit-1000">of</span><span
 class="ecit-1000"> </span><span 
 class="ecit-1000">the</span><span 
 class="ectt-1000"> </span><br /><span class="label"><a 
- id="x1-9031r5"></a></span><span 
+ id="x1-9031r4"></a></span><span 
 class="ecit-1000"> </span><span 
 class="ecit-1000"> </span><span 
 class="ecit-1000"> </span><span 
@@ -2888,9 +2843,9 @@ class="ecit-1000">&#x003C;</span><span
 class="ecit-1000">prefix</span><span 
 class="ecit-1000">&#x003E;.</span><span 
 class="ectt-1000"> </span><br /><span class="label"><a 
- id="x1-9032r6"></a></span><span 
+ id="x1-9032r5"></a></span><span 
 class="ectt-1000"> </span><br /><span class="label"><a 
- id="x1-9033r7"></a></span><span 
+ id="x1-9033r6"></a></span><span 
 class="ecit-1000"> </span><span 
 class="ecit-1000"> </span><span 
 class="ecit-1000"> </span><span 
@@ -2902,7 +2857,7 @@ class="ecit-1000"> </span><span
 class="ecit-1000">Input</span><span 
 class="ecit-1000">:</span><span 
 class="ectt-1000"> </span><br /><span class="label"><a 
- id="x1-9034r8"></a></span><span 
+ id="x1-9034r7"></a></span><span 
 class="ecit-1000"> </span><span 
 class="ecit-1000"> </span><span 
 class="ecit-1000"> </span><span 
@@ -2913,9 +2868,9 @@ class="ecit-1000"> </span><span
 class="ecit-1000"> </span><span 
 class="ecit-1000">-----</span><span 
 class="ectt-1000"> </span><br /><span class="label"><a 
- id="x1-9035r9"></a></span><span 
+ id="x1-9035r8"></a></span><span 
 class="ectt-1000"> </span><br /><span class="label"><a 
- id="x1-9036r10"></a></span><span 
+ id="x1-9036r9"></a></span><span 
 class="ecit-1000"> </span><span 
 class="ecit-1000"> </span><span 
 class="ecit-1000"> </span><span 
@@ -2946,7 +2901,7 @@ class="ecit-1000"> </span><span
 class="ecit-1000">transformed</span><span 
 class="ecit-1000">.</span><span 
 class="ectt-1000"> </span><br /><span class="label"><a 
- id="x1-9037r11"></a></span><span 
+ id="x1-9037r10"></a></span><span 
 class="ecit-1000"> </span><span 
 class="ecit-1000"> </span><span 
 class="ecit-1000"> </span><span 
@@ -2971,9 +2926,9 @@ class="ecit-1000"> </span><span
 class="ecit-1000">decompositions</span><span 
 class="ecit-1000">.</span><span 
 class="ectt-1000"> </span><br /><span class="label"><a 
- id="x1-9038r12"></a></span><span 
+ id="x1-9038r11"></a></span><span 
 class="ectt-1000"> </span><br /><span class="label"><a 
- id="x1-9039r13"></a></span><span 
+ id="x1-9039r12"></a></span><span 
 class="ecit-1000"> </span><span 
 class="ecit-1000"> </span><span 
 class="ecit-1000"> </span><span 
@@ -2985,7 +2940,7 @@ class="ecit-1000"> </span><span
 class="ecit-1000">Output</span><span 
 class="ecit-1000">:</span><span 
 class="ectt-1000"> </span><br /><span class="label"><a 
- id="x1-9040r14"></a></span><span 
+ id="x1-9040r13"></a></span><span 
 class="ecit-1000"> </span><span 
 class="ecit-1000"> </span><span 
 class="ecit-1000"> </span><span 
@@ -2996,9 +2951,9 @@ class="ecit-1000"> </span><span
 class="ecit-1000"> </span><span 
 class="ecit-1000">------</span><span 
 class="ectt-1000"> </span><br /><span class="label"><a 
- id="x1-9041r15"></a></span><span 
+ id="x1-9041r14"></a></span><span 
 class="ectt-1000"> </span><br /><span class="label"><a 
- id="x1-9042r16"></a></span><span 
+ id="x1-9042r15"></a></span><span 
 class="ecit-1000"> </span><span 
 class="ecit-1000"> </span><span 
 class="ecit-1000"> </span><span 
@@ -3024,9 +2979,9 @@ class="ecit-1000"> </span><span
 class="ecit-1000">images</span><span 
 class="ecit-1000">.</span><span 
 class="ectt-1000"> </span><br /><span class="label"><a 
- id="x1-9043r17"></a></span><span 
+ id="x1-9043r16"></a></span><span 
 class="ectt-1000"> </span><br /><span class="label"><a 
- id="x1-9044r18"></a></span><span 
+ id="x1-9044r17"></a></span><span 
 class="ecit-1000"> </span><span 
 class="ecit-1000"> </span><span 
 class="ecit-1000"> </span><span 
@@ -3037,9 +2992,9 @@ class="ecit-1000"> </span><span
 class="ecit-1000"> </span><span 
 class="ecit-1000">’’’</span><span 
 class="ectt-1000"> </span><br /><span class="label"><a 
- id="x1-9045r19"></a></span><span 
+ id="x1-9045r18"></a></span><span 
 class="ectt-1000"> </span><br /><span class="label"><a 
- id="x1-9046r20"></a></span><span 
+ id="x1-9046r19"></a></span><span 
 class="ectt-1000"> </span><span 
 class="ectt-1000"> </span><span 
 class="ectt-1000"> </span><span 
@@ -3059,7 +3014,7 @@ class="ectt-1000">(</span><span
 class="ectt-1000">N</span><span 
 class="ectt-1000">):</span><span 
 class="ectt-1000"> </span><br /><span class="label"><a 
- id="x1-9047r21"></a></span><span 
+ id="x1-9047r20"></a></span><span 
 class="ectt-1000"> </span><span 
 class="ectt-1000"> </span><span 
 class="ectt-1000"> </span><span 
@@ -3094,7 +3049,7 @@ class="ectt-1000">(</span><span
 class="ectt-1000">i</span><span 
 class="ectt-1000">))</span><span 
 class="ectt-1000"> </span><br /><span class="label"><a 
- id="x1-9048r22"></a></span><span 
+ id="x1-9048r21"></a></span><span 
 class="ectt-1000"> </span><span 
 class="ectt-1000"> </span><span 
 class="ectt-1000"> </span><span 
@@ -3120,7 +3075,7 @@ class="ectt-1000">(</span><span
 class="ectt-1000">pyr</span><span 
 class="ectt-1000">)</span><span 
 class="ectt-1000"> </span><br /><span class="label"><a 
- id="x1-9049r23"></a></span><span 
+ id="x1-9049r22"></a></span><span 
 class="ectt-1000"> </span><span 
 class="ectt-1000"> </span><span 
 class="ectt-1000"> </span><span 
@@ -3157,7 +3112,7 @@ class="ectt-1000">))</span>
 <!--l. 246--><p class="noindent" >.
 <br /> </p><div class="caption" 
 ><span class="id">Figure 2: </span><span  
-class="content">Implementation of the MDWT.</span></div><!--tex4ht:label?: x1-90502 -->
+class="content">Implementation of the MDWT.</span></div><!--tex4ht:label?: x1-90522 -->
                                                                   
 
                                                                   
@@ -3353,8 +3308,8 @@ depending on the avaliable bandwidth.
 </p><!--l. 415--><p class="noindent" >
 </p>
    <h3 class="sectionHead"><span class="titlemark">5   </span> <a 
- id="x1-150005"></a>Motion Compensated Discrete Wavelet Transform (MCDWT)</h3>
-<!--l. 416--><p class="noindent" >MCDWT is a 2D+t transform. The 2D stage is 1-iteration MDWT, and it is applied ﬁrst. The t
+ id="x1-150005"></a>Motion Compensated Discrete Wavelet Transform (MCOLP)</h3>
+<!--l. 416--><p class="noindent" >MCOLP is a 2D+t transform. The 2D stage is 1-iteration MDWT, and it is applied ﬁrst. The t
 stage is a <!--l. 417--><math 
  xmlns="http://www.w3.org/1998/Math/MathML"  
 display="inline" ><mi 
@@ -3387,7 +3342,7 @@ class="MathClass-rel">=</mo> <msup><mrow
 ><mo 
 class="MathClass-punc">.</mo>
 </math></td><td class="eq-no">(1)</td></tr></table>
-<!--l. 427--><p class="indent" >   A special characteristic of MCDWT is that the motion information is not
+<!--l. 427--><p class="indent" >   A special characteristic of MCOLP is that the motion information is not
 transmitted from the encoder to the decoder, which must replicate it or at least,
 predict it. This is possible because to estimate de motion at the encoder, only the
 information that it is accesible by the decoder is used.
@@ -3395,7 +3350,7 @@ information that it is accesible by the decoder is used.
 </p>
    <h4 class="subsectionHead"><span class="titlemark">5.1   </span> <a 
  id="x1-160005.1"></a>The butterﬂy</h4>
-<!--l. 434--><p class="noindent" >MCDWT butterly inputs three decompositions
+<!--l. 434--><p class="noindent" >MCOLP butterly inputs three decompositions
 <!--l. 434--><math 
  xmlns="http://www.w3.org/1998/Math/MathML"  
 display="inline" ><mi 
@@ -3509,8 +3464,8 @@ subbands.
  id="x1-16003"></a>
 <br /> <div class="caption" 
 ><span class="id">Listing 5: </span><span  
-class="content">MCDWT butterﬂy (<a 
-href="https://github.com/Sistemas-Multimedia/MCDWT/blob/master/src/MCDWT.py" >MCDWT.py</a>).</span></div><!--tex4ht:label?: x1-16002r5 --><span 
+class="content">MCOLP butterﬂy (<a 
+href="https://github.com/Sistemas-Multimedia/MCOLP/blob/master/src/MCOLP.py" >MCOLP.py</a>).</span></div><!--tex4ht:label?: x1-16002r5 --><span 
 class="ectt-1000"> </span><br /><span class="label"><a 
  id="x1-16004r1"></a></span><span 
 class="ectt-1000"> </span><span 
@@ -3653,7 +3608,7 @@ class="ecit-1000"> </span><span
 class="ecit-1000">’’’</span><span 
 class="ecit-1000">Forward</span><span 
 class="ecit-1000"> </span><span 
-class="ecit-1000">MCDWT</span><span 
+class="ecit-1000">MCOLP</span><span 
 class="ecit-1000"> </span><span 
 class="ecit-1000">butterfly</span><span 
 class="ecit-1000">.</span><span 
@@ -4018,8 +3973,8 @@ class="ectt-1000">))</span>
  id="x1-16032"></a>
 <br /><div class="caption" 
 ><span class="id">Listing 6: </span><span  
-class="content">Inverse MCDWT butterﬂy (<a 
-href="https://github.com/Sistemas-Multimedia/MCDWT/blob/master/src/MCDWT.py" >MCDWT.py</a>).</span></div><!--tex4ht:label?: x1-16031r5 --><span 
+class="content">Inverse MCOLP butterﬂy (<a 
+href="https://github.com/Sistemas-Multimedia/MCOLP/blob/master/src/MCOLP.py" >MCOLP.py</a>).</span></div><!--tex4ht:label?: x1-16031r5 --><span 
 class="ectt-1000"> </span><br /><span class="label"><a 
  id="x1-16033r1"></a></span><span 
 class="ectt-1000"> </span><span 
@@ -4120,7 +4075,7 @@ class="ecit-1000"> </span><span
 class="ecit-1000">’’’</span><span 
 class="ecit-1000">Backward</span><span 
 class="ecit-1000"> </span><span 
-class="ecit-1000">MCDWT</span><span 
+class="ecit-1000">MCOLP</span><span 
 class="ecit-1000"> </span><span 
 class="ecit-1000">butterfly</span><span 
 class="ecit-1000">.</span><span 
@@ -4470,7 +4425,7 @@ class="ectt-1000">))</span>
 ><span class="id">Listing 7:        </span><span  
 class="content">Computation        of        the        prediction        image
 (<a 
-href="https://github.com/Sistemas-Multimedia/MCDWT/blob/master/src/simple_average.py" >simple_average.py</a>).</span></div><!--tex4ht:label?: x1-16060r5 --><span 
+href="https://github.com/Sistemas-Multimedia/MCOLP/blob/master/src/simple_average.py" >simple_average.py</a>).</span></div><!--tex4ht:label?: x1-16060r5 --><span 
 class="ectt-1000"> </span><br /><span class="label"><a 
  id="x1-16062r1"></a></span><span 
 class="ectt-1000">def</span><span 
@@ -4581,7 +4536,7 @@ class="ectt-1000">2</span>
 </div>
 <br /> <div class="caption" 
 ><span class="id">Figure 3: </span><span  
-class="content">MCDWT butterﬂies.</span></div><!--tex4ht:label?: x1-160683 -->
+class="content">MCOLP butterﬂies.</span></div><!--tex4ht:label?: x1-160683 -->
                                                                   
 
                                                                   
@@ -4662,14 +4617,14 @@ class="MathClass-close">]</mo></mrow></math>.
  xmlns="http://www.w3.org/1998/Math/MathML"  
 display="inline" ><mi 
 >T</mi></math>-iterations
-MCDWT is the result of applying the MCDWT butterﬂy to all the images of
+MCOLP is the result of applying the MCOLP butterﬂy to all the images of
 <!--l. 487--><math 
  xmlns="http://www.w3.org/1998/Math/MathML"  
 display="inline" ><mi 
 >T</mi> <mo 
 class="MathClass-bin">+</mo> <mn>1</mn></math> diﬀerent
 temporal scales (see Fig. <a 
-href="#x1-171004">4<!--tex4ht:ref: fig:MCDWT --></a>). These scales are deﬁned by the images with number multiple
+href="#x1-171004">4<!--tex4ht:ref: fig:MCOLP --></a>). These scales are deﬁned by the images with number multiple
 of <!--l. 489--><math 
  xmlns="http://www.w3.org/1998/Math/MathML"  
 display="inline" ><msup><mrow 
@@ -4703,8 +4658,8 @@ is the current iteration.
  id="x1-17002"></a>
 <br /> <div class="caption" 
 ><span class="id">Listing 8: </span><span  
-class="content">MCDWT (<a 
-href="https://github.com/Sistemas-Multimedia/MCDWT/blob/master/src/MCDWT.py" >MCDWT.py</a>).</span></div><!--tex4ht:label?: x1-17001r5 --><span 
+class="content">MCOLP (<a 
+href="https://github.com/Sistemas-Multimedia/MCOLP/blob/master/src/MCOLP.py" >MCOLP.py</a>).</span></div><!--tex4ht:label?: x1-17001r5 --><span 
 class="ectt-1000"> </span><br /><span class="label"><a 
  id="x1-17003r1"></a></span><span 
 class="ectt-1000"> </span><span 
@@ -4804,7 +4759,7 @@ class="ecit-1000"> </span><span
 class="ecit-1000">’’’</span><span 
 class="ecit-1000">Forward</span><span 
 class="ecit-1000"> </span><span 
-class="ecit-1000">MCDWT</span><span 
+class="ecit-1000">MCOLP</span><span 
 class="ecit-1000">.</span><span 
 class="ectt-1000"> </span><br /><span class="label"><a 
  id="x1-17009r7"></a></span><span 
@@ -4820,7 +4775,7 @@ class="ecit-1000"> </span><span
 class="ecit-1000"> </span><span 
 class="ecit-1000">Compute</span><span 
 class="ecit-1000"> </span><span 
-class="ecit-1000">the</span><span 
+class="ecit-1000">a</span><span 
 class="ecit-1000"> </span><span 
 class="ecit-1000">MC</span><span 
 class="ecit-1000"> </span><span 
@@ -4828,6 +4783,57 @@ class="ecit-1000">1</span><span
 class="ecit-1000">D</span><span 
 class="ecit-1000">-</span><span 
 class="ecit-1000">DWT</span><span 
+class="ecit-1000">,</span><span 
+class="ecit-1000"> </span><span 
+class="ecit-1000">estimating</span><span 
+class="ecit-1000"> </span><span 
+class="ecit-1000">in</span><span 
+class="ecit-1000"> </span><span 
+class="ecit-1000">the</span><span 
+class="ecit-1000"> </span><span 
+class="ecit-1000">L</span><span 
+class="ecit-1000"> </span><span 
+class="ecit-1000">subbands</span><span 
+class="ecit-1000"> </span><span 
+class="ecit-1000">and</span><span 
+class="ectt-1000"> </span><br /><span class="label"><a 
+ id="x1-17011r9"></a></span><span 
+class="ecit-1000"> </span><span 
+class="ecit-1000"> </span><span 
+class="ecit-1000"> </span><span 
+class="ecit-1000"> </span><span 
+class="ecit-1000"> </span><span 
+class="ecit-1000"> </span><span 
+class="ecit-1000"> </span><span 
+class="ecit-1000"> </span><span 
+class="ecit-1000">compensaing</span><span 
+class="ecit-1000"> </span><span 
+class="ecit-1000">in</span><span 
+class="ecit-1000"> </span><span 
+class="ecit-1000">the</span><span 
+class="ecit-1000"> </span><span 
+class="ecit-1000">H</span><span 
+class="ecit-1000"> </span><span 
+class="ecit-1000">subbands</span><span 
+class="ecit-1000"> </span><span 
+class="ecit-1000">of</span><span 
+class="ecit-1000"> </span><span 
+class="ecit-1000">the</span><span 
+class="ecit-1000"> </span><span 
+class="ecit-1000">Orthogonal</span><span 
+class="ecit-1000"> </span><span 
+class="ecit-1000">Laplacian</span><span 
+class="ectt-1000"> </span><br /><span class="label"><a 
+ id="x1-17012r10"></a></span><span 
+class="ecit-1000"> </span><span 
+class="ecit-1000"> </span><span 
+class="ecit-1000"> </span><span 
+class="ecit-1000"> </span><span 
+class="ecit-1000"> </span><span 
+class="ecit-1000"> </span><span 
+class="ecit-1000"> </span><span 
+class="ecit-1000"> </span><span 
+class="ecit-1000">Pyramid</span><span 
 class="ecit-1000">.</span><span 
 class="ecit-1000"> </span><span 
 class="ecit-1000">The</span><span 
@@ -4844,18 +4850,18 @@ class="ecit-1000"> </span><span
 class="ecit-1000">sequence</span><span 
 class="ecit-1000"> </span><span 
 class="ecit-1000">of</span><span 
-class="ectt-1000"> </span><br /><span class="label"><a 
- id="x1-17011r9"></a></span><span 
-class="ecit-1000"> </span><span 
-class="ecit-1000"> </span><span 
-class="ecit-1000"> </span><span 
-class="ecit-1000"> </span><span 
-class="ecit-1000"> </span><span 
-class="ecit-1000"> </span><span 
-class="ecit-1000"> </span><span 
 class="ecit-1000"> </span><span 
 class="ecit-1000">1-</span><span 
 class="ecit-1000">iteration</span><span 
+class="ectt-1000"> </span><br /><span class="label"><a 
+ id="x1-17013r11"></a></span><span 
+class="ecit-1000"> </span><span 
+class="ecit-1000"> </span><span 
+class="ecit-1000"> </span><span 
+class="ecit-1000"> </span><span 
+class="ecit-1000"> </span><span 
+class="ecit-1000"> </span><span 
+class="ecit-1000"> </span><span 
 class="ecit-1000"> </span><span 
 class="ecit-1000">decompositions</span><span 
 class="ecit-1000">)</span><span 
@@ -4873,17 +4879,17 @@ class="ecit-1000"> </span><span
 class="ecit-1000">in</span><span 
 class="ecit-1000"> </span><span 
 class="ecit-1000">the</span><span 
-class="ectt-1000"> </span><br /><span class="label"><a 
- id="x1-17012r10"></a></span><span 
-class="ecit-1000"> </span><span 
-class="ecit-1000"> </span><span 
-class="ecit-1000"> </span><span 
-class="ecit-1000"> </span><span 
-class="ecit-1000"> </span><span 
-class="ecit-1000"> </span><span 
-class="ecit-1000"> </span><span 
 class="ecit-1000"> </span><span 
 class="ecit-1000">directory</span><span 
+class="ectt-1000"> </span><br /><span class="label"><a 
+ id="x1-17014r12"></a></span><span 
+class="ecit-1000"> </span><span 
+class="ecit-1000"> </span><span 
+class="ecit-1000"> </span><span 
+class="ecit-1000"> </span><span 
+class="ecit-1000"> </span><span 
+class="ecit-1000"> </span><span 
+class="ecit-1000"> </span><span 
 class="ecit-1000"> </span><span 
 class="ecit-1000">&#x003C;</span><span 
 class="ecit-1000">prefix</span><span 
@@ -4904,18 +4910,18 @@ class="ecit-1000">1-</span><span
 class="ecit-1000">iteration</span><span 
 class="ecit-1000"> </span><span 
 class="ecit-1000">MC</span><span 
-class="ectt-1000"> </span><br /><span class="label"><a 
- id="x1-17013r11"></a></span><span 
-class="ecit-1000"> </span><span 
-class="ecit-1000"> </span><span 
-class="ecit-1000"> </span><span 
-class="ecit-1000"> </span><span 
-class="ecit-1000"> </span><span 
-class="ecit-1000"> </span><span 
-class="ecit-1000"> </span><span 
 class="ecit-1000"> </span><span 
 class="ecit-1000">decompositions</span><span 
 class="ecit-1000">)</span><span 
+class="ectt-1000"> </span><br /><span class="label"><a 
+ id="x1-17015r13"></a></span><span 
+class="ecit-1000"> </span><span 
+class="ecit-1000"> </span><span 
+class="ecit-1000"> </span><span 
+class="ecit-1000"> </span><span 
+class="ecit-1000"> </span><span 
+class="ecit-1000"> </span><span 
+class="ecit-1000"> </span><span 
 class="ecit-1000"> </span><span 
 class="ecit-1000">will</span><span 
 class="ecit-1000"> </span><span 
@@ -4930,9 +4936,9 @@ class="ecit-1000"> </span><span
 class="ecit-1000">directory</span><span 
 class="ecit-1000">.</span><span 
 class="ectt-1000"> </span><br /><span class="label"><a 
- id="x1-17014r12"></a></span><span 
+ id="x1-17016r14"></a></span><span 
 class="ectt-1000"> </span><br /><span class="label"><a 
- id="x1-17015r13"></a></span><span 
+ id="x1-17017r15"></a></span><span 
 class="ecit-1000"> </span><span 
 class="ecit-1000"> </span><span 
 class="ecit-1000"> </span><span 
@@ -4943,7 +4949,7 @@ class="ecit-1000"> </span><span
 class="ecit-1000"> </span><span 
 class="ecit-1000">Input</span><span 
 class="ectt-1000"> </span><br /><span class="label"><a 
- id="x1-17016r14"></a></span><span 
+ id="x1-17018r16"></a></span><span 
 class="ecit-1000"> </span><span 
 class="ecit-1000"> </span><span 
 class="ecit-1000"> </span><span 
@@ -4954,9 +4960,9 @@ class="ecit-1000"> </span><span
 class="ecit-1000"> </span><span 
 class="ecit-1000">-----</span><span 
 class="ectt-1000"> </span><br /><span class="label"><a 
- id="x1-17017r15"></a></span><span 
+ id="x1-17019r17"></a></span><span 
 class="ectt-1000"> </span><br /><span class="label"><a 
- id="x1-17018r16"></a></span><span 
+ id="x1-17020r18"></a></span><span 
 class="ecit-1000"> </span><span 
 class="ecit-1000"> </span><span 
 class="ecit-1000"> </span><span 
@@ -4975,9 +4981,9 @@ class="ecit-1000">:</span><span
 class="ecit-1000"> </span><span 
 class="ecit-1000">str</span><span 
 class="ectt-1000"> </span><br /><span class="label"><a 
- id="x1-17019r17"></a></span><span 
+ id="x1-17021r19"></a></span><span 
 class="ectt-1000"> </span><br /><span class="label"><a 
- id="x1-17020r18"></a></span><span 
+ id="x1-17022r20"></a></span><span 
 class="ecit-1000"> </span><span 
 class="ecit-1000"> </span><span 
 class="ecit-1000"> </span><span 
@@ -5010,7 +5016,7 @@ class="ecit-1000"> </span><span
 class="ecit-1000">Example</span><span 
 class="ecit-1000">:</span><span 
 class="ectt-1000"> </span><br /><span class="label"><a 
- id="x1-17021r19"></a></span><span 
+ id="x1-17023r21"></a></span><span 
 class="ecit-1000"> </span><span 
 class="ecit-1000"> </span><span 
 class="ecit-1000"> </span><span 
@@ -5031,9 +5037,9 @@ class="ecit-1000">&#x0022;/</span><span
 class="ecit-1000">tmp</span><span 
 class="ecit-1000">/&#x0022;.</span><span 
 class="ectt-1000"> </span><br /><span class="label"><a 
- id="x1-17022r20"></a></span><span 
+ id="x1-17024r22"></a></span><span 
 class="ectt-1000"> </span><br /><span class="label"><a 
- id="x1-17023r21"></a></span><span 
+ id="x1-17025r23"></a></span><span 
 class="ecit-1000"> </span><span 
 class="ecit-1000"> </span><span 
 class="ecit-1000"> </span><span 
@@ -5053,9 +5059,9 @@ class="ecit-1000">:</span><span
 class="ecit-1000"> </span><span 
 class="ecit-1000">int</span><span 
 class="ectt-1000"> </span><br /><span class="label"><a 
- id="x1-17024r22"></a></span><span 
+ id="x1-17026r24"></a></span><span 
 class="ectt-1000"> </span><br /><span class="label"><a 
- id="x1-17025r23"></a></span><span 
+ id="x1-17027r25"></a></span><span 
 class="ecit-1000"> </span><span 
 class="ecit-1000"> </span><span 
 class="ecit-1000"> </span><span 
@@ -5083,9 +5089,9 @@ class="ecit-1000"> </span><span
 class="ecit-1000">process</span><span 
 class="ecit-1000">.</span><span 
 class="ectt-1000"> </span><br /><span class="label"><a 
- id="x1-17026r24"></a></span><span 
+ id="x1-17028r26"></a></span><span 
 class="ectt-1000"> </span><br /><span class="label"><a 
- id="x1-17027r25"></a></span><span 
+ id="x1-17029r27"></a></span><span 
 class="ecit-1000"> </span><span 
 class="ecit-1000"> </span><span 
 class="ecit-1000"> </span><span 
@@ -5105,9 +5111,9 @@ class="ecit-1000">:</span><span
 class="ecit-1000"> </span><span 
 class="ecit-1000">int</span><span 
 class="ectt-1000"> </span><br /><span class="label"><a 
- id="x1-17028r26"></a></span><span 
+ id="x1-17030r28"></a></span><span 
 class="ectt-1000"> </span><br /><span class="label"><a 
- id="x1-17029r27"></a></span><span 
+ id="x1-17031r29"></a></span><span 
 class="ecit-1000"> </span><span 
 class="ecit-1000"> </span><span 
 class="ecit-1000"> </span><span 
@@ -5134,7 +5140,7 @@ class="ecit-1000">of</span><span
 class="ecit-1000"> </span><span 
 class="ecit-1000">the</span><span 
 class="ecit-1000"> </span><span 
-class="ecit-1000">MCDWT</span><span 
+class="ecit-1000">MCOLP</span><span 
 class="ecit-1000"> </span><span 
 class="ecit-1000">(</span><span 
 class="ecit-1000">temporal</span><span 
@@ -5142,7 +5148,7 @@ class="ecit-1000"> </span><span
 class="ecit-1000">scales</span><span 
 class="ecit-1000">).</span><span 
 class="ectt-1000"> </span><br /><span class="label"><a 
- id="x1-17030r28"></a></span><span 
+ id="x1-17032r30"></a></span><span 
 class="ecit-1000"> </span><span 
 class="ecit-1000"> </span><span 
 class="ecit-1000"> </span><span 
@@ -5168,9 +5174,9 @@ class="ecit-1000"> </span><span
 class="ecit-1000">size</span><span 
 class="ecit-1000">.</span><span 
 class="ectt-1000"> </span><br /><span class="label"><a 
- id="x1-17031r29"></a></span><span 
+ id="x1-17033r31"></a></span><span 
 class="ectt-1000"> </span><br /><span class="label"><a 
- id="x1-17032r30"></a></span><span 
+ id="x1-17034r32"></a></span><span 
 class="ecit-1000"> </span><span 
 class="ecit-1000"> </span><span 
 class="ecit-1000"> </span><span 
@@ -5195,7 +5201,7 @@ class="ecit-1000">|</span><span
 class="ecit-1000"> </span><span 
 class="ecit-1000">GOP_size</span><span 
 class="ectt-1000"> </span><br /><span class="label"><a 
- id="x1-17033r31"></a></span><span 
+ id="x1-17035r33"></a></span><span 
 class="ecit-1000"> </span><span 
 class="ecit-1000"> </span><span 
 class="ecit-1000"> </span><span 
@@ -5214,7 +5220,7 @@ class="ecit-1000"> </span><span
 class="ecit-1000"> </span><span 
 class="ecit-1000">----+----------</span><span 
 class="ectt-1000"> </span><br /><span class="label"><a 
- id="x1-17034r32"></a></span><span 
+ id="x1-17036r34"></a></span><span 
 class="ecit-1000"> </span><span 
 class="ecit-1000"> </span><span 
 class="ecit-1000"> </span><span 
@@ -5246,7 +5252,7 @@ class="ecit-1000"> </span><span
 class="ecit-1000"> </span><span 
 class="ecit-1000">1</span><span 
 class="ectt-1000"> </span><br /><span class="label"><a 
- id="x1-17035r33"></a></span><span 
+ id="x1-17037r35"></a></span><span 
 class="ecit-1000"> </span><span 
 class="ecit-1000"> </span><span 
 class="ecit-1000"> </span><span 
@@ -5278,7 +5284,7 @@ class="ecit-1000"> </span><span
 class="ecit-1000"> </span><span 
 class="ecit-1000">2</span><span 
 class="ectt-1000"> </span><br /><span class="label"><a 
- id="x1-17036r34"></a></span><span 
+ id="x1-17038r36"></a></span><span 
 class="ecit-1000"> </span><span 
 class="ecit-1000"> </span><span 
 class="ecit-1000"> </span><span 
@@ -5310,7 +5316,7 @@ class="ecit-1000"> </span><span
 class="ecit-1000"> </span><span 
 class="ecit-1000">4</span><span 
 class="ectt-1000"> </span><br /><span class="label"><a 
- id="x1-17037r35"></a></span><span 
+ id="x1-17039r37"></a></span><span 
 class="ecit-1000"> </span><span 
 class="ecit-1000"> </span><span 
 class="ecit-1000"> </span><span 
@@ -5342,7 +5348,7 @@ class="ecit-1000"> </span><span
 class="ecit-1000"> </span><span 
 class="ecit-1000">8</span><span 
 class="ectt-1000"> </span><br /><span class="label"><a 
- id="x1-17038r36"></a></span><span 
+ id="x1-17040r38"></a></span><span 
 class="ecit-1000"> </span><span 
 class="ecit-1000"> </span><span 
 class="ecit-1000"> </span><span 
@@ -5373,7 +5379,7 @@ class="ecit-1000"> </span><span
 class="ecit-1000"> </span><span 
 class="ecit-1000">16</span><span 
 class="ectt-1000"> </span><br /><span class="label"><a 
- id="x1-17039r37"></a></span><span 
+ id="x1-17041r39"></a></span><span 
 class="ecit-1000"> </span><span 
 class="ecit-1000"> </span><span 
 class="ecit-1000"> </span><span 
@@ -5404,7 +5410,7 @@ class="ecit-1000"> </span><span
 class="ecit-1000"> </span><span 
 class="ecit-1000">32</span><span 
 class="ectt-1000"> </span><br /><span class="label"><a 
- id="x1-17040r38"></a></span><span 
+ id="x1-17042r40"></a></span><span 
 class="ecit-1000"> </span><span 
 class="ecit-1000"> </span><span 
 class="ecit-1000"> </span><span 
@@ -5436,9 +5442,9 @@ class="ecit-1000"> </span><span
 class="ecit-1000"> </span><span 
 class="ecit-1000">:</span><span 
 class="ectt-1000"> </span><br /><span class="label"><a 
- id="x1-17041r39"></a></span><span 
+ id="x1-17043r41"></a></span><span 
 class="ectt-1000"> </span><br /><span class="label"><a 
- id="x1-17042r40"></a></span><span 
+ id="x1-17044r42"></a></span><span 
 class="ecit-1000"> </span><span 
 class="ecit-1000"> </span><span 
 class="ecit-1000"> </span><span 
@@ -5449,7 +5455,7 @@ class="ecit-1000"> </span><span
 class="ecit-1000"> </span><span 
 class="ecit-1000">Returns</span><span 
 class="ectt-1000"> </span><br /><span class="label"><a 
- id="x1-17043r41"></a></span><span 
+ id="x1-17045r43"></a></span><span 
 class="ecit-1000"> </span><span 
 class="ecit-1000"> </span><span 
 class="ecit-1000"> </span><span 
@@ -5460,9 +5466,9 @@ class="ecit-1000"> </span><span
 class="ecit-1000"> </span><span 
 class="ecit-1000">-------</span><span 
 class="ectt-1000"> </span><br /><span class="label"><a 
- id="x1-17044r42"></a></span><span 
+ id="x1-17046r44"></a></span><span 
 class="ectt-1000"> </span><br /><span class="label"><a 
- id="x1-17045r43"></a></span><span 
+ id="x1-17047r45"></a></span><span 
 class="ecit-1000"> </span><span 
 class="ecit-1000"> </span><span 
 class="ecit-1000"> </span><span 
@@ -5486,9 +5492,9 @@ class="ecit-1000"> </span><span
 class="ecit-1000">decompositions</span><span 
 class="ecit-1000">.</span><span 
 class="ectt-1000"> </span><br /><span class="label"><a 
- id="x1-17046r44"></a></span><span 
+ id="x1-17048r46"></a></span><span 
 class="ectt-1000"> </span><br /><span class="label"><a 
- id="x1-17047r45"></a></span><span 
+ id="x1-17049r47"></a></span><span 
 class="ecit-1000"> </span><span 
 class="ecit-1000"> </span><span 
 class="ecit-1000"> </span><span 
@@ -5499,7 +5505,7 @@ class="ecit-1000"> </span><span
 class="ecit-1000"> </span><span 
 class="ecit-1000">’’’</span><span 
 class="ectt-1000"> </span><br /><span class="label"><a 
- id="x1-17048r46"></a></span><span 
+ id="x1-17050r48"></a></span><span 
 class="ectt-1000"> </span><span 
 class="ectt-1000"> </span><span 
 class="ectt-1000"> </span><span 
@@ -5514,7 +5520,7 @@ class="ectt-1000">=</span><span
 class="ectt-1000"> </span><span 
 class="ectt-1000">2</span><span 
 class="ectt-1000"> </span><br /><span class="label"><a 
- id="x1-17049r47"></a></span><span 
+ id="x1-17051r49"></a></span><span 
 class="ectt-1000"> </span><span 
 class="ectt-1000"> </span><span 
 class="ectt-1000"> </span><span 
@@ -5540,7 +5546,7 @@ class="ecit-1000">Temporal</span><span
 class="ecit-1000"> </span><span 
 class="ecit-1000">scale</span><span 
 class="ectt-1000"> </span><br /><span class="label"><a 
- id="x1-17050r48"></a></span><span 
+ id="x1-17052r50"></a></span><span 
 class="ecit-1000"> </span><span 
 class="ecit-1000"> </span><span 
 class="ecit-1000"> </span><span 
@@ -5566,7 +5572,7 @@ class="ecit-1000">=’</span><span
 class="ecit-1000"> </span><span 
 class="ecit-1000">’)</span><span 
 class="ectt-1000"> </span><br /><span class="label"><a 
- id="x1-17051r49"></a></span><span 
+ id="x1-17053r51"></a></span><span 
 class="ectt-1000"> </span><span 
 class="ectt-1000"> </span><span 
 class="ectt-1000"> </span><span 
@@ -5585,7 +5591,7 @@ class="ectt-1000">=</span><span
 class="ectt-1000"> </span><span 
 class="ectt-1000">0</span><span 
 class="ectt-1000"> </span><br /><span class="label"><a 
- id="x1-17052r50"></a></span><span 
+ id="x1-17054r52"></a></span><span 
 class="ectt-1000"> </span><span 
 class="ectt-1000"> </span><span 
 class="ectt-1000"> </span><span 
@@ -5621,7 +5627,7 @@ class="ectt-1000">.</span><span
 class="ectt-1000">format</span><span 
 class="ectt-1000">(0))</span><span 
 class="ectt-1000"> </span><br /><span class="label"><a 
- id="x1-17053r51"></a></span><span 
+ id="x1-17055r53"></a></span><span 
 class="ectt-1000"> </span><span 
 class="ectt-1000"> </span><span 
 class="ectt-1000"> </span><span 
@@ -5644,50 +5650,19 @@ class="ectt-1000">(</span><span
 class="ectt-1000">N</span><span 
 class="ectt-1000">//</span><span 
 class="ectt-1000">x</span><span 
-class="ectt-1000">):</span><span 
+class="ectt-1000">):</span>
+</div>
+<!--l. 496--><div class="lstinputlisting">
+<a 
+ id="x1-17056r9"></a>
+<a 
+ id="x1-17057"></a>
+<br /><div class="caption" 
+><span class="id">Listing 9: </span><span  
+class="content">iMCOLP (<a 
+href="https://github.com/Sistemas-Multimedia/MCOLP/blob/master/src/MCOLP.py" >MCOLP.py</a>).</span></div><!--tex4ht:label?: x1-17056r5 --><span 
 class="ectt-1000"> </span><br /><span class="label"><a 
- id="x1-17054r52"></a></span><span 
-class="ecit-1000"> </span><span 
-class="ecit-1000"> </span><span 
-class="ecit-1000"> </span><span 
-class="ecit-1000"> </span><span 
-class="ecit-1000"> </span><span 
-class="ecit-1000"> </span><span 
-class="ecit-1000"> </span><span 
-class="ecit-1000"> </span><span 
-class="ecit-1000"> </span><span 
-class="ecit-1000"> </span><span 
-class="ecit-1000"> </span><span 
-class="ecit-1000"> </span><span 
-class="ecit-1000"> </span><span 
-class="ecit-1000"> </span><span 
-class="ecit-1000"> </span><span 
-class="ecit-1000"> </span><span 
-class="ecit-1000">#</span><span 
-class="ecit-1000">print</span><span 
-class="ecit-1000">(&#x0022;</span><span 
-class="ecit-1000">b</span><span 
-class="ecit-1000">={}</span><span 
-class="ecit-1000"> </span><span 
-class="ecit-1000">c</span><span 
-class="ecit-1000">={}&#x0022;.</span><span 
-class="ecit-1000">format</span><span 
-class="ecit-1000">(</span><span 
-class="ecit-1000">x</span><span 
-class="ecit-1000">*</span><span 
-class="ecit-1000">i</span><span 
-class="ecit-1000">+</span><span 
-class="ecit-1000">x</span><span 
-class="ecit-1000">//2,</span><span 
-class="ecit-1000"> </span><span 
-class="ecit-1000">x</span><span 
-class="ecit-1000">*</span><span 
-class="ecit-1000">i</span><span 
-class="ecit-1000">+</span><span 
-class="ecit-1000">x</span><span 
-class="ecit-1000">))</span><span 
-class="ectt-1000"> </span><br /><span class="label"><a 
- id="x1-17055r53"></a></span><span 
+ id="x1-17058r1"></a></span><span 
 class="ectt-1000"> </span><span 
 class="ectt-1000"> </span><span 
 class="ectt-1000"> </span><span 
@@ -5731,19 +5706,55 @@ class="ectt-1000">*</span><span
 class="ectt-1000">i</span><span 
 class="ectt-1000">+</span><span 
 class="ectt-1000">x</span><span 
-class="ectt-1000">//2))</span>
-</div>
-<!--l. 496--><div class="lstinputlisting">
-<a 
- id="x1-17056r9"></a>
-<a 
- id="x1-17057"></a>
-<br /><div class="caption" 
-><span class="id">Listing 9: </span><span  
-class="content">iMCDWT (<a 
-href="https://github.com/Sistemas-Multimedia/MCDWT/blob/master/src/MCDWT.py" >MCDWT.py</a>).</span></div><!--tex4ht:label?: x1-17056r5 --><span 
+class="ectt-1000">//2))</span><span 
 class="ectt-1000"> </span><br /><span class="label"><a 
- id="x1-17058r1"></a></span><span 
+ id="x1-17059r2"></a></span><span 
+class="ectt-1000"> </span><span 
+class="ectt-1000"> </span><span 
+class="ectt-1000"> </span><span 
+class="ectt-1000"> </span><span 
+class="ectt-1000"> </span><span 
+class="ectt-1000"> </span><span 
+class="ectt-1000"> </span><span 
+class="ectt-1000"> </span><span 
+class="ectt-1000"> </span><span 
+class="ectt-1000"> </span><span 
+class="ectt-1000"> </span><span 
+class="ectt-1000"> </span><span 
+class="ectt-1000"> </span><span 
+class="ectt-1000"> </span><span 
+class="ectt-1000"> </span><span 
+class="ectt-1000"> </span><span 
+class="ectt-1000">cL</span><span 
+class="ectt-1000">,</span><span 
+class="ectt-1000"> </span><span 
+class="ectt-1000">cH</span><span 
+class="ectt-1000"> </span><span 
+class="ectt-1000">=</span><span 
+class="ectt-1000"> </span><span 
+class="ectt-1000">decomposition</span><span 
+class="ectt-1000">.</span><span 
+class="ectt-1000">read</span><span 
+class="ectt-1000">(</span><span 
+class="ectt-1000">prefix</span><span 
+class="ectt-1000">,</span><span 
+class="ectt-1000"> </span><span 
+class="ectt-1000">&#x0022;</span><span 
+class="ectt-1000">{:03</span><span 
+class="ectt-1000">d</span><span 
+class="ectt-1000">}</span><span 
+class="ectt-1000">&#x0022;</span><span 
+class="ectt-1000">.</span><span 
+class="ectt-1000">format</span><span 
+class="ectt-1000">(</span><span 
+class="ectt-1000">x</span><span 
+class="ectt-1000">*</span><span 
+class="ectt-1000">i</span><span 
+class="ectt-1000">+</span><span 
+class="ectt-1000">x</span><span 
+class="ectt-1000">))</span><span 
+class="ectt-1000"> </span><br /><span class="label"><a 
+ id="x1-17060r3"></a></span><span 
 class="ectt-1000"> </span><span 
 class="ectt-1000"> </span><span 
 class="ectt-1000"> </span><span 
@@ -5786,7 +5797,7 @@ class="ectt-1000"> </span><span
 class="ectt-1000">cH</span><span 
 class="ectt-1000">)</span><span 
 class="ectt-1000"> </span><br /><span class="label"><a 
- id="x1-17059r2"></a></span><span 
+ id="x1-17061r4"></a></span><span 
 class="ectt-1000"> </span><span 
 class="ectt-1000"> </span><span 
 class="ectt-1000"> </span><span 
@@ -5828,7 +5839,7 @@ class="ectt-1000">+</span><span
 class="ectt-1000">x</span><span 
 class="ectt-1000">//2))</span><span 
 class="ectt-1000"> </span><br /><span class="label"><a 
- id="x1-17060r3"></a></span><span 
+ id="x1-17062r5"></a></span><span 
 class="ectt-1000"> </span><span 
 class="ectt-1000"> </span><span 
 class="ectt-1000"> </span><span 
@@ -5857,7 +5868,7 @@ class="ectt-1000">,</span><span
 class="ectt-1000"> </span><span 
 class="ectt-1000">cH</span><span 
 class="ectt-1000"> </span><br /><span class="label"><a 
- id="x1-17061r4"></a></span><span 
+ id="x1-17063r6"></a></span><span 
 class="ecit-1000"> </span><span 
 class="ecit-1000"> </span><span 
 class="ecit-1000"> </span><span 
@@ -5893,7 +5904,7 @@ class="ecit-1000">=’</span><span
 class="ecit-1000"> </span><span 
 class="ecit-1000">’)</span><span 
 class="ectt-1000"> </span><br /><span class="label"><a 
- id="x1-17062r5"></a></span><span 
+ id="x1-17064r7"></a></span><span 
 class="ectt-1000"> </span><span 
 class="ectt-1000"> </span><span 
 class="ectt-1000"> </span><span 
@@ -5916,7 +5927,7 @@ class="ectt-1000">+=</span><span
 class="ectt-1000"> </span><span 
 class="ectt-1000">1</span><span 
 class="ectt-1000"> </span><br /><span class="label"><a 
- id="x1-17063r6"></a></span><span 
+ id="x1-17065r8"></a></span><span 
 class="ectt-1000"> </span><span 
 class="ectt-1000"> </span><span 
 class="ectt-1000"> </span><span 
@@ -5935,7 +5946,7 @@ class="ectt-1000">*=</span><span
 class="ectt-1000"> </span><span 
 class="ectt-1000">2</span><span 
 class="ectt-1000"> </span><br /><span class="label"><a 
- id="x1-17064r7"></a></span><span 
+ id="x1-17066r9"></a></span><span 
 class="ecit-1000"> </span><span 
 class="ecit-1000"> </span><span 
 class="ecit-1000"> </span><span 
@@ -5954,9 +5965,9 @@ class="ecit-1000">(’\</span><span
 class="ecit-1000">n</span><span 
 class="ecit-1000">’)</span><span 
 class="ectt-1000"> </span><br /><span class="label"><a 
- id="x1-17065r8"></a></span><span 
+ id="x1-17067r10"></a></span><span 
 class="ectt-1000"> </span><br /><span class="label"><a 
- id="x1-17066r9"></a></span><span 
+ id="x1-17068r11"></a></span><span 
 class="ectt-1000"> </span><span 
 class="ectt-1000"> </span><span 
 class="ectt-1000"> </span><span 
@@ -5985,7 +5996,7 @@ class="ectt-1000"> </span><span
 class="ectt-1000">T</span><span 
 class="ectt-1000">=2):</span><span 
 class="ectt-1000"> </span><br /><span class="label"><a 
- id="x1-17067r10"></a></span><span 
+ id="x1-17069r12"></a></span><span 
 class="ecit-1000"> </span><span 
 class="ecit-1000"> </span><span 
 class="ecit-1000"> </span><span 
@@ -5997,12 +6008,12 @@ class="ecit-1000"> </span><span
 class="ecit-1000">’’’</span><span 
 class="ecit-1000">Backward</span><span 
 class="ecit-1000"> </span><span 
-class="ecit-1000">MCDWT</span><span 
+class="ecit-1000">MCOLP</span><span 
 class="ecit-1000">.</span><span 
 class="ectt-1000"> </span><br /><span class="label"><a 
- id="x1-17068r11"></a></span><span 
+ id="x1-17070r13"></a></span><span 
 class="ectt-1000"> </span><br /><span class="label"><a 
- id="x1-17069r12"></a></span><span 
+ id="x1-17071r14"></a></span><span 
 class="ecit-1000"> </span><span 
 class="ecit-1000"> </span><span 
 class="ecit-1000"> </span><span 
@@ -6033,7 +6044,7 @@ class="ecit-1000">sequence</span><span
 class="ecit-1000"> </span><span 
 class="ecit-1000">of</span><span 
 class="ectt-1000"> </span><br /><span class="label"><a 
- id="x1-17070r13"></a></span><span 
+ id="x1-17072r15"></a></span><span 
 class="ecit-1000"> </span><span 
 class="ecit-1000"> </span><span 
 class="ecit-1000"> </span><span 
@@ -6063,7 +6074,7 @@ class="ecit-1000">in</span><span
 class="ecit-1000"> </span><span 
 class="ecit-1000">the</span><span 
 class="ectt-1000"> </span><br /><span class="label"><a 
- id="x1-17071r14"></a></span><span 
+ id="x1-17073r16"></a></span><span 
 class="ecit-1000"> </span><span 
 class="ecit-1000"> </span><span 
 class="ecit-1000"> </span><span 
@@ -6092,7 +6103,7 @@ class="ecit-1000"> </span><span
 class="ecit-1000">1-</span><span 
 class="ecit-1000">iteration</span><span 
 class="ectt-1000"> </span><br /><span class="label"><a 
- id="x1-17072r15"></a></span><span 
+ id="x1-17074r17"></a></span><span 
 class="ecit-1000"> </span><span 
 class="ecit-1000"> </span><span 
 class="ecit-1000"> </span><span 
@@ -6117,9 +6128,9 @@ class="ecit-1000"> </span><span
 class="ecit-1000">directory</span><span 
 class="ecit-1000">.</span><span 
 class="ectt-1000"> </span><br /><span class="label"><a 
- id="x1-17073r16"></a></span><span 
+ id="x1-17075r18"></a></span><span 
 class="ectt-1000"> </span><br /><span class="label"><a 
- id="x1-17074r17"></a></span><span 
+ id="x1-17076r19"></a></span><span 
 class="ecit-1000"> </span><span 
 class="ecit-1000"> </span><span 
 class="ecit-1000"> </span><span 
@@ -6130,7 +6141,7 @@ class="ecit-1000"> </span><span
 class="ecit-1000"> </span><span 
 class="ecit-1000">Input</span><span 
 class="ectt-1000"> </span><br /><span class="label"><a 
- id="x1-17075r18"></a></span><span 
+ id="x1-17077r20"></a></span><span 
 class="ecit-1000"> </span><span 
 class="ecit-1000"> </span><span 
 class="ecit-1000"> </span><span 
@@ -6141,9 +6152,9 @@ class="ecit-1000"> </span><span
 class="ecit-1000"> </span><span 
 class="ecit-1000">-----</span><span 
 class="ectt-1000"> </span><br /><span class="label"><a 
- id="x1-17076r19"></a></span><span 
+ id="x1-17078r21"></a></span><span 
 class="ectt-1000"> </span><br /><span class="label"><a 
- id="x1-17077r20"></a></span><span 
+ id="x1-17079r22"></a></span><span 
 class="ecit-1000"> </span><span 
 class="ecit-1000"> </span><span 
 class="ecit-1000"> </span><span 
@@ -6162,9 +6173,9 @@ class="ecit-1000">:</span><span
 class="ecit-1000"> </span><span 
 class="ecit-1000">str</span><span 
 class="ectt-1000"> </span><br /><span class="label"><a 
- id="x1-17078r21"></a></span><span 
+ id="x1-17080r23"></a></span><span 
 class="ectt-1000"> </span><br /><span class="label"><a 
- id="x1-17079r22"></a></span><span 
+ id="x1-17081r24"></a></span><span 
 class="ecit-1000"> </span><span 
 class="ecit-1000"> </span><span 
 class="ecit-1000"> </span><span 
@@ -6197,7 +6208,7 @@ class="ecit-1000"> </span><span
 class="ecit-1000">Example</span><span 
 class="ecit-1000">:</span><span 
 class="ectt-1000"> </span><br /><span class="label"><a 
- id="x1-17080r23"></a></span><span 
+ id="x1-17082r25"></a></span><span 
 class="ecit-1000"> </span><span 
 class="ecit-1000"> </span><span 
 class="ecit-1000"> </span><span 
@@ -6218,9 +6229,9 @@ class="ecit-1000">&#x0022;/</span><span
 class="ecit-1000">tmp</span><span 
 class="ecit-1000">/&#x0022;.</span><span 
 class="ectt-1000"> </span><br /><span class="label"><a 
- id="x1-17081r24"></a></span><span 
+ id="x1-17083r26"></a></span><span 
 class="ectt-1000"> </span><br /><span class="label"><a 
- id="x1-17082r25"></a></span><span 
+ id="x1-17084r27"></a></span><span 
 class="ecit-1000"> </span><span 
 class="ecit-1000"> </span><span 
 class="ecit-1000"> </span><span 
@@ -6240,9 +6251,9 @@ class="ecit-1000">:</span><span
 class="ecit-1000"> </span><span 
 class="ecit-1000">int</span><span 
 class="ectt-1000"> </span><br /><span class="label"><a 
- id="x1-17083r26"></a></span><span 
+ id="x1-17085r28"></a></span><span 
 class="ectt-1000"> </span><br /><span class="label"><a 
- id="x1-17084r27"></a></span><span 
+ id="x1-17086r29"></a></span><span 
 class="ecit-1000"> </span><span 
 class="ecit-1000"> </span><span 
 class="ecit-1000"> </span><span 
@@ -6270,9 +6281,9 @@ class="ecit-1000"> </span><span
 class="ecit-1000">process</span><span 
 class="ecit-1000">.</span><span 
 class="ectt-1000"> </span><br /><span class="label"><a 
- id="x1-17085r28"></a></span><span 
+ id="x1-17087r30"></a></span><span 
 class="ectt-1000"> </span><br /><span class="label"><a 
- id="x1-17086r29"></a></span><span 
+ id="x1-17088r31"></a></span><span 
 class="ecit-1000"> </span><span 
 class="ecit-1000"> </span><span 
 class="ecit-1000"> </span><span 
@@ -6292,9 +6303,9 @@ class="ecit-1000">:</span><span
 class="ecit-1000"> </span><span 
 class="ecit-1000">int</span><span 
 class="ectt-1000"> </span><br /><span class="label"><a 
- id="x1-17087r30"></a></span><span 
+ id="x1-17089r32"></a></span><span 
 class="ectt-1000"> </span><br /><span class="label"><a 
- id="x1-17088r31"></a></span><span 
+ id="x1-17090r33"></a></span><span 
 class="ecit-1000"> </span><span 
 class="ecit-1000"> </span><span 
 class="ecit-1000"> </span><span 
@@ -6321,7 +6332,7 @@ class="ecit-1000">of</span><span
 class="ecit-1000"> </span><span 
 class="ecit-1000">the</span><span 
 class="ecit-1000"> </span><span 
-class="ecit-1000">MCDWT</span><span 
+class="ecit-1000">MCOLP</span><span 
 class="ecit-1000"> </span><span 
 class="ecit-1000">(</span><span 
 class="ecit-1000">temporal</span><span 
@@ -6329,9 +6340,9 @@ class="ecit-1000"> </span><span
 class="ecit-1000">scales</span><span 
 class="ecit-1000">).</span><span 
 class="ectt-1000"> </span><br /><span class="label"><a 
- id="x1-17089r32"></a></span><span 
+ id="x1-17091r34"></a></span><span 
 class="ectt-1000"> </span><br /><span class="label"><a 
- id="x1-17090r33"></a></span><span 
+ id="x1-17092r35"></a></span><span 
 class="ecit-1000"> </span><span 
 class="ecit-1000"> </span><span 
 class="ecit-1000"> </span><span 
@@ -6342,7 +6353,7 @@ class="ecit-1000"> </span><span
 class="ecit-1000"> </span><span 
 class="ecit-1000">Returns</span><span 
 class="ectt-1000"> </span><br /><span class="label"><a 
- id="x1-17091r34"></a></span><span 
+ id="x1-17093r36"></a></span><span 
 class="ecit-1000"> </span><span 
 class="ecit-1000"> </span><span 
 class="ecit-1000"> </span><span 
@@ -6353,9 +6364,9 @@ class="ecit-1000"> </span><span
 class="ecit-1000"> </span><span 
 class="ecit-1000">-------</span><span 
 class="ectt-1000"> </span><br /><span class="label"><a 
- id="x1-17092r35"></a></span><span 
+ id="x1-17094r37"></a></span><span 
 class="ectt-1000"> </span><br /><span class="label"><a 
- id="x1-17093r36"></a></span><span 
+ id="x1-17095r38"></a></span><span 
 class="ecit-1000"> </span><span 
 class="ecit-1000"> </span><span 
 class="ecit-1000"> </span><span 
@@ -6380,9 +6391,9 @@ class="ecit-1000"> </span><span
 class="ecit-1000">decompositions</span><span 
 class="ecit-1000">.</span><span 
 class="ectt-1000"> </span><br /><span class="label"><a 
- id="x1-17094r37"></a></span><span 
+ id="x1-17096r39"></a></span><span 
 class="ectt-1000"> </span><br /><span class="label"><a 
- id="x1-17095r38"></a></span><span 
+ id="x1-17097r40"></a></span><span 
 class="ecit-1000"> </span><span 
 class="ecit-1000"> </span><span 
 class="ecit-1000"> </span><span 
@@ -6393,7 +6404,7 @@ class="ecit-1000"> </span><span
 class="ecit-1000"> </span><span 
 class="ecit-1000">’’’</span><span 
 class="ectt-1000"> </span><br /><span class="label"><a 
- id="x1-17096r39"></a></span><span 
+ id="x1-17098r41"></a></span><span 
 class="ectt-1000"> </span><span 
 class="ectt-1000"> </span><span 
 class="ectt-1000"> </span><span 
@@ -6409,7 +6420,7 @@ class="ectt-1000"> </span><span
 class="ectt-1000">2**</span><span 
 class="ectt-1000">T</span><span 
 class="ectt-1000"> </span><br /><span class="label"><a 
- id="x1-17097r40"></a></span><span 
+ id="x1-17099r42"></a></span><span 
 class="ectt-1000"> </span><span 
 class="ectt-1000"> </span><span 
 class="ectt-1000"> </span><span 
@@ -6433,66 +6444,11 @@ class="ecit-1000">#</span><span
 class="ecit-1000"> </span><span 
 class="ecit-1000">Temporal</span><span 
 class="ecit-1000"> </span><span 
-class="ecit-1000">scale</span><span 
-class="ectt-1000"> </span><br /><span class="label"><a 
- id="x1-17098r41"></a></span><span 
-class="ectt-1000"> </span><span 
-class="ectt-1000"> </span><span 
-class="ectt-1000"> </span><span 
-class="ectt-1000"> </span><span 
-class="ectt-1000"> </span><span 
-class="ectt-1000"> </span><span 
-class="ectt-1000"> </span><span 
-class="ectt-1000"> </span><span 
-class="ectt-1000"> </span><span 
-class="ectt-1000"> </span><span 
-class="ectt-1000"> </span><span 
-class="ectt-1000"> </span><span 
-class="ectt-1000">i</span><span 
-class="ectt-1000"> </span><span 
-class="ectt-1000">=</span><span 
-class="ectt-1000"> </span><span 
-class="ectt-1000">0</span><span 
-class="ectt-1000"> </span><br /><span class="label"><a 
- id="x1-17099r42"></a></span><span 
-class="ectt-1000"> </span><span 
-class="ectt-1000"> </span><span 
-class="ectt-1000"> </span><span 
-class="ectt-1000"> </span><span 
-class="ectt-1000"> </span><span 
-class="ectt-1000"> </span><span 
-class="ectt-1000"> </span><span 
-class="ectt-1000"> </span><span 
-class="ectt-1000"> </span><span 
-class="ectt-1000"> </span><span 
-class="ectt-1000"> </span><span 
-class="ectt-1000"> </span><span 
-class="ectt-1000">aL</span><span 
-class="ectt-1000">,</span><span 
-class="ectt-1000"> </span><span 
-class="ectt-1000">aH</span><span 
-class="ectt-1000"> </span><span 
-class="ectt-1000">=</span><span 
-class="ectt-1000"> </span><span 
-class="ectt-1000">decomposition</span><span 
-class="ectt-1000">.</span><span 
-class="ectt-1000">read</span><span 
-class="ectt-1000">(</span><span 
-class="ectt-1000">prefix</span><span 
-class="ectt-1000">,</span><span 
-class="ectt-1000"> </span><span 
-class="ectt-1000">&#x0022;</span><span 
-class="ectt-1000">{:03</span><span 
-class="ectt-1000">d</span><span 
-class="ectt-1000">}</span><span 
-class="ectt-1000">&#x0022;</span><span 
-class="ectt-1000">.</span><span 
-class="ectt-1000">format</span><span 
-class="ectt-1000">(0))</span>
+class="ecit-1000">scale</span>
 </div>
 <br /> <div class="caption" 
 ><span class="id">Figure 4: </span><span  
-class="content">Implementation of the MCDWT.</span></div><!--tex4ht:label?: x1-171004 -->
+class="content">Implementation of the MCOLP.</span></div><!--tex4ht:label?: x1-171004 -->
                                                                   
 
                                                                   
@@ -6517,7 +6473,7 @@ display="inline" ><mi
 are temporally decorrelated.
 </p>
    <h4 class="likesubsectionHead"><a 
- id="x1-180005.2"></a>Example: 1-iteration MDWT + 1-iteration MCDWT</h4>
+ id="x1-180005.2"></a>Example: 1-iteration MDWT + 1-iteration MCOLP</h4>
 <!--l. 506--><p class="noindent" >In this example, a sequence of ﬁve images is transformed ﬁrst with
 the (1-iteration) MDWT, producing 2 SRLs by image. Next, the
 <!--l. 507--><math 
@@ -6525,7 +6481,7 @@ the (1-iteration) MDWT, producing 2 SRLs by image. Next, the
 display="inline" ><mi 
 >H</mi></math>
 subbands of the odd images (images 1 and 3) are motion compensated using the
-(1-iteration) MCDWT.
+(1-iteration) MCOLP.
                                                                   
 
                                                                   
@@ -6534,8 +6490,8 @@ subbands of the odd images (images 1 and 3) are motion compensated using the
 predictor=1
  <br />iterations=1
  <br />
- <br /># You must be in the ’src’ directory.
- <br />rm /tmp/*.png
+ <br /># You must be in the ’src’ directory to run this.
+ <br />rm -f /tmp/*.png
  <br />cp ../sequences/stockholm/*.png /tmp
  <br />
  <br /># 1-iteration MDWT.
@@ -6547,8 +6503,8 @@ predictor=1
  <br />for i in /tmp/HL???.png; do ls -l $i; done
  <br />for i in /tmp/HH???.png; do ls -l $i; done
  <br />
- <br /># 1-iteration MCDWT.
- <br />python3 -O MCDWT.py -P $predictor -p /tmp/ -T $iterations
+ <br /># 1-iteration MCOLP.
+ <br />python3 -O MCOLP.py -P $predictor -p /tmp/ -T $iterations
  <br />
  <br /># Show the length of the subbands.
  <br />for i in /tmp/LL???.png; do ls -l $i; done
@@ -6562,8 +6518,8 @@ predictor=1
  <br /># Lets recover the original sequence ...
  <br />rm /tmp/???.png
  <br />
- <br /># 1-iteration iMCDWT.
- <br />python3 -O MCDWT.py -P $predictor -b -p /tmp/ -T $iterations
+ <br /># 1-iteration iMCOLP.
+ <br />python3 -O MCOLP.py -P $predictor -b -p /tmp/ -T $iterations
  <br />
  <br /># 1-iteration iMDWT.
  <br />python3 -O MDWT.py -b -p /tmp/
@@ -6583,20 +6539,20 @@ predictor=1
 </p><!--l. 558--><p class="noindent" >
 </p>
    <h4 class="likesubsectionHead"><a 
- id="x1-190005.2"></a>Example: 1-iteration MDWT + 2-iterations MCDWT</h4>
-<!--l. 559--><p class="noindent" >This example is similar to the previous, but now the number of iterations of MCDWT is
-<!--l. 560--><math 
+ id="x1-190005.2"></a>Example: 1-iteration MDWT + 2-iterations MCOLP</h4>
+<!--l. 559--><p class="noindent" >This example is similar to the previous, but now the number of iterations of MCOLP
+is <!--l. 560--><math 
  xmlns="http://www.w3.org/1998/Math/MathML"  
 display="inline" ><mi 
 >T</mi> <mo 
 class="MathClass-rel">=</mo> <mn>2</mn></math>.
-Now, the second iteration of MCDWT compensates also the
+Now, the second iteration of MCOLP compensates also the
 <!--l. 561--><math 
  xmlns="http://www.w3.org/1998/Math/MathML"  
 display="inline" ><mi 
 >H</mi></math> subband of
 the image 2. This example matches exactly with the described in the Fig <a 
-href="#x1-171004">4<!--tex4ht:ref: fig:MCDWT --></a>. Notice that the
+href="#x1-171004">4<!--tex4ht:ref: fig:MCOLP --></a>. Notice that the
 GOP size is <!--l. 563--><math 
  xmlns="http://www.w3.org/1998/Math/MathML"  
 display="inline" ><mn>4</mn></math>
@@ -6625,10 +6581,10 @@ predictor=1
  <br />mkdir /tmp/tmp
  <br />cp /tmp/*.png /tmp/tmp
  <br />
- <br /># 1-iteration MCDWT.
- <br />python3 -O MCDWT.py -p /tmp/ -T 1
+ <br /># 1-iteration MCOLP.
+ <br />python3 -O MCOLP.py -p /tmp/ -T 1
  <br />
- <br /># Is the content of the MCDWT subbands different to the MDWT’s output?
+ <br /># Is the content of the MCOLP subbands different to the MDWT’s output?
  <br />for i in {0..4}; do ii=$(printf &#x0022;%03d&#x0022; $i); ls -l /tmp/LL$ii.png /tmp/tmp/LL$ii.png;echo; done
  <br />for i in {0..4}; do ii=$(printf &#x0022;%03d&#x0022; $i); ls -l /tmp/LH$ii.png /tmp/tmp/LH$ii.png;echo; done
  <br />for i in {0..4}; do ii=$(printf &#x0022;%03d&#x0022; $i); ls -l /tmp/HL$ii.png /tmp/tmp/HL$ii.png;echo; done
@@ -6645,10 +6601,10 @@ predictor=1
  <br />mkdir /tmp/tmp
  <br />cp /tmp/*.png /tmp/tmp
  <br />
- <br /># 2-iterations MCDWT.
- <br />python3 -O MCDWT.py -p /tmp/ -T 2
+ <br /># 2-iterations MCOLP.
+ <br />python3 -O MCOLP.py -p /tmp/ -T 2
  <br />
- <br /># Is the content of the MCDWT subbands different to the MDWT’s output?
+ <br /># Is the content of the MCOLP subbands different to the MDWT’s output?
  <br />for i in {0..4}; do ii=$(printf &#x0022;%03d&#x0022; $i); ls -l /tmp/LL$ii.png /tmp/tmp/LL$ii.png;echo; done
  <br />for i in {0..4}; do ii=$(printf &#x0022;%03d&#x0022; $i); ls -l /tmp/LH$ii.png /tmp/tmp/LH$ii.png;echo; done
  <br />for i in {0..4}; do ii=$(printf &#x0022;%03d&#x0022; $i); ls -l /tmp/HL$ii.png /tmp/tmp/HL$ii.png;echo; done
@@ -6659,47 +6615,47 @@ predictor=1
  <br />
  <br /># Comparing LH visually.
  <br />for i in {0..4}; do ii=$(printf &#x0022;%03d&#x0022; $i); convert -normalize /tmp/tmp/LH$ii.png /tmp/tmp/MDWT_LH$ii.png; done
- <br />for i in {0..4}; do ii=$(printf &#x0022;%03d&#x0022; $i); convert -normalize /tmp/LH$ii.png /tmp/MCDWT_LH$ii.png; done
+ <br />for i in {0..4}; do ii=$(printf &#x0022;%03d&#x0022; $i); convert -normalize /tmp/LH$ii.png /tmp/MCOLP_LH$ii.png; done
  <br />animate /tmp/tmp/MDWT_LH00?.png &#x0026;
- <br />animate /tmp/MCDWT_LH00?.png &#x0026;
+ <br />animate /tmp/MCOLP_LH00?.png &#x0026;
  <br />
  <br /># Comparing LH002 numerically.
  <br />echo MDWT &#x003E; /tmp/1
- <br />printf &#x0022;%61s\n&#x0022; MCDWT &#x003E; /tmp/2
+ <br />printf &#x0022;%61s\n&#x0022; MCOLP &#x003E; /tmp/2
  <br />python3 ../tools/show_statistics.py -i /tmp/tmp/LH002.png &#x003E;&#x003E; /tmp/1
  <br />python3 ../tools/show_statistics.py -i /tmp/LH002.png &#x003E;&#x003E; /tmp/2
  <br />paste /tmp/1 /tmp/2
  <br />
  <br /># Comparing HL visually.
  <br />for i in {0..4}; do ii=$(printf &#x0022;%03d&#x0022; $i); convert -normalize /tmp/tmp/HL$ii.png /tmp/tmp/MDWT_HL$ii.png; done
- <br />for i in {0..4}; do ii=$(printf &#x0022;%03d&#x0022; $i); convert -normalize /tmp/HL$ii.png /tmp/MCDWT_HL$ii.png; done
+ <br />for i in {0..4}; do ii=$(printf &#x0022;%03d&#x0022; $i); convert -normalize /tmp/HL$ii.png /tmp/MCOLP_HL$ii.png; done
  <br />animate /tmp/tmp/MDWT_HL00?.png &#x0026;
- <br />animate /tmp/MCDWT_HL00?.png &#x0026;
+ <br />animate /tmp/MCOLP_HL00?.png &#x0026;
  <br />
  <br /># Comparing HL002 numerically.
  <br />echo MDWT &#x003E; /tmp/1
- <br />printf &#x0022;%61s\n&#x0022; MCDWT &#x003E; /tmp/2
+ <br />printf &#x0022;%61s\n&#x0022; MCOLP &#x003E; /tmp/2
  <br />python3 ../tools/show_statistics.py -i /tmp/tmp/HL002.png &#x003E;&#x003E; /tmp/1
  <br />python3 ../tools/show_statistics.py -i /tmp/HL002.png &#x003E;&#x003E; /tmp/2
  <br />paste /tmp/1 /tmp/2
  <br />
  <br /># Comparing HH visually.
  <br />for i in {0..4}; do ii=$(printf &#x0022;%03d&#x0022; $i); convert -normalize /tmp/tmp/HH$ii.png /tmp/tmp/MDWT_HH$ii.png; done
- <br />for i in {0..4}; do ii=$(printf &#x0022;%03d&#x0022; $i); convert -normalize /tmp/HH$ii.png /tmp/MCDWT_HH$ii.png; done
+ <br />for i in {0..4}; do ii=$(printf &#x0022;%03d&#x0022; $i); convert -normalize /tmp/HH$ii.png /tmp/MCOLP_HH$ii.png; done
  <br />animate /tmp/tmp/MDWT_HH00?.png &#x0026;
- <br />animate /tmp/MCDWT_HH00?.png &#x0026;
+ <br />animate /tmp/MCOLP_HH00?.png &#x0026;
  <br />
  <br /># Comparing HH002 numerically.
  <br />echo MDWT &#x003E; /tmp/1
- <br />printf &#x0022;%61s\n&#x0022; MCDWT &#x003E; /tmp/2
+ <br />printf &#x0022;%61s\n&#x0022; MCOLP &#x003E; /tmp/2
  <br />python3 ../tools/show_statistics.py -i /tmp/tmp/HH002.png &#x003E;&#x003E; /tmp/1
  <br />python3 ../tools/show_statistics.py -i /tmp/HH002.png &#x003E;&#x003E; /tmp/2
  <br />paste /tmp/1 /tmp/2
  <br />
  <br /># Now we recover the original video.
  <br />
- <br /># 2-iterations iMCDWT.
- <br />python3 -O MCDWT.py -P $predictor -b -p /tmp/ -T $iterations
+ <br /># 2-iterations iMCOLP.
+ <br />python3 -O MCOLP.py -P $predictor -b -p /tmp/ -T $iterations
  <br />
                                                                   
 
@@ -6721,7 +6677,7 @@ predictor=1
 </p><!--l. 667--><p class="noindent" >
 </p>
    <h4 class="likesubsectionHead"><a 
- id="x1-200005.2"></a>Example: 1-iteration MDWT + 4-iterations MCDWT</h4>
+ id="x1-200005.2"></a>Example: 1-iteration MDWT + 4-iterations MCOLP</h4>
 <!--l. 668--><p class="noindent" >A exaple with <!--l. 668--><math 
  xmlns="http://www.w3.org/1998/Math/MathML"  
 display="inline" ><mi 
@@ -6758,8 +6714,8 @@ class="MathClass-rel">=</mo> <mn>1</mn><mn>6</mn></math>.
  <br />cp /tmp/HL*.png /tmp/tmp
  <br />cp /tmp/HH*.png /tmp/tmp
  <br />
- <br /># 4-iterations MCDWT.
- <br />python3 -O MCDWT.py -p /tmp/ -T 4 -N 17
+ <br /># 4-iterations MCOLP.
+ <br />python3 -O MCOLP.py -p /tmp/ -T 4 -N 17
  <br />
  <br />ls -l /tmp/LH*.png &#x003E; /tmp/1
  <br />ls -l /tmp/tmp/LH*.png &#x003E; /tmp/2
@@ -6775,8 +6731,8 @@ class="MathClass-rel">=</mo> <mn>1</mn><mn>6</mn></math>.
  <br />
  <br /># Now we recover the original video.
  <br />
- <br /># 4-iterations iMCDWT.
- <br />python3 -O MCDWT.py -b -p /tmp/ -T 4 -N 17
+ <br /># 4-iterations iMCOLP.
+ <br />python3 -O MCOLP.py -b -p /tmp/ -T 4 -N 17
                                                                   
 
                                                                   
@@ -6798,12 +6754,12 @@ class="MathClass-rel">=</mo> <mn>1</mn><mn>6</mn></math>.
 </p><!--l. 727--><p class="noindent" >
 </p>
    <h4 class="subsectionHead"><span class="titlemark">5.3   </span> <a 
- id="x1-210005.3"></a>Scalability provided by MCDWT</h4>
-<!--l. 728--><p class="noindent" >MCDWT preserves the dyadic spatial decomposition generated by MDWT, and
-therefore, MCDWT provides the same spatial scalability than MDWT.
-</p><!--l. 731--><p class="indent" >   Unfortunately, as the rest of video encoders based on MC, MCDWT reduces the
+ id="x1-210005.3"></a>Scalability provided by MCOLP</h4>
+<!--l. 728--><p class="noindent" >MCOLP preserves the dyadic spatial decomposition generated by MDWT, and
+therefore, MCOLP provides the same spatial scalability than MDWT.
+</p><!--l. 731--><p class="indent" >   Unfortunately, as the rest of video encoders based on MC, MCOLP reduces the
 temporal scalability provided by MDWT, allowing only a dyadic access to the
-images. For example, after applying each iteration of the inverse MCDWT, if
+images. For example, after applying each iteration of the inverse MCOLP, if
 <!--l. 734--><math 
  xmlns="http://www.w3.org/1998/Math/MathML"  
 display="inline" ><mi 
@@ -6827,8 +6783,8 @@ image of the sequence) should be reconstructed in this order:
    <div class="verbatim" id="verbatim-12">
  <br />GOP0          GOP 1
  <br />---- ------------------------
- <br />  s0                       s8  &#x003C;- output of the 3-iterations MCDWT. Provides TRL3.
- <br />               s4              &#x003C;- first iteration of the inverse MCDWT. Provides TRL2.
+ <br />  s0                       s8  &#x003C;- output of the 3-iterations MCOLP. Provides TRL3.
+ <br />               s4              &#x003C;- first iteration of the inverse MCOLP. Provides TRL2.
  <br />         s2          s6        &#x003C;- second iteration. Provides TRL1.
  <br />      s1    s3    s5    s7     &#x003C;- third iteration. Provides TRL0.
  <br />
@@ -6841,7 +6797,7 @@ image of the sequence) should be reconstructed in this order:
  xmlns="http://www.w3.org/1998/Math/MathML"  
 display="inline" ><mo 
 class="MathClass-bin">×</mo></math>
-(1-iter MDWT + 2-iters MCDWT)</h4>
+(1-iter MDWT + 2-iters MCOLP)</h4>
                                                                   
 
                                                                   
@@ -6855,19 +6811,19 @@ predictor=1
  <br />
  <br />predictor=1
  <br />python3 -O MDWT.py  -p /tmp/
- <br />python3 -O MCDWT.py -p /tmp/     -P $predictor -T $iterations
+ <br />python3 -O MCOLP.py -p /tmp/     -P $predictor -T $iterations
  <br />python3 -O MDWT.py  -p /tmp/LL
- <br />python3 -O MCDWT.py -p /tmp/LL   -P $predictor -T $iterations
+ <br />python3 -O MCOLP.py -p /tmp/LL   -P $predictor -T $iterations
  <br />python3 -O MDWT.py  -p /tmp/LLLL
- <br />python3 -O MCDWT.py -p /tmp/LLLL -P $predictor -T $iterations
+ <br />python3 -O MCOLP.py -p /tmp/LLLL -P $predictor -T $iterations
  <br />
  <br />rm /tmp/00?.png
  <br />
- <br />python3 -O MCDWT.py -p /tmp/LLLL -P $predictor -b -T $iterations
+ <br />python3 -O MCOLP.py -p /tmp/LLLL -P $predictor -b -T $iterations
  <br />python3 -O MDWT.py  -p /tmp/LLLL               -b
- <br />python3 -O MCDWT.py -p /tmp/LL   -P $predictor -b -T $iterations
+ <br />python3 -O MCOLP.py -p /tmp/LL   -P $predictor -b -T $iterations
  <br />python3 -O MDWT.py  -p /tmp/LL                 -b
- <br />python3 -O MCDWT.py -p /tmp/     -P $predictor -b -T $iterations
+ <br />python3 -O MCOLP.py -p /tmp/     -P $predictor -b -T $iterations
  <br />python3 -O MDWT.py  -p /tmp/                   -b
  <br />
  <br />for i in /tmp/00?.png; do python ../tools/substract_offset.py -i $i -o $i.png; done; animate /tmp/00?.png.png
@@ -6973,7 +6929,7 @@ diﬀerent possible reconstructions of the video are possible:
    <h3 class="sectionHead"><span class="titlemark">6   </span> <a 
  id="x1-230006"></a>Adaptive motion compensation based on the distortion of the prediction
 error</h3>
-<!--l. 1002--><p class="noindent" >As can be seen in the MCDWT buﬀerﬂy (see Fig. <a 
+<!--l. 1002--><p class="noindent" >As can be seen in the MCOLP buﬀerﬂy (see Fig. <a 
 href="#x1-160683">3<!--tex4ht:ref: fig:forward_butterfly --></a>), both predictions
 <!--l. 1003--><math 
  xmlns="http://www.w3.org/1998/Math/MathML"  
@@ -7571,7 +7527,7 @@ class="MathClass-punc">,</mo><mi
 <br /> <div class="caption" 
 ><span class="id">Listing 10: </span><span  
 class="content"><a 
-href="https://github.com/Sistemas-Multimedia/MCDWT/blob/master/src/weighted_average.py" >weighted_average.py</a>.</span></div><!--tex4ht:label?: x1-23005r6 --><span 
+href="https://github.com/Sistemas-Multimedia/MCOLP/blob/master/src/weighted_average.py" >weighted_average.py</a>.</span></div><!--tex4ht:label?: x1-23005r6 --><span 
 class="ectt-1000"> </span><br /><span class="label"><a 
  id="x1-23007r1"></a></span><span 
 class="ectt-1000">def</span><span 
@@ -7787,7 +7743,7 @@ class="content">Computation of the weighted average prediction.</span></div><!--
  id="x1-240007"></a>Lossy compression: quantization</h3>
 <!--l. 1067--><p class="noindent" ><a 
 href="https://vicente-gonzalez-ruiz.github.io/quantization/" >Quantization</a> allows to remove information from signals. We will use it in
-MCDWT to achieve higher compression ratios, but at the expense of losing
+MCOLP to achieve higher compression ratios, but at the expense of losing
 visual information (ideally, the less relevant information should be removed
 ﬁrst).
 </p><!--l. 1072--><p class="indent" >   When the signal cannot be recoverd perfectly, we can use a <a 
@@ -7816,8 +7772,8 @@ predictor=2
  <br /># 1D 1-iteration MDWT.
  <br />python3 -O MDWT.py -p /tmp/
  <br />
- <br /># 1D 1-iteration MCDWT.
- <br />python3 -O MCDWT.py -p /tmp/
+ <br /># 1D 1-iteration MCOLP.
+ <br />python3 -O MCOLP.py -p /tmp/
  <br />
  <br /># Let’s delete the motion compensated subbands and reconstruct the sequence ...
  <br />rm -f /tmp/LH001.png
@@ -7830,8 +7786,8 @@ predictor=2
  <br />rm -f /tmp/HL003.png
  <br />rm -f /tmp/HH003.png
  <br />
- <br /># 1D 1-iteration iMCDWT.
- <br />python3 -O MCDWT.py -P $predictor -b -p /tmp/
+ <br /># 1D 1-iteration iMCOLP.
+ <br />python3 -O MCOLP.py -P $predictor -b -p /tmp/
  <br />
  <br /># 1D 1-iteration iMDWT.
  <br />python3 -O MDWT.py -b -p /tmp/
@@ -7873,7 +7829,7 @@ q_step=32
  <br />cp ../sequences/stockholm/* /tmp
  <br />
  <br />python3 -O MDWT.py -p /tmp/
- <br />python3 -O MCDWT.py -P $predictor -p /tmp/
+ <br />python3 -O MCOLP.py -P $predictor -p /tmp/
  <br />
  <br />#python3 ../tools/show_statistics.py -i /tmp/LH001.png
  <br />python3 ../tools/quantize.py -i /tmp/LH001.png -o /tmp/LH001.png -q $q_step
@@ -7889,7 +7845,7 @@ q_step=32
  <br />python3 ../tools/quantize.py -i /tmp/HL003.png -o /tmp/HL003.png -q $q_step
  <br />python3 ../tools/quantize.py -i /tmp/HH003.png -o /tmp/HH003.png -q $q_step
  <br />
- <br />python3 -O MCDWT.py -P $predictor -p /tmp/ -b
+ <br />python3 -O MCOLP.py -P $predictor -p /tmp/ -b
  <br />python3 -O MDWT.py -p /tmp/ -b
  <br />
  <br />for i in /tmp/00?.png; do python3 ../tools/substract_offset.py -i $i -o $i.png; done; animate /tmp/00?.png.png
@@ -7919,7 +7875,7 @@ q_step=32
  <br />cp ../sequences/stockholm/* /tmp
  <br />
  <br />python3 -O MDWT.py -p /tmp/
- <br />python3 -O MCDWT.py -P $predictor -p /tmp/
+ <br />python3 -O MCOLP.py -P $predictor -p /tmp/
  <br />
  <br />python3 ../tools/quantize.py -i /tmp/LH000.png -o /tmp/LH000.png -q $q_step
  <br />python3 ../tools/quantize.py -i /tmp/HL000.png -o /tmp/HL000.png -q $q_step
@@ -7941,7 +7897,7 @@ q_step=32
  <br />python3 ../tools/quantize.py -i /tmp/HL004.png -o /tmp/HL004.png -q $q_step
  <br />python3 ../tools/quantize.py -i /tmp/HH004.png -o /tmp/HH004.png -q $q_step
  <br />
- <br />python3 -O MCDWT.py -P $predictor -p /tmp/ -b
+ <br />python3 -O MCOLP.py -P $predictor -p /tmp/ -b
  <br />python3 -O MDWT.py -p /tmp/ -b
  <br />
  <br />for i in /tmp/00?.png; do python3 ../tools/substract_offset.py -i $i -o $i.png; done; animate /tmp/00?.png.png
@@ -7970,7 +7926,7 @@ q_step=128
  <br />cp ../sequences/stockholm/* /tmp
  <br />
  <br />python3 -O MDWT.py -p /tmp/
- <br />python3 -O MCDWT.py -P $predictor -p /tmp/
+ <br />python3 -O MCOLP.py -P $predictor -p /tmp/
  <br />
  <br />python3 ../tools/quantize.py -i /tmp/LL000.png -o /tmp/LL000.png -q $q_step
  <br />python3 ../tools/quantize.py -i /tmp/LH000.png -o /tmp/LH000.png -q $q_step
@@ -7997,7 +7953,7 @@ q_step=128
  <br />python3 ../tools/quantize.py -i /tmp/HL004.png -o /tmp/HL004.png -q $q_step
  <br />python3 ../tools/quantize.py -i /tmp/HH004.png -o /tmp/HH004.png -q $q_step
  <br />
- <br />python3 -O MCDWT.py -P $predictor -p /tmp/ -b
+ <br />python3 -O MCOLP.py -P $predictor -p /tmp/ -b
  <br />python3 -O MDWT.py -p /tmp/ -b
  <br />
  <br />for i in /tmp/00?.png; do python3 ../tools/substract_offset.py -i $i -o $i.png; done; animate /tmp/00?.png.png
@@ -8010,8 +7966,80 @@ q_step=128
  <br />for i in {0..4}; do ii=$(printf &#x0022;%03d&#x0022; $i); MSE=‘python3 -O ../tools/MSE.py -x ../sequences/stockholm/$ii.png -y /tmp/$ii.png‘; printf &#x0022;MSE(%s)=%s\n&#x0022; $ii $MSE; done
 </div>
 <!--l. 1248--><p class="nopar" >
+</p><!--l. 1252--><p class="noindent" >
+</p>
+   <h3 class="sectionHead"><span class="titlemark">8   </span> <a 
+ id="x1-290008"></a>Bit allocation</h3>
+<!--l. 1253--><p class="noindent" >En la mariposa (o en un esquema IPPP...) la subbanda
+<!--l. 1253--><math 
+ xmlns="http://www.w3.org/1998/Math/MathML"  
+display="inline" ><msub><mrow 
+><mover 
+accent="true"><mrow 
+><mi 
+>H</mi></mrow><mo 
+class="MathClass-op">̃</mo></mover></mrow><mrow 
+><mi 
+>b</mi></mrow></msub 
+></math> compensada depende
+de las subbandas <!--l. 1253--><math 
+ xmlns="http://www.w3.org/1998/Math/MathML"  
+display="inline" ><msubsup><mrow 
+><mi 
+>L</mi></mrow><mrow 
+><mi 
+>a</mi></mrow><mrow 
+><mrow ><mo 
+class="MathClass-open">[</mo><mrow><mi 
+>q</mi></mrow><mo 
+class="MathClass-close">]</mo></mrow></mrow></msubsup 
+></math>,
+<!--l. 1253--><math 
+ xmlns="http://www.w3.org/1998/Math/MathML"  
+display="inline" ><msub><mrow 
+><mi 
+>L</mi></mrow><mrow 
+><mi 
+>b</mi></mrow></msub 
+></math> y
+<!--l. 1253--><math 
+ xmlns="http://www.w3.org/1998/Math/MathML"  
+display="inline" ><msub><mrow 
+><mi 
+>L</mi></mrow><mrow 
+><mi 
+>c</mi></mrow></msub 
+></math>,
+para generar los campos de movimiento adecuados.
+<!--l. 1253--><math 
+ xmlns="http://www.w3.org/1998/Math/MathML"  
+display="inline" ><msub><mrow 
+><mover 
+accent="true"><mrow 
+><mi 
+>H</mi></mrow><mo 
+class="MathClass-op">̃</mo></mover></mrow><mrow 
+><mi 
+>b</mi></mrow></msub 
+></math> también
+depende de <!--l. 1253--><math 
+ xmlns="http://www.w3.org/1998/Math/MathML"  
+display="inline" ><msub><mrow 
+><mi 
+>H</mi></mrow><mrow 
+><mi 
+>a</mi></mrow></msub 
+></math>
+y <!--l. 1253--><math 
+ xmlns="http://www.w3.org/1998/Math/MathML"  
+display="inline" ><msub><mrow 
+><mi 
+>H</mi></mrow><mrow 
+><mi 
+>b</mi></mrow></msub 
+></math>
 <a 
- id="Q1-1-44"></a>
+ id="Q1-1-45"></a>
 </p>
     
 </body> 
