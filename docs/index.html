@@ -56,15 +56,15 @@ href="#x1-160005.1" id="QQ2-1-22">The MCOLP butterﬂy</a></span>
 <br />    <span class="subsectionToc" >5.2 <a 
 href="#x1-170005.2" id="QQ2-1-27">The MCOLP transform</a></span>
 <br />    <span class="subsectionToc" >5.3 <a 
-href="#x1-210005.3" id="QQ2-1-34">Scalability provided by MCOLP</a></span>
+href="#x1-210005.3" id="QQ2-1-36">Scalability provided by MCOLP</a></span>
 <br />   <span class="sectionToc" >6 <a 
-href="#x1-230006" id="QQ2-1-36">Adaptive motion compensation based on the distortion of the prediction error</a></span>
+href="#x1-230006" id="QQ2-1-38">Adaptive motion compensation based on the distortion of the prediction error</a></span>
 <br />   <span class="sectionToc" >7 <a 
-href="#x1-240007" id="QQ2-1-39">Lossy compression: quantization</a></span>
+href="#x1-240007" id="QQ2-1-41">Lossy compression: quantization</a></span>
 <br />   <span class="sectionToc" >8 <a 
-href="#x1-290008" id="QQ2-1-44">Bit allocation</a></span>
+href="#x1-290008" id="QQ2-1-46">Bit allocation</a></span>
 <br />   <span class="sectionToc" ><a 
-href="#Q1-1-45">References</a></span>
+href="#Q1-1-47">References</a></span>
    </div>
 <!--l. 8--><p class="noindent" >
 </p>
@@ -2213,11 +2213,16 @@ class="MathClass-open">(</mo><mrow><mi
 >k</mi> <mo 
 class="MathClass-bin">+</mo> <mn>1</mn></mrow><mo 
 class="MathClass-close">)</mo></mrow></math> levels
-(SRLs) is generated. For the sake of simplicity, we will denote the subbands
-<!--l. 99--><math 
+(SRLs) is generated. For the sake of simplicity, we will denote the spatial
+frame<span class="footnote-mark"><a 
+href="index6.html#fn5x0"><sup class="textsuperscript">5</sup></a></span><a 
+ id="x1-5002f5"></a> 
+subbands <!--l. 102--><math 
  xmlns="http://www.w3.org/1998/Math/MathML"  
 display="inline" ><mrow ><mo 
 class="MathClass-open">{</mo><mrow><mi 
+>F</mi><mo 
+class="MathClass-punc">.</mo><mi 
 >L</mi><msub><mrow 
 ><mi 
 >H</mi></mrow><mrow 
@@ -2225,6 +2230,8 @@ class="MathClass-open">{</mo><mrow><mi
 >k</mi></mrow></msub 
 ><mo 
 class="MathClass-punc">,</mo><mi 
+>F</mi><mo 
+class="MathClass-punc">.</mo><mi 
 >H</mi><msub><mrow 
 ><mi 
 >L</mi></mrow><mrow 
@@ -2232,59 +2239,68 @@ class="MathClass-punc">,</mo><mi
 >k</mi></mrow></msub 
 ><mo 
 class="MathClass-punc">,</mo><mi 
+>F</mi><mo 
+class="MathClass-punc">.</mo><mi 
 >H</mi><msub><mrow 
 ><mi 
 >H</mi></mrow><mrow 
 ><mi 
 >k</mi></mrow></msub 
 ></mrow><mo 
-class="MathClass-close">}</mo></mrow></math> as only
-<!--l. 100--><math 
+class="MathClass-close">}</mo></mrow></math>
+as only <!--l. 102--><math 
  xmlns="http://www.w3.org/1998/Math/MathML"  
-display="inline" ><msub><mrow 
+display="inline" ><mi 
+>F</mi><mo 
+class="MathClass-punc">.</mo><msub><mrow 
 ><mi 
 >H</mi></mrow><mrow 
 ><mi 
 >k</mi></mrow></msub 
-></math>, and
-<!--l. 100--><math 
+></math>,
+and <!--l. 102--><math 
  xmlns="http://www.w3.org/1998/Math/MathML"  
 display="inline" ><mi 
+>F</mi><mo 
+class="MathClass-punc">.</mo><mi 
 >L</mi><msub><mrow 
 ><mi 
 >L</mi></mrow><mrow 
 ><mi 
 >k</mi></mrow></msub 
 ></math> as
-only <!--l. 100--><math 
+only <!--l. 103--><math 
  xmlns="http://www.w3.org/1998/Math/MathML"  
-display="inline" ><msub><mrow 
+display="inline" ><mi 
+>F</mi><mo 
+class="MathClass-punc">.</mo><msub><mrow 
 ><mi 
 >L</mi></mrow><mrow 
 ><mi 
 >k</mi></mrow></msub 
-></math>.
-See <a 
+></math>,
+where <!--l. 103--><math 
+ xmlns="http://www.w3.org/1998/Math/MathML"  
+display="inline" ><mi 
+>F</mi></math>
+is a frame. See <a 
 href="https://nbviewer.jupyter.org/github/Sistemas-Multimedia/PRMC/blob/master/docs/DWT_vs_LPT.ipynb" >DWT versus LPT</a>.
 </p>
    <h4 class="subsectionHead"><span class="titlemark">2.3   </span> <a 
  id="x1-60002.3"></a>Scalability provided by the 2D DWT</h4>
-<!--l. 105--><p class="noindent" >Depending on the number of subband levels (pyramid levels in the <a 
-href="https://vicente-gonzalez-ruiz.github.io/pyramids-and-wavelets/" >pyramid representation</a>), we can
-reconstruct a frame<span class="footnote-mark"><a 
-href="index6.html#fn5x0"><sup class="textsuperscript">5</sup></a></span><a 
- id="x1-6001f5"></a> 
-at diﬀerent spatial scales (resolutions). For example, if a frame
-<!--l. 110--><math 
+<!--l. 108--><p class="noindent" >Depending on the number of subband levels (pyramid levels in the <a 
+href="https://vicente-gonzalez-ruiz.github.io/pyramids-and-wavelets/" >pyramid representation</a>),
+we can reconstruct a frame at diﬀerent spatial scales (resolutions). For example, if a
+frame <!--l. 112--><math 
  xmlns="http://www.w3.org/1998/Math/MathML"  
 display="inline" ><msub><mrow 
 ><mi 
 >F</mi></mrow><mrow 
 ><mn>1</mn></mrow></msub 
-></math> has
-been transformed using the DWT of 2 iterations, we get: </p>
+></math>
+has been transformed using the DWT of 2 iterations, we get: </p>
      <ul class="itemize1">
-     <li class="itemize">Subband <!--l. 112--><math 
+     <li class="itemize">Subband <!--l. 114--><math 
  xmlns="http://www.w3.org/1998/Math/MathML"  
 display="inline" ><msub><mrow 
 ><mi 
@@ -2308,9 +2324,9 @@ class="MathClass-punc">.</mo><msub><mrow
       <br />    +------+
       <br />       X/4
 </div>
-     <!--l. 120--><p class="nopar" >
+     <!--l. 122--><p class="nopar" >
      </p></li>
-     <li class="itemize">Subband <!--l. 121--><math 
+     <li class="itemize">Subband <!--l. 123--><math 
  xmlns="http://www.w3.org/1998/Math/MathML"  
 display="inline" ><msub><mrow 
 ><mi 
@@ -2353,7 +2369,7 @@ class="MathClass-punc">.</mo><msub><mrow
 ><mn>2</mn></mrow></msub 
 ></mrow><mo 
 class="MathClass-close">)</mo></mrow></math> with
-     the scale <!--l. 122--><math 
+     the scale <!--l. 124--><math 
  xmlns="http://www.w3.org/1998/Math/MathML"  
 display="inline" ><mn>1</mn></math>.
                                                                   
@@ -2369,9 +2385,9 @@ display="inline" ><mn>1</mn></math>.
       <br />    +-------------+
       <br />          X/2
 </div>
-     <!--l. 132--><p class="nopar" >
+     <!--l. 134--><p class="nopar" >
      </p></li>
-     <li class="itemize"><!--l. 134--><math 
+     <li class="itemize"><!--l. 136--><math 
  xmlns="http://www.w3.org/1998/Math/MathML"  
 display="inline" ><msub><mrow 
 ><mi 
@@ -2400,7 +2416,7 @@ class="MathClass-punc">,</mo><msub><mrow
 class="MathClass-punc">.</mo><mi 
 >H</mi></mrow><mo 
 class="MathClass-close">)</mo></mrow></math> (the original image)
-     with the scale <!--l. 135--><math 
+     with the scale <!--l. 137--><math 
  xmlns="http://www.w3.org/1998/Math/MathML"  
 display="inline" ><mn>0</mn></math>.
                                                                   
@@ -2424,27 +2440,29 @@ display="inline" ><mn>0</mn></math>.
       <br />    +---------------------------+
       <br />                  X
 </div>
-     <!--l. 153--><p class="nopar" ></p></li></ul>
+     <!--l. 155--><p class="nopar" ></p></li></ul>
+<!--l. 158--><p class="noindent" >
+</p>
    <h4 class="likesubsectionHead"><a 
  id="x1-70002.3"></a>Example: A 1-iteration 2D-DWT (<span 
 class="ectt-1000">DWT(iters=1)</span>)</h4>
-<!--l. 157--><p class="noindent" >An image is transformed, generating four subbands
-<!--l. 157--><math 
+<!--l. 159--><p class="noindent" >An image is transformed, generating four subbands
+<!--l. 159--><math 
  xmlns="http://www.w3.org/1998/Math/MathML"  
 display="inline" ><mi 
 >L</mi><mi 
 >L</mi></math>,
-<!--l. 157--><math 
+<!--l. 159--><math 
  xmlns="http://www.w3.org/1998/Math/MathML"  
 display="inline" ><mi 
 >L</mi><mi 
 >H</mi></math>,
-<!--l. 157--><math 
+<!--l. 159--><math 
  xmlns="http://www.w3.org/1998/Math/MathML"  
 display="inline" ><mi 
 >H</mi><mi 
 >L</mi></math> and
-<!--l. 158--><math 
+<!--l. 160--><math 
  xmlns="http://www.w3.org/1998/Math/MathML"  
 display="inline" ><mi 
 >H</mi><mi 
@@ -2480,8 +2498,8 @@ display="inline" ><mi
  <br />../tools/show_differences.sh -1 /tmp/000.png -2 ../sequences/stockholm/000.png -o /tmp/diffs.png
  <br />display /tmp/diffs.png
 </div>
-<!--l. 185--><p class="nopar" >
-</p><!--l. 187--><p class="noindent" >
+<!--l. 187--><p class="nopar" >
+</p><!--l. 189--><p class="noindent" >
 </p>
    <h4 class="likesubsectionHead"><a 
  id="x1-80002.3"></a>Example: A 2-iterations 2D-DWT (<span 
@@ -2526,15 +2544,15 @@ class="ectt-1000">DWT(iters=2)</span>)</h4>
  <br />../tools/show_differences.sh -1 /tmp/000.png -2 ../sequences/stockholm/000.png -o /tmp/diffs.png
  <br />display /tmp/diffs.png
 </div>
-<!--l. 224--><p class="nopar" >
-</p><!--l. 228--><p class="noindent" >
+<!--l. 226--><p class="nopar" >
+</p><!--l. 230--><p class="noindent" >
 </p>
    <h3 class="sectionHead"><span class="titlemark">3   </span> <a 
  id="x1-90003"></a>Motion DWT (MDWT)</h3>
                                                                   
 
                                                                   
-<!--l. 229--><p class="noindent" >The 2D-DWT can be applied to a sequence of frames by simply transforming
+<!--l. 231--><p class="noindent" >The 2D-DWT can be applied to a sequence of frames by simply transforming
 each frame of the sequence independently. This is done, for example, in
 the <a 
 href="https://vicente-gonzalez-ruiz.github.io/JPEG2000/" >Motion JPEG2000 video compression standard</a>. Notice that only the
@@ -2542,7 +2560,7 @@ spatial redundancy is exploited in MDWT (all the temporal redundancy still
 remains in the video). The decomposition structure generated by MDWT
 is shown in the Fig <a 
 href="#x1-90552">2<!--tex4ht:ref: fig:forward_MDWT --></a>. 1-iteration MDWT inputs a sequence of frames
-<!--l. 236--><math 
+<!--l. 238--><math 
  xmlns="http://www.w3.org/1998/Math/MathML"  
 display="inline" ><mrow ><mo 
 class="MathClass-open">{</mo><mrow><msub><mrow 
@@ -2552,7 +2570,7 @@ class="MathClass-open">{</mo><mrow><msub><mrow
 >i</mi></mrow></msub 
 ></mrow><mo 
 class="MathClass-close">}</mo></mrow></math> and outputs a sequence
-of decompositions <!--l. 237--><math 
+of decompositions <!--l. 239--><math 
  xmlns="http://www.w3.org/1998/Math/MathML"  
 display="inline" ><mrow ><mo 
 class="MathClass-open">{</mo><mrow><msub><mrow 
@@ -2565,77 +2583,6 @@ class="MathClass-punc">.</mo><msub><mrow
 ><mi 
 >L</mi></mrow><mrow 
 ><mn>1</mn></mrow></msub 
-></mrow><mo 
-class="MathClass-close">}</mo></mrow></math>
-and <!--l. 237--><math 
- xmlns="http://www.w3.org/1998/Math/MathML"  
-display="inline" ><mrow ><mo 
-class="MathClass-open">{</mo><mrow><msub><mrow 
-><mi 
->F</mi></mrow><mrow 
-><mi 
->i</mi></mrow></msub 
-><mo 
-class="MathClass-punc">.</mo><msub><mrow 
-><mi 
->H</mi></mrow><mrow 
-><mn>1</mn></mrow></msub 
-></mrow><mo 
-class="MathClass-close">}</mo></mrow></math>, providing
-the SRLs <!--l. 237--><math 
- xmlns="http://www.w3.org/1998/Math/MathML"  
-display="inline" ><mrow ><mo 
-class="MathClass-open">{</mo><mrow><msub><mrow 
-><mi 
->F</mi></mrow><mrow 
-><mi 
->i</mi></mrow></msub 
-><mo 
-class="MathClass-punc">.</mo><msub><mrow 
-><mi 
->L</mi></mrow><mrow 
-><mn>1</mn></mrow></msub 
-></mrow><mo 
-class="MathClass-close">}</mo></mrow></math>
-and <!--l. 238--><math 
- xmlns="http://www.w3.org/1998/Math/MathML"  
-display="inline" ><mrow ><mo 
-class="MathClass-open">{</mo><mrow><msub><mrow 
-><mi 
->F</mi></mrow><mrow 
-><mi 
->i</mi></mrow></msub 
-><mo 
-class="MathClass-punc">.</mo><msub><mrow 
-><mi 
->L</mi></mrow><mrow 
-><mn>0</mn></mrow></msub 
-></mrow><mo 
-class="MathClass-close">}</mo></mrow> <mo 
-class="MathClass-rel">=</mo> <mrow ><mo 
-class="MathClass-open">{</mo><mrow><msub><mrow 
-><mi 
->F</mi></mrow><mrow 
-><mi 
->i</mi></mrow></msub 
-></mrow><mo 
-class="MathClass-close">}</mo></mrow></math>.
-When we refeer to the whole frame sequence, we also use the notation
-<!--l. 239--><math 
- xmlns="http://www.w3.org/1998/Math/MathML"  
-display="inline" ><mrow ><mo 
-class="MathClass-open">{</mo><mrow><msub><mrow 
-><mi 
->F</mi></mrow><mrow 
-><mi 
->i</mi></mrow></msub 
-></mrow><mo 
-class="MathClass-close">}</mo></mrow> <mo 
-class="MathClass-rel">=</mo> <mrow ><mo 
-class="MathClass-open">{</mo><mrow><msub><mrow 
-><mi 
->L</mi></mrow><mrow 
-><mn>0</mn></mrow></msub 
 ></mrow><mo 
 class="MathClass-close">}</mo></mrow></math> and
 <!--l. 239--><math 
@@ -2649,17 +2596,103 @@ class="MathClass-open">{</mo><mrow><msub><mrow
 ><mo 
 class="MathClass-punc">.</mo><msub><mrow 
 ><mi 
+>H</mi></mrow><mrow 
+><mn>1</mn></mrow></msub 
+></mrow><mo 
+class="MathClass-close">}</mo></mrow></math> (sequence subbands),
+providing the SRLs <!--l. 240--><math 
+ xmlns="http://www.w3.org/1998/Math/MathML"  
+display="inline" ><mrow ><mo 
+class="MathClass-open">{</mo><mrow><msub><mrow 
+><mi 
+>F</mi></mrow><mrow 
+><mi 
+>i</mi></mrow></msub 
+><mo 
+class="MathClass-punc">.</mo><msub><mrow 
+><mi 
 >L</mi></mrow><mrow 
 ><mn>1</mn></mrow></msub 
+></mrow><mo 
+class="MathClass-close">}</mo></mrow></math>
+and <!--l. 240--><math 
+ xmlns="http://www.w3.org/1998/Math/MathML"  
+display="inline" ><mrow ><mo 
+class="MathClass-open">{</mo><mrow><msub><mrow 
+><mi 
+>F</mi></mrow><mrow 
+><mi 
+>i</mi></mrow></msub 
+><mo 
+class="MathClass-punc">.</mo><msub><mrow 
+><mi 
+>L</mi></mrow><mrow 
+><mn>0</mn></mrow></msub 
 ></mrow><mo 
 class="MathClass-close">}</mo></mrow> <mo 
 class="MathClass-rel">=</mo> <mrow ><mo 
 class="MathClass-open">{</mo><mrow><msub><mrow 
 ><mi 
+>F</mi></mrow><mrow 
+><mi 
+>i</mi></mrow></msub 
+></mrow><mo 
+class="MathClass-close">}</mo></mrow></math>.
+For the sake of simplicity, we will denote sequence spatial subbands
+<!--l. 241--><math 
+ xmlns="http://www.w3.org/1998/Math/MathML"  
+display="inline" ><mrow ><mo 
+class="MathClass-open">{</mo><mrow><msub><mrow 
+><mi 
+>F</mi></mrow><mrow 
+><mi 
+>i</mi></mrow></msub 
+><mo 
+class="MathClass-punc">.</mo><msub><mrow 
+><mi 
 >L</mi></mrow><mrow 
 ><mn>1</mn></mrow></msub 
 ></mrow><mo 
-class="MathClass-close">}</mo></mrow></math>.
+class="MathClass-close">}</mo></mrow> <mo 
+class="MathClass-rel">=</mo> <msub><mrow 
+><mi 
+>L</mi></mrow><mrow 
+><mn>1</mn></mrow></msub 
+></math> and
+<!--l. 242--><math 
+ xmlns="http://www.w3.org/1998/Math/MathML"  
+display="inline" ><mrow ><mo 
+class="MathClass-open">{</mo><mrow><msub><mrow 
+><mi 
+>F</mi></mrow><mrow 
+><mi 
+>i</mi></mrow></msub 
+><mo 
+class="MathClass-punc">.</mo><msub><mrow 
+><mi 
+>H</mi></mrow><mrow 
+><mn>1</mn></mrow></msub 
+></mrow><mo 
+class="MathClass-close">}</mo></mrow> <mo 
+class="MathClass-rel">=</mo> <msub><mrow 
+><mi 
+>H</mi></mrow><mrow 
+><mn>1</mn></mrow></msub 
+></math>, and the sequence spatial
+resolution levels as <!--l. 243--><math 
+ xmlns="http://www.w3.org/1998/Math/MathML"  
+display="inline" ><msub><mrow 
+><mi 
+>L</mi></mrow><mrow 
+><mn>1</mn></mrow></msub 
+></math>
+and <!--l. 243--><math 
+ xmlns="http://www.w3.org/1998/Math/MathML"  
+display="inline" ><msub><mrow 
+><mi 
+>L</mi></mrow><mrow 
+><mn>0</mn></mrow></msub 
+></math>.
 </p>
    <hr class="figure" /><div class="figure" 
 >
@@ -2671,7 +2704,7 @@ class="MathClass-close">}</mo></mrow></math>.
                                                                   
 
                                                                   
-<!--l. 242--><p class="noindent" ><div style="text-align:center;"> <img width=600 src="graphics/forward_MDWT.svg" /> </div>  </p><!--l. 245--><div class="lstinputlisting">
+<!--l. 246--><p class="noindent" ><div style="text-align:center;"> <img width=600 src="graphics/forward_MDWT.svg" /> </div>  </p><!--l. 249--><div class="lstinputlisting">
 <a 
  id="x1-9001r3"></a>
 <a 
@@ -3087,7 +3120,7 @@ class="ectt-1000">(</span><span
 class="ectt-1000">i</span><span 
 class="ectt-1000">))</span>
 </div>
-<!--l. 245--><p class="noindent" >. </p><!--l. 248--><div class="lstinputlisting">
+<!--l. 249--><p class="noindent" >. </p><!--l. 252--><div class="lstinputlisting">
 <a 
  id="x1-9030r4"></a>
 <a 
@@ -3475,7 +3508,7 @@ class="ectt-1000">(</span><span
 class="ectt-1000">i</span><span 
 class="ectt-1000">))</span>
 </div>
-<!--l. 248--><p class="noindent" >.
+<!--l. 252--><p class="noindent" >.
 <br /> </p><div class="caption" 
 ><span class="id">Figure 2: </span><span  
 class="content">Implementation of the MDWT.</span></div><!--tex4ht:label?: x1-90552 -->
@@ -3485,14 +3518,14 @@ class="content">Implementation of the MDWT.</span></div><!--tex4ht:label?: x1-90
    </div><hr class="endfigure" />
    <h4 class="subsectionHead"><span class="titlemark">3.1   </span> <a 
  id="x1-100003.1"></a>Scalability provided by MDWT</h4>
-<!--l. 254--><p class="noindent" >MDWT sequences (of (subband) decompositions) are scalable in space and in time.
+<!--l. 258--><p class="noindent" >MDWT sequences (of (subband) decompositions) are scalable in space and in time.
 Spatial scalability is a direct consequence of the 2D-DWT (the number of SRLs can
 be controlled by the number of iterations of 2D-DWT). On the other hand, it is
 trivial to observe that MDWT provides <span 
 class="ecti-1000">fully </span>temporal scalability (we can access to
 the frames randomly) because each frame of the input sequence is transformed
 independently.
-</p><!--l. 262--><p class="noindent" >
+</p><!--l. 266--><p class="noindent" >
 </p>
    <h4 class="likesubsectionHead"><a 
  id="x1-110003.1"></a>Example: 1-iteration MDWT (<span 
@@ -3531,8 +3564,8 @@ class="ectt-1000">MDWT(iters=1)</span>)</h4>
  <br />for i in {0..4}; do ii=$(printf &#x0022;%03d&#x0022; $i); bash ../tools/show_differences.sh -1 /tmp/$ii.png -2 ../sequences/stockholm/$ii.png -o /tmp/diff_$ii.png; done
  <br />animate /tmp/diff*.png
 </div>
-<!--l. 293--><p class="nopar" >
-</p><!--l. 295--><p class="noindent" >
+<!--l. 297--><p class="nopar" >
+</p><!--l. 299--><p class="noindent" >
 </p>
    <h4 class="likesubsectionHead"><a 
  id="x1-120003.1"></a>Example: 2-iterations MDWT (<span 
@@ -3563,15 +3596,15 @@ class="ectt-1000">MDWT(iters=2)</span>)</h4>
  <br />for i in {0..4}; do ii=$(printf &#x0022;%03d&#x0022; $i); bash ../tools/show_differences.sh -1 /tmp/$ii.png -2 ../sequences/stockholm/$ii.png -o /tmp/diff_$ii.png; done
  <br />animate /tmp/diff*.png
 </div>
-<!--l. 318--><p class="nopar" >
-</p><!--l. 322--><p class="noindent" >
+<!--l. 322--><p class="nopar" >
+</p><!--l. 326--><p class="noindent" >
 </p>
    <h4 class="likesubsectionHead"><a 
  id="x1-130003.1"></a>Example: Interpolating with the 2D-DWT</h4>
-<!--l. 323--><p class="noindent" >If we apply an inverse transform to the original frames, supposing that they are the
+<!--l. 327--><p class="noindent" >If we apply an inverse transform to the original frames, supposing that they are the
 low-frequency subbands of the input decomposition, and that the high-frequency
 subbands are zero, we can interpolate each frame of the original sequence by a factor
-of <!--l. 326--><math 
+of <!--l. 330--><math 
  xmlns="http://www.w3.org/1998/Math/MathML"  
 display="inline" ><mn>2</mn></math> in
 each direction.
@@ -3604,12 +3637,12 @@ each direction.
  <br />for i in /tmp/???.png; do convert -normalize $i $i.norm; done
  <br />animate /tmp/*.png.norm
 </div>
-<!--l. 352--><p class="nopar" >
-</p><!--l. 354--><p class="noindent" >
+<!--l. 356--><p class="nopar" >
+</p><!--l. 358--><p class="noindent" >
 </p>
    <h3 class="sectionHead"><span class="titlemark">4   </span> <a 
  id="x1-140004"></a>Video transform alternatives</h3>
-<!--l. 357--><p class="noindent" >To remove both, spatial and temporal redundancies, two diﬀerent alternatives are
+<!--l. 361--><p class="noindent" >To remove both, spatial and temporal redundancies, two diﬀerent alternatives are
 available:
      </p><ol  class="enumerate1" >
      <li 
@@ -3621,7 +3654,7 @@ href="https://en.wikipedia.org/wiki/Digital_filter#Analysis_techniques" >analyze
      <li 
   class="enumerate" id="x1-14004x2">A <span 
 class="ecbx-1000">“2D+t” transform </span>does just the opposite.</li></ol>
-<!--l. 365--><p class="noindent" >Each choice has a number of <span 
+<!--l. 369--><p class="noindent" >Each choice has a number of <span 
 class="ecti-1000">pros </span>and <span 
 class="ecti-1000">cons</span>. For example, in a “t+2D” transform we can
 apply directly any frame predictor based on <a 
@@ -3643,7 +3676,7 @@ scalability (processing only those <a
 href="https://www.tutorialspoint.com/dip/spatial_resolution.htm" >spatial resolutions</a> (scales) necessary to get a
 spatially scaled of our video), a “t+2D” transformed video presents some
 drawbacks:
-</p><!--l. 386--><p class="indent" >
+</p><!--l. 390--><p class="indent" >
      </p><ol  class="enumerate1" >
      <li 
   class="enumerate" id="x1-14006x1">The perfect reconstruction of the original frames only is possible if the
@@ -3666,40 +3699,40 @@ href="https://en.wikipedia.org/wiki/Decoder" >decoder</a>. Therefore, if
      for working in a diﬀerent spatial resolution of the frames). Unfortunately,
      progressive representations usually need more data than non-progressive
      ones.</li></ol>
-<!--l. 406--><p class="indent" >   Finally, it is important to realize that the presence of the motion data in the
+<!--l. 410--><p class="indent" >   Finally, it is important to realize that the presence of the motion data in the
 code-stream introduces also complexity into the decoding process because, in a
 quality scalable scenario, for example, it is not trivial (specially when non-linear
 systems such as those based on <a 
 href="https://vicente-gonzalez-ruiz.github.io/video_compression/" >ME</a> are involved) to decide how to interleave the
 motion and the texture information in a code-stream that can be decoded partially,
 depending on the avaliable bandwidth.
-</p><!--l. 416--><p class="noindent" >
+</p><!--l. 420--><p class="noindent" >
 </p>
    <h3 class="sectionHead"><span class="titlemark">5   </span> <a 
  id="x1-150005"></a>Motion Compensated Orthogonal Laplacian Pyramid (MCOLP)</h3>
-<!--l. 417--><p class="noindent" >MCOLP is a “2D+t” transform. The “2D” stage is 1-iteration
+<!--l. 421--><p class="noindent" >MCOLP is a “2D+t” transform. The “2D” stage is 1-iteration
 MDWT, and it is applied ﬁrst. Basically, the “t” stage is a
                                                                   
 
                                                                   
-<!--l. 419--><math 
+<!--l. 423--><math 
  xmlns="http://www.w3.org/1998/Math/MathML"  
 display="inline" ><mi 
 >T</mi></math>-iterations 1D
 <a 
 href="https://en.wikipedia.org/wiki/Motion_compensation" >Motion Compensated (MC)</a> DWT, which removes the temporal redundancy between adjacent
-<!--l. 422--><math 
+<!--l. 426--><math 
  xmlns="http://www.w3.org/1998/Math/MathML"  
 display="inline" ><mi 
 >H</mi></math> subbands. The
-number of iterations <!--l. 422--><math 
+number of iterations <!--l. 426--><math 
  xmlns="http://www.w3.org/1998/Math/MathML"  
 display="inline" ><mi 
 >T</mi></math>
 determines the <a 
 href="https://en.wikipedia.org/wiki/Group_of_pictures" >GOP</a> size </p><table class="equation"><tr><td> <a 
  id="x1-15001r1"></a>
-<!--l. 424--><math 
+<!--l. 428--><math 
  xmlns="http://www.w3.org/1998/Math/MathML"  
 display="block" class="equation">
                              <mi 
@@ -3711,20 +3744,20 @@ class="MathClass-rel">=</mo> <msup><mrow
 ><mo 
 class="MathClass-punc">.</mo>
 </math></td><td class="eq-no">(1)</td></tr></table>
-<!--l. 429--><p class="indent" >   A special feature of MCOLP is that the motion information is not transmitted
+<!--l. 433--><p class="indent" >   A special feature of MCOLP is that the motion information is not transmitted
 from the encoder to the decoder, which must replicate it or at least, predict it. This
 is possible because to estimate de motion at the encoder, only the information that it
 is accesible by the decoder is used.
-</p><!--l. 435--><p class="indent" >   The predict step implemented by the MCOLP is performed in the Orthogonal
+</p><!--l. 439--><p class="indent" >   The predict step implemented by the MCOLP is performed in the Orthogonal
 Laplacian Pyramid domain, where the coeﬃcients have not been subsampled as in
 the DWT domain. The advantage of using the OLP domain over the DWT domain is
 that the OLP representation is shift invariant.
-</p><!--l. 441--><p class="noindent" >
+</p><!--l. 445--><p class="noindent" >
 </p>
    <h4 class="subsectionHead"><span class="titlemark">5.1   </span> <a 
  id="x1-160005.1"></a>The MCOLP butterﬂy</h4>
-<!--l. 442--><p class="noindent" >The butterly inputs three decompositions
-<!--l. 442--><math 
+<!--l. 446--><p class="noindent" >The butterly inputs three decompositions
+<!--l. 446--><math 
  xmlns="http://www.w3.org/1998/Math/MathML"  
 display="inline" ><mi 
 >a</mi> <mo 
@@ -3738,7 +3771,7 @@ class="MathClass-punc">,</mo><mi
 class="MathClass-punc">.</mo><mi 
 >H</mi></mrow><mo 
 class="MathClass-close">}</mo></mrow></math>,
-<!--l. 442--><math 
+<!--l. 446--><math 
  xmlns="http://www.w3.org/1998/Math/MathML"  
 display="inline" ><mi 
 >b</mi> <mo 
@@ -3752,7 +3785,7 @@ class="MathClass-punc">,</mo><mi
 class="MathClass-punc">.</mo><mi 
 >H</mi></mrow><mo 
 class="MathClass-close">}</mo></mrow></math> and
-<!--l. 443--><math 
+<!--l. 447--><math 
  xmlns="http://www.w3.org/1998/Math/MathML"  
 display="inline" ><mi 
 >c</mi> <mo 
@@ -3766,7 +3799,7 @@ class="MathClass-punc">,</mo><mi
 class="MathClass-punc">.</mo><mi 
 >H</mi></mrow><mo 
 class="MathClass-close">}</mo></mrow></math>, and outputs a
-residue subband <!--l. 444--><math 
+residue subband <!--l. 448--><math 
  xmlns="http://www.w3.org/1998/Math/MathML"  
 display="inline" ><mover 
 accent="true"><mrow 
@@ -3775,22 +3808,22 @@ accent="true"><mrow
 class="MathClass-op">̃</mo></mover><mo 
 class="MathClass-punc">.</mo><mi 
 >H</mi></math>,
-which replaces to <!--l. 444--><math 
+which replaces to <!--l. 448--><math 
  xmlns="http://www.w3.org/1998/Math/MathML"  
 display="inline" ><mi 
 >b</mi><mo 
 class="MathClass-punc">.</mo><mi 
 >H</mi></math>
-in the original <!--l. 444--><math 
+in the original <!--l. 448--><math 
  xmlns="http://www.w3.org/1998/Math/MathML"  
 display="inline" ><mi 
 >b</mi></math>
 decomposition. Therefore, after the use of the buﬀerﬂy, we get
-<!--l. 445--><math 
+<!--l. 449--><math 
  xmlns="http://www.w3.org/1998/Math/MathML"  
 display="inline" ><mi 
 >a</mi></math> ,
-<!--l. 446--><math 
+<!--l. 450--><math 
  xmlns="http://www.w3.org/1998/Math/MathML"  
 display="inline" ><mover 
 accent="true"><mrow 
@@ -3811,11 +3844,11 @@ class="MathClass-punc">.</mo><mi
 >H</mi></mrow><mo 
 class="MathClass-close">}</mo></mrow></math>
 (notice that only the high-frequency information of
-<!--l. 447--><math 
+<!--l. 451--><math 
  xmlns="http://www.w3.org/1998/Math/MathML"  
 display="inline" ><mi 
 >b</mi></math> has been
-compensated) and <!--l. 447--><math 
+compensated) and <!--l. 451--><math 
  xmlns="http://www.w3.org/1998/Math/MathML"  
 display="inline" ><mi 
 >c</mi></math>.
@@ -3826,7 +3859,7 @@ invariant to the pixels displacements) has been used to estimate and compensate 
                                                                   
 
                                                                   
-<!--l. 453--><math 
+<!--l. 457--><math 
  xmlns="http://www.w3.org/1998/Math/MathML"  
 display="inline" ><mi 
 >H</mi></math>
@@ -3842,7 +3875,7 @@ subbands.
                                                                   
 
                                                                   
-<!--l. 456--><p class="noindent" ><div style="text-align:center;"> <img width=1000 src="graphics/forward_butterfly.svg" /> </div>  </p><!--l. 459--><div class="lstinputlisting">
+<!--l. 460--><p class="noindent" ><div style="text-align:center;"> <img width=1000 src="graphics/forward_butterfly.svg" /> </div>  </p><!--l. 463--><div class="lstinputlisting">
 <a 
  id="x1-16001r5"></a>
 <a 
@@ -4462,7 +4495,7 @@ class="ectt-1000"> </span><span
 class="ectt-1000">residue_bH</span><span 
 class="ectt-1000">[1]</span>
 </div>
-<!--l. 462--><div class="lstinputlisting">
+<!--l. 466--><div class="lstinputlisting">
 <a 
  id="x1-16037r6"></a>
 <a 
@@ -4943,7 +4976,7 @@ class="ectt-1000"> </span><span
 class="ectt-1000">bH</span><span 
 class="ectt-1000">[1]</span>
 </div>
-<!--l. 465--><div class="lstinputlisting">
+<!--l. 469--><div class="lstinputlisting">
 <a 
  id="x1-16066r7"></a>
 <a 
@@ -5068,7 +5101,7 @@ class="content">Forward and inverse MCOLP butterﬂies.</span></div><!--tex4ht:l
 
                                                                   
    </div><hr class="endfigure" />
-<!--l. 470--><p class="indent" >   Notice that the ME projections for <!--l. 470--><math 
+<!--l. 474--><p class="indent" >   Notice that the ME projections for <!--l. 474--><math 
  xmlns="http://www.w3.org/1998/Math/MathML"  
 display="inline" ><mrow ><mo 
 class="MathClass-open">[</mo><mrow><mi 
@@ -5076,7 +5109,7 @@ class="MathClass-open">[</mo><mrow><mi
 class="MathClass-punc">.</mo><mi 
 >L</mi></mrow><mo 
 class="MathClass-close">]</mo></mrow></math>
-are performed with <!--l. 470--><math 
+are performed with <!--l. 474--><math 
  xmlns="http://www.w3.org/1998/Math/MathML"  
 display="inline" ><mrow ><mo 
 class="MathClass-open">[</mo><mrow><mi 
@@ -5084,7 +5117,7 @@ class="MathClass-open">[</mo><mrow><mi
 class="MathClass-punc">.</mo><mi 
 >L</mi></mrow><mo 
 class="MathClass-close">]</mo></mrow></math>
-and <!--l. 471--><math 
+and <!--l. 475--><math 
  xmlns="http://www.w3.org/1998/Math/MathML"  
 display="inline" ><mrow ><mo 
 class="MathClass-open">[</mo><mrow><mi 
@@ -5092,24 +5125,24 @@ class="MathClass-open">[</mo><mrow><mi
 class="MathClass-punc">.</mo><mi 
 >L</mi></mrow><mo 
 class="MathClass-close">]</mo></mrow></math> instead
-of <!--l. 471--><math 
+of <!--l. 475--><math 
  xmlns="http://www.w3.org/1998/Math/MathML"  
 display="inline" ><mi 
 >a</mi></math> and
-<!--l. 471--><math 
+<!--l. 475--><math 
  xmlns="http://www.w3.org/1998/Math/MathML"  
 display="inline" ><mi 
 >c</mi></math> (that are available at
-the decoder) because, in <!--l. 472--><math 
+the decoder) because, in <!--l. 476--><math 
  xmlns="http://www.w3.org/1998/Math/MathML"  
 display="inline" ><mi 
 >a</mi></math>
-and <!--l. 472--><math 
+and <!--l. 476--><math 
  xmlns="http://www.w3.org/1998/Math/MathML"  
 display="inline" ><mi 
 >c</mi></math>
 there is high-frequency information that can diﬁcult the computation of the projections
-<!--l. 473--><math 
+<!--l. 477--><math 
  xmlns="http://www.w3.org/1998/Math/MathML"  
 display="inline" ><mrow ><mo 
 class="MathClass-open">[</mo><mrow><mi 
@@ -5123,7 +5156,7 @@ class="MathClass-open">[</mo><mrow><mi
 class="MathClass-punc">.</mo><mi 
 >L</mi></mrow><mo 
 class="MathClass-close">]</mo></mrow></math> and
-<!--l. 474--><math 
+<!--l. 478--><math 
  xmlns="http://www.w3.org/1998/Math/MathML"  
 display="inline" ><mrow ><mo 
 class="MathClass-open">[</mo><mrow><mi 
@@ -5140,26 +5173,26 @@ class="MathClass-close">]</mo></mrow></math>.
 </p>
    <h4 class="subsectionHead"><span class="titlemark">5.2   </span> <a 
  id="x1-170005.2"></a>The MCOLP transform</h4>
-<!--l. 487--><p class="noindent" >The <!--l. 487--><math 
+<!--l. 491--><p class="noindent" >The <!--l. 491--><math 
  xmlns="http://www.w3.org/1998/Math/MathML"  
 display="inline" ><mi 
 >T</mi></math>-iterations
 MCOLP is the result of applying the MCOLP butterﬂy to all the frames of
-<!--l. 488--><math 
+<!--l. 492--><math 
  xmlns="http://www.w3.org/1998/Math/MathML"  
 display="inline" ><mi 
 >T</mi> <mo 
 class="MathClass-bin">+</mo> <mn>1</mn></math> diﬀerent
 temporal scales (see Fig. <a 
 href="#x1-171064">4<!--tex4ht:ref: fig:MCOLP --></a>). These scales are deﬁned by the frames with number multiple
-of <!--l. 490--><math 
+of <!--l. 494--><math 
  xmlns="http://www.w3.org/1998/Math/MathML"  
 display="inline" ><msup><mrow 
 ><mn>2</mn></mrow><mrow 
 ><mi 
 >t</mi></mrow></msup 
 ></math>,
-where <!--l. 490--><math 
+where <!--l. 494--><math 
  xmlns="http://www.w3.org/1998/Math/MathML"  
 display="inline" ><mn>1</mn> <mo 
 class="MathClass-rel">≤</mo> <mi 
@@ -5178,7 +5211,7 @@ is the current iteration.
                                                                   
 
                                                                   
-<!--l. 495--><p class="noindent" ><div style="text-align:center;"> <img width=1000 src="graphics/temporal_decorrelation.svg" /> </div>  </p><!--l. 496--><div class="lstinputlisting">
+<!--l. 500--><div class="lstinputlisting">
 <a 
  id="x1-17001r8"></a>
 <a 
@@ -6466,7 +6499,7 @@ class="ecit-1000">(’\</span><span
 class="ecit-1000">n</span><span 
 class="ecit-1000">’)</span>
 </div>
-<!--l. 497--><div class="lstinputlisting">
+<!--l. 501--><div class="lstinputlisting">
 <a 
  id="x1-17062r9"></a>
 <a 
@@ -7288,34 +7321,36 @@ class="content">Implementation of the MCOLP.</span></div><!--tex4ht:label?: x1-1
 
                                                                   
    </div><hr class="endfigure" />
-<!--l. 502--><p class="indent" >   Notice that, if <!--l. 502--><math 
+<!--l. 506--><p class="indent" >   Notice that, if <!--l. 506--><math 
  xmlns="http://www.w3.org/1998/Math/MathML"  
 display="inline" ><mi 
 >N</mi> <mo 
 class="MathClass-rel">=</mo> <mi 
 >G</mi> <mo 
 class="MathClass-bin">+</mo> <mn>1</mn></math>
-(where <!--l. 502--><math 
+(where <!--l. 506--><math 
  xmlns="http://www.w3.org/1998/Math/MathML"  
 display="inline" ><mi 
 >G</mi></math> is
 the GOP size, see Eq. <a 
 href="#x1-15001r1">1<!--tex4ht:ref: eq:GOP_size --></a>), except for the ﬁrst and the last frame of the sequence, all the
-<!--l. 504--><math 
+<!--l. 508--><math 
  xmlns="http://www.w3.org/1998/Math/MathML"  
 display="inline" ><mi 
 >H</mi></math>-subbands
 are temporally decorrelated.
 </p>
    <h4 class="likesubsectionHead"><a 
- id="x1-180005.2"></a>Example: 1-iteration MDWT + 1-iteration MCOLP (<span 
-class="ectt-1000">PRMC(dwt_iters=1,</span>
-<span 
-class="ectt-1000">olp_iters=1)</span>)</h4>
-<!--l. 507--><p class="noindent" >In this example, a sequence of ﬁve frames is transformed ﬁrst with the
+ id="x1-180005.2"></a>Example: 1-iteration <!--l. 510--><math 
+ xmlns="http://www.w3.org/1998/Math/MathML"  
+display="inline" ><mo 
+class="MathClass-bin">×</mo></math>
+(MDWT + 1-iteration MCOLP) (<span 
+class="ectt-1000">PRMC(iters=1, olp_iters=1)</span>)</h4>
+<!--l. 511--><p class="noindent" >In this example, a sequence of ﬁve frames is transformed ﬁrst with the
 (1-iteration) MDWT (<span 
 class="ectt-1000">MDWT(iters=1)</span>), producing 2 SRLs by frame. Next, the
-<!--l. 509--><math 
+<!--l. 513--><math 
  xmlns="http://www.w3.org/1998/Math/MathML"  
 display="inline" ><mi 
 >H</mi></math>
@@ -7375,31 +7410,57 @@ predictor=1
  <br />for i in {0..4}; do ii=$(printf &#x0022;%03d&#x0022; $i); bash ../tools/show_differences.sh -1 /tmp/$ii.png -2 ../sequences/stockholm/$ii.png -o /tmp/diff_$ii.png; done
  <br />animate /tmp/diff*.png
 </div>
-<!--l. 558--><p class="nopar" >
-</p><!--l. 560--><p class="noindent" >
+<!--l. 562--><p class="nopar" >
 </p>
+   <hr class="figure" /><div class="figure" 
+>
+                                                                  
+
+                                                                  
+<a 
+ id="x1-180015"></a>
+                                                                  
+
+                                                                  
+<!--l. 566--><p class="noindent" ><div style="text-align:center;"> <img width=1000 src="graphics/temporal_decorrelation_1x1.svg" /> </div> 
+<br />      </p><div class="caption" 
+><span class="id">Figure 5:          </span><span  
+class="content">Subbands          generated          after          running
+<!--l. 567--><math 
+ xmlns="http://www.w3.org/1998/Math/MathML"  
+display="inline" ><mn>1</mn> <mo 
+class="MathClass-bin">×</mo><mi mathvariant="monospace">PRMC(iters = 1)</mi></math>.</span></div><!--tex4ht:label?: x1-180015 -->
+                                                                  
+
+                                                                  
+   </div><hr class="endfigure" />
    <h4 class="likesubsectionHead"><a 
- id="x1-190005.2"></a>Example: 1-iteration MDWT + 2-iterations MCOLP</h4>
-<!--l. 561--><p class="noindent" >This example is similar to the previous, but now the number of iterations of MCOLP
-is <!--l. 562--><math 
+ id="x1-190005.2"></a>Example: 1-iteration <!--l. 571--><math 
+ xmlns="http://www.w3.org/1998/Math/MathML"  
+display="inline" ><mo 
+class="MathClass-bin">×</mo></math>
+(MDWT + 2-iterations MCOLP) (<span 
+class="ectt-1000">PRMC(iters=1, olp_iters=2)</span>)</h4>
+<!--l. 572--><p class="noindent" >This example is similar to the previous, but now the number of iterations of MCOLP
+is <!--l. 573--><math 
  xmlns="http://www.w3.org/1998/Math/MathML"  
 display="inline" ><mi 
 >T</mi> <mo 
-class="MathClass-rel">=</mo> <mn>2</mn></math>.
-Now, the second iteration of MCOLP compensates also the
-<!--l. 563--><math 
+class="MathClass-rel">=</mo> <mn>2</mn></math>,
+and therefore, the second iteration of MCOLP compensates also the
+<!--l. 574--><math 
  xmlns="http://www.w3.org/1998/Math/MathML"  
 display="inline" ><mi 
 >H</mi></math> subband of
 the frame 2. This example matches exactly with the described in the Fig <a 
 href="#x1-171064">4<!--tex4ht:ref: fig:MCOLP --></a>. Notice that the
-GOP size is <!--l. 565--><math 
+GOP size is <!--l. 576--><math 
  xmlns="http://www.w3.org/1998/Math/MathML"  
 display="inline" ><mn>4</mn></math>
-(<!--l. 565--><math 
+(<!--l. 576--><math 
  xmlns="http://www.w3.org/1998/Math/MathML"  
 display="inline" ><mn>3</mn></math> TRLs) and the
-number of SRLs is <!--l. 565--><math 
+number of SRLs is <!--l. 576--><math 
  xmlns="http://www.w3.org/1998/Math/MathML"  
 display="inline" ><mn>2</mn></math>.
                                                                   
@@ -7513,12 +7574,38 @@ predictor=1
  <br />
  <br />python3 ../tools/show_statistics.py -i /tmp/diff_002.png
 </div>
-<!--l. 667--><p class="nopar" >
-</p><!--l. 669--><p class="noindent" >
+<!--l. 678--><p class="nopar" >
 </p>
+   <hr class="figure" /><div class="figure" 
+>
+                                                                  
+
+                                                                  
+<a 
+ id="x1-190016"></a>
+                                                                  
+
+                                                                  
+<!--l. 682--><p class="noindent" ><div style="text-align:center;"> <img width=1000 src="graphics/temporal_decorrelation_1x2.svg" /> </div> 
+<br />      </p><div class="caption" 
+><span class="id">Figure 6:          </span><span  
+class="content">Subbands          generated          after          running
+<!--l. 683--><math 
+ xmlns="http://www.w3.org/1998/Math/MathML"  
+display="inline" ><mn>1</mn> <mo 
+class="MathClass-bin">×</mo><mi mathvariant="monospace">PRMC(iters = 2)</mi></math>.</span></div><!--tex4ht:label?: x1-190016 -->
+                                                                  
+
+                                                                  
+   </div><hr class="endfigure" />
    <h4 class="likesubsectionHead"><a 
- id="x1-200005.2"></a>Example: 1-iteration MDWT + 4-iterations MCOLP</h4>
-<!--l. 670--><p class="noindent" >A exaple with <!--l. 670--><math 
+ id="x1-200005.2"></a>Example: 1-iteration <!--l. 687--><math 
+ xmlns="http://www.w3.org/1998/Math/MathML"  
+display="inline" ><mo 
+class="MathClass-bin">×</mo></math>
+(MDWT + 4-iterations MCOLP) (<span 
+class="ectt-1000">PRMC(iters=1, olp_iters=4)</span>)</h4>
+<!--l. 688--><p class="noindent" >An example with <!--l. 688--><math 
  xmlns="http://www.w3.org/1998/Math/MathML"  
 display="inline" ><mi 
 >G</mi> <mo 
@@ -7526,7 +7613,14 @@ class="MathClass-rel">=</mo> <msup><mrow
 ><mn>2</mn></mrow><mrow 
 ><mn>3</mn></mrow></msup 
 > <mo 
-class="MathClass-rel">=</mo> <mn>1</mn><mn>6</mn></math>.
+class="MathClass-rel">=</mo> <mn>1</mn><mn>6</mn></math>,
+i.e. <!--l. 688--><math 
+ xmlns="http://www.w3.org/1998/Math/MathML"  
+display="inline" ><mn>5</mn></math>
+TRLs. <!--l. 688--><math 
+ xmlns="http://www.w3.org/1998/Math/MathML"  
+display="inline" ><mn>2</mn></math>
+SRLs.
                                                                   
 
                                                                   
@@ -7590,27 +7684,27 @@ class="MathClass-rel">=</mo> <mn>1</mn><mn>6</mn></math>.
  <br />
  <br />python3 ../tools/show_statistics.py -i /tmp/diff_002.png
 </div>
-<!--l. 727--><p class="nopar" >
-</p><!--l. 729--><p class="noindent" >
+<!--l. 745--><p class="nopar" >
+</p><!--l. 747--><p class="noindent" >
 </p>
    <h4 class="subsectionHead"><span class="titlemark">5.3   </span> <a 
  id="x1-210005.3"></a>Scalability provided by MCOLP</h4>
-<!--l. 730--><p class="noindent" >MCOLP preserves the dyadic spatial decomposition generated by MDWT, and
+<!--l. 748--><p class="noindent" >MCOLP preserves the dyadic spatial decomposition generated by MDWT, and
 therefore, MCOLP provides the same spatial scalability than MDWT.
-</p><!--l. 733--><p class="indent" >   Unfortunately, as the rest of video encoders based on MC, MCOLP reduces the
-temporal scalability provided by MDWT, allowing only a dyadic access to the
-frames. For example, after applying each iteration of the inverse MCOLP, if
-<!--l. 736--><math 
+</p><!--l. 751--><p class="indent" >   Unfortunately, as the rest of video encoders based on MC, MCOLP reduces the
+temporal scalability provided by MDWT, allowing (in the case of MCOLP) only a dyadic
+access to the frames. For example, after applying each iteration of the inverse MCOLP, if
+<!--l. 754--><math 
  xmlns="http://www.w3.org/1998/Math/MathML"  
 display="inline" ><mi 
 >T</mi> <mo 
 class="MathClass-rel">=</mo> <mn>3</mn></math> (the GOP
-size <!--l. 736--><math 
+size <!--l. 755--><math 
  xmlns="http://www.w3.org/1998/Math/MathML"  
 display="inline" ><mi 
 >G</mi> <mo 
 class="MathClass-rel">=</mo> <mn>8</mn></math>,
-i.e. <!--l. 736--><math 
+i.e. <!--l. 755--><math 
  xmlns="http://www.w3.org/1998/Math/MathML"  
 display="inline" ><mn>4</mn></math>
 temporal resolution levels (TRLs) have been generated), the frames of the second
@@ -7629,15 +7723,16 @@ frame of the sequence) should be reconstructed in this order:
  <br />      s1    s3    s5    s7     &#x003C;- third iteration. Provides TRL0.
  <br />
 </div>
-<!--l. 751--><p class="nopar" >
-</p><!--l. 753--><p class="noindent" >
+<!--l. 769--><p class="nopar" >
+</p><!--l. 771--><p class="noindent" >
 </p>
    <h4 class="likesubsectionHead"><a 
- id="x1-220005.3"></a>Example: 3-iters <!--l. 753--><math 
+ id="x1-220005.3"></a>Example: 3-iters <!--l. 771--><math 
  xmlns="http://www.w3.org/1998/Math/MathML"  
 display="inline" ><mo 
 class="MathClass-bin">×</mo></math>
-(1-iter MDWT + 2-iters MCOLP)</h4>
+(MDWT + 2-iters MCOLP) (<span 
+class="ectt-1000">PRMC(iters=3, olp_iters=2)</span>)</h4>
                                                                   
 
                                                                   
@@ -7649,7 +7744,6 @@ predictor=1
  <br />rm /tmp/*.png
  <br />cp ../sequences/stockholm/* /tmp
  <br />
- <br />predictor=1
  <br />python3 -O MDWT.py  -p /tmp/
  <br />python3 -O MCOLP.py -p /tmp/     -P $predictor -T $iterations
  <br />python3 -O MDWT.py  -p /tmp/LL
@@ -7671,14 +7765,14 @@ predictor=1
  <br />for i in {0..4}; do ii=$(printf &#x0022;%03d&#x0022; $i); bash ../tools/show_differences.sh -1 /tmp/$ii.png -2 ../sequences/stockholm/$ii.png -o /tmp/diff_$ii.png; done
  <br />animate /tmp/diff*.png
 </div>
-<!--l. 784--><p class="nopar" >
-</p><!--l. 786--><p class="indent" >   The GOP size is <!--l. 786--><math 
+<!--l. 801--><p class="nopar" >
+</p><!--l. 803--><p class="indent" >   The GOP size is <!--l. 803--><math 
  xmlns="http://www.w3.org/1998/Math/MathML"  
 display="inline" ><mn>4</mn></math>,
-generating <!--l. 786--><math 
+generating <!--l. 803--><math 
  xmlns="http://www.w3.org/1998/Math/MathML"  
 display="inline" ><mn>3</mn></math> TRLs
-in this case. <!--l. 786--><math 
+in this case. <!--l. 803--><math 
  xmlns="http://www.w3.org/1998/Math/MathML"  
 display="inline" ><mn>4</mn></math>
 is the number of SRLs.
@@ -7718,8 +7812,8 @@ is the number of SRLs.
  <br />|                               |
  <br />+-------------------------------+
 </div>
-<!--l. 821--><p class="nopar" >
-</p><!--l. 823--><p class="indent" >   <!--l. 823--><math 
+<!--l. 838--><p class="nopar" >
+</p><!--l. 840--><p class="indent" >   <!--l. 840--><math 
  xmlns="http://www.w3.org/1998/Math/MathML"  
 display="inline" ><mn>3</mn> <mo 
 class="MathClass-bin">×</mo> <mn>4</mn> <mo 
@@ -7764,14 +7858,14 @@ diﬀerent possible reconstructions of the video are possible:
      </li>
      <li 
   class="enumerate" id="x1-22024x12">s0.0, s4.0, s2.0, s1.0, s3.0.</li></ol>
-<!--l. 1001--><p class="noindent" >
+<!--l. 1018--><p class="noindent" >
 </p>
    <h3 class="sectionHead"><span class="titlemark">6   </span> <a 
  id="x1-230006"></a>Adaptive motion compensation based on the distortion of the prediction
 error</h3>
-<!--l. 1004--><p class="noindent" >As can be seen in the MCOLP buﬀerﬂy (see Fig. <a 
+<!--l. 1021--><p class="noindent" >As can be seen in the MCOLP buﬀerﬂy (see Fig. <a 
 href="#x1-160743">3<!--tex4ht:ref: fig:forward_butterfly --></a>), both predictions
-<!--l. 1005--><math 
+<!--l. 1022--><math 
  xmlns="http://www.w3.org/1998/Math/MathML"  
 display="inline" ><mrow ><mo 
 class="MathClass-open">[</mo><mrow><msub><mrow 
@@ -7783,7 +7877,7 @@ class="MathClass-open">[</mo><mrow><msub><mrow
 class="MathClass-punc">.</mo><mi 
 >H</mi></mrow><mo 
 class="MathClass-close">]</mo></mrow></math> and
-<!--l. 1006--><math 
+<!--l. 1023--><math 
  xmlns="http://www.w3.org/1998/Math/MathML"  
 display="inline" ><mrow ><mo 
 class="MathClass-open">[</mo><mrow><msub><mrow 
@@ -7800,7 +7894,7 @@ the same weight to build the prediction </p><table class="equation"><tr><td> <a
                                                                   
 
                                                                   
-<!--l. 1007--><math 
+<!--l. 1024--><math 
  xmlns="http://www.w3.org/1998/Math/MathML"  
 display="block" class="equation">
                       <mrow ><mo 
@@ -7837,12 +7931,12 @@ class="MathClass-close">]</mo></mrow></mrow>
 ><mn>2</mn></mrow></mfrac>         <mo 
 class="MathClass-punc">.</mo>
 </math></td><td class="eq-no">(2)</td></tr></table>
-<!--l. 1010--><p class="indent" >   This simple computation, that can have very eﬀective for example in <a 
+<!--l. 1027--><p class="indent" >   This simple computation, that can have very eﬀective for example in <a 
 href="https://biteable.com/blog/tips/video-transitions-effects-examples/" >dissolves</a>
 video transitions, can also be counterproductive when objects appear only in one of
 the reference frames. For this reason, in this section a diﬀerent predictor is proposed,
 based on the estimated prediction error generated throughout the ME process
-(<!--l. 1015--><math 
+(<!--l. 1032--><math 
  xmlns="http://www.w3.org/1998/Math/MathML"  
 display="inline" ><mrow ><mo 
 class="MathClass-open">[</mo><mrow><mover 
@@ -7857,7 +7951,7 @@ the Fig. <a
 href="#x1-160743">3<!--tex4ht:ref: fig:forward_butterfly --></a>). To estimate this error, we will suppose that the prediction error
 generated for the high frequencies of an frame is proportional to the prediction error
 generated for the low frequencies of such frame.
-</p><!--l. 1021--><p class="indent" >   Let <!--l. 1021--><math 
+</p><!--l. 1038--><p class="indent" >   Let <!--l. 1038--><math 
  xmlns="http://www.w3.org/1998/Math/MathML"  
 display="inline" ><mrow ><mo 
 class="MathClass-open">[</mo><mrow><msub><mrow 
@@ -7869,7 +7963,7 @@ class="MathClass-open">[</mo><mrow><msub><mrow
 class="MathClass-punc">.</mo><mi 
 >L</mi></mrow><mo 
 class="MathClass-close">]</mo></mrow></math> the prediction
-generated for the subband <!--l. 1021--><math 
+generated for the subband <!--l. 1038--><math 
  xmlns="http://www.w3.org/1998/Math/MathML"  
 display="inline" ><mrow ><mo 
 class="MathClass-open">[</mo><mrow><mi 
@@ -7877,7 +7971,7 @@ class="MathClass-open">[</mo><mrow><mi
 class="MathClass-punc">.</mo><mi 
 >L</mi></mrow><mo 
 class="MathClass-close">]</mo></mrow></math>
-using <!--l. 1022--><math 
+using <!--l. 1039--><math 
  xmlns="http://www.w3.org/1998/Math/MathML"  
 display="inline" ><mrow ><mo 
 class="MathClass-open">[</mo><mrow><mi 
@@ -7885,7 +7979,7 @@ class="MathClass-open">[</mo><mrow><mi
 class="MathClass-punc">.</mo><mi 
 >L</mi></mrow><mo 
 class="MathClass-close">]</mo></mrow></math> as reference
-and <!--l. 1022--><math 
+and <!--l. 1039--><math 
  xmlns="http://www.w3.org/1998/Math/MathML"  
 display="inline" ><mrow ><mo 
 class="MathClass-open">[</mo><mrow><mi 
@@ -7899,7 +7993,7 @@ class="MathClass-open">[</mo><mrow><mi
 class="MathClass-punc">.</mo><mi 
 >L</mi></mrow><mo 
 class="MathClass-close">]</mo></mrow></math> as motion, and
-let <!--l. 1023--><math 
+let <!--l. 1040--><math 
  xmlns="http://www.w3.org/1998/Math/MathML"  
 display="inline" ><mrow ><mo 
 class="MathClass-open">[</mo><mrow><msub><mrow 
@@ -7911,7 +8005,7 @@ class="MathClass-open">[</mo><mrow><msub><mrow
 class="MathClass-punc">.</mo><mi 
 >L</mi></mrow><mo 
 class="MathClass-close">]</mo></mrow></math> the prediction
-generated for <!--l. 1023--><math 
+generated for <!--l. 1040--><math 
  xmlns="http://www.w3.org/1998/Math/MathML"  
 display="inline" ><mrow ><mo 
 class="MathClass-open">[</mo><mrow><mi 
@@ -7919,7 +8013,7 @@ class="MathClass-open">[</mo><mrow><mi
 class="MathClass-punc">.</mo><mi 
 >L</mi></mrow><mo 
 class="MathClass-close">]</mo></mrow></math>
-using <!--l. 1023--><math 
+using <!--l. 1040--><math 
  xmlns="http://www.w3.org/1998/Math/MathML"  
 display="inline" ><mrow ><mo 
 class="MathClass-open">[</mo><mrow><mi 
@@ -7927,7 +8021,7 @@ class="MathClass-open">[</mo><mrow><mi
 class="MathClass-punc">.</mo><mi 
 >L</mi></mrow><mo 
 class="MathClass-close">]</mo></mrow></math> as
-reference and <!--l. 1024--><math 
+reference and <!--l. 1041--><math 
  xmlns="http://www.w3.org/1998/Math/MathML"  
 display="inline" ><mrow ><mo 
 class="MathClass-open">[</mo><mrow><mi 
@@ -7943,7 +8037,7 @@ class="MathClass-punc">.</mo><mi
 class="MathClass-close">]</mo></mrow></math>
 as motion. We now compute the prediction errors </p><table class="equation"><tr><td> <a 
  id="x1-23002r3"></a>
-<!--l. 1026--><math 
+<!--l. 1043--><math 
  xmlns="http://www.w3.org/1998/Math/MathML"  
 display="block" class="equation">
  <mtable  align="axis" style=""  
@@ -8003,12 +8097,12 @@ class="MathClass-punc">.</mo><mi
 class="MathClass-close">]</mo></mrow><mo 
 class="MathClass-punc">.</mo> </mtd></mtr><!--l--></mtable>
 </math></td><td class="eq-no">(3)</td></tr></table>
-<!--l. 1033--><p class="indent" >   We deﬁne the similarity matrices as </p><table class="equation"><tr><td> <a 
+<!--l. 1050--><p class="indent" >   We deﬁne the similarity matrices as </p><table class="equation"><tr><td> <a 
  id="x1-23003r4"></a>
                                                                   
 
                                                                   
-<!--l. 1034--><math 
+<!--l. 1051--><math 
  xmlns="http://www.w3.org/1998/Math/MathML"  
 display="block" class="equation">
  <mtable  align="axis" style=""  
@@ -8068,8 +8162,8 @@ class="MathClass-close">]</mo></mrow><mo
 class="MathClass-rel">|</mo></mrow></mfrac><mo 
 class="MathClass-punc">.</mo> </mtd></mtr><!--l--></mtable>
 </math></td><td class="eq-no">(4)</td></tr></table>
-<!--l. 1041--><p class="indent" >   Notice that, if (for example) the error
-<!--l. 1041--><math 
+<!--l. 1058--><p class="indent" >   Notice that, if (for example) the error
+<!--l. 1058--><math 
  xmlns="http://www.w3.org/1998/Math/MathML"  
 display="inline" ><msub><mrow 
 ><mrow ><mo 
@@ -8088,7 +8182,7 @@ class="MathClass-punc">,</mo><mi
 >y</mi></mrow></msub 
 > <mo 
 class="MathClass-rel">=</mo> <mn>0</mn></math>, the
-similarity is <!--l. 1042--><math 
+similarity is <!--l. 1059--><math 
  xmlns="http://www.w3.org/1998/Math/MathML"  
 display="inline" ><msub><mrow 
 ><mrow ><mo 
@@ -8108,13 +8202,13 @@ class="MathClass-punc">,</mo><mi
 > <mo 
 class="MathClass-rel">=</mo> <mn>1</mn></math>
 (the maximum similarity), if the error is high, the similarity tends to be low (but never
-<!--l. 1043--><math 
+<!--l. 1060--><math 
  xmlns="http://www.w3.org/1998/Math/MathML"  
 display="inline" ><mn>0</mn></math>).
-</p><!--l. 1045--><p class="indent" >   With this information, that can be recovered by the decoder, the improved
+</p><!--l. 1062--><p class="indent" >   With this information, that can be recovered by the decoder, the improved
 prediction is deﬁned as </p><table class="equation"><tr><td> <a 
  id="x1-23004r5"></a>
-<!--l. 1047--><math 
+<!--l. 1064--><math 
  xmlns="http://www.w3.org/1998/Math/MathML"  
 display="block" class="equation">
                   <mrow ><mo 
@@ -8188,9 +8282,9 @@ class="MathClass-punc">.</mo><mi
 class="MathClass-close">]</mo></mrow></mrow></mfrac>        <mo 
 class="MathClass-punc">.</mo>
 </math></td><td class="eq-no">(5)</td></tr></table>
-<!--l. 1050--><p class="indent" >   The Fig. <a 
-href="#x1-230195">5<!--tex4ht:ref: fig:weighted_average --></a> shows an implementation of this equation.
-</p><!--l. 1053--><p class="indent" >   Notice that, if (for example) <!--l. 1053--><math 
+<!--l. 1067--><p class="indent" >   The Fig. <a 
+href="#x1-230197">7<!--tex4ht:ref: fig:weighted_average --></a> shows an implementation of this equation.
+</p><!--l. 1070--><p class="indent" >   Notice that, if (for example) <!--l. 1070--><math 
  xmlns="http://www.w3.org/1998/Math/MathML"  
 display="inline" ><msub><mrow 
 ><mrow ><mo 
@@ -8209,7 +8303,7 @@ class="MathClass-punc">,</mo><mi
 >y</mi></mrow></msub 
 > <mo 
 class="MathClass-rel">=</mo> <mn>1</mn></math>
-and <!--l. 1054--><math 
+and <!--l. 1071--><math 
  xmlns="http://www.w3.org/1998/Math/MathML"  
 display="inline" ><msub><mrow 
 ><mrow ><mo 
@@ -8228,7 +8322,7 @@ class="MathClass-punc">,</mo><mi
 >y</mi></mrow></msub 
 > <mo 
 class="MathClass-rel">≈</mo> <mn>0</mn></math>, then
-<!--l. 1055--><math 
+<!--l. 1072--><math 
  xmlns="http://www.w3.org/1998/Math/MathML"  
 display="inline" ><msub><mrow 
 ><mrow ><mo 
@@ -8261,7 +8355,7 @@ class="MathClass-close">]</mo></mrow></mrow><mrow
 class="MathClass-punc">,</mo><mi 
 >y</mi></mrow></msub 
 ></math>, and
-viceversa. If <!--l. 1056--><math 
+viceversa. If <!--l. 1073--><math 
  xmlns="http://www.w3.org/1998/Math/MathML"  
 display="inline" ><msub><mrow 
 ><mrow ><mo 
@@ -8295,7 +8389,7 @@ class="MathClass-close">]</mo></mrow></mrow><mrow
 class="MathClass-punc">,</mo><mi 
 >y</mi></mrow></msub 
 ></math>,
-then <!--l. 1057--><math 
+then <!--l. 1074--><math 
  xmlns="http://www.w3.org/1998/Math/MathML"  
 display="inline" ><msub><mrow 
 ><mrow ><mo 
@@ -8355,11 +8449,11 @@ class="MathClass-punc">,</mo><mi
 
                                                                   
 <a 
- id="x1-230195"></a>
+ id="x1-230197"></a>
                                                                   
 
                                                                   
-<!--l. 1061--><div class="lstinputlisting">
+<!--l. 1078--><div class="lstinputlisting">
 <a 
  id="x1-23005r10"></a>
 <a 
@@ -8573,27 +8667,27 @@ class="ectt-1000">SCL</span><span
 class="ectt-1000">)</span>
 </div>
 <br /> <div class="caption" 
-><span class="id">Figure 5: </span><span  
-class="content">Computation of the weighted average prediction.</span></div><!--tex4ht:label?: x1-230195 -->
+><span class="id">Figure 7: </span><span  
+class="content">Computation of the weighted average prediction.</span></div><!--tex4ht:label?: x1-230197 -->
                                                                   
 
                                                                   
    </div><hr class="endfigure" />
    <h3 class="sectionHead"><span class="titlemark">7   </span> <a 
  id="x1-240007"></a>Lossy compression: quantization</h3>
-<!--l. 1069--><p class="noindent" ><a 
+<!--l. 1086--><p class="noindent" ><a 
 href="https://vicente-gonzalez-ruiz.github.io/quantization/" >Quantization</a> allows to remove information from signals. We will use it in
 MCOLP to achieve higher compression ratios, but at the expense of losing
 visual information (ideally, the less relevant information should be removed
 ﬁrst).
-</p><!--l. 1074--><p class="indent" >   When the signal cannot be recoverd perfectly, we can use a <a 
+</p><!--l. 1091--><p class="indent" >   When the signal cannot be recoverd perfectly, we can use a <a 
 href="https://vicente-gonzalez-ruiz.github.io/distortion_metrics/" >distortion metric</a> to
 ﬁnd how much error has been generated.
-</p><!--l. 1078--><p class="noindent" >
+</p><!--l. 1095--><p class="noindent" >
 </p>
    <h4 class="likesubsectionHead"><a 
  id="x1-250007"></a>Example: Eﬀects caused by the total attenuation of the motion compensated (MCed)
-<!--l. 1078--><math 
+<!--l. 1095--><math 
  xmlns="http://www.w3.org/1998/Math/MathML"  
 display="inline" ><mi 
 >H</mi></math>
@@ -8644,15 +8738,15 @@ predictor=2
  <br /># PSNR per frame
  <br />for i in {0..4}; do ii=$(printf &#x0022;%03d&#x0022; $i); PSNR=‘python3 -O ../tools/PSNR.py -x ../sequences/stockholm/$ii.png -y /tmp/$ii.png‘; printf &#x0022;PSNR(%s)=%s\n&#x0022; $ii $PSNR; done
 </div>
-<!--l. 1122--><p class="nopar" >
+<!--l. 1139--><p class="nopar" >
                                                                   
 
                                                                   
-</p><!--l. 1127--><p class="noindent" >
+</p><!--l. 1144--><p class="noindent" >
 </p>
    <h4 class="likesubsectionHead"><a 
  id="x1-260007"></a>Example: Eﬀects caused by the quantization of MCed
-<!--l. 1127--><math 
+<!--l. 1144--><math 
  xmlns="http://www.w3.org/1998/Math/MathML"  
 display="inline" ><mi 
 >H</mi></math>
@@ -8694,11 +8788,11 @@ q_step=32
  <br />
  <br />for i in {0..4}; do ii=$(printf &#x0022;%03d&#x0022; $i); MSE=‘python3 -O ../tools/MSE.py -x ../sequences/stockholm/$ii.png -y /tmp/$ii.png‘; printf &#x0022;MSE(%s)=%s\n&#x0022; $ii $MSE; done
 </div>
-<!--l. 1161--><p class="nopar" >
-</p><!--l. 1163--><p class="noindent" >
+<!--l. 1178--><p class="nopar" >
+</p><!--l. 1180--><p class="noindent" >
 </p>
    <h4 class="likesubsectionHead"><a 
- id="x1-270007"></a>Example: Quantization of all <!--l. 1163--><math 
+ id="x1-270007"></a>Example: Quantization of all <!--l. 1180--><math 
  xmlns="http://www.w3.org/1998/Math/MathML"  
 display="inline" ><mi 
 >H</mi></math>
@@ -8746,8 +8840,8 @@ q_step=32
  <br />
  <br />for i in {0..4}; do ii=$(printf &#x0022;%03d&#x0022; $i); MSE=‘python3 -O ../tools/MSE.py -x ../sequences/stockholm/$ii.png -y /tmp/$ii.png‘; printf &#x0022;MSE(%s)=%s\n&#x0022; $ii $MSE; done
 </div>
-<!--l. 1203--><p class="nopar" >
-</p><!--l. 1205--><p class="noindent" >
+<!--l. 1220--><p class="nopar" >
+</p><!--l. 1222--><p class="noindent" >
                                                                   
 
                                                                   
@@ -8805,13 +8899,13 @@ q_step=128
                                                                   
  <br />for i in {0..4}; do ii=$(printf &#x0022;%03d&#x0022; $i); MSE=‘python3 -O ../tools/MSE.py -x ../sequences/stockholm/$ii.png -y /tmp/$ii.png‘; printf &#x0022;MSE(%s)=%s\n&#x0022; $ii $MSE; done
 </div>
-<!--l. 1250--><p class="nopar" >
-</p><!--l. 1254--><p class="noindent" >
+<!--l. 1267--><p class="nopar" >
+</p><!--l. 1271--><p class="noindent" >
 </p>
    <h3 class="sectionHead"><span class="titlemark">8   </span> <a 
  id="x1-290008"></a>Bit allocation</h3>
-<!--l. 1255--><p class="noindent" >En la mariposa (o en un esquema IPPP...) la subbanda
-<!--l. 1255--><math 
+<!--l. 1272--><p class="noindent" >En la mariposa (o en un esquema IPPP...) la subbanda
+<!--l. 1272--><math 
  xmlns="http://www.w3.org/1998/Math/MathML"  
 display="inline" ><msub><mrow 
 ><mover 
@@ -8822,7 +8916,7 @@ class="MathClass-op">̃</mo></mover></mrow><mrow
 ><mi 
 >b</mi></mrow></msub 
 ></math> compensada depende
-de las subbandas <!--l. 1255--><math 
+de las subbandas <!--l. 1272--><math 
  xmlns="http://www.w3.org/1998/Math/MathML"  
 display="inline" ><msubsup><mrow 
 ><mi 
@@ -8834,7 +8928,7 @@ class="MathClass-open">[</mo><mrow><mi
 >q</mi></mrow><mo 
 class="MathClass-close">]</mo></mrow></mrow></msubsup 
 ></math>,
-<!--l. 1255--><math 
+<!--l. 1272--><math 
  xmlns="http://www.w3.org/1998/Math/MathML"  
 display="inline" ><msub><mrow 
 ><mi 
@@ -8842,7 +8936,7 @@ display="inline" ><msub><mrow
 ><mi 
 >b</mi></mrow></msub 
 ></math> y
-<!--l. 1255--><math 
+<!--l. 1272--><math 
  xmlns="http://www.w3.org/1998/Math/MathML"  
 display="inline" ><msub><mrow 
 ><mi 
@@ -8851,7 +8945,7 @@ display="inline" ><msub><mrow
 >c</mi></mrow></msub 
 ></math>,
 para generar los campos de movimiento adecuados.
-<!--l. 1255--><math 
+<!--l. 1272--><math 
  xmlns="http://www.w3.org/1998/Math/MathML"  
 display="inline" ><msub><mrow 
 ><mover 
@@ -8862,7 +8956,7 @@ class="MathClass-op">̃</mo></mover></mrow><mrow
 ><mi 
 >b</mi></mrow></msub 
 ></math> también
-depende de <!--l. 1255--><math 
+depende de <!--l. 1272--><math 
  xmlns="http://www.w3.org/1998/Math/MathML"  
 display="inline" ><msub><mrow 
 ><mi 
@@ -8870,7 +8964,7 @@ display="inline" ><msub><mrow
 ><mi 
 >a</mi></mrow></msub 
 ></math>
-y <!--l. 1255--><math 
+y <!--l. 1272--><math 
  xmlns="http://www.w3.org/1998/Math/MathML"  
 display="inline" ><msub><mrow 
 ><mi 
@@ -8879,7 +8973,7 @@ display="inline" ><msub><mrow
 >b</mi></mrow></msub 
 ></math>
 <a 
- id="Q1-1-45"></a>
+ id="Q1-1-47"></a>
 </p>
     
 </body> 
