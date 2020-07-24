@@ -5,6 +5,8 @@ image_width="256"
 image_height="256"
 circle_radius="30"
 frames="10"
+x_initial="80"
+y_initial="40"
 
 usage() {
     echo $0
@@ -14,12 +16,14 @@ usage() {
     echo "  [-w image width, number of pixels in the horizontal direction ($image_height)]"
     echo "  [-f frames, number of frames to generate ($frames)]"
     echo "  [-f circle radius ($circle_radius)]"
+    echo "  [-x initial X coordinate ($x_initial)]"
+    echo "  [-y initial Y coordinate ($y_initial)]"
     echo "  [-? help]"
 }
 
 echo $0: parsing: $@
 
-while getopts "o:h:w:f:r:?" opt; do
+while getopts "o:h:w:f:r:y:x:?" opt; do
     case ${opt} in
         o)
             output_seq_prefix="${OPTARG}"
@@ -40,6 +44,14 @@ while getopts "o:h:w:f:r:?" opt; do
         r)
             circle_radius="${OPTARG}"
             echo "circle_radius =" $circle_radius
+            ;;
+        y)
+            y_initial="${OPTARG}"
+            echo "Initial Y coordinate =" $y_initial
+            ;;
+        x)
+            x_initial="${OPTARG}"
+            echo "Initial X coordinate =" $x_initial
             ;;
         ?)
             usage
@@ -64,6 +76,6 @@ i=0
 while [ $i -le $((frames-1)) ]
 do
     ii=$(printf "%03d" $i)
-    convert -size ${image_width}x${image_height} xc:skyblue -fill white -stroke black -draw "circle $((42+i)),42 $((42+circle_radius+i)),42" ${output_seq_prefix}${ii}.png
+    convert -size ${image_width}x${image_height} xc:skyblue -fill white -stroke black -draw "circle $((x_initial+i)),$y_initial $((x_initial+circle_radius+i)),$y_initial" ${output_seq_prefix}${ii}.png
     i=$(( $i + 1 ))
 done
