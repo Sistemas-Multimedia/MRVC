@@ -1,6 +1,7 @@
 from MC.optical.motion import motion_estimation
 from MC.optical.motion import estimate_frame
 import sys
+
 def generate_prediction(AL, BL, CL, AH, CH):
     flow_AL_BL = motion_estimation(AL, BL)
     flow_CL_BL = motion_estimation(CL, BL)

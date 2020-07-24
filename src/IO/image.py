@@ -12,8 +12,8 @@ class InputFileException(Exception):
     pass
 
 def read(prefix = "/tmp/", index = "000"):
-    '''Read a 3-components image from disk. Each component stores
-       integers between [0, 65535].
+    '''Read an image from disk, with a number of components. Each
+       component stores integers between [0, 65535].
 
     Input:
     -----
@@ -27,8 +27,8 @@ def read(prefix = "/tmp/", index = "000"):
 
         (disk): [:,:,:].
 
-            A color image, where each component is in the range
-            [-32768, 32767].
+            A multicomponent image, where each component ranges
+            between [-32768, 32767].
 
     '''
     fn = prefix + index + ".png"
@@ -44,7 +44,7 @@ def read(prefix = "/tmp/", index = "000"):
     return buf.astype(np.int16)
 
 def write(image, prefix = "/tmp/", index = "000"):
-    '''Write a 3-components image to disk. Each component stores integers
+    '''Write a image to disk. Each component stores integers
        between [0, 65536].
 
     Input:
@@ -52,7 +52,8 @@ def write(image, prefix = "/tmp/", index = "000"):
 
         image: [:,:,:].
 
-            The color image to write, where each component is in the range [-32768, 32768].
+            The multicomponent image to write, where each component is
+            in the range [-32768, 32768].
 
         prefix: str.
 
@@ -64,6 +65,7 @@ def write(image, prefix = "/tmp/", index = "000"):
         (disk) : [:,:,:].
 
             A color image.
+
     '''
 
     image = image.astype(np.float32)

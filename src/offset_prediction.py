@@ -1,5 +1,5 @@
-# Designed for testing purposes, The result from MCOLP should the the
-# same that MDWT.
+# Designed for testing purposes, The result from MCOLP should the
+# same than MDWT.
 
 import numpy as np
 

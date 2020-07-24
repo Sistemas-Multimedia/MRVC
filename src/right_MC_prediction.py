@@ -1,4 +1,4 @@
-# The prediction is base only on the right decomposition.
+# The MC prediction is based only on the right decomposition.
 
 from MC.optical.motion import motion_estimation
 from MC.optical.motion import estimate_frame

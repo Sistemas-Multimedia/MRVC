@@ -24,8 +24,9 @@ from src.IO import decomposition
 
 class DWT:
 
-    def __init__(self, wavelet = "bior3.5"):
+    def __init__(self, wavelet = "bior3.5", ncomp=3):
         self.wavelet = wavelet
+        self.ncomp = ncomp
 
     def show(self):
         print("Available wavelets:")
@@ -33,12 +34,12 @@ class DWT:
             print("* %s family: " % family + ', '.join(pywt.wavelist(family)))
     
     def forward(self, image):
-        '''1-iteration 2D-DWT of a color image.
+        '''1-iteration 2D-DWT of a multicomponent image.
 
         Input:
         -----
 
-            an image: an array[y, x, component] with a color (usually YUV) image.
+            an image: an array[y, x, component] with a usually color (for example, YUV) image.
 
                   x
              +---------------+
@@ -57,10 +58,10 @@ class DWT:
         Output:
         ------
 
-            a decomposition: a tuple (L, H), where L (the low-frequencie
-            subband) is an array[y, x, component], and H (high-frequencies
-            subbands) is a tuple (LH, HL, HH), where LH, HL, HH are
-            array[y, x, component], with the color decomposition.
+            a decomposition: a tuple (L, H), where L (the low-frequency
+            subband) is an array[y, x, component], and H (high-frequency
+            subband) is a tuple (LH, HL, HH), where LH, HL, HH are
+            array[y, x, component], with the multicomponent decomposition.
 
                  x
              +-------+-------+
@@ -81,13 +82,13 @@ class DWT:
         '''
         y = math.ceil(image.shape[0]/2)
         x = math.ceil(image.shape[1]/2)
-        LL = np.ndarray((y, x, 3), np.float64)
-        LH = np.ndarray((y, x, 3), np.float64)
-        HL = np.ndarray((y, x, 3), np.float64)
-        HH = np.ndarray((y, x, 3), np.float64)
+        LL = np.ndarray((y, x, self.ncomp), np.float64)
+        LH = np.ndarray((y, x, self.ncomp), np.float64)
+        HL = np.ndarray((y, x, self.ncomp), np.float64)
+        HH = np.ndarray((y, x, self.ncomp), np.float64)
         if __debug__:
             print("image: max={} min={}".format(np.amax(image), np.amin(image)))
-        for c in range(3):
+        for c in range(self.ncomp):
             LL[:,:,c], (LH[:,:,c], HL[:,:,c], HH[:,:,c]) = pywt.dwt2(image[:,:,c], self.wavelet, mode='per')
         if __debug__:
             print("DWT::forward: LL: max={} min={}".format(np.amax(LL), np.amin(LL)))
@@ -116,9 +117,9 @@ class DWT:
         LH = decomposition[1][0]
         HL = decomposition[1][1]
         HH = decomposition[1][2]        
-        image = np.ndarray((LL.shape[0]*2, LL.shape[1]*2, 3), np.float64)
+        image = np.ndarray((LL.shape[0]*2, LL.shape[1]*2, self.ncomp), np.float64)
 
-        for c in range(3):
+        for c in range(self.ncomp):
             image[:,:,c] = pywt.idwt2((LL[:,:,c], (LH[:,:,c], HL[:,:,c], HH[:,:,c])), self.wavelet, mode='per')
         return image
 

@@ -11,8 +11,8 @@ if __debug__:
         return ((x - np.amin(x)) / (np.amax(x) - np.amin(x)))
 
 def readL(prefix = "/tmp/", index = "000"):
-    '''Read a 3-components LL-subband from disk. Each coefficient is an
-    integer between [0, 65535] in disk.
+    '''Read a 3-components LL-subband from disk, where ach coefficient is
+    an integer between [0, 65535] in disk.
 
     Parameters
     ----------
@@ -27,8 +27,8 @@ def readL(prefix = "/tmp/", index = "000"):
 
         [:,:,:].
 
-            A color subband, where each coefficient is in the range
-            [-32768, 32767].
+            A multicomponent subband, where each coefficient is in the
+            range [-32768, 32767].
 
     '''
     fn = prefix + "LL" + index + ".png"
@@ -54,15 +54,15 @@ def readL(prefix = "/tmp/", index = "000"):
     return LL
 
 def readH(prefix = "/tmp/", index = "000"):
-    '''Read a 3-components H-subbands (LH, HL and HH) from disk. Each
-    coefficient is an integer between [0, 65535] in disk.
+    '''Read a multicomponent H-subband (LH, HL and HH) from disk, where
+    each coefficient is an integer between [0, 65535].
 
     Parameters
     ----------
 
         prefix : str.
 
-            Path to the H-subbands in the file system, without
+            Path to the H-subband in the file system, without
             extension.
 
     Returns
@@ -70,8 +70,8 @@ def readH(prefix = "/tmp/", index = "000"):
 
         ([:,:,:], [:,:,:], [:,:,:]).
 
-            A tuple of color subbands, where each coefficient is in
-            the range [-32768, 32767].
+            A tuple of multicomponent subbands, where each coefficient
+            is in the range [-32768, 32767].
 
     '''
     fn = prefix + "LH" + index + ".png"
@@ -129,8 +129,8 @@ def readH(prefix = "/tmp/", index = "000"):
     return LH, HL, HH
 
 def read(prefix = "/tmp/", index = "000"):
-    '''Read a decomposition from disk. The coefficients must be in the
-    range [0, 65535].
+    '''Read a multicomponent decomposition from disk. The read
+    coefficients must be in the range [0, 65535].
 
     Parameters
     ----------
@@ -146,7 +146,7 @@ def read(prefix = "/tmp/", index = "000"):
         where LH, HL, HH = [:,:,:]. The coefficients are in the range
         [-32768, 32767].
 
-            A color decomposition.
+            A multicomponent decomposition.
 
     '''
 
@@ -188,11 +188,11 @@ def writeL(LL, prefix = "/tmp/", index = "000"):
 
         LL : [:,:,:].
 
-            An image structure.
+            A multicomponent image structure.
 
         dir_name : str.
 
-            Path to the LL subband.
+            Path to the LL multicomponent subband.
 
     Returns
     -------
@@ -216,14 +216,16 @@ def writeL(LL, prefix = "/tmp/", index = "000"):
             time.sleep(0.1)
 
 def writeH(H, prefix = "/tmp/", index = "000"):
-    '''Write the high-frequency subbands H=(LH, HL, HH) to the disk.
+    '''Write the multicomponent high-frequency subband H=(LH, HL, HH) to
+    the disk.
 
     Parameters
     ----------
 
         dir_name : str.
 
-            Path to the 3 subband files (LH.png, HL.png, and HH.png) in the file system.
+            Path to the 3 multicomponent subband files (LH.png,
+            HL.png, and HH.png) in the file system.
 
     Returns
     -------
@@ -266,14 +268,14 @@ def writeH(H, prefix = "/tmp/", index = "000"):
             time.sleep(0.1)
 
 def write(decomposition, prefix = "/tmp/", index = "000"):
-    '''Write a decomposition to disk.
+    '''Write a multicomponent decomposition to disk.
 
     Parameters
     ----------
 
         decomposition : (LL, (LH, HL, HH) where each subband is [:,:,:].
 
-            Decomposition structure.
+            Multicomponent decomposition structure.
 
         dir_name : str.
 
