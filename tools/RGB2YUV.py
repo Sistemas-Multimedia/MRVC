@@ -15,7 +15,7 @@ if image_rgb is None:
     raise Exception('{} not found'.format(args.input))
 
 # Convert to YCbCr
-image_ycc = cv2.cvtColor(image_rgb, cv2.COLOR_BGR2YCR_CB)
+image_yuv = cv2.cvtColor(image_rgb, cv2.COLOR_RGB2YCR_CB)
 
 # Write image
-cv2.imwrite(args.output, image_ycc)
+cv2.imwrite(args.output, image_yuv)

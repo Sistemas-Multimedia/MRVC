@@ -10,12 +10,12 @@ parser.add_argument('-o','--output',help='Output file name', required=True)
 args = parser.parse_args()
 
 # Read image
-image_ycc = cv2.imread(args.input, -1)
-if image_ycc is None:
+image_yuv = cv2.imread(args.input, -1)
+if image_yuv is None:
     raise Exception('{} not found'.format(args.input))
 
 # Convert to YCbCr
-image_rgb = cv2.cvtColor(image_ycc, cv2.COLOR_YCR_CB2BGR)
+image_rgb = cv2.cvtColor(image_yuv, cv2.COLOR_YCR_CB2RGB)
 
 # Write image
 cv2.imwrite(args.output, image_rgb)

@@ -19,10 +19,10 @@ from src.IO import decomposition
 
 class MCOLP:
 
-    def __init__(self, shape):
+    def __init__(self, shape, wavelet = "bior3.5"):
         self.zero_L = np.zeros(shape, np.float64)
         self.zero_H = (np.zeros(shape, np.float64), np.zeros(shape, np.float64), np.zeros(shape, np.float64))
-        self.dwt = DWT()
+        self.dwt = DWT(wavelet)
 
     def __forward_butterfly(self, aL, aH, bL, bH, cL, cH):
         '''Forward MCOLP butterfly.
@@ -205,6 +205,7 @@ if __name__ == "__main__":
     parser.add_argument("-p", "--prefix", help="Dir where the files the I/O files are placed", default="/tmp/")
     parser.add_argument("-N", "--decompositions", help="Number of input decompositions", default=5, type=int)
     parser.add_argument("-T", "--iterations", help="Number of temporal iterations", default=2, type=int)
+    parser.add_argument("-w", "--wavelet", help="Wavelet name", default="bior3.5")
     parser.add_argument("-P", "--predictor", help="Predictor to use (0=none, 1=MC average, 2=MC weighted average, 3=left, 4=right, 5=MC left, 6=MC right, 7=offset)", default=1, type=int)
 
     args = parser.parse_args()
@@ -226,21 +227,15 @@ if __name__ == "__main__":
     if args.predictor == 7:
         import offset_prediction as predictor
 
+    # The first image is read only for getting the dimensions of
+    # the images.
+    p = decomposition.readL(args.prefix, "000")
+    mcolp = MCOLP(shape=p.shape, wavelet=args.wavelet)
     if args.backward:
         if __debug__:
             print("Backward transform")
-
-        # The first image is read only for knowing the dimenssions of
-        # the images.
-        p = decomposition.readL(args.prefix, "000")
-        d = MCOLP(p.shape)
-
-        d.backward(args.prefix, args.decompositions, args.iterations)
+        mcolp.backward(args.prefix, args.decompositions, args.iterations)
     else:
         if __debug__:
             print("Forward transform")
-
-        p = decomposition.readL(args.prefix, "000")
-        d = MCOLP(p.shape)
-
-        p = d.forward(args.prefix, args.decompositions, args.iterations)
+        mcolp.forward(args.prefix, args.decompositions, args.iterations)
