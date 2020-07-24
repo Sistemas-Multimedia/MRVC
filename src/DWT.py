@@ -26,6 +26,11 @@ class DWT:
 
     def __init__(self, wavelet = "bior3.5"):
         self.wavelet = wavelet
+
+    def show(self):
+        print("Available wavelets:")
+        for family in pywt.families():
+            print("* %s family: " % family + ', '.join(pywt.wavelist(family)))
     
     def forward(self, image):
         '''1-iteration 2D-DWT of a color image.
@@ -135,19 +140,24 @@ if __name__ == "__main__":
     parser.add_argument("-b", "--backward", action='store_true', help="Performs backward transform")
     parser.add_argument("-p", "--prefix", help="Folder where the files the I/O files are placed", default="/tmp/")
     parser.add_argument("-i", "--index", help="Index of the image/decomposition", default="000")
+    parser.add_argument("-w", "--wavelet", help="Wavelet name", default="bior3.5")
+    parser.add_argument("-s", "--show", action='store_true', help="Show available wavelet names")
 
     args = parser.parse_args()
-
-    dwt = DWT()
-    if args.backward:
-        if __debug__:
-            print("Backward transform")
-        d = decomposition.read(args.prefix, args.index)
-        i = dwt.backward(d)
-        image.write(i, args.prefix, args.index)
+    dwt = DWT(wavelet=args.wavelet)
+    
+    if args.show:
+        dwt.show()
     else:
-        if __debug__:
-            print("Forward transform")
-        i = image.read(args.prefix, args.index)
-        d = dwt.forward(i)
-        decomposition.write(d, args.prefix, args.index)
+        if args.backward:
+            if __debug__:
+                print("Backward transform")
+            d = decomposition.read(args.prefix, args.index)
+            i = dwt.backward(d)
+            image.write(i, args.prefix, args.index)
+        else:
+            if __debug__:
+                print("Forward transform")
+            i = image.read(args.prefix, args.index)
+            d = dwt.forward(i)
+            decomposition.write(d, args.prefix, args.index)

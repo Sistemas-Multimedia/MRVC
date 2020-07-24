@@ -61,7 +61,7 @@ done
 set -x
 
 i=0
-while [ $i -le 5 ]
+while [ $i -le $((frames-1)) ]
 do
     ii=$(printf "%03d" $i)
     convert -size ${image_width}x${image_height} xc:skyblue -fill white -stroke black -draw "circle $((42+i)),42 $((42+circle_radius+i)),42" ${output_seq_prefix}${ii}.png
