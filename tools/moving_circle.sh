@@ -3,7 +3,7 @@
 output_seq_prefix="/tmp/moving_circle_"
 image_width="256"
 image_height="256"
-circle_radius="30"
+diameter="30"
 frames="10"
 x_initial="80"
 y_initial="40"
@@ -15,7 +15,7 @@ usage() {
     echo "  [-h image height, number of pixels in the vertical direction ($image_width)]"
     echo "  [-w image width, number of pixels in the horizontal direction ($image_height)]"
     echo "  [-f frames, number of frames to generate ($frames)]"
-    echo "  [-f circle radius ($circle_radius)]"
+    echo "  [-d circle diameter ($diameter)]"
     echo "  [-x initial X coordinate ($x_initial)]"
     echo "  [-y initial Y coordinate ($y_initial)]"
     echo "  [-? help]"
@@ -23,7 +23,7 @@ usage() {
 
 echo $0: parsing: $@
 
-while getopts "o:h:w:f:r:y:x:?" opt; do
+while getopts "o:h:w:f:d:y:x:?" opt; do
     case ${opt} in
         o)
             output_seq_prefix="${OPTARG}"
@@ -41,9 +41,9 @@ while getopts "o:h:w:f:r:y:x:?" opt; do
             frames="${OPTARG}"
             echo "frames =" $frames
             ;;
-        r)
-            circle_radius="${OPTARG}"
-            echo "circle_radius =" $circle_radius
+        d)
+            diameter="${OPTARG}"
+            echo "diameter =" $diameter
             ;;
         y)
             y_initial="${OPTARG}"
@@ -76,6 +76,6 @@ i=0
 while [ $i -le $((frames-1)) ]
 do
     ii=$(printf "%03d" $i)
-    convert -size ${image_width}x${image_height} xc:skyblue -fill white -stroke black -draw "circle $((x_initial+i)),$y_initial $((x_initial+circle_radius+i)),$y_initial" ${output_seq_prefix}${ii}.png
+    convert -size ${image_width}x${image_height} xc:skyblue -fill white -stroke black -draw "circle $((x_initial+i)),$y_initial $((x_initial+diameter+i)),$y_initial" ${output_seq_prefix}${ii}.png
     i=$(( $i + 1 ))
 done
