@@ -231,7 +231,7 @@ Y/2 |     L_1     |
 
 %{{{ Examples
 
-\subsection*{Example: A 1-iteration DWT ($\mathtt{DWT(iters=1)}$)}
+\subsection*{Example: A 1-iteration DWT}
 %{{{
 
 An image is transformed, generating four subbands $LL$, $LH$, $HL$ and
@@ -266,7 +266,7 @@ display /tmp/diffs.png
 
 %}}}
 
-\subsection*{Example: A 2-iterations DWT ($\mathtt{DWT(iters=2)}$)}
+\subsection*{Example: A 2-iterations DWT ($2\times\mathtt{DWT}$)}
 %{{{
 
 \begin{verbatim}
@@ -354,7 +354,7 @@ transformed independently.
 
 %{{{ Examples
 
-\subsection*{Example: 1-iteration MDWT (\texttt{MDWT(iters=1)})}
+\subsection*{Example: 1-iteration MDWT ($\mathtt{MDWT}(N=5)$)}
 %{{{
 
 \begin{verbatim}
@@ -391,7 +391,7 @@ animate /tmp/diff*.png
 
 %}}}
 
-\subsection*{Example: 2-iterations MDWT (\texttt{MDWT(iters=2)})}
+\subsection*{Example: 2-iterations MDWT ($2\times\mathtt{MDWT}(N=5)$)}
 %{{{
 
 \begin{verbatim}
@@ -621,28 +621,26 @@ been used to estimate and compensate the $H$ subbands.
 \subsection{The MCOLP transform}
 %{{{
 
-The $T$-iterations MCOLP is the result of applying the MCOLP butterfly
-to all the frames of $T+1$ different temporal scales (see
-Fig.~\ref{fig:MCOLP}). These scales are defined by the frames with
-number multiple of $2^t$, where $1\leq t\leq T$ is the current
-iteration.
+The $T$-iterations MCOLP (see Fig.~\ref{fig:MCOLP}) is the result of
+applying the MCOLP butterfly to all the frames at $T$ different
+temporal subsamplings (or scales). At the iteration $1\leq t\leq T$ of
+MCOLP, the involved frames are multiple of $2^t$.
 
 \begin{figure}
   \centering
   %\myfig{graphics/temporal_decorrelation_2x1}{10cm}{1000}
-  \lstinputlisting[firstline=83, lastline=141, language=python, caption={MCOLP (\href{https://github.com/Sistemas-Multimedia/PRMC/blob/master/src/MCOLP.py}{MCOLP.py}).}]{../src/MCOLP.py}
-  \lstinputlisting[firstline=143, lastline=184, language=python, caption={iMCOLP (\href{https://github.com/Sistemas-Multimedia/PRMC/blob/master/src/MCOLP.py}{MCOLP.py}).}]{../src/MCOLP.py}
+  \lstinputlisting[firstline=83, lastline=184, language=python, caption={MCOLP (\href{https://github.com/Sistemas-Multimedia/PRMC/blob/master/src/MCOLP.py}{MCOLP.py}).}]{../src/MCOLP.py}
   \caption{Implementation of the MCOLP.}
   \label{fig:MCOLP}
 \end{figure}
 
-Notice that, if $N=G+1$ (where $G$ is the GOP size, see
+Notice that, if the parameter $N=G+1$ (where $G$ is the GOP size, see
 Eq.~\ref{eq:GOP_size}), except for the first and the last frame of the
-sequence, all the $H$-subbands are temporally decorrelated.
+sequence, all the $H$-subbands are compensated.
 
 %}}}
 
-\subsection*{Example: 1-iteration $\times$ (MDWT + 1-iteration MCOLP) (\texttt{PRMC(iters=1)})}
+\subsection*{Example: $\mathtt{PRMC}(T=1, N=5)$}
 %{{{
 
 In this example, a sequence of five frames is transformed first with
