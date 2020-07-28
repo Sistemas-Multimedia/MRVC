@@ -80,7 +80,7 @@ class MCOLP:
         bH = self.dwt.forward(BH)
         return bH[1]
 
-    def forward(self, prefix = "/tmp/", N=5, T=2):
+    def forward(self, prefix = "/tmp/", N = 5, T = 2):
         '''Forward MCOLP.
 
         Compute a MC 1D-DWT, estimating in the L subbands and
@@ -140,7 +140,7 @@ class MCOLP:
             x *= 2
             #print('\n')
 
-    def backward(self, prefix = "/tmp/", N=5, T=2):
+    def backward(self, prefix = "/tmp/", N = 5, T = 2):
         '''Backward MCOLP.
 
         Compute the inverse MC 1D-DWT. The input sequence of

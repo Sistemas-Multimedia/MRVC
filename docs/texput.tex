@@ -644,10 +644,9 @@ sequence, all the $H$-subbands are compensated.
 %{{{
 
 In this example, a sequence of five frames is transformed first with
-the (1-iteration) MDWT (\texttt{MDWT(iters=1)}), producing 2 SRLs by
-frame. Next, the $H$ subbands of the odd frames (frames 1 and 3) are
-motion compensated using the (1-iteration) MCOLP
-(\texttt{MCOLP(iters=1)}).
+$\mathtt{MDWT}(N=5)$, producing 2 SRLs by frame. Next, the $H$
+subbands of the odd frames (frames 1 and 3) are motion compensated
+using $\mathtt{MCOLP}(T=1, N=5)$.
 
 \begin{verbatim}
 predictor=1
@@ -699,7 +698,7 @@ animate /tmp/diff*.png
 \begin{figure}
   \centering
   \myfig{graphics/temporal_decorrelation_1x1}{10cm}{1000}
-  \caption{Subbands generated after running $\mathtt{PRMC(iters=1)}$: $L$.}
+  \caption{Subbands generated after running $\mathtt{PRMC}(T=1, N=5)$: $L$.}
   \label{fig:1xPRMC1}
 \end{figure}
 
