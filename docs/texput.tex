@@ -584,29 +584,27 @@ fully reversible because the forward transform uses only the
 information that the inverse transform will have access to. Notice
 that the
 \href{http://www.vtvt.ece.vt.edu/research/references/video/DCT_Video_Compression/Zhang92a.pdf}{pyramid
-  domain} (which is invariant to the pixels displacements) has been
-used to estimate and compensate the $H$ subbands.
+  domain} (which is near-invariant to the pixels displacements) has
+been used to estimate and compensate the $H$ subbands.
 
 \begin{figure}
   \centering \myfig{graphics/forward_butterfly}{10cm}{1000}
-  \lstinputlisting[firstline=20, lastline=53, language=python,
+  \lstinputlisting[firstline=20, lastline=81, language=python,
     caption={MCOLP butterfly
-      (\href{https://github.com/Sistemas-Multimedia/PRMC/blob/master/src/MCOLP.py}{MCOLP.py}).}]{../src/MCOLP.py}
-  \lstinputlisting[firstline=55, lastline=81, language=python,
-    caption={Inverse MCOLP butterfly
       (\href{https://github.com/Sistemas-Multimedia/PRMC/blob/master/src/MCOLP.py}{MCOLP.py}).}]{../src/MCOLP.py}
   \lstinputlisting[firstline=4, lastline=9, language=python,
     caption={Computation of the prediction
       frame (\href{https://github.com/Sistemas-Multimedia/PRMC/blob/master/src/simple_average.py}{simple\_average.py}).}]{../src/simple_average.py}
-  \caption{Forward and inverse MCOLP butterflies.}
+  \caption{Forward and inverse MCOLP butterflies, and computation of
+    the prediction frame.}
   \label{fig:forward_butterfly}
 \end{figure}
 
-Notice that the ME projections for $[b.L]$ are performed with $[a.L]$
-and $[c.L]$ instead of $a$ and $c$ (that are available at the decoder)
-because, in $a$ and $c$ there is high-frequency information that can
-dificult the computation of the projections $[a.L]\rightarrow [b.L]$
-and $[c.L]\rightarrow [b.L]$.
+%Notice that the ME projections for $[b.L]$ are performed with $[a.L]$
+%and $[c.L]$ instead of $a$ and $c$ (that are available at the decoder)
+%because, in $a$ and $c$ there is high-frequency information that can
+%dificults the computation of the projections $[a.L]\rightarrow [b.L]$
+%and $[c.L]\rightarrow [b.L]$.
 
 %\subsection{The MCOLP step}
 
