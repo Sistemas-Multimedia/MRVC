@@ -142,25 +142,25 @@ A $N$-iterations\footnote{Notice that
 $(N+1)$-levels dyadic structure which is able to provide $N+1$ Spatial
 Resolution Levels (SRL's). For example, in the
 Fig.~\ref{fig:2-levels_DWT} the DWT has been applied 2-times,
-generating 3 SRLs: (1) $L_2$, (2) $L_1=\mathtt{iDWT}(L_2, H_2)$, and
-(3) $L_0=\mathtt{iDWT}(L_1, H_1)$, where $\mathtt{iDWT}$ stands for
+generating 3 SRLs: (1) $L^2$, (2) $L^1=\mathtt{iDWT}(L^2, H^2)$, and
+(3) $L^0=\mathtt{iDWT}(L^1, H^1)$, where $\mathtt{iDWT}$ stands for
 inverse DWT.
 
 \begin{figure}
 \begin{verbatim}
     +------+------+-------------+ 0         +------+------+-------------+
     |      |      |             |           |      |      |             |
-    | LL_2 | LH_2 |             |           | L_2  |      |             |
+    | LL^2 | LH^2 |             |           | L^2  |      |             |
     |      |      |             |           |      |      |             |
-    +------+------+     LH_1    |           +------+      |             |
+    +------+------+     LH^1    |           +------+      |             |
     |      |      |             |           |             |             |
-    | HL_2 | HH_2 |             |           |        H_2  |             |
+    | HL^2 | HH^2 |             |           |        H^2  |             |
     |      |      |             | Y/2-1     |             |             |
     +------+------+-------------+       =   +-------------+             |
     |             |             |           |                           |
     |             |             |           |                           |
     |             |             |           |                           |
-    |     HL_1    |     HH_1    |           |                    H_1    |
+    |     HL^1    |     HH^1    |           |                    H^1    |
     |             |             |           |                           |
     |             |             |           |                           |
     |             |             | Y-1       |                           |
@@ -182,31 +182,31 @@ different spatial scales (resolutions). For example, if a image has
 been transformed using the DWT of $2$ iterations (see
 Fig.~\ref{fig:2-levels_DWT}), we get:
 \begin{itemize}
-\item Subband $L_2$ with the scale $2$ of the image. If such image is
-  $I$, we will denote the scale $2$ as $I.L_2$.
+\item Subband $L^2$ with the scale $2$ of the image. If such image is
+  $I$, we will denote the scale $2$ as $I.L^2$.
 \begin{verbatim}
     +------+
     |      |
-Y/4 |  L_2 |
+Y/4 |  L^2 |
     |      |
     +------+
        X/4
 \end{verbatim}
-\item Subband $L_1\coloneqq L=\mathtt{iDWT}(L_2, H_2)$
-  with $I.L_1$.
+\item Subband $L^1\coloneqq L=\mathtt{iDWT}(L^2, H^2)$
+  with $I.L^1$.
 \begin{verbatim}
     +-------------+
     |             |
     |             |
-Y/2 |     L_1     |
+Y/2 |     L^1     |
     |             | 
     |             |
     +-------------+
           X/2
 \end{verbatim}
   
-\item $L_0=\mathtt{iDWT}(L, H)$ (the original image) with
-  the scale $I.L_0=I$.
+\item $L^0=\mathtt{iDWT}(L, H)$ (the original image) with
+  the scale $I.L^0=I$.
 \begin{verbatim}
     +---------------------------+
     |                           |
@@ -215,7 +215,7 @@ Y/2 |     L_1     |
     |                           |
     |                           |
     |                           |
-  Y |            L_0            |
+  Y |            L^0            |
     |                           | 
     |                           |
     |                           | 
@@ -247,10 +247,10 @@ cp ../sequences/stockholm/000.png /tmp
 python3 -O DWT.py -p /tmp/ -i 000
 
 # Visualize the subbands.
-display -normalize /tmp/LL000.png # <- LL_1
-display -normalize /tmp/LH000.png # <- LH_1
-display -normalize /tmp/HL000.png # <- HL_1
-display -normalize /tmp/HH000.png # <- HH_1
+display -normalize /tmp/LL000.png # <- LL^1
+display -normalize /tmp/LH000.png # <- LH^1
+display -normalize /tmp/HL000.png # <- HL^1
+display -normalize /tmp/HH000.png # <- HH^1
 
 # 1-iteration 2D iDWT.
 python3 -O DWT.py -b -p /tmp/ -i 000
@@ -284,14 +284,14 @@ python3 -O DWT.py -p /tmp/LL -i 000
 
 # Visualize the subbands.
 ls -l /tmp/*.png
-display -normalize /tmp/LL000.png # <- LL_1
-display -normalize /tmp/LH000.png # <- LH_1
-display -normalize /tmp/HL000.png # <- HL_1
-display -normalize /tmp/HH000.png # <- HH_1
-display -normalize /tmp/LLLL000.png # <- LL_2
-display -normalize /tmp/LLLH000.png # <- LH_2
-display -normalize /tmp/LLHL000.png # <- HL_2
-display -normalize /tmp/LLHH000.png # <- HH_2
+display -normalize /tmp/LL000.png # <- LL^1
+display -normalize /tmp/LH000.png # <- LH^1
+display -normalize /tmp/HL000.png # <- HL^1
+display -normalize /tmp/HH000.png # <- HH^1
+display -normalize /tmp/LLLL000.png # <- LL^2
+display -normalize /tmp/LLLH000.png # <- LH^2
+display -normalize /tmp/LLHL000.png # <- HL^2
+display -normalize /tmp/LLHH000.png # <- HH^2
 
 # Reverse second iteration.
 python3 -O DWT.py -b -p /tmp/LL -i 000
@@ -319,13 +319,14 @@ transforming each one independently. This is done, for example, in the
 \mylink{JPEG2000}{Motion JPEG2000 video compression standard}. Notice
 that only the spatial redundancy is exploited in MDWT (all the
 temporal redundancy still remains in the video). The decomposition
-structure generated by MDWT is shown in the
-Fig~\ref{fig:MDWT}. The 1-iteration MDWT inputs a sequence of
-frames $\{F_i\}$ and outputs a sequence of decompositions
-$\{\{F_i\}.L, \{F_i\}.H\}$, also called sequence spatial
-subbands. Notice that $\{F_i\}.L$ represents the scale $1$ of the
+structure generated by MDWT is shown in the Fig~\ref{fig:MDWT}. The
+1-iteration MDWT inputs a sequence of frames $\{F_i\}$ and outputs a
+sequence of decompositions $\{\{F_i\}.L, \{F_i\}.H\}$, also called
+sequence spatial subbands. In all this discussion, $i$ is an integer
+number starting a $0$ ($F_0$ is always the first frame of the
+video). Notice that $\{F_i\}.L$ represents the scale $1$ of the
 sequence (a version of the original video $\{F_i\}$ but with a
-resolution $Y/2\times X/2$), and that $\{F_i\}.L_0 = \{F_i\} =
+resolution $Y/2\times X/2$), and that $\{F_i\}.L^0 = \{F_i\} =
 \mathtt{iMDWT}(\{F_i\}.L,\{F_i\}.H )$.
 
 \begin{figure}
@@ -698,7 +699,15 @@ animate /tmp/diff*.png
 \begin{figure}
   \centering
   \myfig{graphics/temporal_decorrelation_1x1}{10cm}{1000}
-  \caption{Subbands generated after running $\mathtt{PRMC}(T=1, N=5)$: $L$.}
+  \caption{Subbands generated after running $\mathtt{PRMC}(T=1, N=5)$:
+    (1) subband $\{F_i\}.L$, that provides spatial resolution level
+    $1$ of the sequence, (2) subband $\{F_{2i}\}.H$, which provides
+    spatial resolution level $0$ for the even frames (temporal
+    resolution level $1$ at full spatial resolution), and (3) subband
+    $\{{\tilde F}_{2i+1}\}.H$, that provides spatial resolution level
+    $0$ for the odd frames (temporal resolution level $0$ at full
+    spatial resolution, considering that $\{F_{2i}\}.H$ has been
+    already decoded).}
   \label{fig:1xPRMC1}
 \end{figure}
 
@@ -818,7 +827,19 @@ python3 ../tools/show_statistics.py -i /tmp/diff_002.png
 \begin{figure}
   \centering
   \myfig{graphics/temporal_decorrelation_1x2}{10cm}{1000}
-  \caption{Subbands generated after running $1\times\mathtt{PRMC(iters=2)}$.}
+  \caption{Subbands generated after running $\mathtt{PRMC}(T=2, N=5)$:
+    (1) subband $\{F_i\}.L$, that provides spatial resolution level
+    $1$ of the sequence, (2) $\{F_{2^2i}\}.H$, which provides spatial
+    resolution level $0$ for frames with number $2^2i$ (temporal
+    resolution level $2$ at full spatial resolution), (3) subband
+    $\{{\tilde F}_{2^2i+2}\}.H$, that provides spatial resolution
+    level $0$ for the frames with number $2^2i+2$ (that considering
+    also $\{F_{2^2i}\}.H$, provides temporal resolution level $1$ at
+    full spatial resolution), and finally (4) subband $\{{\tilde
+      F}_{2i+1}\}.H$, which provides spatial resolution level $0$ for
+    odd images (temporal resolution level $0$ at full spatial
+    resolution, considering the previouly decoded temporal resolution
+    levels).}
   \label{fig:1xPRMC2}
 \end{figure}
 
@@ -890,9 +911,9 @@ python3 ../tools/show_statistics.py -i /tmp/diff_002.png
 
 The (temporal and spatial) subbands generated after using $\mathtt{PRMC(1)$ are:
 \begin{enumerate}
-\item $L^0_1=\{F_0.L_1, \cdots, F_4.L_1\}$ which when decoded, reconstruct the sequence of frames with a resolution $Y/2\times X/2$ at the original frame rate.
-\item $H^$L^1_0=\{F_0.L_0, F_2.L_0, F_4.L_0\}$ which when decoded, reconstruct frames $F_0$, $F_2$, and $F_4$ with a resolution $Y\times X$.
-\item $L^0_0=\{F_0.L_0, \cdots, F_4.L_0\}$ 
+\item $L^0_1=\{F_0.L^1, \cdots, F_4.L^1\}$ which when decoded, reconstruct the sequence of frames with a resolution $Y/2\times X/2$ at the original frame rate.
+\item $H^$L^1_0=\{F_0.L^0, F_2.L^0, F_4.L^0\}$ which when decoded, reconstruct frames $F_0$, $F_2$, and $F_4$ with a resolution $Y\times X$.
+\item $L^0_0=\{F_0.L^0, \cdots, F_4.L^0\}$ 
 \end{enumerate}
 
 %\begin{verbatim}
@@ -1458,7 +1479,7 @@ for i in {0..4}; do ii=$(printf "%03d" $i); MSE=`python3 -O ../tools/MSE.py -x .
 %}}}
 
 \section{Bit allocation}
-En la mariposa (o en un esquema IPPP...) la subbanda $\tilde{H}_b$ compensada depende de las subbandas $L_a^{[q]}$, $L_b$ y $L_c$, para generar los campos de movimiento adecuados. $\tilde{H}_b$ también depende de $H_a$ y $H_b$ 
+En la mariposa (o en un esquema IPPP...) la subbanda $\tilde{H}_b$ compensada depende de las subbandas $L^a^{[q]}$, $L^b$ y $L^c$, para generar los campos de movimiento adecuados. $\tilde{H}_b$ también depende de $H^a$ y $H^b$ 
 
 \subsection*{Example: Lossy compression of the MC $H$ subbands}
 %{{{
@@ -1887,16 +1908,16 @@ Introduced such ideas, to compress the $H$ subbands of a 1-level
   \item Estimate the nearest power of two, smaller or equal than the
     coefficient of $H$ with the maximum amplitude.
     \begin{equation}
-      \lambda_0 = \lambda = 1 << \text{int}(\log_2(\text{abs}(H_{\hat{H}\downarrow[0]}))).
+      \lambda_0 = \lambda = 1 << \text{int}(\log_2(\text{abs}(H^{\hat{H}\downarrow[0]}))).
     \end{equation}
     $\lambda$ should be the index of the MSBP in $H$.
     
   \item Send the BP of index $\lambda$.
     \begin{equation}
       \begin{array}{l}
-        \text{for~}H_{s,x,y}\text{~in} H[\hat{H}\downarrow]: \\
-        ~ if \lambda > int(\log_2(abs(H_{s,x,y}))) > \lambda/2: \\
-        ~~ send(sign(H_{s,x,y}))\\
+        \text{for~}H^{s,x,y}\text{~in} H[\hat{H}\downarrow]: \\
+        ~ if \lambda > int(\log_2(abs(H^{s,x,y}))) > \lambda/2: \\
+        ~~ send(sign(H^{s,x,y}))\\
         ~ 
         %~ 
         %\text{for~}d\text{~in range}(3): \\
