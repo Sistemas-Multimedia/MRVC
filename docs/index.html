@@ -57,6 +57,8 @@ href="#x1-170009.1" id="QQ2-1-19">The MCOLP butterﬂy</a></span>
 href="#x1-180009.2" id="QQ2-1-22">The MCOLP transform</a></span>
 <br />    <span class="subsectionToc" >9.3 <a 
 href="#x1-220009.3" id="QQ2-1-27">Scalability provided by MCOLP</a></span>
+<br />   <span class="sectionToc" >10 <a 
+href="#x1-2400010" id="QQ2-1-29">Adaptive motion compensation based on the distortion of the prediction error</a></span>
    </div>
 <!--l. 13--><p class="noindent" >
 </p>
@@ -8585,6 +8587,819 @@ display="inline" ><mstyle mathvariant="monospace"><mi
 display="inline" ><mn>0</mn></math>
 corresponds with the original resolution of the frames.
 </span></div><!--tex4ht:label?: x1-23003r9 -->
+                                                                  
+
+                                                                  
+   </div><hr class="endfigure" />
+   <h3 class="sectionHead"><span class="titlemark">10   </span> <a 
+ id="x1-2400010"></a>Adaptive motion compensation based on the distortion of the prediction
+error</h3>
+<!--l. 1055--><p class="noindent" >As can be seen in the MCOLP buﬀerﬂy (see Fig. <a 
+href="#x1-17073r4">4<!--tex4ht:ref: fig:forward_butterfly --></a>), both predictions
+<!--l. 1056--><math 
+ xmlns="http://www.w3.org/1998/Math/MathML"  
+display="inline" ><mrow ><mo 
+class="MathClass-open">[</mo><mrow><msub><mrow 
+><mi 
+>b</mi></mrow><mrow 
+><mi 
+>a</mi></mrow></msub 
+><mo 
+class="MathClass-punc">.</mo><mi 
+>H</mi></mrow><mo 
+class="MathClass-close">]</mo></mrow></math> and
+<!--l. 1057--><math 
+ xmlns="http://www.w3.org/1998/Math/MathML"  
+display="inline" ><mrow ><mo 
+class="MathClass-open">[</mo><mrow><msub><mrow 
+><mi 
+>b</mi></mrow><mrow 
+><mi 
+>c</mi></mrow></msub 
+><mo 
+class="MathClass-punc">.</mo><mi 
+>H</mi></mrow><mo 
+class="MathClass-close">]</mo></mrow></math>
+weight the same in the prediction </p><table class="equation"><tr><td> <a 
+ id="x1-24001r2"></a>
+<!--l. 1058--><math 
+ xmlns="http://www.w3.org/1998/Math/MathML"  
+display="block" class="equation">
+                      <mrow ><mo 
+class="MathClass-open">[</mo><mrow><mover 
+accent="true"><mrow 
+><mi 
+>b</mi><mo 
+class="MathClass-punc">.</mo><mi 
+>H</mi></mrow><mo accent="true">̂</mo></mover></mrow><mo 
+class="MathClass-close">]</mo></mrow> <mo 
+class="MathClass-rel">=</mo> <mfrac><mrow 
+><mrow ><mo 
+class="MathClass-open">[</mo><mrow><msub><mrow 
+><mi 
+>b</mi></mrow><mrow 
+><mi 
+>a</mi></mrow></msub 
+><mo 
+class="MathClass-punc">.</mo><mi 
+>H</mi></mrow><mo 
+class="MathClass-close">]</mo></mrow> <mo 
+class="MathClass-bin">+</mo> <mrow ><mo 
+class="MathClass-open">[</mo><mrow><msub><mrow 
+><mi 
+>b</mi></mrow><mrow 
+><mi 
+>c</mi></mrow></msub 
+><mo 
+class="MathClass-punc">.</mo><mi 
+>H</mi></mrow><mo 
+class="MathClass-close">]</mo></mrow></mrow> 
+         <mrow 
+><mn>2</mn></mrow></mfrac>         <mo 
+class="MathClass-punc">.</mo>
+</math></td><td class="eq-no">(2)</td></tr></table>
+<!--l. 1061--><p class="indent" >   This simple computation, that can have very eﬀective for example in
+<a 
+href="https://biteable.com/blog/tips/video-transitions-effects-examples/" >dissolves</a> video transitions, can also be counterproductive when objects appear
+only in one of the reference frames. For this reason, in this section an
+improved predictor is proposed, based on the estimated prediction error (see
+<!--l. 1066--><math 
+ xmlns="http://www.w3.org/1998/Math/MathML"  
+display="inline" ><mrow ><mo 
+class="MathClass-open">[</mo><mrow><mover 
+accent="true"><mrow 
+><mi 
+>b</mi></mrow><mo accent="true">̃</mo></mover><mo 
+class="MathClass-punc">.</mo><mi 
+>H</mi></mrow><mo 
+class="MathClass-close">]</mo></mrow></math> in the
+Fig. <a 
+href="#x1-17073r4">4<!--tex4ht:ref: fig:forward_butterfly --></a>) generated throughout the ME/MC. To estimate this error, we will suppose
+that the prediction error generated for the high frequencies of an frame is
+correlated with the prediction error generated for the low frequencies of such
+frame.
+</p><!--l. 1072--><p class="indent" >   Let <!--l. 1072--><math 
+ xmlns="http://www.w3.org/1998/Math/MathML"  
+display="inline" ><mrow ><mo 
+class="MathClass-open">[</mo><mrow><msub><mrow 
+><mi 
+>b</mi></mrow><mrow 
+><mi 
+>a</mi></mrow></msub 
+><mo 
+class="MathClass-punc">.</mo><mi 
+>L</mi></mrow><mo 
+class="MathClass-close">]</mo></mrow></math> the prediction
+generated for the subband <!--l. 1072--><math 
+ xmlns="http://www.w3.org/1998/Math/MathML"  
+display="inline" ><mrow ><mo 
+class="MathClass-open">[</mo><mrow><mi 
+>b</mi><mo 
+class="MathClass-punc">.</mo><mi 
+>L</mi></mrow><mo 
+class="MathClass-close">]</mo></mrow></math>
+using <!--l. 1073--><math 
+ xmlns="http://www.w3.org/1998/Math/MathML"  
+display="inline" ><mrow ><mo 
+class="MathClass-open">[</mo><mrow><mi 
+>a</mi><mo 
+class="MathClass-punc">.</mo><mi 
+>L</mi></mrow><mo 
+class="MathClass-close">]</mo></mrow></math> as reference
+and <!--l. 1073--><math 
+ xmlns="http://www.w3.org/1998/Math/MathML"  
+display="inline" ><mrow ><mo 
+class="MathClass-open">[</mo><mrow><mi 
+>a</mi><mo 
+class="MathClass-punc">.</mo><mi 
+>L</mi></mrow><mo 
+class="MathClass-close">]</mo></mrow> <mo 
+class="MathClass-rel">→</mo> <mrow ><mo 
+class="MathClass-open">[</mo><mrow><mi 
+>b</mi><mo 
+class="MathClass-punc">.</mo><mi 
+>L</mi></mrow><mo 
+class="MathClass-close">]</mo></mrow></math> as motion, and
+let <!--l. 1074--><math 
+ xmlns="http://www.w3.org/1998/Math/MathML"  
+display="inline" ><mrow ><mo 
+class="MathClass-open">[</mo><mrow><msub><mrow 
+><mi 
+>b</mi></mrow><mrow 
+><mi 
+>c</mi></mrow></msub 
+><mo 
+class="MathClass-punc">.</mo><mi 
+>L</mi></mrow><mo 
+class="MathClass-close">]</mo></mrow></math> the prediction
+generated for <!--l. 1074--><math 
+ xmlns="http://www.w3.org/1998/Math/MathML"  
+display="inline" ><mrow ><mo 
+class="MathClass-open">[</mo><mrow><mi 
+>b</mi><mo 
+class="MathClass-punc">.</mo><mi 
+>L</mi></mrow><mo 
+class="MathClass-close">]</mo></mrow></math>
+using <!--l. 1074--><math 
+ xmlns="http://www.w3.org/1998/Math/MathML"  
+display="inline" ><mrow ><mo 
+class="MathClass-open">[</mo><mrow><mi 
+>c</mi><mo 
+class="MathClass-punc">.</mo><mi 
+>L</mi></mrow><mo 
+class="MathClass-close">]</mo></mrow></math> as
+reference and <!--l. 1075--><math 
+ xmlns="http://www.w3.org/1998/Math/MathML"  
+display="inline" ><mrow ><mo 
+class="MathClass-open">[</mo><mrow><mi 
+>c</mi><mo 
+class="MathClass-punc">.</mo><mi 
+>L</mi></mrow><mo 
+class="MathClass-close">]</mo></mrow> <mo 
+class="MathClass-rel">→</mo> <mrow ><mo 
+class="MathClass-open">[</mo><mrow><mi 
+>b</mi><mo 
+class="MathClass-punc">.</mo><mi 
+>L</mi></mrow><mo 
+class="MathClass-close">]</mo></mrow></math>
+as motion. We now compute the prediction errors </p><table class="equation"><tr><td> <a 
+ id="x1-24002r3"></a>
+                                                                  
+
+                                                                  
+<!--l. 1077--><math 
+ xmlns="http://www.w3.org/1998/Math/MathML"  
+display="block" class="equation">
+ <mtable  align="axis" style=""  
+equalrows="false" equalcolumns="false" class="array"> <mtr><mtd 
+class="array"  columnalign="left">  <mrow ><mo 
+class="MathClass-open">[</mo><mrow><msub><mrow 
+><mi 
+>e</mi></mrow><mrow 
+><mi 
+>a</mi></mrow></msub 
+><mo 
+class="MathClass-punc">.</mo><mi 
+>L</mi></mrow><mo 
+class="MathClass-close">]</mo></mrow> <mo 
+class="MathClass-rel">=</mo> <mrow ><mo 
+class="MathClass-open">[</mo><mrow><mi 
+>b</mi><mo 
+class="MathClass-punc">.</mo><mi 
+>L</mi></mrow><mo 
+class="MathClass-close">]</mo></mrow> <mo 
+class="MathClass-bin">−</mo> <mrow ><mo 
+class="MathClass-open">[</mo><mrow><msub><mrow 
+><mi 
+>b</mi></mrow><mrow 
+><mi 
+>a</mi></mrow></msub 
+><mo 
+class="MathClass-punc">.</mo><mi 
+>L</mi></mrow><mo 
+class="MathClass-close">]</mo></mrow>  </mtd>
+</mtr>  <mtr><mtd 
+class="array"  columnalign="left">  <mrow ><mo 
+class="MathClass-open">[</mo><mrow><msub><mrow 
+><mi 
+>e</mi></mrow><mrow 
+><mi 
+>c</mi></mrow></msub 
+><mo 
+class="MathClass-punc">.</mo><mi 
+>L</mi></mrow><mo 
+class="MathClass-close">]</mo></mrow> <mo 
+class="MathClass-rel">=</mo> <mrow ><mo 
+class="MathClass-open">[</mo><mrow><mi 
+>b</mi><mo 
+class="MathClass-punc">.</mo><mi 
+>L</mi></mrow><mo 
+class="MathClass-close">]</mo></mrow> <mo 
+class="MathClass-bin">−</mo> <mrow ><mo 
+class="MathClass-open">[</mo><mrow><msub><mrow 
+><mi 
+>b</mi></mrow><mrow 
+><mi 
+>c</mi></mrow></msub 
+><mo 
+class="MathClass-punc">.</mo><mi 
+>L</mi></mrow><mo 
+class="MathClass-close">]</mo></mrow><mo 
+class="MathClass-punc">.</mo> </mtd></mtr><!--l--></mtable>
+</math></td><td class="eq-no">(3)</td></tr></table>
+<!--l. 1084--><p class="indent" >   We deﬁne <span 
+class="ecti-1000">similarity matrices </span>as </p><table class="equation"><tr><td> <a 
+ id="x1-24003r4"></a>
+<!--l. 1085--><math 
+ xmlns="http://www.w3.org/1998/Math/MathML"  
+display="block" class="equation">
+ <mtable  align="axis" style=""  
+equalrows="false" equalcolumns="false" class="array"> <mtr><mtd 
+class="array"  columnalign="left">  <mrow ><mo 
+class="MathClass-open">[</mo><mrow><msub><mrow 
+><mi 
+>s</mi></mrow><mrow 
+><mi 
+>a</mi></mrow></msub 
+><mo 
+class="MathClass-punc">.</mo><mi 
+>L</mi></mrow><mo 
+class="MathClass-close">]</mo></mrow> <mo 
+class="MathClass-rel">=</mo>      <mfrac><mrow 
+><mn>1</mn></mrow> 
+<mrow 
+><mn>1</mn><mo 
+class="MathClass-bin">+</mo><mo 
+class="MathClass-rel">|</mo><mrow ><mo 
+class="MathClass-open">[</mo><mrow><msub><mrow 
+><mi 
+>e</mi></mrow><mrow 
+><mi 
+>a</mi></mrow></msub 
+><mo 
+class="MathClass-punc">.</mo><mi 
+>L</mi></mrow><mo 
+class="MathClass-close">]</mo></mrow><mo 
+class="MathClass-rel">|</mo></mrow></mfrac> </mtd>
+</mtr>  <mtr><mtd 
+class="array"  columnalign="left"> <mrow ><mo 
+class="MathClass-open">[</mo><mrow><msub><mrow 
+><mi 
+>s</mi></mrow><mrow 
+><mi 
+>c</mi></mrow></msub 
+><mo 
+class="MathClass-punc">.</mo><mi 
+>L</mi></mrow><mo 
+class="MathClass-close">]</mo></mrow> <mo 
+class="MathClass-rel">=</mo>      <mfrac><mrow 
+><mn>1</mn></mrow> 
+<mrow 
+><mn>1</mn><mo 
+class="MathClass-bin">+</mo><mo 
+class="MathClass-rel">|</mo><mrow ><mo 
+class="MathClass-open">[</mo><mrow><msub><mrow 
+><mi 
+>e</mi></mrow><mrow 
+><mi 
+>c</mi></mrow></msub 
+><mo 
+class="MathClass-punc">.</mo><mi 
+>L</mi></mrow><mo 
+class="MathClass-close">]</mo></mrow><mo 
+class="MathClass-rel">|</mo></mrow></mfrac><mo 
+class="MathClass-punc">.</mo> </mtd></mtr><!--l--></mtable>
+</math></td><td class="eq-no">(4)</td></tr></table>
+<!--l. 1092--><p class="indent" >   Notice that, if (for example) the error
+<!--l. 1092--><math 
+ xmlns="http://www.w3.org/1998/Math/MathML"  
+display="inline" ><msub><mrow 
+><mrow ><mo 
+class="MathClass-open">[</mo><mrow><msub><mrow 
+><mi 
+>e</mi></mrow><mrow 
+><mi 
+>a</mi></mrow></msub 
+><mo 
+class="MathClass-punc">.</mo><mi 
+>L</mi></mrow><mo 
+class="MathClass-close">]</mo></mrow></mrow><mrow 
+><mi 
+>x</mi><mo 
+class="MathClass-punc">,</mo><mi 
+>y</mi></mrow></msub 
+> <mo 
+class="MathClass-rel">=</mo> <mn>0</mn></math>, the similarity
+is <!--l. 1093--><math 
+ xmlns="http://www.w3.org/1998/Math/MathML"  
+display="inline" ><msub><mrow 
+><mrow ><mo 
+class="MathClass-open">[</mo><mrow><msub><mrow 
+><mi 
+>s</mi></mrow><mrow 
+><mi 
+>a</mi></mrow></msub 
+><mo 
+class="MathClass-punc">.</mo><mi 
+>L</mi></mrow><mo 
+class="MathClass-close">]</mo></mrow></mrow><mrow 
+><mi 
+>x</mi><mo 
+class="MathClass-punc">,</mo><mi 
+>y</mi></mrow></msub 
+> <mo 
+class="MathClass-rel">=</mo> <mn>1</mn></math> (the
+maximum similarity). On the other side, if the error is high, the similarity tends to be low
+(but never <!--l. 1095--><math 
+ xmlns="http://www.w3.org/1998/Math/MathML"  
+display="inline" ><mn>0</mn></math>).
+</p><!--l. 1097--><p class="indent" >   With this information, that can be recovered by the decoder, the improved
+prediction is deﬁned as </p><table class="equation"><tr><td> <a 
+ id="x1-24004r5"></a>
+<!--l. 1099--><math 
+ xmlns="http://www.w3.org/1998/Math/MathML"  
+display="block" class="equation">
+                  <mrow ><mo 
+class="MathClass-open">[</mo><mrow><mover 
+accent="true"><mrow 
+><mi 
+>b</mi><mo 
+class="MathClass-punc">.</mo><mi 
+>H</mi></mrow><mo accent="true">̂</mo></mover></mrow><mo 
+class="MathClass-close">]</mo></mrow> <mo 
+class="MathClass-rel">=</mo> <mfrac><mrow 
+><mrow ><mo 
+class="MathClass-open">[</mo><mrow><msub><mrow 
+><mi 
+>b</mi></mrow><mrow 
+><mi 
+>a</mi></mrow></msub 
+><mo 
+class="MathClass-punc">.</mo><mi 
+>H</mi></mrow><mo 
+class="MathClass-close">]</mo></mrow><mrow ><mo 
+class="MathClass-open">[</mo><mrow><msub><mrow 
+><mi 
+>s</mi></mrow><mrow 
+><mi 
+>a</mi></mrow></msub 
+><mo 
+class="MathClass-punc">.</mo><mi 
+>L</mi></mrow><mo 
+class="MathClass-close">]</mo></mrow> <mo 
+class="MathClass-bin">+</mo> <mrow ><mo 
+class="MathClass-open">[</mo><mrow><msub><mrow 
+><mi 
+>s</mi></mrow><mrow 
+><mi 
+>c</mi></mrow></msub 
+><mo 
+class="MathClass-punc">.</mo><mi 
+>L</mi></mrow><mo 
+class="MathClass-close">]</mo></mrow><mrow ><mo 
+class="MathClass-open">[</mo><mrow><msub><mrow 
+><mi 
+>b</mi></mrow><mrow 
+><mi 
+>c</mi></mrow></msub 
+><mo 
+class="MathClass-punc">.</mo><mi 
+>H</mi></mrow><mo 
+class="MathClass-close">]</mo></mrow></mrow> 
+        <mrow 
+><mrow ><mo 
+class="MathClass-open">[</mo><mrow><msub><mrow 
+><mi 
+>s</mi></mrow><mrow 
+><mi 
+>a</mi></mrow></msub 
+><mo 
+class="MathClass-punc">.</mo><mi 
+>L</mi></mrow><mo 
+class="MathClass-close">]</mo></mrow> <mo 
+class="MathClass-bin">+</mo> <mrow ><mo 
+class="MathClass-open">[</mo><mrow><msub><mrow 
+><mi 
+>s</mi></mrow><mrow 
+><mi 
+>c</mi></mrow></msub 
+><mo 
+class="MathClass-punc">.</mo><mi 
+>L</mi></mrow><mo 
+class="MathClass-close">]</mo></mrow></mrow></mfrac>        <mo 
+class="MathClass-punc">.</mo>
+</math></td><td class="eq-no">(5)</td></tr></table>
+<!--l. 1102--><p class="indent" >   The Fig. <a 
+href="#x1-24019r11">11<!--tex4ht:ref: fig:weighted_average --></a> shows an implementation of this equation.
+</p><!--l. 1105--><p class="indent" >   Notice that, if (for example) <!--l. 1105--><math 
+ xmlns="http://www.w3.org/1998/Math/MathML"  
+display="inline" ><msub><mrow 
+><mrow ><mo 
+class="MathClass-open">[</mo><mrow><msub><mrow 
+><mi 
+>s</mi></mrow><mrow 
+><mi 
+>a</mi></mrow></msub 
+><mo 
+class="MathClass-punc">.</mo><mi 
+>L</mi></mrow><mo 
+class="MathClass-close">]</mo></mrow></mrow><mrow 
+><mi 
+>x</mi><mo 
+class="MathClass-punc">,</mo><mi 
+>y</mi></mrow></msub 
+> <mo 
+class="MathClass-rel">=</mo> <mn>1</mn></math>
+and <!--l. 1106--><math 
+ xmlns="http://www.w3.org/1998/Math/MathML"  
+display="inline" ><msub><mrow 
+><mrow ><mo 
+class="MathClass-open">[</mo><mrow><msub><mrow 
+><mi 
+>s</mi></mrow><mrow 
+><mi 
+>c</mi></mrow></msub 
+><mo 
+class="MathClass-punc">.</mo><mi 
+>L</mi></mrow><mo 
+class="MathClass-close">]</mo></mrow></mrow><mrow 
+><mi 
+>x</mi><mo 
+class="MathClass-punc">,</mo><mi 
+>y</mi></mrow></msub 
+> <mo 
+class="MathClass-rel">≈</mo> <mn>0</mn></math>, then
+<!--l. 1107--><math 
+ xmlns="http://www.w3.org/1998/Math/MathML"  
+display="inline" ><msub><mrow 
+><mrow ><mo 
+class="MathClass-open">[</mo><mrow><mover 
+accent="true"><mrow 
+><mi 
+>b</mi><mo 
+class="MathClass-punc">.</mo><mi 
+>H</mi></mrow><mo accent="true">̂</mo></mover></mrow><mo 
+class="MathClass-close">]</mo></mrow></mrow><mrow 
+><mi 
+>x</mi><mo 
+class="MathClass-punc">,</mo><mi 
+>y</mi></mrow></msub 
+> <mo 
+class="MathClass-rel">≈</mo> <msub><mrow 
+><mrow ><mo 
+class="MathClass-open">[</mo><mrow><msub><mrow 
+><mi 
+>b</mi></mrow><mrow 
+><mi 
+>a</mi></mrow></msub 
+><mo 
+class="MathClass-punc">.</mo><mi 
+>H</mi></mrow><mo 
+class="MathClass-close">]</mo></mrow></mrow><mrow 
+><mi 
+>x</mi><mo 
+class="MathClass-punc">,</mo><mi 
+>y</mi></mrow></msub 
+></math>, and
+viceversa. If <!--l. 1108--><math 
+ xmlns="http://www.w3.org/1998/Math/MathML"  
+display="inline" ><msub><mrow 
+><mrow ><mo 
+class="MathClass-open">[</mo><mrow><msub><mrow 
+><mi 
+>s</mi></mrow><mrow 
+><mi 
+>a</mi></mrow></msub 
+><mo 
+class="MathClass-punc">.</mo><mi 
+>L</mi></mrow><mo 
+class="MathClass-close">]</mo></mrow></mrow><mrow 
+><mi 
+>x</mi><mo 
+class="MathClass-punc">,</mo><mi 
+>y</mi></mrow></msub 
+> <mo 
+class="MathClass-rel">=</mo> <msub><mrow 
+><mrow ><mo 
+class="MathClass-open">[</mo><mrow><msub><mrow 
+><mi 
+>s</mi></mrow><mrow 
+><mi 
+>c</mi></mrow></msub 
+><mo 
+class="MathClass-punc">.</mo><mi 
+>L</mi></mrow><mo 
+class="MathClass-close">]</mo></mrow></mrow><mrow 
+><mi 
+>x</mi><mo 
+class="MathClass-punc">,</mo><mi 
+>y</mi></mrow></msub 
+></math>,
+then <!--l. 1109--><math 
+ xmlns="http://www.w3.org/1998/Math/MathML"  
+display="inline" ><msub><mrow 
+><mrow ><mo 
+class="MathClass-open">[</mo><mrow><mover 
+accent="true"><mrow 
+><mi 
+>b</mi><mo 
+class="MathClass-punc">.</mo><mi 
+>H</mi></mrow><mo accent="true">̂</mo></mover></mrow><mo 
+class="MathClass-close">]</mo></mrow></mrow><mrow 
+><mi 
+>x</mi><mo 
+class="MathClass-punc">,</mo><mi 
+>y</mi></mrow></msub 
+> <mo 
+class="MathClass-rel">=</mo> <mfrac><mrow 
+><msub><mrow 
+><mrow ><mo 
+class="MathClass-open">[</mo><mrow><msub><mrow 
+><mi 
+>b</mi></mrow><mrow 
+><mi 
+>a</mi></mrow></msub 
+><mo 
+class="MathClass-punc">.</mo><mi 
+>H</mi></mrow><mo 
+class="MathClass-close">]</mo></mrow></mrow><mrow 
+><mi 
+>x</mi><mo 
+class="MathClass-punc">,</mo><mi 
+>y</mi></mrow></msub 
+><mo 
+class="MathClass-bin">+</mo><msub><mrow 
+><mrow ><mo 
+class="MathClass-open">[</mo><mrow><msub><mrow 
+><mi 
+>b</mi></mrow><mrow 
+><mi 
+>c</mi></mrow></msub 
+><mo 
+class="MathClass-punc">.</mo><mi 
+>H</mi></mrow><mo 
+class="MathClass-close">]</mo></mrow></mrow><mrow 
+><mi 
+>x</mi><mo 
+class="MathClass-punc">,</mo><mi 
+>y</mi></mrow></msub 
+></mrow> 
+           <mrow 
+><mn>2</mn></mrow></mfrac>             </math>
+(even if both similarities are small).
+</p>
+                                                                  
+
+                                                                  
+   <hr class="figure" /><div class="figure" 
+>
+                                                                  
+
+                                                                  
+                                                                  
+
+                                                                  
+<!--l. 1113--><div class="lstinputlisting">
+<a 
+ id="x1-24005r6"></a>
+<a 
+ id="x1-24006"></a>
+<br /> <div class="caption" 
+><span class="id">Listing 6: </span><span  
+class="content"><a 
+href="https://github.com/Sistemas-Multimedia/MCOLP/blob/master/src/weighted_average.py" >weighted_average.py</a>.</span></div><!--tex4ht:label?: x1-24005r10 --><span 
+class="ectt-1000"> </span><br /><span class="label"><a 
+ id="x1-24007r1"></a></span><span 
+class="ectt-1000">def</span><span 
+class="ectt-1000"> </span><span 
+class="ectt-1000">generate_prediction</span><span 
+class="ectt-1000">(</span><span 
+class="ectt-1000">AL</span><span 
+class="ectt-1000">,</span><span 
+class="ectt-1000"> </span><span 
+class="ectt-1000">BL</span><span 
+class="ectt-1000">,</span><span 
+class="ectt-1000"> </span><span 
+class="ectt-1000">CL</span><span 
+class="ectt-1000">,</span><span 
+class="ectt-1000"> </span><span 
+class="ectt-1000">AH</span><span 
+class="ectt-1000">,</span><span 
+class="ectt-1000"> </span><span 
+class="ectt-1000">CH</span><span 
+class="ectt-1000">):</span><span 
+class="ectt-1000"> </span><br /><span class="label"><a 
+ id="x1-24008r2"></a></span><span 
+class="ectt-1000"> </span><span 
+class="ectt-1000"> </span><span 
+class="ectt-1000"> </span><span 
+class="ectt-1000"> </span><span 
+class="ectt-1000">flow_AL_BL</span><span 
+class="ectt-1000"> </span><span 
+class="ectt-1000">=</span><span 
+class="ectt-1000"> </span><span 
+class="ectt-1000">motion_estimation</span><span 
+class="ectt-1000">(</span><span 
+class="ectt-1000">AL</span><span 
+class="ectt-1000">,</span><span 
+class="ectt-1000"> </span><span 
+class="ectt-1000">BL</span><span 
+class="ectt-1000">)</span><span 
+class="ectt-1000"> </span><br /><span class="label"><a 
+ id="x1-24009r3"></a></span><span 
+class="ectt-1000"> </span><span 
+class="ectt-1000"> </span><span 
+class="ectt-1000"> </span><span 
+class="ectt-1000"> </span><span 
+class="ectt-1000">flow_CL_BL</span><span 
+class="ectt-1000"> </span><span 
+class="ectt-1000">=</span><span 
+class="ectt-1000"> </span><span 
+class="ectt-1000">motion_estimation</span><span 
+class="ectt-1000">(</span><span 
+class="ectt-1000">CL</span><span 
+class="ectt-1000">,</span><span 
+class="ectt-1000"> </span><span 
+class="ectt-1000">BL</span><span 
+class="ectt-1000">)</span><span 
+class="ectt-1000"> </span><br /><span class="label"><a 
+ id="x1-24010r4"></a></span><span 
+class="ectt-1000"> </span><span 
+class="ectt-1000"> </span><span 
+class="ectt-1000"> </span><span 
+class="ectt-1000"> </span><span 
+class="ectt-1000">BAH</span><span 
+class="ectt-1000"> </span><span 
+class="ectt-1000">=</span><span 
+class="ectt-1000"> </span><span 
+class="ectt-1000">estimate_frame</span><span 
+class="ectt-1000">(</span><span 
+class="ectt-1000">AH</span><span 
+class="ectt-1000">,</span><span 
+class="ectt-1000"> </span><span 
+class="ectt-1000">flow_AL_BL</span><span 
+class="ectt-1000">)</span><span 
+class="ectt-1000"> </span><br /><span class="label"><a 
+ id="x1-24011r5"></a></span><span 
+class="ectt-1000"> </span><span 
+class="ectt-1000"> </span><span 
+class="ectt-1000"> </span><span 
+class="ectt-1000"> </span><span 
+class="ectt-1000">BCH</span><span 
+class="ectt-1000"> </span><span 
+class="ectt-1000">=</span><span 
+class="ectt-1000"> </span><span 
+class="ectt-1000">estimate_frame</span><span 
+class="ectt-1000">(</span><span 
+class="ectt-1000">CH</span><span 
+class="ectt-1000">,</span><span 
+class="ectt-1000"> </span><span 
+class="ectt-1000">flow_CL_BL</span><span 
+class="ectt-1000">)</span><span 
+class="ectt-1000"> </span><br /><span class="label"><a 
+ id="x1-24012r6"></a></span><span 
+class="ectt-1000"> </span><span 
+class="ectt-1000"> </span><span 
+class="ectt-1000"> </span><span 
+class="ectt-1000"> </span><span 
+class="ectt-1000">BAL</span><span 
+class="ectt-1000"> </span><span 
+class="ectt-1000">=</span><span 
+class="ectt-1000"> </span><span 
+class="ectt-1000">estimate_frame</span><span 
+class="ectt-1000">(</span><span 
+class="ectt-1000">AL</span><span 
+class="ectt-1000">,</span><span 
+class="ectt-1000"> </span><span 
+class="ectt-1000">flow_AL_BL</span><span 
+class="ectt-1000">)</span><span 
+class="ectt-1000"> </span><br /><span class="label"><a 
+ id="x1-24013r7"></a></span><span 
+class="ectt-1000"> </span><span 
+class="ectt-1000"> </span><span 
+class="ectt-1000"> </span><span 
+class="ectt-1000"> </span><span 
+class="ectt-1000">BCL</span><span 
+class="ectt-1000"> </span><span 
+class="ectt-1000">=</span><span 
+class="ectt-1000"> </span><span 
+class="ectt-1000">estimate_frame</span><span 
+class="ectt-1000">(</span><span 
+class="ectt-1000">CL</span><span 
+class="ectt-1000">,</span><span 
+class="ectt-1000"> </span><span 
+class="ectt-1000">flow_CL_BL</span><span 
+class="ectt-1000">)</span><span 
+class="ectt-1000"> </span><br /><span class="label"><a 
+ id="x1-24014r8"></a></span><span 
+class="ectt-1000"> </span><span 
+class="ectt-1000"> </span><span 
+class="ectt-1000"> </span><span 
+class="ectt-1000"> </span><span 
+class="ectt-1000">EAL</span><span 
+class="ectt-1000"> </span><span 
+class="ectt-1000">=</span><span 
+class="ectt-1000"> </span><span 
+class="ectt-1000">BL</span><span 
+class="ectt-1000"> </span><span 
+class="ectt-1000">-</span><span 
+class="ectt-1000"> </span><span 
+class="ectt-1000">BAL</span><span 
+class="ectt-1000"> </span><br /><span class="label"><a 
+ id="x1-24015r9"></a></span><span 
+class="ectt-1000"> </span><span 
+class="ectt-1000"> </span><span 
+class="ectt-1000"> </span><span 
+class="ectt-1000"> </span><span 
+class="ectt-1000">ECL</span><span 
+class="ectt-1000"> </span><span 
+class="ectt-1000">=</span><span 
+class="ectt-1000"> </span><span 
+class="ectt-1000">BL</span><span 
+class="ectt-1000"> </span><span 
+class="ectt-1000">-</span><span 
+class="ectt-1000"> </span><span 
+class="ectt-1000">BCL</span><span 
+class="ectt-1000"> </span><br /><span class="label"><a 
+ id="x1-24016r10"></a></span><span 
+class="ectt-1000"> </span><span 
+class="ectt-1000"> </span><span 
+class="ectt-1000"> </span><span 
+class="ectt-1000"> </span><span 
+class="ectt-1000">SAL</span><span 
+class="ectt-1000"> </span><span 
+class="ectt-1000">=</span><span 
+class="ectt-1000"> </span><span 
+class="ectt-1000">1/(1+</span><span 
+class="ectt-1000">abs</span><span 
+class="ectt-1000">(</span><span 
+class="ectt-1000">EAL</span><span 
+class="ectt-1000">))</span><span 
+class="ectt-1000"> </span><br /><span class="label"><a 
+ id="x1-24017r11"></a></span><span 
+class="ectt-1000"> </span><span 
+class="ectt-1000"> </span><span 
+class="ectt-1000"> </span><span 
+class="ectt-1000"> </span><span 
+class="ectt-1000">SCL</span><span 
+class="ectt-1000"> </span><span 
+class="ectt-1000">=</span><span 
+class="ectt-1000"> </span><span 
+class="ectt-1000">1/(1+</span><span 
+class="ectt-1000">abs</span><span 
+class="ectt-1000">(</span><span 
+class="ectt-1000">ECL</span><span 
+class="ectt-1000">))</span><span 
+class="ectt-1000"> </span><br /><span class="label"><a 
+ id="x1-24018r12"></a></span><span 
+class="ectt-1000"> </span><span 
+class="ectt-1000"> </span><span 
+class="ectt-1000"> </span><span 
+class="ectt-1000"> </span><span 
+class="ectt-1000">return</span><span 
+class="ectt-1000"> </span><span 
+class="ectt-1000">(</span><span 
+class="ectt-1000">BAH</span><span 
+class="ectt-1000">*</span><span 
+class="ectt-1000">SAL</span><span 
+class="ectt-1000">+</span><span 
+class="ectt-1000">BCH</span><span 
+class="ectt-1000">*</span><span 
+class="ectt-1000">SCL</span><span 
+class="ectt-1000">)/(</span><span 
+class="ectt-1000">SAL</span><span 
+class="ectt-1000">+</span><span 
+class="ectt-1000">SCL</span><span 
+class="ectt-1000">)</span>
+</div>
+<a 
+ id="x1-24019r11"></a>
+<a 
+ id="x1-24020"></a>
+<br />                                                                  <div class="caption" 
+><span class="id">
+Figure 11: : </span><span  
+class="content">Computation of the weighted average prediction.              </span></div><!--tex4ht:label?: x1-24019r10 -->
                                                                   
 
                                                                   

@@ -1049,6 +1049,74 @@ GOP0     GOP1
 
 %}}}
 
+\section{Adaptive motion compensation based on the distortion of the prediction error}
+%{{{
+
+As can be seen in the MCOLP bufferfly (see
+Fig.~\ref{fig:forward_butterfly}), both predictions $[b_a.H]$ and
+$[b_c.H]$ weight the same in the prediction
+\begin{equation}
+  [\hat{b.H}] = \frac{[b_a.H] + [b_c.H]}{2}.
+\end{equation}
+This simple computation, that can have very effective for example in
+\href{https://biteable.com/blog/tips/video-transitions-effects-examples/}{dissolves}
+video transitions, can also be counterproductive when objects appear
+only in one of the reference frames. For this reason, in this section
+an improved predictor is proposed, based on the estimated prediction
+error (see $[\tilde{b}.H]$ in the Fig.~\ref{fig:forward_butterfly})
+generated throughout the ME/MC. To estimate this error, we will
+suppose that the prediction error generated for the high frequencies
+of an frame is correlated with the prediction error generated for the
+low frequencies of such frame.
+
+Let $[b_a.L]$ the prediction generated for the subband $[b.L]$ using
+$[a.L]$ as reference and $[a.L]\rightarrow [b.L]$ as motion, and let
+$[b_c.L]$ the prediction generated for $[b.L]$ using $[c.L]$ as
+reference and $[c.L]\rightarrow [b.L]$ as motion. We now compute the
+prediction errors
+\begin{equation}
+  \begin{array}{l}
+    {[e_a.L]} = [b.L] - [b_a.L]\\
+    {[e_c.L]} = [b.L] - [b_c.L].
+  \end{array}
+\end{equation}
+
+We define \emph{similarity matrices} as
+\begin{equation}
+  \begin{array}{l}
+    {[s_a.L]} = \frac{1}{1+{|[e_a.L]|}}\\
+    {[s_c.L]} = \frac{1}{1+{|[e_c.L]|}}.    
+  \end{array}
+  \label{eq:weighted_prediction}
+\end{equation}
+Notice that, if (for example) the error $[e_a.L]_{x,y}=0$, the
+similarity is $[s_a.L]_{x,y}=1$ (the maximum similarity). On the other
+side, if the error is high, the similarity tends to be low (but never
+$0$).
+
+With this information, that can be recovered by the decoder, the
+improved prediction is defined as
+\begin{equation}
+  [\hat{b.H}] = \frac{[b_a.H][s_a.L]+[s_c.L][b_c.H]}{[s_a.L]+[s_c.L]}.
+\end{equation}
+The Fig.~\ref{fig:weighted_average} shows an implementation of this
+equation.
+
+Notice that, if (for example) $[s_a.L]_{x,y}=1$ and
+$[s_c.L]_{x,y}\approx 0$, then
+$[\hat{b.H}]_{x,y} \approx [b_a.H]_{x,y}$, and viceversa. If
+$[s_a.L]_{x,y}=[s_c.L]_{x,y}$, then
+$[\hat{b.H}]_{x,y}=\frac{[b_a.H]_{x,y}+[b_c.H]_{x,y}}{2}$ (even if both similarities are small).
+
+\begin{figure}
+  \centering \lstinputlisting[firstline=4, lastline=15,
+    language=python, caption={\href{https://github.com/Sistemas-Multimedia/MCOLP/blob/master/src/weighted_average.py}{weighted\_average.py}.}]{../src/weighted_average.py}
+  \caption{Computation of the weighted average prediction.}
+  \label{fig:weighted_average}
+\end{figure}
+
+%}}}
+
 \end{document}
 
 %{{{ Temporal interpolation
@@ -1220,73 +1288,6 @@ using a 2-iterations DWT, to obtain $\tilde{b}$.
 
 %Spatial dyadic multiresolution can be obtained by appliying a sequence
 %of MDWT+MCOLP steps (see Fig.~\ref{fig:multiresolution}).
-
-\section{Adaptive motion compensation based on the distortion of the prediction error}
-%{{{
-
-As can be seen in the MCOLP bufferfly (see
-Fig.~\ref{fig:forward_butterfly}), both predictions $[b_a.H]$ and
-$[b_c.H]$ have the same weight to build the prediction
-\begin{equation}
-  [\hat{b.H}] = \frac{[b_a.H] + [b_c.H]}{2}.
-\end{equation}
-This simple computation, that can have very effective for example in
-\href{https://biteable.com/blog/tips/video-transitions-effects-examples/}{dissolves}
-video transitions, can also be counterproductive when objects appear
-only in one of the reference frames. For this reason, in this section
-a different predictor is proposed, based on the estimated prediction
-error generated throughout the ME process ($[\tilde{b}.H]$ in the
-Fig.~\ref{fig:forward_butterfly}). To estimate this error, we will
-suppose that the prediction error generated for the high frequencies
-of an frame is proportional to the prediction error generated for the
-low frequencies of such frame.
-
-Let $[b_a.L]$ the prediction generated for the subband $[b.L]$ using
-$[a.L]$ as reference and $[a.L]\rightarrow [b.L]$ as motion, and let
-$[b_c.L]$ the prediction generated for $[b.L]$ using $[c.L]$ as
-reference and $[c.L]\rightarrow [b.L]$ as motion. We now compute the
-prediction errors
-\begin{equation}
-  \begin{array}{l}
-    {[e_a.L]} = [b.L] - [b_a.L]\\
-    {[e_c.L]} = [b.L] - [b_c.L].
-  \end{array}
-\end{equation}
-
-We define the similarity matrices as
-\begin{equation}
-  \begin{array}{l}
-    {[s_a.L]} = \frac{1}{1+{|[e_a.L]|}}\\
-    {[s_c.L]} = \frac{1}{1+{|[e_c.L]|}}.    
-  \end{array}
-  \label{eq:weighted_prediction}
-\end{equation}
-Notice that, if (for example) the error $[e_a.L]_{x,y}=0$, the
-similarity is $[s_a.L]_{x,y}=1$ (the maximum similarity), if the error
-is high, the similarity tends to be low (but never $0$).
-
-With this information, that can be recovered by the decoder, the
-improved prediction is defined as
-\begin{equation}
-  [\hat{b.H}] = \frac{[b_a.H][s_a.L]+[s_c.L][b_c.H]}{[s_a.L]+[s_c.L]}.
-\end{equation}
-The Fig.~\ref{fig:weighted_average} shows an implementation of this
-equation.
-
-Notice that, if (for example) $[s_a.L]_{x,y}=1$ and
-$[s_c.L]_{x,y}\approx 0$, then
-$[\hat{b.H}]_{x,y} \approx [b_a.H]_{x,y}$, and viceversa. If
-$[s_a.L]_{x,y}=[s_c.L]_{x,y}$, then
-$[\hat{b.H}]_{x,y}=\frac{[b_a.H]_{x,y}+[b_c.H]_{x,y}}{2}$ (even if both similarities are small).
-
-\begin{figure}
-  \centering \lstinputlisting[firstline=4, lastline=15,
-    language=python, caption={\href{https://github.com/Sistemas-Multimedia/MCOLP/blob/master/src/weighted_average.py}{weighted\_average.py}.}]{../src/weighted_average.py}
-  \caption{Computation of the weighted average prediction.}
-  \label{fig:weighted_average}
-\end{figure}
-
-%}}}
 
 \section{Lossy compression: quantization}
 %{{{
