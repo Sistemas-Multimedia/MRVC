@@ -55,6 +55,8 @@ href="#x1-160009" id="QQ2-1-18">Motion Compensated Orthogonal Laplacian Pyramid 
 href="#x1-170009.1" id="QQ2-1-19">The MCOLP butterﬂy</a></span>
 <br />    <span class="subsectionToc" >9.2 <a 
 href="#x1-180009.2" id="QQ2-1-22">The MCOLP transform</a></span>
+<br />    <span class="subsectionToc" >9.3 <a 
+href="#x1-220009.3" id="QQ2-1-27">Scalability provided by MCOLP</a></span>
    </div>
 <!--l. 13--><p class="noindent" >
 </p>
@@ -8061,6 +8063,502 @@ levels).                                                            </span></div
 
                                                                   
    </div><hr class="endfigure" />
+<!--l. 846--><p class="indent" >   For the sake of simplifying the notation, we will represent
+<!--l. 847--><math 
+ xmlns="http://www.w3.org/1998/Math/MathML"  
+display="inline" ><mrow ><mo 
+class="MathClass-open">{</mo><mrow><msub><mrow 
+><mi 
+>F</mi></mrow><mrow 
+><mi 
+>t</mi></mrow></msub 
+></mrow><mo 
+class="MathClass-close">}</mo></mrow><mo 
+class="MathClass-punc">.</mo><msup><mrow 
+><mi 
+>L</mi></mrow><mrow 
+><mi 
+>s</mi></mrow></msup 
+></math> by
+<!--l. 847--><math 
+ xmlns="http://www.w3.org/1998/Math/MathML"  
+display="inline" ><msubsup><mrow 
+><mi 
+>L</mi></mrow><mrow 
+><mi 
+>t</mi></mrow><mrow 
+><mi 
+>s</mi></mrow></msubsup 
+></math>, and
+<!--l. 847--><math 
+ xmlns="http://www.w3.org/1998/Math/MathML"  
+display="inline" ><mrow ><mo 
+class="MathClass-open">{</mo><mrow><msub><mrow 
+><mi 
+>F</mi></mrow><mrow 
+><mi 
+>t</mi></mrow></msub 
+></mrow><mo 
+class="MathClass-close">}</mo></mrow><mo 
+class="MathClass-punc">.</mo><msup><mrow 
+><mi 
+>H</mi></mrow><mrow 
+><mi 
+>s</mi></mrow></msup 
+></math> by
+<!--l. 847--><math 
+ xmlns="http://www.w3.org/1998/Math/MathML"  
+display="inline" ><msubsup><mrow 
+><mi 
+>H</mi></mrow><mrow 
+><mi 
+>t</mi></mrow><mrow 
+><mi 
+>s</mi></mrow></msubsup 
+></math>.
+Thus, for example, the subbands shown in the Fig. <a 
+href="#x1-20001r7">7<!--tex4ht:ref: fig:1xPRMC2 --></a> can be represented as: (1)
+<!--l. 849--><math 
+ xmlns="http://www.w3.org/1998/Math/MathML"  
+display="inline" ><mi 
+>L</mi></math>
+(that is a version of the sequence with spatial resolution
+<!--l. 850--><math 
+ xmlns="http://www.w3.org/1998/Math/MathML"  
+display="inline" ><mi 
+>X</mi><mo 
+class="MathClass-bin">∕</mo><mn>2</mn> <mo 
+class="MathClass-bin">×</mo> <mi 
+>Y</mi><mo 
+class="MathClass-bin">∕</mo><mn>2</mn></math>), (2)
+<!--l. 850--><math 
+ xmlns="http://www.w3.org/1998/Math/MathML"  
+display="inline" ><msub><mrow 
+><mi 
+>H</mi></mrow><mrow 
+><msup><mrow 
+><mn>2</mn></mrow><mrow 
+><mn>2</mn></mrow></msup 
+><mi 
+>i</mi></mrow></msub 
+></math> (made
+up of intra-coded high-frequency spatial information of the frames with numbers
+<!--l. 852--><math 
+ xmlns="http://www.w3.org/1998/Math/MathML"  
+display="inline" ><msup><mrow 
+><mn>2</mn></mrow><mrow 
+><mn>2</mn></mrow></msup 
+><mi 
+>i</mi></math>), (3)
+<!--l. 852--><math 
+ xmlns="http://www.w3.org/1998/Math/MathML"  
+display="inline" ><msub><mrow 
+><mover 
+accent="true"><mrow 
+><mi 
+>H</mi></mrow><mo accent="true">̃</mo></mover></mrow><mrow 
+><msup><mrow 
+><mn>2</mn></mrow><mrow 
+><mn>2</mn></mrow></msup 
+><mi 
+>i</mi><mo 
+class="MathClass-bin">+</mo><mn>2</mn></mrow></msub 
+></math> (with the
+high-frequency spatio-temporal prediction error resulting from decorrelating even frames with
+distance <!--l. 854--><math 
+ xmlns="http://www.w3.org/1998/Math/MathML"  
+display="inline" ><msup><mrow 
+><mn>2</mn></mrow><mrow 
+><mn>2</mn></mrow></msup 
+></math>),
+and (4) <!--l. 854--><math 
+ xmlns="http://www.w3.org/1998/Math/MathML"  
+display="inline" ><msub><mrow 
+><mover 
+accent="true"><mrow 
+><mi 
+>H</mi></mrow><mo accent="true">̃</mo></mover></mrow><mrow 
+><mn>2</mn><mi 
+>i</mi><mo 
+class="MathClass-bin">+</mo><mn>1</mn></mrow></msub 
+></math>
+(high-frequency spatio-temporal prediction error resulting from decorrelating frames with
+distance <!--l. 856--><math 
+ xmlns="http://www.w3.org/1998/Math/MathML"  
+display="inline" ><mn>2</mn></math>).
+</p>
+   <h4 class="likesubsectionHead"><a 
+ id="x1-210009.2"></a>Example: <!--l. 860--><math 
+ xmlns="http://www.w3.org/1998/Math/MathML"  
+display="inline" ><mstyle mathvariant="monospace"><mi 
+>P</mi><mi 
+>R</mi><mi 
+>M</mi><mi 
+>C</mi></mstyle><mrow ><mo 
+class="MathClass-open">(</mo><mrow><mi 
+>T</mi> <mo 
+class="MathClass-rel">=</mo> <mn>4</mn><mo 
+class="MathClass-punc">,</mo><mi 
+>N</mi> <mo 
+class="MathClass-rel">=</mo> <mn>1</mn><mn>7</mn></mrow><mo 
+class="MathClass-close">)</mo></mrow></math></h4>
+<!--l. 863--><p class="noindent" >An example with <!--l. 863--><math 
+ xmlns="http://www.w3.org/1998/Math/MathML"  
+display="inline" ><mi 
+>G</mi> <mo 
+class="MathClass-rel">=</mo> <msup><mrow 
+><mn>2</mn></mrow><mrow 
+><mn>4</mn></mrow></msup 
+> <mo 
+class="MathClass-rel">=</mo> <mn>1</mn><mn>6</mn></math>,
+i.e. <!--l. 863--><math 
+ xmlns="http://www.w3.org/1998/Math/MathML"  
+display="inline" ><mn>5</mn></math> TRLs
+and <!--l. 863--><math 
+ xmlns="http://www.w3.org/1998/Math/MathML"  
+display="inline" ><mn>2</mn></math>
+SRLs. The subbands generated are:
+     </p><ol  class="enumerate1" >
+     <li 
+  class="enumerate" id="x1-21002x1"><!--l. 866--><math 
+ xmlns="http://www.w3.org/1998/Math/MathML"  
+display="inline" ><mi 
+>L</mi></math>,
+     that by itself, allows to reconstruct all the frames at half resolution.
+     </li>
+     <li 
+  class="enumerate" id="x1-21004x2"><!--l. 868--><math 
+ xmlns="http://www.w3.org/1998/Math/MathML"  
+display="inline" ><msub><mrow 
+><mi 
+>H</mi></mrow><mrow 
+><mn>1</mn><mn>6</mn><mi 
+>i</mi><mo 
+class="MathClass-bin">+</mo><mn>8</mn></mrow></msub 
+></math>,
+     which with <!--l. 868--><math 
+ xmlns="http://www.w3.org/1998/Math/MathML"  
+display="inline" ><mi 
+>L</mi></math>,
+     provides full resolution for frames with number <!--l. 869--><math 
+ xmlns="http://www.w3.org/1998/Math/MathML"  
+display="inline" ><mn>1</mn><mn>6</mn><mi 
+>i</mi> <mo 
+class="MathClass-bin">+</mo> <mn>8</mn></math>
+     (the rest of frames have half resolution).
+     </li>
+     <li 
+  class="enumerate" id="x1-21006x3"><!--l. 870--><math 
+ xmlns="http://www.w3.org/1998/Math/MathML"  
+display="inline" ><msub><mrow 
+><mi 
+>H</mi></mrow><mrow 
+><mn>8</mn><mi 
+>i</mi><mo 
+class="MathClass-bin">+</mo><mn>4</mn></mrow></msub 
+></math>,
+     that with the previous subbands provides full resolution also for frames
+     with number <!--l. 871--><math 
+ xmlns="http://www.w3.org/1998/Math/MathML"  
+display="inline" ><mn>8</mn><mi 
+>i</mi> <mo 
+class="MathClass-bin">+</mo> <mn>4</mn></math>.
+     </li>
+     <li 
+  class="enumerate" id="x1-21008x4"><!--l. 872--><math 
+ xmlns="http://www.w3.org/1998/Math/MathML"  
+display="inline" ><msub><mrow 
+><mi 
+>H</mi></mrow><mrow 
+><mn>4</mn><mi 
+>i</mi><mo 
+class="MathClass-bin">+</mo><mn>2</mn></mrow></msub 
+></math>,
+     which also provides full resolution for frames <!--l. 872--><math 
+ xmlns="http://www.w3.org/1998/Math/MathML"  
+display="inline" ><mn>4</mn><mi 
+>i</mi> <mo 
+class="MathClass-bin">+</mo> <mn>2</mn></math>.
+                                                                  
+
+                                                                  
+     </li>
+     <li 
+  class="enumerate" id="x1-21010x5"><!--l. 873--><math 
+ xmlns="http://www.w3.org/1998/Math/MathML"  
+display="inline" ><msub><mrow 
+><mi 
+>H</mi></mrow><mrow 
+><mn>2</mn><mi 
+>i</mi><mo 
+class="MathClass-bin">+</mo><mn>1</mn></mrow></msub 
+></math>,
+     that reconstruct the original sequence.</li></ol>
+<!--l. 876--><p class="indent" >   The temporal decorrelation pattern followed by
+<!--l. 876--><math 
+ xmlns="http://www.w3.org/1998/Math/MathML"  
+display="inline" ><mstyle mathvariant="monospace"><mi 
+>i</mi><mi 
+>M</mi><mi 
+>C</mi><mi 
+>O</mi><mi 
+>L</mi><mi 
+>P</mi><mrow ><mo 
+class="MathClass-open">(</mo><mrow><mi 
+>T</mi> <mo 
+class="MathClass-rel">=</mo> <mi 
+>4</mi><mo 
+class="MathClass-punc">,</mo><mi 
+>N</mi> <mo 
+class="MathClass-rel">=</mo> <mi 
+>1</mi><mi 
+>7</mi></mrow><mo 
+class="MathClass-close">)</mo></mrow></mstyle></math> is
+(notice that the hexadecimal notation has been followed for indexing the frames)
+shown in the Fig. <a 
+href="#x1-21011r8">8<!--tex4ht:ref: fig:PRMC_4_17 --></a>.
+</p>
+   <hr class="figure" /><div class="figure" 
+>
+                                                                  
+
+                                                                  
+                                                                  
+
+                                                                  
+<pre class="verbatim" id="verbatim-12">
+GOP0                     GOP1
+---- ------------------------------------------------
+  F0                      F8                      F10 -&#x003E; H_{16i+8} = TRL 3
+              F4                      Fc              -&#x003E; H_{8i+4} + TRL 3 = TRL 2
+        F2          F6          Fa          Fe        -&#x003E; H_{4i+2} + TRL 2 = TRL 1
+     F1    F3    F5    F7    F9    Fb    Fd    Ff     -&#x003E; H_{2i+1} + TRL 1 = TRL 0
+</pre>
+<!--l. 888--><p class="nopar" > <a 
+ id="x1-21011r8"></a>
+<a 
+ id="x1-21012"></a>
+<br />                                                                  </p><div class="caption" 
+><span class="id">
+Figure 8:          :          </span><span  
+class="content">Correlation          pattern          followed          by
+<!--l. 892--><math 
+ xmlns="http://www.w3.org/1998/Math/MathML"  
+display="inline" ><mstyle mathvariant="monospace"><mi 
+>M</mi><mi 
+>C</mi><mi 
+>O</mi><mi 
+>L</mi><mi 
+>P</mi><mrow ><mo 
+class="MathClass-open">(</mo><mrow><mi 
+>T</mi> <mo 
+class="MathClass-rel">=</mo> <mi 
+>4</mi><mo 
+class="MathClass-punc">,</mo><mi 
+>N</mi> <mo 
+class="MathClass-rel">=</mo> <mi 
+>1</mi><mi 
+>7</mi></mrow><mo 
+class="MathClass-close">)</mo></mrow></mstyle></math>.
+The temporal resolution levels (TRLs) are considering only the frames that has
+been reconstructed at the original spatial resolution.
+</span></div><!--tex4ht:label?: x1-21011r9 -->
+                                                                  
+
+                                                                  
+   </div><hr class="endfigure" />
+                                                                  
+
+                                                                  
+   <pre class="verbatim" id="verbatim-13">
+# You must be in the ’src’ directory.
+rm /tmp/*.png
+video_file=/tmp/akiyo_cif.y4m
+if test -f $video_file; then
+  print akiyo exists
+else
+  wget https://media.xiph.org/video/derf/y4m/akiyo_cif.y4m -O /tmp/akiyo_cif.y4m
+fi
+mplayer /tmp/akiyo_cif.y4m
+ffmpeg -i /tmp/akiyo_cif.y4m -vframes 17 -start_number 0 /tmp/%03d.png
+# 1D 1-iteration MDWT.
+python3 -O MDWT.py -p /tmp/ -N 17
+# Save a copy of the MDWT subbands (for comparing later).
+rm -rf /tmp/tmp
+mkdir /tmp/tmp
+cp /tmp/LL*.png /tmp/tmp
+cp /tmp/LH*.png /tmp/tmp
+cp /tmp/HL*.png /tmp/tmp
+cp /tmp/HH*.png /tmp/tmp
+# 4-iterations MCOLP.
+python3 -O MCOLP.py -p /tmp/ -T 4 -N 17
+ls -l /tmp/LH*.png &#x003E; /tmp/1
+ls -l /tmp/tmp/LH*.png &#x003E; /tmp/2
+paste /tmp/1 /tmp/2
+ls -l /tmp/HL*.png &#x003E; /tmp/1
+ls -l /tmp/tmp/HL*.png &#x003E; /tmp/2
+paste /tmp/1 /tmp/2
+ls -l /tmp/HH*.png &#x003E; /tmp/1
+ls -l /tmp/tmp/HH*.png &#x003E; /tmp/2
+paste /tmp/1 /tmp/2
+# Now we recover the original video.
+# 4-iterations iMCOLP.
+python3 -O MCOLP.py -b -p /tmp/ -T 4 -N 17
+                                                                  
+
+                                                                  
+# 1-iteration iMDWT
+python3 -O MDWT.py -b -p /tmp/ -N 17
+# Visualization of the reconstruction.
+for i in /tmp/???.png; do python3 ../tools/substract_offset.py -i $i -o $i.png; done
+animate /tmp/???.png.png
+# Visualization of the residue.
+for i in {0..16}; do ii=$(printf &#x0022;%03d&#x0022; $i); bash ../tools/show_differences.sh -1 /tmp/$ii.png -2 ../sequences/stockholm/$ii.png -o /tmp/diff_$ii.png; done
+animate /tmp/diff*.png
+python3 ../tools/show_statistics.py -i /tmp/diff_002.png
+</pre>
+<!--l. 951--><p class="nopar" >
+</p>
+   <h4 class="subsectionHead"><span class="titlemark">9.3   </span> <a 
+ id="x1-220009.3"></a>Scalability provided by MCOLP</h4>
+<!--l. 958--><p class="noindent" >MCOLP preserves the dyadic spatial decomposition generated by MDWT, and
+therefore, MCOLP provides the same spatial scalability than MDWT.
+</p><!--l. 961--><p class="indent" >   Unfortunately, as the rest of video encoders based on MC, MCOLP reduces the
+temporal scalability provided by MDWT, allowing (in the case of MCOLP) only a
+dyadic access to the frames.
+</p><!--l. 967--><p class="noindent" >
+</p>
+   <h4 class="likesubsectionHead"><a 
+ id="x1-230009.3"></a>Example: 3-iters of <!--l. 967--><math 
+ xmlns="http://www.w3.org/1998/Math/MathML"  
+display="inline" ><mstyle mathvariant="monospace"><mi 
+>P</mi><mi 
+>R</mi><mi 
+>M</mi><mi 
+>C</mi></mstyle><mrow ><mo 
+class="MathClass-open">(</mo><mrow><mi 
+>T</mi> <mo 
+class="MathClass-rel">=</mo> <mn>2</mn><mo 
+class="MathClass-punc">,</mo><mi 
+>N</mi> <mo 
+class="MathClass-rel">=</mo> <mn>5</mn></mrow><mo 
+class="MathClass-close">)</mo></mrow></math></h4>
+                                                                  
+
+                                                                  
+   <pre class="verbatim" id="verbatim-14">
+predictor=1
+iterations=2
+# You must be in the ’src’ directory.
+rm /tmp/*.png
+cp ../sequences/stockholm/* /tmp
+python3 -O MDWT.py  -p /tmp/
+python3 -O MCOLP.py -p /tmp/     -P $predictor -T $iterations
+python3 -O MDWT.py  -p /tmp/LL
+python3 -O MCOLP.py -p /tmp/LL   -P $predictor -T $iterations
+python3 -O MDWT.py  -p /tmp/LLLL
+python3 -O MCOLP.py -p /tmp/LLLL -P $predictor -T $iterations
+rm /tmp/00?.png
+python3 -O MCOLP.py -p /tmp/LLLL -P $predictor -b -T $iterations
+python3 -O MDWT.py  -p /tmp/LLLL               -b
+python3 -O MCOLP.py -p /tmp/LL   -P $predictor -b -T $iterations
+python3 -O MDWT.py  -p /tmp/LL                 -b
+python3 -O MCOLP.py -p /tmp/     -P $predictor -b -T $iterations
+python3 -O MDWT.py  -p /tmp/                   -b
+for i in /tmp/00?.png; do python ../tools/substract_offset.py -i $i -o $i.png; done; animate /tmp/00?.png.png
+for i in {0..4}; do ii=$(printf &#x0022;%03d&#x0022; $i); bash ../tools/show_differences.sh -1 /tmp/$ii.png -2 ../sequences/stockholm/$ii.png -o /tmp/diff_$ii.png; done
+animate /tmp/diff*.png
+</pre>
+<!--l. 998--><p class="nopar" >
+</p><!--l. 1000--><p class="indent" >   The GOP size is <!--l. 1000--><math 
+ xmlns="http://www.w3.org/1998/Math/MathML"  
+display="inline" ><mn>4</mn></math>,
+generating <!--l. 1000--><math 
+ xmlns="http://www.w3.org/1998/Math/MathML"  
+display="inline" ><mn>3</mn></math> TRLs
+in this case. <!--l. 1000--><math 
+ xmlns="http://www.w3.org/1998/Math/MathML"  
+display="inline" ><mn>4</mn></math>
+is the number of SRLs.
+                                                                  
+
+                                                                  
+</p>
+   <pre class="verbatim" id="verbatim-15">
+TRLs:
+GOP0     GOP1
+---- ------------
+  F0           F4  -&#x003E; TRL1 U {s0, s4} = TRL2
+         F2        -&#x003E; TRL0 U s2 = TRL1
+      F1    F3     -&#x003E; TRL0
+SRLs:
++---+---+-------+---------------+
+| 3 | 2 |   1   |       0       |
++---+   |       |               |
+|       |       |               |
++-------+       |               |
+|               |               |
+|               |               |
+|               |               |
++---------------+               |
+|                               |
+|                               |
+|                               |
+|                               |
+|                               |
+|                               |
+|                               |
+|                               |
+|                               |
+|                               |
++-------------------------------+
+</pre>
+<!--l. 1035--><p class="nopar" >
+</p><!--l. 1037--><p class="indent" >   <!--l. 1037--><math 
+ xmlns="http://www.w3.org/1998/Math/MathML"  
+display="inline" ><mn>3</mn> <mo 
+class="MathClass-bin">×</mo> <mn>4</mn> <mo 
+class="MathClass-rel">=</mo> <mn>1</mn><mn>2</mn></math>
+diﬀerent possible reconstructions of the video are possible:
+     </p><ol  class="enumerate1" >
+     <li 
+  class="enumerate" id="x1-23002x1">s0.3, s4.3.
+     </li>
+     <li 
+  class="enumerate" id="x1-23004x2">s0.2, s4.2.
+                                                                  
+
+                                                                  
+     </li>
+     <li 
+  class="enumerate" id="x1-23006x3">s0.1, s4.1.
+     </li>
+     <li 
+  class="enumerate" id="x1-23008x4">s0.0, s4.0.
+     </li>
+     <li 
+  class="enumerate" id="x1-23010x5">s0.3, s4.3, s2.3.
+     </li>
+     <li 
+  class="enumerate" id="x1-23012x6">s0.2, s4.2, s2.2.
+     </li>
+     <li 
+  class="enumerate" id="x1-23014x7">s0.1, s4.1, s2.1.
+     </li>
+     <li 
+  class="enumerate" id="x1-23016x8">s0.0, s4.0, s2.0.
+     </li>
+     <li 
+  class="enumerate" id="x1-23018x9">s0.3, s4.3, s2.3, s1.3, s3.3.
+     </li>
+     <li 
+  class="enumerate" id="x1-23020x10">s0.2, s4.2, s2.2, s1.2, s3.2.
+     </li>
+     <li 
+  class="enumerate" id="x1-23022x11">s0.1, s4.1, s2.1, s1.1, s3.1.
+     </li>
+     <li 
+  class="enumerate" id="x1-23024x12">s0.0, s4.0, s2.0, s1.0, s3.0.</li></ol>
     
 </body> 
 </html>
