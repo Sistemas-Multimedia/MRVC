@@ -1117,178 +1117,6 @@ $[\hat{b.H}]_{x,y}=\frac{[b_a.H]_{x,y}+[b_c.H]_{x,y}}{2}$ (even if both similari
 
 %}}}
 
-\end{document}
-
-%{{{ Temporal interpolation
-
-\begin{comment}
-  \subsection{Temporal interpolation}
-
-Hay que trasladar el lifting a este nuevo diseño. Así se sabrá mejor cómo realizar la interpolación temporal.
-  
-  Si conseguimos a->c y c->a, siendo a y c dos imágenes adyacentes (000 y 001, por ejemplo), podemos generar la imagen predicha proyectando a usando (a->c)/2 y c usando (c->a)/2. Así conseguimos 2 proyecciones, con las que podemos hacer la media o usar el error de predicción para calcular la proporción de cada proyección.
-\begin{verbatim}
-predictor=1
-
-# You must be in the 'src' directory.
-rm /tmp/*.png
-cp ../sequences/stockholm/* /tmp
-
-predictor=1
-python3 -O MDWT.py  -p /tmp/
-python3 -O MCOLP.py -p /tmp/     -P $predictor -T 1
-
-rm /tmp/00?.png
-
-mv /tmp/LL004.png /tmp/LL008.png
-mv /tmp/LL003.png /tmp/LL006.png
-mv /tmp/LL002.png /tmp/LL004.png
-mv /tmp/LL001.png /tmp/LL002.png
-mv /tmp/LH004.png /tmp/LH008.png
-mv /tmp/LH003.png /tmp/LH006.png
-mv /tmp/LH002.png /tmp/LH004.png
-mv /tmp/LH001.png /tmp/LH002.png
-mv /tmp/HL004.png /tmp/HL008.png
-mv /tmp/HL003.png /tmp/HL006.png
-mv /tmp/HL002.png /tmp/HL004.png
-mv /tmp/HL001.png /tmp/HL002.png
-mv /tmp/HH004.png /tmp/HH008.png
-mv /tmp/HH003.png /tmp/HH006.png
-mv /tmp/HH002.png /tmp/HH004.png
-mv /tmp/HH001.png /tmp/HH002.png
-
-python3 -O MCOLP.py -b -p /tmp/ -N 9 -P $predictor -T 2
-python3 -O MDWT.py  -b -p /tmp/ -N 9
-
-for i in /tmp/00?.png; do python ../tools/substract_offset.py -i $i -o $i.png; done; animate /tmp/00?.png.png
-
-for i in {0..4}; do ii=$(printf "%03d" $i); bash ../tools/show_differences.sh -1 /tmp/$ii.png -2 ../sequences/stockholm/$ii.png -o /tmp/diff_$ii.png; done
-animate /tmp/diff*.png
-
-
-
-predictor=1
-
-# You must be in the 'src' directory.
-rm /tmp/*.png
-cp ../sequences/stockholm/* /tmp
-
-predictor=1
-python3 -O MDWT.py  -p /tmp/
-python3 -O MCOLP.py -p /tmp/     -P $predictor -T 1
-
-rm /tmp/00?.png
-
-python3 -O MCOLP.py -p /tmp/     -P $predictor -b -T 2
-python3 -O MDWT.py  -p /tmp/                   -b
-
-for i in /tmp/00?.png; do python ../tools/substract_offset.py -i $i -o $i.png; done; animate /tmp/00?.png.png
-
-for i in {0..4}; do ii=$(printf "%03d" $i); bash ../tools/show_differences.sh -1 /tmp/$ii.png -2 ../sequences/stockholm/$ii.png -o /tmp/diff_$ii.png; done
-animate /tmp/diff*.png
-
-
-
-rm /tmp/*.png
-cp ../sequences/stockholm/000.png /tmp/LL000.png
-cp ../sequences/stockholm/000.png /tmp/LL001.png
-cp ../sequences/stockholm/001.png /tmp/LL002.png
-cp ../sequences/stockholm/001.png /tmp/LL003.png
-cp ../sequences/stockholm/002.png /tmp/LL004.png
-cp ../sequences/stockholm/002.png /tmp/LL005.png
-cp ../sequences/stockholm/003.png /tmp/LL006.png
-cp ../sequences/stockholm/003.png /tmp/LL007.png
-cp ../sequences/stockholm/004.png /tmp/LL008.png
-cp ../sequences/stockholm/004.png /tmp/LL009.png
-python3 -O MCOLP.py -p /tmp/ -N 9 -b
-\end{verbatim}        
-\end{comment}
-
-%}}}
-
-%{{{ Subpixel accuracy
-
-\begin{comment}
-\subsection{Accuracy of the motion compensation (TO BE IMPLEMENTED)}
-The movement of the objects in the scene captured by a video is a
-continuous event. Conversely, the digital frames taken from such
-objects are discrete in the time and the space domains. This means
-that, in general, two different positions of an object in two
-different frames is not going to match with a distance that can be
-measured by an integer number of pixels. For example, lets suppose that the content of the frame $s_0$ is:
-\begin{verbatim}
-  0   0   0 255   0   0   0
-  0   0   0 255   0   0   0
-  0   0   0 255   0   0   0
-  0   0   0 255   0   0   0
-  0   0   0 255   0   0   0
-  0   0   0 255   0   0   0
-\end{verbatim}
-and that the camera has moved, following a parallel movement to the
-surface of the object of 1/2 pixels. In this case, the frame $s_1$
-taken from such object would be:
-\begin{verbatim}
-  0   0 128 128   0   0   0
-  0   0 128 128   0   0   0
-  0   0 128 128   0   0   0
-  0   0 128 128   0   0   0
-  0   0 128 128   0   0   0
-  0   0 128 128   0   0   0
-\end{verbatim}
-and it can be seen, it is difficult to determine that the object has
-been moved, because the values of the pixels have changed
-significantly. However, if we interpolate both frames using the
-wavelet ``bior3.5'' of PyWavelets, we obtain for the first
-frame\footnote{\texttt{pywt.idwt([0,0,0,255,0,0,0],None,'bior3.5',
-    'per')}}:
-\begin{verbatim}
-  0   0   0   0   0  45 135 135  45   0   0   0   0   0
-  0   0   0   0   0  45 135 135  45   0   0   0   0   0
-  0   0   0   0   0  45 135 135  45   0   0   0   0   0
-  0   0   0   0   0  45 135 135  45   0   0   0   0   0
-  0   0   0   0   0  45 135 135  45   0   0   0   0   0
-  0   0   0   0   0  45 135 135  45   0   0   0   0   0
-\end{verbatim}
-and for the second
-one\footnote{\texttt{pywt.idwt([0,0,128,128,0,0,0],None,'bior3.5',
-    'per')}}:
-\begin{verbatim}
-  0   0   0  23  68  91  91  68  23   0   0   0   0   0
-  0   0   0  23  68  91  91  68  23   0   0   0   0   0
-  0   0   0  23  68  91  91  68  23   0   0   0   0   0
-  0   0   0  23  68  91  91  68  23   0   0   0   0   0
-  0   0   0  23  68  91  91  68  23   0   0   0   0   0
-  0   0   0  23  68  91  91  68  23   0   0   0   0   0
-\end{verbatim}
-that is more suitable for determining the sub-pixel accuracy motion.
-
-So, to increase the accuracy of the MC step to 1/2 sub-pixel accuracy
-(for example), we can interpolate\footnote{Considering the unkown
-  high-frequency information as zero.} all the subbands that are
-involved in the MC process by means of a 2-iterations iDWT, generating
-$[a.L]^2$, $[c.L]^2$, $[a.H]^2$, $[b.H]^2$ and $[c.H]^2$, and finally,
-using a 2-iterations DWT, to obtain $\tilde{b}$.
-\end{comment}
-
-%}}}
-
-%\subsection{(Spatial) Multiresolution}
-%Spatial dyadic multiresolution can be obtained by appliying a sequence
-%of (MDWT+MCOLP) steps (see Fig.~\ref{fig:multiresolution}).
-
-%\begin{figure}
-%  \centering %
-%  \myfig{graphics/multiresolution}{10cm}{1200}
-%  \caption{MDWT+MCOLP multiresolution procedure. The input to the second
-%    iteration of the MDWT+MCOLP transform is the output of a previous
-%    (first) iteration MDWT+MCOLP transform. The second iteration is only
-%    applied to the scale 1.} %
-%  \label{fig:multiresolution}
-%\end{figure}
-
-%Spatial dyadic multiresolution can be obtained by appliying a sequence
-%of MDWT+MCOLP steps (see Fig.~\ref{fig:multiresolution}).
-
 \section{Lossy compression: quantization}
 %{{{
 
@@ -1488,6 +1316,181 @@ for i in {0..4}; do ii=$(printf "%03d" $i); MSE=`python3 -O ../tools/MSE.py -x .
 \end{verbatim}
 
 %}}}
+
+\end{document}
+
+%{{{ Temporal interpolation
+
+\begin{comment}
+  \subsection{Temporal interpolation}
+
+Hay que trasladar el lifting a este nuevo diseño. Así se sabrá mejor cómo realizar la interpolación temporal.
+  
+  Si conseguimos a->c y c->a, siendo a y c dos imágenes adyacentes (000 y 001, por ejemplo), podemos generar la imagen predicha proyectando a usando (a->c)/2 y c usando (c->a)/2. Así conseguimos 2 proyecciones, con las que podemos hacer la media o usar el error de predicción para calcular la proporción de cada proyección.
+\begin{verbatim}
+predictor=1
+
+# You must be in the 'src' directory.
+rm /tmp/*.png
+cp ../sequences/stockholm/* /tmp
+
+predictor=1
+python3 -O MDWT.py  -p /tmp/
+python3 -O MCOLP.py -p /tmp/     -P $predictor -T 1
+
+rm /tmp/00?.png
+
+mv /tmp/LL004.png /tmp/LL008.png
+mv /tmp/LL003.png /tmp/LL006.png
+mv /tmp/LL002.png /tmp/LL004.png
+mv /tmp/LL001.png /tmp/LL002.png
+mv /tmp/LH004.png /tmp/LH008.png
+mv /tmp/LH003.png /tmp/LH006.png
+mv /tmp/LH002.png /tmp/LH004.png
+mv /tmp/LH001.png /tmp/LH002.png
+mv /tmp/HL004.png /tmp/HL008.png
+mv /tmp/HL003.png /tmp/HL006.png
+mv /tmp/HL002.png /tmp/HL004.png
+mv /tmp/HL001.png /tmp/HL002.png
+mv /tmp/HH004.png /tmp/HH008.png
+mv /tmp/HH003.png /tmp/HH006.png
+mv /tmp/HH002.png /tmp/HH004.png
+mv /tmp/HH001.png /tmp/HH002.png
+
+cp /tmp/LL000.png 
+
+python3 -O MCOLP.py -b -p /tmp/ -N 9 -P $predictor -T 2
+python3 -O MDWT.py  -b -p /tmp/ -N 9
+
+for i in /tmp/00?.png; do python ../tools/substract_offset.py -i $i -o $i.png; done; animate /tmp/00?.png.png
+
+for i in {0..4}; do ii=$(printf "%03d" $i); bash ../tools/show_differences.sh -1 /tmp/$ii.png -2 ../sequences/stockholm/$ii.png -o /tmp/diff_$ii.png; done
+animate /tmp/diff*.png
+
+
+
+predictor=1
+
+# You must be in the 'src' directory.
+rm /tmp/*.png
+cp ../sequences/stockholm/* /tmp
+
+predictor=1
+python3 -O MDWT.py  -p /tmp/
+python3 -O MCOLP.py -p /tmp/     -P $predictor -T 1
+
+rm /tmp/00?.png
+
+python3 -O MCOLP.py -p /tmp/     -P $predictor -b -T 2
+python3 -O MDWT.py  -p /tmp/                   -b
+
+for i in /tmp/00?.png; do python ../tools/substract_offset.py -i $i -o $i.png; done; animate /tmp/00?.png.png
+
+for i in {0..4}; do ii=$(printf "%03d" $i); bash ../tools/show_differences.sh -1 /tmp/$ii.png -2 ../sequences/stockholm/$ii.png -o /tmp/diff_$ii.png; done
+animate /tmp/diff*.png
+
+
+
+rm /tmp/*.png
+cp ../sequences/stockholm/000.png /tmp/LL000.png
+cp ../sequences/stockholm/000.png /tmp/LL001.png
+cp ../sequences/stockholm/001.png /tmp/LL002.png
+cp ../sequences/stockholm/001.png /tmp/LL003.png
+cp ../sequences/stockholm/002.png /tmp/LL004.png
+cp ../sequences/stockholm/002.png /tmp/LL005.png
+cp ../sequences/stockholm/003.png /tmp/LL006.png
+cp ../sequences/stockholm/003.png /tmp/LL007.png
+cp ../sequences/stockholm/004.png /tmp/LL008.png
+cp ../sequences/stockholm/004.png /tmp/LL009.png
+python3 -O MCOLP.py -p /tmp/ -N 9 -b
+\end{verbatim}        
+\end{comment}
+
+%}}}
+
+%{{{ Subpixel accuracy
+
+\begin{comment}
+\subsection{Accuracy of the motion compensation (TO BE IMPLEMENTED)}
+The movement of the objects in the scene captured by a video is a
+continuous event. Conversely, the digital frames taken from such
+objects are discrete in the time and the space domains. This means
+that, in general, two different positions of an object in two
+different frames is not going to match with a distance that can be
+measured by an integer number of pixels. For example, lets suppose that the content of the frame $s_0$ is:
+\begin{verbatim}
+  0   0   0 255   0   0   0
+  0   0   0 255   0   0   0
+  0   0   0 255   0   0   0
+  0   0   0 255   0   0   0
+  0   0   0 255   0   0   0
+  0   0   0 255   0   0   0
+\end{verbatim}
+and that the camera has moved, following a parallel movement to the
+surface of the object of 1/2 pixels. In this case, the frame $s_1$
+taken from such object would be:
+\begin{verbatim}
+  0   0 128 128   0   0   0
+  0   0 128 128   0   0   0
+  0   0 128 128   0   0   0
+  0   0 128 128   0   0   0
+  0   0 128 128   0   0   0
+  0   0 128 128   0   0   0
+\end{verbatim}
+and it can be seen, it is difficult to determine that the object has
+been moved, because the values of the pixels have changed
+significantly. However, if we interpolate both frames using the
+wavelet ``bior3.5'' of PyWavelets, we obtain for the first
+frame\footnote{\texttt{pywt.idwt([0,0,0,255,0,0,0],None,'bior3.5',
+    'per')}}:
+\begin{verbatim}
+  0   0   0   0   0  45 135 135  45   0   0   0   0   0
+  0   0   0   0   0  45 135 135  45   0   0   0   0   0
+  0   0   0   0   0  45 135 135  45   0   0   0   0   0
+  0   0   0   0   0  45 135 135  45   0   0   0   0   0
+  0   0   0   0   0  45 135 135  45   0   0   0   0   0
+  0   0   0   0   0  45 135 135  45   0   0   0   0   0
+\end{verbatim}
+and for the second
+one\footnote{\texttt{pywt.idwt([0,0,128,128,0,0,0],None,'bior3.5',
+    'per')}}:
+\begin{verbatim}
+  0   0   0  23  68  91  91  68  23   0   0   0   0   0
+  0   0   0  23  68  91  91  68  23   0   0   0   0   0
+  0   0   0  23  68  91  91  68  23   0   0   0   0   0
+  0   0   0  23  68  91  91  68  23   0   0   0   0   0
+  0   0   0  23  68  91  91  68  23   0   0   0   0   0
+  0   0   0  23  68  91  91  68  23   0   0   0   0   0
+\end{verbatim}
+that is more suitable for determining the sub-pixel accuracy motion.
+
+So, to increase the accuracy of the MC step to 1/2 sub-pixel accuracy
+(for example), we can interpolate\footnote{Considering the unkown
+  high-frequency information as zero.} all the subbands that are
+involved in the MC process by means of a 2-iterations iDWT, generating
+$[a.L]^2$, $[c.L]^2$, $[a.H]^2$, $[b.H]^2$ and $[c.H]^2$, and finally,
+using a 2-iterations DWT, to obtain $\tilde{b}$.
+\end{comment}
+
+%}}}
+
+%\subsection{(Spatial) Multiresolution}
+%Spatial dyadic multiresolution can be obtained by appliying a sequence
+%of (MDWT+MCOLP) steps (see Fig.~\ref{fig:multiresolution}).
+
+%\begin{figure}
+%  \centering %
+%  \myfig{graphics/multiresolution}{10cm}{1200}
+%  \caption{MDWT+MCOLP multiresolution procedure. The input to the second
+%    iteration of the MDWT+MCOLP transform is the output of a previous
+%    (first) iteration MDWT+MCOLP transform. The second iteration is only
+%    applied to the scale 1.} %
+%  \label{fig:multiresolution}
+%\end{figure}
+
+%Spatial dyadic multiresolution can be obtained by appliying a sequence
+%of MDWT+MCOLP steps (see Fig.~\ref{fig:multiresolution}).
+
 
 \section{Bit allocation}
 En la mariposa (o en un esquema IPPP...) la subbanda $\tilde{H}_b$ compensada depende de las subbandas $L^a^{[q]}$, $L^b$ y $L^c$, para generar los campos de movimiento adecuados. $\tilde{H}_b$ también depende de $H^a$ y $H^b$ 

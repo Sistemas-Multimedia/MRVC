@@ -28,7 +28,7 @@ class="ecrm-1200">Vicente Gonz</span><span
 class="ecrm-1200">á</span><span 
 class="ecrm-1200">lez Ruiz</span></div><br />
 <div class="date" ><span 
-class="ecrm-1200">July 29, 2020</span></div>
+class="ecrm-1200">July 30, 2020</span></div>
    </div>
    <h3 class="likesectionHead"><a 
  id="x1-1000"></a>Contents</h3>
@@ -59,19 +59,21 @@ href="#x1-180009.2" id="QQ2-1-22">The MCOLP transform</a></span>
 href="#x1-220009.3" id="QQ2-1-27">Scalability provided by MCOLP</a></span>
 <br />   <span class="sectionToc" >10 <a 
 href="#x1-2400010" id="QQ2-1-29">Adaptive motion compensation based on the distortion of the prediction error</a></span>
+<br />   <span class="sectionToc" >11 <a 
+href="#x1-2500011" id="QQ2-1-31">Lossy compression: quantization</a></span>
    </div>
 <!--l. 13--><p class="noindent" >
 </p>
    <h3 class="sectionHead"><span class="titlemark">1   </span> <a 
  id="x1-20001"></a>Transform coding and compression</h3>
+                                                                  
+
+                                                                  
 <!--l. 16--><p class="noindent" ><a 
 href="https://en.wikipedia.org/wiki/Video" >Video</a> data contain high amounts of <a 
 href="https://vicente-gonzalez-ruiz.github.io/redundancy/" >redundancy</a>, spatial and temporal.
 For this reason, most of <a 
 href="https://vicente-gonzalez-ruiz.github.io/video_compression/" >video encoders</a> compress an input sequence of
-                                                                  
-
-                                                                  
 <a 
 href="https://en.wikipedia.org/wiki/Digital_image" >images</a><span class="footnote-mark"><a 
 href="index2.html#fn1x0"><sup class="textsuperscript">1</sup></a></span><a 
@@ -164,13 +166,13 @@ for 1D high-pass analysis ﬁltering. Thus, for example,
 display="inline" ><mi 
 >L</mi><mi 
 >H</mi></math> is the result of applying
+                                                                  
+
+                                                                  
 the <!--l. 76--><math 
  xmlns="http://www.w3.org/1998/Math/MathML"  
 display="inline" ><mi 
 >L</mi></math> ﬁlter to the rows
-                                                                  
-
-                                                                  
 and downsample<span class="footnote-mark"><a 
 href="index5.html#fn4x0"><sup class="textsuperscript">4</sup></a></span><a 
  id="x1-3003f4"></a> 
@@ -9404,6 +9406,192 @@ class="content">Computation of the weighted average prediction.              </s
 
                                                                   
    </div><hr class="endfigure" />
+   <h3 class="sectionHead"><span class="titlemark">11   </span> <a 
+ id="x1-2500011"></a>Lossy compression: quantization</h3>
+<!--l. 1123--><p class="noindent" ><a 
+href="https://vicente-gonzalez-ruiz.github.io/quantization/" >Quantization</a> allows to remove information from signals. We will use it in
+MCOLP to achieve higher compression ratios, but at the expense of losing
+visual information (ideally, the less relevant information should be removed
+ﬁrst).
+</p><!--l. 1128--><p class="indent" >   When the signal cannot be recoverd perfectly, we can use a <a 
+href="https://vicente-gonzalez-ruiz.github.io/distortion_metrics/" >distortion metric</a> to
+ﬁnd how much error has been generated.
+</p><!--l. 1134--><p class="noindent" >
+</p>
+   <h4 class="likesubsectionHead"><a 
+ id="x1-2600011"></a>Example: Eﬀects caused by the total attenuation of the motion compensated (MCed)
+<!--l. 1134--><math 
+ xmlns="http://www.w3.org/1998/Math/MathML"  
+display="inline" ><mi 
+>H</mi></math>
+subbands</h4>
+                                                                  
+
+                                                                  
+   <pre class="verbatim" id="verbatim-17">
+predictor=2
+# You must be in the ’src’ directory.
+rm /tmp/*.png
+cp ../sequences/stockholm/*.png /tmp
+# 1D 1-iteration MDWT.
+python3 -O MDWT.py -p /tmp/
+# 1D 1-iteration MCOLP.
+python3 -O MCOLP.py -p /tmp/
+# Let’s delete the motion compensated subbands and reconstruct the sequence ...
+rm -f /tmp/LH001.png
+rm -f /tmp/HL001.png
+rm -f /tmp/HH001.png
+rm -f /tmp/LH002.png
+rm -f /tmp/HL002.png
+rm -f /tmp/HH002.png
+rm -f /tmp/LH003.png
+rm -f /tmp/HL003.png
+rm -f /tmp/HH003.png
+# 1D 1-iteration iMCOLP.
+python3 -O MCOLP.py -P $predictor -b -p /tmp/
+# 1D 1-iteration iMDWT.
+python3 -O MDWT.py -b -p /tmp/
+# Visualization of the reconstruction.
+for i in /tmp/00?.png; do python3 ../tools/substract_offset.py -i $i -o $i.png; done; animate /tmp/00?.png.png
+# Visualization of the differences with the original sequence.
+rm -f /tmp/diff*.png; for i in {0..4}; do ii=$(printf &#x0022;%03d&#x0022; $i); bash ../tools/show_differences.sh -1 /tmp/$ii.png -2 ../sequences/stockholm/$ii.png -o /tmp/diff_$ii.png; done; animate /tmp/diff*.png
+# MSE per frame
+for i in {0..4}; do ii=$(printf &#x0022;%03d&#x0022; $i); MSE=‘python3 -O ../tools/MSE.py -x ../sequences/stockholm/$ii.png -y /tmp/$ii.png‘; printf &#x0022;MSE(%s)=%s\n&#x0022; $ii $MSE; done
+# PSNR per frame
+for i in {0..4}; do ii=$(printf &#x0022;%03d&#x0022; $i); PSNR=‘python3 -O ../tools/PSNR.py -x ../sequences/stockholm/$ii.png -y /tmp/$ii.png‘; printf &#x0022;PSNR(%s)=%s\n&#x0022; $ii $PSNR; done
+</pre>
+<!--l. 1179--><p class="nopar" >
+                                                                  
+
+                                                                  
+</p><!--l. 1183--><p class="noindent" >
+</p>
+   <h4 class="likesubsectionHead"><a 
+ id="x1-2700011"></a>Example: Eﬀects caused by the quantization of MCed
+<!--l. 1183--><math 
+ xmlns="http://www.w3.org/1998/Math/MathML"  
+display="inline" ><mi 
+>H</mi></math>
+subbands</h4>
+                                                                  
+
+                                                                  
+   <pre class="verbatim" id="verbatim-18">
+q_step=32
+predictor=2
+# You must be in the ’src’ directory.
+rm /tmp/*.png
+cp ../sequences/stockholm/* /tmp
+python3 -O MDWT.py -p /tmp/
+python3 -O MCOLP.py -P $predictor -p /tmp/
+#python3 ../tools/show_statistics.py -i /tmp/LH001.png
+python3 ../tools/quantize.py -i /tmp/LH001.png -o /tmp/LH001.png -q $q_step
+#python3 ../tools/show_statistics.py -i /tmp/LH001.png
+python3 ../tools/quantize.py -i /tmp/HL001.png -o /tmp/HL001.png -q $q_step
+python3 ../tools/quantize.py -i /tmp/HH001.png -o /tmp/HH001.png -q $q_step
+python3 ../tools/quantize.py -i /tmp/LH002.png -o /tmp/LH002.png -q $q_step
+python3 ../tools/quantize.py -i /tmp/HL002.png -o /tmp/HL002.png -q $q_step
+python3 ../tools/quantize.py -i /tmp/HH002.png -o /tmp/HH002.png -q $q_step
+python3 ../tools/quantize.py -i /tmp/LH003.png -o /tmp/LH003.png -q $q_step
+python3 ../tools/quantize.py -i /tmp/HL003.png -o /tmp/HL003.png -q $q_step
+python3 ../tools/quantize.py -i /tmp/HH003.png -o /tmp/HH003.png -q $q_step
+python3 -O MCOLP.py -P $predictor -p /tmp/ -b
+python3 -O MDWT.py -p /tmp/ -b
+for i in /tmp/00?.png; do python3 ../tools/substract_offset.py -i $i -o $i.png; done; animate /tmp/00?.png.png
+rm -f /tmp/diff*.png; for i in {0..4}; do ii=$(printf &#x0022;%03d&#x0022; $i); bash ../tools/show_differences.sh -1 /tmp/$ii.png -2 ../sequences/stockholm/$ii.png -o /tmp/diff_$ii.png; done; animate /tmp/diff*.png
+for i in {0..4}; do ii=$(printf &#x0022;%03d&#x0022; $i); MSE=‘python3 -O ../tools/MSE.py -x ../sequences/stockholm/$ii.png -y /tmp/$ii.png‘; printf &#x0022;MSE(%s)=%s\n&#x0022; $ii $MSE; done
+</pre>
+<!--l. 1219--><p class="nopar" >
+</p><!--l. 1223--><p class="noindent" >
+</p>
+   <h4 class="likesubsectionHead"><a 
+ id="x1-2800011"></a>Example: Quantization of all <!--l. 1223--><math 
+ xmlns="http://www.w3.org/1998/Math/MathML"  
+display="inline" ><mi 
+>H</mi></math>
+subbands (MCed and intra)</h4>
+                                                                  
+
+                                                                  
+   <pre class="verbatim" id="verbatim-19">
+q_step=32
+predictor=2
+# You must be in the ’src’ directory.
+rm /tmp/*.png
+cp ../sequences/stockholm/* /tmp
+python3 -O MDWT.py -p /tmp/
+python3 -O MCOLP.py -P $predictor -p /tmp/
+python3 ../tools/quantize.py -i /tmp/LH000.png -o /tmp/LH000.png -q $q_step
+python3 ../tools/quantize.py -i /tmp/HL000.png -o /tmp/HL000.png -q $q_step
+python3 ../tools/quantize.py -i /tmp/HH000.png -o /tmp/HH000.png -q $q_step
+python3 ../tools/quantize.py -i /tmp/LH001.png -o /tmp/LH001.png -q $q_step
+python3 ../tools/quantize.py -i /tmp/HL001.png -o /tmp/HL001.png -q $q_step
+python3 ../tools/quantize.py -i /tmp/HH001.png -o /tmp/HH001.png -q $q_step
+python3 ../tools/quantize.py -i /tmp/LH002.png -o /tmp/LH002.png -q $q_step
+python3 ../tools/quantize.py -i /tmp/HL002.png -o /tmp/HL002.png -q $q_step
+python3 ../tools/quantize.py -i /tmp/HH002.png -o /tmp/HH002.png -q $q_step
+python3 ../tools/quantize.py -i /tmp/LH003.png -o /tmp/LH003.png -q $q_step
+python3 ../tools/quantize.py -i /tmp/HL003.png -o /tmp/HL003.png -q $q_step
+python3 ../tools/quantize.py -i /tmp/HH003.png -o /tmp/HH003.png -q $q_step
+python3 ../tools/quantize.py -i /tmp/LH004.png -o /tmp/LH004.png -q $q_step
+python3 ../tools/quantize.py -i /tmp/HL004.png -o /tmp/HL004.png -q $q_step
+python3 ../tools/quantize.py -i /tmp/HH004.png -o /tmp/HH004.png -q $q_step
+python3 -O MCOLP.py -P $predictor -p /tmp/ -b
+python3 -O MDWT.py -p /tmp/ -b
+for i in /tmp/00?.png; do python3 ../tools/substract_offset.py -i $i -o $i.png; done; animate /tmp/00?.png.png
+rm -f /tmp/diff*.png; for i in {0..4}; do ii=$(printf &#x0022;%03d&#x0022; $i); bash ../tools/show_differences.sh -1 /tmp/$ii.png -2 ../sequences/stockholm/$ii.png -o /tmp/diff_$ii.png; done; animate /tmp/diff*.png
+for i in {0..4}; do ii=$(printf &#x0022;%03d&#x0022; $i); MSE=‘python3 -O ../tools/MSE.py -x ../sequences/stockholm/$ii.png -y /tmp/$ii.png‘; printf &#x0022;MSE(%s)=%s\n&#x0022; $ii $MSE; done
+</pre>
+<!--l. 1265--><p class="nopar" >
+</p><!--l. 1269--><p class="noindent" >
+                                                                  
+
+                                                                  
+</p>
+   <h4 class="likesubsectionHead"><a 
+ id="x1-2900011"></a>Example: Quantization of all subbands</h4>
+                                                                  
+
+                                                                  
+   <pre class="verbatim" id="verbatim-20">
+q_step=128
+predictor=2
+# You must be in the ’src’ directory.
+rm /tmp/*.png
+cp ../sequences/stockholm/* /tmp
+python3 -O MDWT.py -p /tmp/
+python3 -O MCOLP.py -P $predictor -p /tmp/
+python3 ../tools/quantize.py -i /tmp/LL000.png -o /tmp/LL000.png -q $q_step
+python3 ../tools/quantize.py -i /tmp/LH000.png -o /tmp/LH000.png -q $q_step
+python3 ../tools/quantize.py -i /tmp/HL000.png -o /tmp/HL000.png -q $q_step
+python3 ../tools/quantize.py -i /tmp/HH000.png -o /tmp/HH000.png -q $q_step
+python3 ../tools/quantize.py -i /tmp/LL001.png -o /tmp/LL001.png -q $q_step
+python3 ../tools/quantize.py -i /tmp/LH001.png -o /tmp/LH001.png -q $q_step
+python3 ../tools/quantize.py -i /tmp/HL001.png -o /tmp/HL001.png -q $q_step
+python3 ../tools/quantize.py -i /tmp/HH001.png -o /tmp/HH001.png -q $q_step
+python3 ../tools/quantize.py -i /tmp/LL002.png -o /tmp/LL002.png -q $q_step
+python3 ../tools/quantize.py -i /tmp/LH002.png -o /tmp/LH002.png -q $q_step
+python3 ../tools/quantize.py -i /tmp/HL002.png -o /tmp/HL002.png -q $q_step
+python3 ../tools/quantize.py -i /tmp/HH002.png -o /tmp/HH002.png -q $q_step
+python3 ../tools/quantize.py -i /tmp/LL003.png -o /tmp/LL003.png -q $q_step
+python3 ../tools/quantize.py -i /tmp/LH003.png -o /tmp/LH003.png -q $q_step
+python3 ../tools/quantize.py -i /tmp/HL003.png -o /tmp/HL003.png -q $q_step
+python3 ../tools/quantize.py -i /tmp/HH003.png -o /tmp/HH003.png -q $q_step
+python3 ../tools/quantize.py -i /tmp/LL004.png -o /tmp/LL004.png -q $q_step
+python3 ../tools/quantize.py -i /tmp/LH004.png -o /tmp/LH004.png -q $q_step
+python3 ../tools/quantize.py -i /tmp/HL004.png -o /tmp/HL004.png -q $q_step
+python3 ../tools/quantize.py -i /tmp/HH004.png -o /tmp/HH004.png -q $q_step
+python3 -O MCOLP.py -P $predictor -p /tmp/ -b
+python3 -O MDWT.py -p /tmp/ -b
+for i in /tmp/00?.png; do python3 ../tools/substract_offset.py -i $i -o $i.png; done; animate /tmp/00?.png.png
+rm -f /tmp/diff*.png; for i in {0..4}; do ii=$(printf &#x0022;%03d&#x0022; $i); bash ../tools/show_differences.sh -1 /tmp/$ii.png -2 ../sequences/stockholm/$ii.png -o /tmp/diff_$ii.png; done; animate /tmp/diff*.png
+                                                                  
+
+                                                                  
+for i in {0..4}; do ii=$(printf &#x0022;%03d&#x0022; $i); MSE=‘python3 -O ../tools/MSE.py -x ../sequences/stockholm/$ii.png -y /tmp/$ii.png‘; printf &#x0022;MSE(%s)=%s\n&#x0022; $ii $MSE; done
+</pre>
+<!--l. 1316--><p class="nopar" >
+</p>
     
 </body> 
 </html>
