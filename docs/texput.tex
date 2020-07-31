@@ -132,7 +132,7 @@ also
 
 %}}}
 
-\section*{Implementation of the 3 components (usually color) DWT step}
+\subsection{Implementation of the 3 components (usually color) DWT step}
 %{{{
 
 \href{https://github.com/Sistemas-Multimedia/PRMC/blob/master/src/DWT.py}{DWT.py}
@@ -667,7 +667,7 @@ sequence, all the $H$-subbands are compensated.
 
 %}}}
 
-\subsection*{Example: $\mathtt{PRMC}(T=1, N=5)$}
+\subsection{Example: $\mathtt{PRMC}(T=1, N=5)$}
 %{{{
 
 In this example (see Fig.~\ref{fig:1xPRMC1}), a sequence of five
@@ -739,7 +739,7 @@ animate /tmp/diff*.png
 
 %}}}
 
-\subsection*{Example: $\mathtt{PRMC}(T=2, N=5)$}
+\subsection{Example: $\mathtt{PRMC}(T=2, N=5)$}
 %{{{
 
 This example is similar to the previous, but now the number of
@@ -870,7 +870,11 @@ python3 ../tools/show_statistics.py -i /tmp/diff_002.png
   \label{fig:1xPRMC2}
 \end{figure}
 
-\section*{Simplyfication of the notation}
+%}}}
+
+\subsection{Simplification of the notation}
+%{{{
+
 For the sake of simplifying the notation, we will represent
 $\{F_t\}.L^s$ by $L_t^s$, and $\{F_t\}.H^s$ by $H_t^s$. Thus, for
 example, the subbands shown in the Fig.~\ref{fig:1xPRMC2} can be
@@ -885,7 +889,7 @@ decorrelating frames with distance $2$).
 
 %}}}
 
-\subsection*{Example: $\mathtt{PRMC}(T=4, N=17)$}
+\subsection{Example: $\mathtt{PRMC}(T=4, N=17)$}
 %{{{
 
 An example with $G=2^4=16$, i.e. $5$ TRLs and $2$ SRLs. The subbands
@@ -992,7 +996,7 @@ case of MCOLP) only a dyadic access to the frames.
 
 %}}}
 
-\subsection*{Example: 3-iters of $\mathtt{PRMC}(T=2, N=5)$}
+\subsection{Example: 3-iters of $\mathtt{PRMC}(T=2, N=5)$}
 %{{{
 
 \begin{verbatim}
@@ -1159,7 +1163,7 @@ has been generated.
 
 %}}}
 
-\subsection*{Example: Effects caused by the total attenuation of the motion compensated (MCed) $H$ subbands}
+\subsection{Example: Effects caused by the total attenuation of the motion compensated (MCed) $H$ subbands}
 %{{{
 
 \begin{verbatim}
@@ -1208,7 +1212,7 @@ for i in {0..4}; do ii=$(printf "%03d" $i); PSNR=`python3 -O ../tools/PSNR.py -x
 
 %}}}
 
-\subsection*{Example: Effects caused by the quantization of MCed $H$ subbands}
+\subsection{Example: Effects caused by the quantization of MCed $H$ subbands}
 %{{{
 
 \begin{verbatim}
@@ -1248,7 +1252,7 @@ for i in {0..4}; do ii=$(printf "%03d" $i); MSE=`python3 -O ../tools/MSE.py -x .
 
 %}}}
 
-\subsection*{Example: Quantization of all $H$ subbands (MCed and intra)}
+\subsection{Example: Quantization of all $H$ subbands (MCed and intra)}
 %{{{
 
 \begin{verbatim}
@@ -1294,7 +1298,7 @@ for i in {0..4}; do ii=$(printf "%03d" $i); MSE=`python3 -O ../tools/MSE.py -x .
 
 %}}}
 
-\subsection*{Example: Quantization of all subbands}
+\subsection{Example: Quantization of all subbands}
 %{{{
 
 \begin{verbatim}
