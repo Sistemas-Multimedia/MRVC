@@ -670,10 +670,10 @@ sequence, all the $H$-subbands are compensated.
 \subsection*{Example: $\mathtt{PRMC}(T=1, N=5)$}
 %{{{
 
-In this example, a sequence of five frames is transformed first with
-$\mathtt{MDWT}(N=5)$, producing 2 SRLs by frame. Next, the $H$
-subbands of the odd frames (frames 1 and 3) are motion compensated
-using $\mathtt{MCOLP}(T=1, N=5)$.
+In this example (see Fig.~\ref{fig:1xPRMC1}), a sequence of five
+frames is transformed first with $\mathtt{MDWT}(N=5)$, producing 2
+SRLs by frame. Next, the $H$ subbands of the odd frames (frames 1 and
+3) are motion compensated using $\mathtt{MCOLP}(T=1, N=5)$.
 
 \begin{verbatim}
 predictor=1
@@ -739,14 +739,15 @@ animate /tmp/diff*.png
 
 %}}}
 
-\subsection*{Example: 1-iteration $\times$ (MDWT + 2-iterations MCOLP) (\texttt{PRMC(iters=2)})}
+\subsection*{Example: $\mathtt{PRMC}(T=2, N=5)$}
 %{{{
 
 This example is similar to the previous, but now the number of
 iterations of MCOLP is $T=2$, and therefore, the second iteration of
 MCOLP compensates also the $H$ subband of the frame 2. This example
-matches exactly with the described in the Fig~\ref{fig:MCOLP}. Notice
-that the GOP size is $4$ ($3$ TRLs) and the number of SRLs is $2$.
+matches exactly with the described in the
+Fig.~\ref{fig:1xPRMC2}. Notice that the GOP size is $4$ ($3$ TRLs) and
+the number of SRLs is $2$.
 
 \begin{verbatim}
 predictor=1
