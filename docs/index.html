@@ -56,11 +56,11 @@ href="#x1-180009.1" id="QQ2-1-20">The MCOLP butterﬂy</a></span>
 <br />    <span class="subsectionToc" >9.2 <a 
 href="#x1-190009.2" id="QQ2-1-23">The MCOLP transform</a></span>
 <br />    <span class="subsectionToc" >9.3 <a 
-href="#x1-230009.3" id="QQ2-1-28">Scalability provided by MCOLP</a></span>
+href="#x1-240009.3" id="QQ2-1-29">Scalability provided by MCOLP</a></span>
 <br />   <span class="sectionToc" >10 <a 
-href="#x1-2500010" id="QQ2-1-30">Adaptive motion compensation based on the distortion of the prediction error</a></span>
+href="#x1-2600010" id="QQ2-1-31">Adaptive motion compensation based on the distortion of the prediction error</a></span>
 <br />   <span class="sectionToc" >11 <a 
-href="#x1-2600011" id="QQ2-1-32">Lossy compression: quantization</a></span>
+href="#x1-2700011" id="QQ2-1-33">Lossy compression: quantization</a></span>
    </div>
 <!--l. 13--><p class="noindent" >
 </p>
@@ -8123,8 +8123,10 @@ levels).                                                            </span></div
 
                                                                   
    </div><hr class="endfigure" />
-<!--l. 873--><p class="indent" >   For the sake of simplifying the notation, we will represent
-<!--l. 874--><math 
+   <h3 class="likesectionHead"><a 
+ id="x1-220009.2"></a>Simplyﬁcation of the notation</h3>
+<!--l. 874--><p class="noindent" >For the sake of simplifying the notation, we will represent
+<!--l. 875--><math 
  xmlns="http://www.w3.org/1998/Math/MathML"  
 display="inline" ><mrow ><mo 
 class="MathClass-open">{</mo><mrow><msub><mrow 
@@ -8140,7 +8142,7 @@ class="MathClass-punc">.</mo><msup><mrow
 ><mi 
 >s</mi></mrow></msup 
 ></math> by
-<!--l. 874--><math 
+<!--l. 875--><math 
  xmlns="http://www.w3.org/1998/Math/MathML"  
 display="inline" ><msubsup><mrow 
 ><mi 
@@ -8150,7 +8152,7 @@ display="inline" ><msubsup><mrow
 ><mi 
 >s</mi></mrow></msubsup 
 ></math>, and
-<!--l. 874--><math 
+<!--l. 875--><math 
  xmlns="http://www.w3.org/1998/Math/MathML"  
 display="inline" ><mrow ><mo 
 class="MathClass-open">{</mo><mrow><msub><mrow 
@@ -8166,7 +8168,7 @@ class="MathClass-punc">.</mo><msup><mrow
 ><mi 
 >s</mi></mrow></msup 
 ></math> by
-<!--l. 874--><math 
+<!--l. 875--><math 
  xmlns="http://www.w3.org/1998/Math/MathML"  
 display="inline" ><msubsup><mrow 
 ><mi 
@@ -8178,12 +8180,12 @@ display="inline" ><msubsup><mrow
 ></math>.
 Thus, for example, the subbands shown in the Fig. <a 
 href="#x1-21001r8">8<!--tex4ht:ref: fig:1xPRMC2 --></a> can be represented as: (1)
-<!--l. 876--><math 
+<!--l. 877--><math 
  xmlns="http://www.w3.org/1998/Math/MathML"  
 display="inline" ><mi 
 >L</mi></math>
 (that is a version of the sequence with spatial resolution
-<!--l. 877--><math 
+<!--l. 878--><math 
  xmlns="http://www.w3.org/1998/Math/MathML"  
 display="inline" ><mi 
 >X</mi><mo 
@@ -8191,7 +8193,7 @@ class="MathClass-bin">∕</mo><mn>2</mn> <mo
 class="MathClass-bin">×</mo> <mi 
 >Y</mi><mo 
 class="MathClass-bin">∕</mo><mn>2</mn></math>), (2)
-<!--l. 877--><math 
+<!--l. 878--><math 
  xmlns="http://www.w3.org/1998/Math/MathML"  
 display="inline" ><msub><mrow 
 ><mi 
@@ -8203,14 +8205,14 @@ display="inline" ><msub><mrow
 >i</mi></mrow></msub 
 ></math> (made
 up of intra-coded high-frequency spatial information of the frames with numbers
-<!--l. 879--><math 
+<!--l. 880--><math 
  xmlns="http://www.w3.org/1998/Math/MathML"  
 display="inline" ><msup><mrow 
 ><mn>2</mn></mrow><mrow 
 ><mn>2</mn></mrow></msup 
 ><mi 
 >i</mi></math>), (3)
-<!--l. 879--><math 
+<!--l. 880--><math 
  xmlns="http://www.w3.org/1998/Math/MathML"  
 display="inline" ><msub><mrow 
 ><mover 
@@ -8225,13 +8227,13 @@ accent="true"><mrow
 class="MathClass-bin">+</mo><mn>2</mn></mrow></msub 
 ></math> (with the
 high-frequency spatio-temporal prediction error resulting from decorrelating even frames with
-distance <!--l. 881--><math 
+distance <!--l. 882--><math 
  xmlns="http://www.w3.org/1998/Math/MathML"  
 display="inline" ><msup><mrow 
 ><mn>2</mn></mrow><mrow 
 ><mn>2</mn></mrow></msup 
 ></math>),
-and (4) <!--l. 881--><math 
+and (4) <!--l. 882--><math 
  xmlns="http://www.w3.org/1998/Math/MathML"  
 display="inline" ><msub><mrow 
 ><mover 
@@ -8243,12 +8245,13 @@ accent="true"><mrow
 class="MathClass-bin">+</mo><mn>1</mn></mrow></msub 
 ></math>
 (high-frequency spatio-temporal prediction error resulting from decorrelating frames with
-distance <!--l. 883--><math 
+distance <!--l. 884--><math 
  xmlns="http://www.w3.org/1998/Math/MathML"  
 display="inline" ><mn>2</mn></math>).
+</p><!--l. 888--><p class="noindent" >
 </p>
    <h4 class="likesubsectionHead"><a 
- id="x1-220009.2"></a>Example: <!--l. 887--><math 
+ id="x1-230009.2"></a>Example: <!--l. 888--><math 
  xmlns="http://www.w3.org/1998/Math/MathML"  
 display="inline" ><mstyle mathvariant="monospace"><mi 
 >P</mi><mi 
@@ -8262,7 +8265,7 @@ class="MathClass-punc">,</mo><mi
 >N</mi> <mo 
 class="MathClass-rel">=</mo> <mn>1</mn><mn>7</mn></mrow><mo 
 class="MathClass-close">)</mo></mrow></math></h4>
-<!--l. 890--><p class="noindent" >An example with <!--l. 890--><math 
+<!--l. 891--><p class="noindent" >An example with <!--l. 891--><math 
  xmlns="http://www.w3.org/1998/Math/MathML"  
 display="inline" ><mi 
 >G</mi> <mo 
@@ -8271,23 +8274,23 @@ class="MathClass-rel">=</mo> <msup><mrow
 ><mn>4</mn></mrow></msup 
 > <mo 
 class="MathClass-rel">=</mo> <mn>1</mn><mn>6</mn></math>,
-i.e. <!--l. 890--><math 
+i.e. <!--l. 891--><math 
  xmlns="http://www.w3.org/1998/Math/MathML"  
 display="inline" ><mn>5</mn></math> TRLs
-and <!--l. 890--><math 
+and <!--l. 891--><math 
  xmlns="http://www.w3.org/1998/Math/MathML"  
 display="inline" ><mn>2</mn></math>
 SRLs. The subbands generated are:
      </p><ol  class="enumerate1" >
      <li 
-  class="enumerate" id="x1-22002x1"><!--l. 893--><math 
+  class="enumerate" id="x1-23002x1"><!--l. 894--><math 
  xmlns="http://www.w3.org/1998/Math/MathML"  
 display="inline" ><mi 
 >L</mi></math>,
      that by itself, allows to reconstruct all the frames at half resolution.
      </li>
      <li 
-  class="enumerate" id="x1-22004x2"><!--l. 895--><math 
+  class="enumerate" id="x1-23004x2"><!--l. 896--><math 
  xmlns="http://www.w3.org/1998/Math/MathML"  
 display="inline" ><msub><mrow 
 ><mi 
@@ -8296,11 +8299,11 @@ display="inline" ><msub><mrow
 >i</mi><mo 
 class="MathClass-bin">+</mo><mn>8</mn></mrow></msub 
 ></math>,
-     which with <!--l. 895--><math 
+     which with <!--l. 896--><math 
  xmlns="http://www.w3.org/1998/Math/MathML"  
 display="inline" ><mi 
 >L</mi></math>,
-     provides full resolution for frames with number <!--l. 896--><math 
+     provides full resolution for frames with number <!--l. 897--><math 
  xmlns="http://www.w3.org/1998/Math/MathML"  
 display="inline" ><mn>1</mn><mn>6</mn><mi 
 >i</mi> <mo 
@@ -8308,7 +8311,7 @@ class="MathClass-bin">+</mo> <mn>8</mn></math>
      (the rest of frames have half resolution).
      </li>
      <li 
-  class="enumerate" id="x1-22006x3"><!--l. 897--><math 
+  class="enumerate" id="x1-23006x3"><!--l. 898--><math 
  xmlns="http://www.w3.org/1998/Math/MathML"  
 display="inline" ><msub><mrow 
 ><mi 
@@ -8318,14 +8321,17 @@ display="inline" ><msub><mrow
 class="MathClass-bin">+</mo><mn>4</mn></mrow></msub 
 ></math>,
      that with the previous subbands provides full resolution also for frames
-     with number <!--l. 898--><math 
+     with number <!--l. 899--><math 
  xmlns="http://www.w3.org/1998/Math/MathML"  
 display="inline" ><mn>8</mn><mi 
 >i</mi> <mo 
 class="MathClass-bin">+</mo> <mn>4</mn></math>.
+                                                                  
+
+                                                                  
      </li>
      <li 
-  class="enumerate" id="x1-22008x4"><!--l. 899--><math 
+  class="enumerate" id="x1-23008x4"><!--l. 900--><math 
  xmlns="http://www.w3.org/1998/Math/MathML"  
 display="inline" ><msub><mrow 
 ><mi 
@@ -8334,17 +8340,14 @@ display="inline" ><msub><mrow
 >i</mi><mo 
 class="MathClass-bin">+</mo><mn>2</mn></mrow></msub 
 ></math>,
-     which also provides full resolution for frames <!--l. 899--><math 
+     which also provides full resolution for frames <!--l. 900--><math 
  xmlns="http://www.w3.org/1998/Math/MathML"  
 display="inline" ><mn>4</mn><mi 
 >i</mi> <mo 
 class="MathClass-bin">+</mo> <mn>2</mn></math>.
-                                                                  
-
-                                                                  
      </li>
      <li 
-  class="enumerate" id="x1-22010x5"><!--l. 900--><math 
+  class="enumerate" id="x1-23010x5"><!--l. 901--><math 
  xmlns="http://www.w3.org/1998/Math/MathML"  
 display="inline" ><msub><mrow 
 ><mi 
@@ -8354,8 +8357,8 @@ display="inline" ><msub><mrow
 class="MathClass-bin">+</mo><mn>1</mn></mrow></msub 
 ></math>,
      that reconstruct the original sequence.</li></ol>
-<!--l. 903--><p class="indent" >   The temporal decorrelation pattern followed by
-<!--l. 903--><math 
+<!--l. 904--><p class="indent" >   The temporal decorrelation pattern followed by
+<!--l. 904--><math 
  xmlns="http://www.w3.org/1998/Math/MathML"  
 display="inline" ><mstyle mathvariant="monospace"><mi 
 >i</mi><mi 
@@ -8376,7 +8379,7 @@ class="MathClass-rel">=</mo> <mi
 class="MathClass-close">)</mo></mrow></mstyle></math> is
 (notice that the hexadecimal notation has been followed for indexing the frames)
 shown in the Fig. <a 
-href="#x1-22011r9">9<!--tex4ht:ref: fig:PRMC_4_17 --></a>.
+href="#x1-23011r9">9<!--tex4ht:ref: fig:PRMC_4_17 --></a>.
 </p>
    <hr class="figure" /><div class="figure" 
 >
@@ -8394,15 +8397,15 @@ GOP0                     GOP1
         F2          F6          Fa          Fe        -&#x003E; H_{4i+2} (+ TRL2 = TRL1)
      F1    F3    F5    F7    F9    Fb    Fd    Ff     -&#x003E; H_{2i+1} (+ TRL1 = TRL0)
 </pre>
-<!--l. 915--><p class="nopar" > <a 
- id="x1-22011r9"></a>
+<!--l. 916--><p class="nopar" > <a 
+ id="x1-23011r9"></a>
 <a 
- id="x1-22012"></a>
+ id="x1-23012"></a>
 <br />                                                                  </p><div class="caption" 
 ><span class="id">
 Figure 9:          :          </span><span  
 class="content">Correlation          pattern          followed          by
-<!--l. 919--><math 
+<!--l. 920--><math 
  xmlns="http://www.w3.org/1998/Math/MathML"  
 display="inline" ><mstyle mathvariant="monospace"><mi 
 >M</mi><mi 
@@ -8422,7 +8425,7 @@ class="MathClass-rel">=</mo> <mi
 class="MathClass-close">)</mo></mrow></mstyle></math>.
 The temporal resolution levels (TRLs) are considering only the frames that has
 been reconstructed at the original spatial resolution.
-</span></div><!--tex4ht:label?: x1-22011r9 -->
+</span></div><!--tex4ht:label?: x1-23011r9.2 -->
                                                                   
 
                                                                   
@@ -8477,19 +8480,19 @@ for i in {0..16}; do ii=$(printf &#x0022;%03d&#x0022; $i); bash ../tool
 animate /tmp/diff*.png
 python3 ../tools/show_statistics.py -i /tmp/diff_002.png
 </pre>
-<!--l. 978--><p class="nopar" >
+<!--l. 979--><p class="nopar" >
 </p>
    <h4 class="subsectionHead"><span class="titlemark">9.3   </span> <a 
- id="x1-230009.3"></a>Scalability provided by MCOLP</h4>
-<!--l. 985--><p class="noindent" >MCOLP preserves the dyadic spatial decomposition generated by MDWT, and
+ id="x1-240009.3"></a>Scalability provided by MCOLP</h4>
+<!--l. 986--><p class="noindent" >MCOLP preserves the dyadic spatial decomposition generated by MDWT, and
 therefore, MCOLP provides the same spatial scalability than MDWT.
-</p><!--l. 988--><p class="indent" >   Unfortunately, as the rest of video encoders based on MC, MCOLP reduces the
+</p><!--l. 989--><p class="indent" >   Unfortunately, as the rest of video encoders based on MC, MCOLP reduces the
 temporal scalability provided by MDWT, allowing (in the case of MCOLP) only a
 dyadic access to the frames.
-</p><!--l. 994--><p class="noindent" >
+</p><!--l. 995--><p class="noindent" >
 </p>
    <h4 class="likesubsectionHead"><a 
- id="x1-240009.3"></a>Example: 3-iters of <!--l. 994--><math 
+ id="x1-250009.3"></a>Example: 3-iters of <!--l. 995--><math 
  xmlns="http://www.w3.org/1998/Math/MathML"  
 display="inline" ><mstyle mathvariant="monospace"><mi 
 >P</mi><mi 
@@ -8529,21 +8532,21 @@ for i in /tmp/00?.png; do python ../tools/substract_offset.py -i $i -o�
 for i in {0..4}; do ii=$(printf &#x0022;%03d&#x0022; $i); bash ../tools/show_differences.sh -1 /tmp/$ii.png -2 ../sequences/stockholm/$ii.png -o /tmp/diff_$ii.png; done
 animate /tmp/diff*.png
 </pre>
-<!--l. 1025--><p class="nopar" >
-</p><!--l. 1027--><p class="indent" >   In this case, <!--l. 1027--><math 
+<!--l. 1026--><p class="nopar" >
+</p><!--l. 1028--><p class="indent" >   In this case, <!--l. 1028--><math 
  xmlns="http://www.w3.org/1998/Math/MathML"  
 display="inline" ><mi 
 >G</mi> <mo 
 class="MathClass-rel">=</mo> <mn>4</mn></math>,
-generating <!--l. 1027--><math 
+generating <!--l. 1028--><math 
  xmlns="http://www.w3.org/1998/Math/MathML"  
 display="inline" ><mn>3</mn></math> TRLs in this
 case (see Fig. <a 
-href="#x1-24001r10">10<!--tex4ht:ref: fig:PRMC_2_5_T --></a>), and <!--l. 1028--><math 
+href="#x1-25001r10">10<!--tex4ht:ref: fig:PRMC_2_5_T --></a>), and <!--l. 1029--><math 
  xmlns="http://www.w3.org/1998/Math/MathML"  
 display="inline" ><mn>4</mn></math>
 is the number of SRLs (see Fig. <a 
-href="#x1-24003r11">11<!--tex4ht:ref: fig:PRMC_2_5_S --></a>).
+href="#x1-25003r11">11<!--tex4ht:ref: fig:PRMC_2_5_S --></a>).
 </p>
    <hr class="figure" /><div class="figure" 
 >
@@ -8561,15 +8564,15 @@ GOP0     GOP1
          F2        -&#x003E; H_{4i+2} (+ TRL2 = TRL1)
       F1    F3     -&#x003E; H_{2i+1} (+ TRL1 = TRL0)
 </pre>
-<!--l. 1041--><p class="nopar" > <a 
- id="x1-24001r10"></a>
+<!--l. 1042--><p class="nopar" > <a 
+ id="x1-25001r10"></a>
 <a 
- id="x1-24002"></a>
+ id="x1-25002"></a>
 <br />                                                                  </p><div class="caption" 
 ><span class="id">
 Figure 10:          :          </span><span  
 class="content">Correlation          pattern          followed          by
-<!--l. 1044--><math 
+<!--l. 1045--><math 
  xmlns="http://www.w3.org/1998/Math/MathML"  
 display="inline" ><mstyle mathvariant="monospace"><mi 
 >M</mi><mi 
@@ -8588,7 +8591,7 @@ class="MathClass-rel">=</mo> <mi
 class="MathClass-close">)</mo></mrow></mstyle></math>.
 The TRLs consider only the frames that has been reconstructed at the original
 spatial resolution.
-</span></div><!--tex4ht:label?: x1-24001r9 -->
+</span></div><!--tex4ht:label?: x1-25001r9.2 -->
                                                                   
 
                                                                   
@@ -8623,38 +8626,38 @@ spatial resolution.
 |                               |
 +-------------------------------+
 </pre>
-<!--l. 1071--><p class="nopar" > <a 
- id="x1-24003r11"></a>
+<!--l. 1072--><p class="nopar" > <a 
+ id="x1-25003r11"></a>
 <a 
- id="x1-24004"></a>
+ id="x1-25004"></a>
 <br />                                                                  </p><div class="caption" 
 ><span class="id">
 Figure 11: : </span><span  
-class="content">SRLs generated by <!--l. 1073--><math 
+class="content">SRLs generated by <!--l. 1074--><math 
  xmlns="http://www.w3.org/1998/Math/MathML"  
 display="inline" ><mn>3</mn></math>
-iterations of <!--l. 1073--><math 
+iterations of <!--l. 1074--><math 
  xmlns="http://www.w3.org/1998/Math/MathML"  
 display="inline" ><mstyle mathvariant="monospace"><mi 
 >P</mi><mi 
 >R</mi><mi 
 >M</mi><mi 
 >C</mi></mstyle></math>.
-<!--l. 1073--><math 
+<!--l. 1074--><math 
  xmlns="http://www.w3.org/1998/Math/MathML"  
 display="inline" ><mn>0</mn></math>
 corresponds with the original resolution of the frames.
-</span></div><!--tex4ht:label?: x1-24003r9 -->
+</span></div><!--tex4ht:label?: x1-25003r9.2 -->
                                                                   
 
                                                                   
    </div><hr class="endfigure" />
    <h3 class="sectionHead"><span class="titlemark">10   </span> <a 
- id="x1-2500010"></a>Adaptive motion compensation based on the distortion of the prediction
+ id="x1-2600010"></a>Adaptive motion compensation based on the distortion of the prediction
 error</h3>
-<!--l. 1082--><p class="noindent" >As can be seen in the MCOLP buﬀerﬂy (see Fig. <a 
+<!--l. 1083--><p class="noindent" >As can be seen in the MCOLP buﬀerﬂy (see Fig. <a 
 href="#x1-18073r5">5<!--tex4ht:ref: fig:forward_butterfly --></a>), both predictions
-<!--l. 1083--><math 
+<!--l. 1084--><math 
  xmlns="http://www.w3.org/1998/Math/MathML"  
 display="inline" ><mrow ><mo 
 class="MathClass-open">[</mo><mrow><msub><mrow 
@@ -8666,7 +8669,7 @@ class="MathClass-open">[</mo><mrow><msub><mrow
 class="MathClass-punc">.</mo><mi 
 >H</mi></mrow><mo 
 class="MathClass-close">]</mo></mrow></math> and
-<!--l. 1084--><math 
+<!--l. 1085--><math 
  xmlns="http://www.w3.org/1998/Math/MathML"  
 display="inline" ><mrow ><mo 
 class="MathClass-open">[</mo><mrow><msub><mrow 
@@ -8679,8 +8682,8 @@ class="MathClass-punc">.</mo><mi
 >H</mi></mrow><mo 
 class="MathClass-close">]</mo></mrow></math>
 weight the same in the prediction </p><table class="equation"><tr><td> <a 
- id="x1-25001r2"></a>
-<!--l. 1085--><math 
+ id="x1-26001r2"></a>
+<!--l. 1086--><math 
  xmlns="http://www.w3.org/1998/Math/MathML"  
 display="block" class="equation">
                       <mrow ><mo 
@@ -8716,12 +8719,12 @@ class="MathClass-close">]</mo></mrow></mrow>
 ><mn>2</mn></mrow></mfrac>         <mo 
 class="MathClass-punc">.</mo>
 </math></td><td class="eq-no">(2)</td></tr></table>
-<!--l. 1088--><p class="indent" >   This simple computation, that can have very eﬀective for example in
+<!--l. 1089--><p class="indent" >   This simple computation, that can have very eﬀective for example in
 <a 
 href="https://biteable.com/blog/tips/video-transitions-effects-examples/" >dissolves</a> video transitions, can also be counterproductive when objects appear
 only in one of the reference frames. For this reason, in this section an
 improved predictor is proposed, based on the estimated prediction error (see
-<!--l. 1093--><math 
+<!--l. 1094--><math 
  xmlns="http://www.w3.org/1998/Math/MathML"  
 display="inline" ><mrow ><mo 
 class="MathClass-open">[</mo><mrow><mover 
@@ -8736,7 +8739,7 @@ href="#x1-18073r5">5<!--tex4ht:ref: fig:forward_butterfly --></a>) generated thr
 that the prediction error generated for the high frequencies of an frame is
 correlated with the prediction error generated for the low frequencies of such
 frame.
-</p><!--l. 1099--><p class="indent" >   Let <!--l. 1099--><math 
+</p><!--l. 1100--><p class="indent" >   Let <!--l. 1100--><math 
  xmlns="http://www.w3.org/1998/Math/MathML"  
 display="inline" ><mrow ><mo 
 class="MathClass-open">[</mo><mrow><msub><mrow 
@@ -8748,7 +8751,7 @@ class="MathClass-open">[</mo><mrow><msub><mrow
 class="MathClass-punc">.</mo><mi 
 >L</mi></mrow><mo 
 class="MathClass-close">]</mo></mrow></math> the prediction
-generated for the subband <!--l. 1099--><math 
+generated for the subband <!--l. 1100--><math 
  xmlns="http://www.w3.org/1998/Math/MathML"  
 display="inline" ><mrow ><mo 
 class="MathClass-open">[</mo><mrow><mi 
@@ -8756,7 +8759,7 @@ class="MathClass-open">[</mo><mrow><mi
 class="MathClass-punc">.</mo><mi 
 >L</mi></mrow><mo 
 class="MathClass-close">]</mo></mrow></math>
-using <!--l. 1100--><math 
+using <!--l. 1101--><math 
  xmlns="http://www.w3.org/1998/Math/MathML"  
 display="inline" ><mrow ><mo 
 class="MathClass-open">[</mo><mrow><mi 
@@ -8764,7 +8767,7 @@ class="MathClass-open">[</mo><mrow><mi
 class="MathClass-punc">.</mo><mi 
 >L</mi></mrow><mo 
 class="MathClass-close">]</mo></mrow></math> as reference
-and <!--l. 1100--><math 
+and <!--l. 1101--><math 
  xmlns="http://www.w3.org/1998/Math/MathML"  
 display="inline" ><mrow ><mo 
 class="MathClass-open">[</mo><mrow><mi 
@@ -8778,7 +8781,7 @@ class="MathClass-open">[</mo><mrow><mi
 class="MathClass-punc">.</mo><mi 
 >L</mi></mrow><mo 
 class="MathClass-close">]</mo></mrow></math> as motion, and
-let <!--l. 1101--><math 
+let <!--l. 1102--><math 
  xmlns="http://www.w3.org/1998/Math/MathML"  
 display="inline" ><mrow ><mo 
 class="MathClass-open">[</mo><mrow><msub><mrow 
@@ -8790,7 +8793,7 @@ class="MathClass-open">[</mo><mrow><msub><mrow
 class="MathClass-punc">.</mo><mi 
 >L</mi></mrow><mo 
 class="MathClass-close">]</mo></mrow></math> the prediction
-generated for <!--l. 1101--><math 
+generated for <!--l. 1102--><math 
  xmlns="http://www.w3.org/1998/Math/MathML"  
 display="inline" ><mrow ><mo 
 class="MathClass-open">[</mo><mrow><mi 
@@ -8798,7 +8801,7 @@ class="MathClass-open">[</mo><mrow><mi
 class="MathClass-punc">.</mo><mi 
 >L</mi></mrow><mo 
 class="MathClass-close">]</mo></mrow></math>
-using <!--l. 1101--><math 
+using <!--l. 1102--><math 
  xmlns="http://www.w3.org/1998/Math/MathML"  
 display="inline" ><mrow ><mo 
 class="MathClass-open">[</mo><mrow><mi 
@@ -8806,7 +8809,7 @@ class="MathClass-open">[</mo><mrow><mi
 class="MathClass-punc">.</mo><mi 
 >L</mi></mrow><mo 
 class="MathClass-close">]</mo></mrow></math> as
-reference and <!--l. 1102--><math 
+reference and <!--l. 1103--><math 
  xmlns="http://www.w3.org/1998/Math/MathML"  
 display="inline" ><mrow ><mo 
 class="MathClass-open">[</mo><mrow><mi 
@@ -8821,11 +8824,11 @@ class="MathClass-punc">.</mo><mi
 >L</mi></mrow><mo 
 class="MathClass-close">]</mo></mrow></math>
 as motion. We now compute the prediction errors </p><table class="equation"><tr><td> <a 
- id="x1-25002r3"></a>
+ id="x1-26002r3"></a>
                                                                   
 
                                                                   
-<!--l. 1104--><math 
+<!--l. 1105--><math 
  xmlns="http://www.w3.org/1998/Math/MathML"  
 display="block" class="equation">
  <mtable  align="axis" style=""  
@@ -8885,10 +8888,10 @@ class="MathClass-punc">.</mo><mi
 class="MathClass-close">]</mo></mrow><mo 
 class="MathClass-punc">.</mo> </mtd></mtr><!--l--></mtable>
 </math></td><td class="eq-no">(3)</td></tr></table>
-<!--l. 1111--><p class="indent" >   We deﬁne <span 
+<!--l. 1112--><p class="indent" >   We deﬁne <span 
 class="ecti-1000">similarity matrices </span>as </p><table class="equation"><tr><td> <a 
- id="x1-25003r4"></a>
-<!--l. 1112--><math 
+ id="x1-26003r4"></a>
+<!--l. 1113--><math 
  xmlns="http://www.w3.org/1998/Math/MathML"  
 display="block" class="equation">
  <mtable  align="axis" style=""  
@@ -8948,8 +8951,8 @@ class="MathClass-close">]</mo></mrow><mo
 class="MathClass-rel">|</mo></mrow></mfrac><mo 
 class="MathClass-punc">.</mo> </mtd></mtr><!--l--></mtable>
 </math></td><td class="eq-no">(4)</td></tr></table>
-<!--l. 1119--><p class="indent" >   Notice that, if (for example) the error
-<!--l. 1119--><math 
+<!--l. 1120--><p class="indent" >   Notice that, if (for example) the error
+<!--l. 1120--><math 
  xmlns="http://www.w3.org/1998/Math/MathML"  
 display="inline" ><msub><mrow 
 ><mrow ><mo 
@@ -8968,7 +8971,7 @@ class="MathClass-punc">,</mo><mi
 >y</mi></mrow></msub 
 > <mo 
 class="MathClass-rel">=</mo> <mn>0</mn></math>, the similarity
-is <!--l. 1120--><math 
+is <!--l. 1121--><math 
  xmlns="http://www.w3.org/1998/Math/MathML"  
 display="inline" ><msub><mrow 
 ><mrow ><mo 
@@ -8988,13 +8991,13 @@ class="MathClass-punc">,</mo><mi
 > <mo 
 class="MathClass-rel">=</mo> <mn>1</mn></math> (the
 maximum similarity). On the other side, if the error is high, the similarity tends to be low
-(but never <!--l. 1122--><math 
+(but never <!--l. 1123--><math 
  xmlns="http://www.w3.org/1998/Math/MathML"  
 display="inline" ><mn>0</mn></math>).
-</p><!--l. 1124--><p class="indent" >   With this information, that can be recovered by the decoder, the improved
+</p><!--l. 1125--><p class="indent" >   With this information, that can be recovered by the decoder, the improved
 prediction is deﬁned as </p><table class="equation"><tr><td> <a 
- id="x1-25004r5"></a>
-<!--l. 1126--><math 
+ id="x1-26004r5"></a>
+<!--l. 1127--><math 
  xmlns="http://www.w3.org/1998/Math/MathML"  
 display="block" class="equation">
                   <mrow ><mo 
@@ -9067,9 +9070,9 @@ class="MathClass-punc">.</mo><mi
 class="MathClass-close">]</mo></mrow></mrow></mfrac>        <mo 
 class="MathClass-punc">.</mo>
 </math></td><td class="eq-no">(5)</td></tr></table>
-<!--l. 1129--><p class="indent" >   The Fig. <a 
-href="#x1-25019r12">12<!--tex4ht:ref: fig:weighted_average --></a> shows an implementation of this equation.
-</p><!--l. 1132--><p class="indent" >   Notice that, if (for example) <!--l. 1132--><math 
+<!--l. 1130--><p class="indent" >   The Fig. <a 
+href="#x1-26019r12">12<!--tex4ht:ref: fig:weighted_average --></a> shows an implementation of this equation.
+</p><!--l. 1133--><p class="indent" >   Notice that, if (for example) <!--l. 1133--><math 
  xmlns="http://www.w3.org/1998/Math/MathML"  
 display="inline" ><msub><mrow 
 ><mrow ><mo 
@@ -9088,7 +9091,7 @@ class="MathClass-punc">,</mo><mi
 >y</mi></mrow></msub 
 > <mo 
 class="MathClass-rel">=</mo> <mn>1</mn></math>
-and <!--l. 1133--><math 
+and <!--l. 1134--><math 
  xmlns="http://www.w3.org/1998/Math/MathML"  
 display="inline" ><msub><mrow 
 ><mrow ><mo 
@@ -9107,7 +9110,7 @@ class="MathClass-punc">,</mo><mi
 >y</mi></mrow></msub 
 > <mo 
 class="MathClass-rel">≈</mo> <mn>0</mn></math>, then
-<!--l. 1134--><math 
+<!--l. 1135--><math 
  xmlns="http://www.w3.org/1998/Math/MathML"  
 display="inline" ><msub><mrow 
 ><mrow ><mo 
@@ -9139,7 +9142,7 @@ class="MathClass-close">]</mo></mrow></mrow><mrow
 class="MathClass-punc">,</mo><mi 
 >y</mi></mrow></msub 
 ></math>, and
-viceversa. If <!--l. 1135--><math 
+viceversa. If <!--l. 1136--><math 
  xmlns="http://www.w3.org/1998/Math/MathML"  
 display="inline" ><msub><mrow 
 ><mrow ><mo 
@@ -9173,7 +9176,7 @@ class="MathClass-close">]</mo></mrow></mrow><mrow
 class="MathClass-punc">,</mo><mi 
 >y</mi></mrow></msub 
 ></math>,
-then <!--l. 1136--><math 
+then <!--l. 1137--><math 
  xmlns="http://www.w3.org/1998/Math/MathML"  
 display="inline" ><msub><mrow 
 ><mrow ><mo 
@@ -9237,17 +9240,17 @@ class="MathClass-punc">,</mo><mi
                                                                   
 
                                                                   
-<!--l. 1140--><div class="lstinputlisting">
+<!--l. 1141--><div class="lstinputlisting">
 <a 
- id="x1-25005r6"></a>
+ id="x1-26005r6"></a>
 <a 
- id="x1-25006"></a>
+ id="x1-26006"></a>
 <br /> <div class="caption" 
 ><span class="id">Listing 6: </span><span  
 class="content"><a 
-href="https://github.com/Sistemas-Multimedia/MCOLP/blob/master/src/weighted_average.py" >weighted_average.py</a>.</span></div><!--tex4ht:label?: x1-25005r10 --><span 
+href="https://github.com/Sistemas-Multimedia/MCOLP/blob/master/src/weighted_average.py" >weighted_average.py</a>.</span></div><!--tex4ht:label?: x1-26005r10 --><span 
 class="ectt-1000"> </span><br /><span class="label"><a 
- id="x1-25007r1"></a></span><span 
+ id="x1-26007r1"></a></span><span 
 class="ectt-1000">def</span><span 
 class="ectt-1000"> </span><span 
 class="ectt-1000">generate_prediction</span><span 
@@ -9267,7 +9270,7 @@ class="ectt-1000"> </span><span
 class="ectt-1000">CH</span><span 
 class="ectt-1000">):</span><span 
 class="ectt-1000"> </span><br /><span class="label"><a 
- id="x1-25008r2"></a></span><span 
+ id="x1-26008r2"></a></span><span 
 class="ectt-1000"> </span><span 
 class="ectt-1000"> </span><span 
 class="ectt-1000"> </span><span 
@@ -9284,7 +9287,7 @@ class="ectt-1000"> </span><span
 class="ectt-1000">BL</span><span 
 class="ectt-1000">)</span><span 
 class="ectt-1000"> </span><br /><span class="label"><a 
- id="x1-25009r3"></a></span><span 
+ id="x1-26009r3"></a></span><span 
 class="ectt-1000"> </span><span 
 class="ectt-1000"> </span><span 
 class="ectt-1000"> </span><span 
@@ -9301,7 +9304,7 @@ class="ectt-1000"> </span><span
 class="ectt-1000">BL</span><span 
 class="ectt-1000">)</span><span 
 class="ectt-1000"> </span><br /><span class="label"><a 
- id="x1-25010r4"></a></span><span 
+ id="x1-26010r4"></a></span><span 
 class="ectt-1000"> </span><span 
 class="ectt-1000"> </span><span 
 class="ectt-1000"> </span><span 
@@ -9318,7 +9321,7 @@ class="ectt-1000"> </span><span
 class="ectt-1000">flow_AL_BL</span><span 
 class="ectt-1000">)</span><span 
 class="ectt-1000"> </span><br /><span class="label"><a 
- id="x1-25011r5"></a></span><span 
+ id="x1-26011r5"></a></span><span 
 class="ectt-1000"> </span><span 
 class="ectt-1000"> </span><span 
 class="ectt-1000"> </span><span 
@@ -9335,7 +9338,7 @@ class="ectt-1000"> </span><span
 class="ectt-1000">flow_CL_BL</span><span 
 class="ectt-1000">)</span><span 
 class="ectt-1000"> </span><br /><span class="label"><a 
- id="x1-25012r6"></a></span><span 
+ id="x1-26012r6"></a></span><span 
 class="ectt-1000"> </span><span 
 class="ectt-1000"> </span><span 
 class="ectt-1000"> </span><span 
@@ -9352,7 +9355,7 @@ class="ectt-1000"> </span><span
 class="ectt-1000">flow_AL_BL</span><span 
 class="ectt-1000">)</span><span 
 class="ectt-1000"> </span><br /><span class="label"><a 
- id="x1-25013r7"></a></span><span 
+ id="x1-26013r7"></a></span><span 
 class="ectt-1000"> </span><span 
 class="ectt-1000"> </span><span 
 class="ectt-1000"> </span><span 
@@ -9369,7 +9372,7 @@ class="ectt-1000"> </span><span
 class="ectt-1000">flow_CL_BL</span><span 
 class="ectt-1000">)</span><span 
 class="ectt-1000"> </span><br /><span class="label"><a 
- id="x1-25014r8"></a></span><span 
+ id="x1-26014r8"></a></span><span 
 class="ectt-1000"> </span><span 
 class="ectt-1000"> </span><span 
 class="ectt-1000"> </span><span 
@@ -9384,7 +9387,7 @@ class="ectt-1000">-</span><span
 class="ectt-1000"> </span><span 
 class="ectt-1000">BAL</span><span 
 class="ectt-1000"> </span><br /><span class="label"><a 
- id="x1-25015r9"></a></span><span 
+ id="x1-26015r9"></a></span><span 
 class="ectt-1000"> </span><span 
 class="ectt-1000"> </span><span 
 class="ectt-1000"> </span><span 
@@ -9399,7 +9402,7 @@ class="ectt-1000">-</span><span
 class="ectt-1000"> </span><span 
 class="ectt-1000">BCL</span><span 
 class="ectt-1000"> </span><br /><span class="label"><a 
- id="x1-25016r10"></a></span><span 
+ id="x1-26016r10"></a></span><span 
 class="ectt-1000"> </span><span 
 class="ectt-1000"> </span><span 
 class="ectt-1000"> </span><span 
@@ -9414,7 +9417,7 @@ class="ectt-1000">(</span><span
 class="ectt-1000">EAL</span><span 
 class="ectt-1000">))</span><span 
 class="ectt-1000"> </span><br /><span class="label"><a 
- id="x1-25017r11"></a></span><span 
+ id="x1-26017r11"></a></span><span 
 class="ectt-1000"> </span><span 
 class="ectt-1000"> </span><span 
 class="ectt-1000"> </span><span 
@@ -9429,7 +9432,7 @@ class="ectt-1000">(</span><span
 class="ectt-1000">ECL</span><span 
 class="ectt-1000">))</span><span 
 class="ectt-1000"> </span><br /><span class="label"><a 
- id="x1-25018r12"></a></span><span 
+ id="x1-26018r12"></a></span><span 
 class="ectt-1000"> </span><span 
 class="ectt-1000"> </span><span 
 class="ectt-1000"> </span><span 
@@ -9451,32 +9454,32 @@ class="ectt-1000">SCL</span><span
 class="ectt-1000">)</span>
 </div>
 <a 
- id="x1-25019r12"></a>
+ id="x1-26019r12"></a>
 <a 
- id="x1-25020"></a>
+ id="x1-26020"></a>
 <br />                                                                  <div class="caption" 
 ><span class="id">
 Figure 12: : </span><span  
-class="content">Computation of the weighted average prediction.              </span></div><!--tex4ht:label?: x1-25019r10 -->
+class="content">Computation of the weighted average prediction.              </span></div><!--tex4ht:label?: x1-26019r10 -->
                                                                   
 
                                                                   
    </div><hr class="endfigure" />
    <h3 class="sectionHead"><span class="titlemark">11   </span> <a 
- id="x1-2600011"></a>Lossy compression: quantization</h3>
-<!--l. 1150--><p class="noindent" ><a 
+ id="x1-2700011"></a>Lossy compression: quantization</h3>
+<!--l. 1151--><p class="noindent" ><a 
 href="https://vicente-gonzalez-ruiz.github.io/quantization/" >Quantization</a> allows to remove information from signals. We will use it in
 MCOLP to achieve higher compression ratios, but at the expense of losing
 visual information (ideally, the less relevant information should be removed
 ﬁrst).
-</p><!--l. 1155--><p class="indent" >   When the signal cannot be recoverd perfectly, we can use a <a 
+</p><!--l. 1156--><p class="indent" >   When the signal cannot be recoverd perfectly, we can use a <a 
 href="https://vicente-gonzalez-ruiz.github.io/distortion_metrics/" >distortion metric</a> to
 ﬁnd how much error has been generated.
-</p><!--l. 1161--><p class="noindent" >
+</p><!--l. 1162--><p class="noindent" >
 </p>
    <h4 class="likesubsectionHead"><a 
- id="x1-2700011"></a>Example: Eﬀects caused by the total attenuation of the motion compensated (MCed)
-<!--l. 1161--><math 
+ id="x1-2800011"></a>Example: Eﬀects caused by the total attenuation of the motion compensated (MCed)
+<!--l. 1162--><math 
  xmlns="http://www.w3.org/1998/Math/MathML"  
 display="inline" ><mi 
 >H</mi></math>
@@ -9516,15 +9519,15 @@ for i in {0..4}; do ii=$(printf &#x0022;%03d&#x0022; $i); MSE=‘python3
 # PSNR per frame
 for i in {0..4}; do ii=$(printf &#x0022;%03d&#x0022; $i); PSNR=‘python3 -O ../tools/PSNR.py -x ../sequences/stockholm/$ii.png -y /tmp/$ii.png‘; printf &#x0022;PSNR(%s)=%s\n&#x0022; $ii $PSNR; done
 </pre>
-<!--l. 1206--><p class="nopar" >
+<!--l. 1207--><p class="nopar" >
                                                                   
 
                                                                   
-</p><!--l. 1210--><p class="noindent" >
+</p><!--l. 1211--><p class="noindent" >
 </p>
    <h4 class="likesubsectionHead"><a 
- id="x1-2800011"></a>Example: Eﬀects caused by the quantization of MCed
-<!--l. 1210--><math 
+ id="x1-2900011"></a>Example: Eﬀects caused by the quantization of MCed
+<!--l. 1211--><math 
  xmlns="http://www.w3.org/1998/Math/MathML"  
 display="inline" ><mi 
 >H</mi></math>
@@ -9557,11 +9560,11 @@ for i in /tmp/00?.png; do python3 ../tools/substract_offset.py -i $i -o
 rm -f /tmp/diff*.png; for i in {0..4}; do ii=$(printf &#x0022;%03d&#x0022; $i); bash ../tools/show_differences.sh -1 /tmp/$ii.png -2 ../sequences/stockholm/$ii.png -o /tmp/diff_$ii.png; done; animate /tmp/diff*.png
 for i in {0..4}; do ii=$(printf &#x0022;%03d&#x0022; $i); MSE=‘python3 -O ../tools/MSE.py -x ../sequences/stockholm/$ii.png -y /tmp/$ii.png‘; printf &#x0022;MSE(%s)=%s\n&#x0022; $ii $MSE; done
 </pre>
-<!--l. 1246--><p class="nopar" >
-</p><!--l. 1250--><p class="noindent" >
+<!--l. 1247--><p class="nopar" >
+</p><!--l. 1251--><p class="noindent" >
 </p>
    <h4 class="likesubsectionHead"><a 
- id="x1-2900011"></a>Example: Quantization of all <!--l. 1250--><math 
+ id="x1-3000011"></a>Example: Quantization of all <!--l. 1251--><math 
  xmlns="http://www.w3.org/1998/Math/MathML"  
 display="inline" ><mi 
 >H</mi></math>
@@ -9598,14 +9601,14 @@ for i in /tmp/00?.png; do python3 ../tools/substract_offset.py -i $i -o
 rm -f /tmp/diff*.png; for i in {0..4}; do ii=$(printf &#x0022;%03d&#x0022; $i); bash ../tools/show_differences.sh -1 /tmp/$ii.png -2 ../sequences/stockholm/$ii.png -o /tmp/diff_$ii.png; done; animate /tmp/diff*.png
 for i in {0..4}; do ii=$(printf &#x0022;%03d&#x0022; $i); MSE=‘python3 -O ../tools/MSE.py -x ../sequences/stockholm/$ii.png -y /tmp/$ii.png‘; printf &#x0022;MSE(%s)=%s\n&#x0022; $ii $MSE; done
 </pre>
-<!--l. 1292--><p class="nopar" >
-</p><!--l. 1296--><p class="noindent" >
+<!--l. 1293--><p class="nopar" >
+</p><!--l. 1297--><p class="noindent" >
                                                                   
 
                                                                   
 </p>
    <h4 class="likesubsectionHead"><a 
- id="x1-3000011"></a>Example: Quantization of all subbands</h4>
+ id="x1-3100011"></a>Example: Quantization of all subbands</h4>
                                                                   
 
                                                                   
@@ -9646,7 +9649,7 @@ rm -f /tmp/diff*.png; for i in {0..4}; do ii=$(printf &#x0022;%03d&#x00
                                                                   
 for i in {0..4}; do ii=$(printf &#x0022;%03d&#x0022; $i); MSE=‘python3 -O ../tools/MSE.py -x ../sequences/stockholm/$ii.png -y /tmp/$ii.png‘; printf &#x0022;MSE(%s)=%s\n&#x0022; $ii $MSE; done
 </pre>
-<!--l. 1343--><p class="nopar" >
+<!--l. 1344--><p class="nopar" >
 </p>
     
 </body> 
