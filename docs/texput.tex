@@ -608,11 +608,26 @@ decomposition. Therefore, after the use of the bufferfly, we get $a$ ,
 $\tilde{b}=\{b.L, \tilde{b}.H\}$ (notice that only the high-frequency
 information of $b$ has been compensated) and $c$. This replacement is
 fully reversible because the forward transform uses only the
-information that the inverse transform will have access to. Notice
-that the
+information that the inverse transform will have access to.
+
+Notice that the
 \href{http://www.vtvt.ece.vt.edu/research/references/video/DCT_Video_Compression/Zhang92a.pdf}{pyramid
   domain} (which is near-invariant to the pixels displacements) has
-been used to estimate and compensate the $H$ subbands.
+been used to estimate and compensate the $H$ subbands. This means that
+the motion has been estimated using integer (not sub-) pixel accuracy,
+and that the motion has been compensated also integer pixel accuracy
+in the OLP domain, that implies $1/2$-pixel accuracy in the DWT
+domain.
+
+After the MC, a DWT is computed to $\tilde{b}.H$ in order to get again
+a critically sampled version these subbands. After this, the $b.L$
+subband is discarded (in fact, replaced by the original subband). The
+MC operation can generate information in this subband, because the MC
+can produce low-frequency information that could not be represented by
+the $H$ subband. However, hopefully the energy of the $L$ subband is
+going to be small in most of the cases, and in any case, this is not
+an unsolvable problem because the decoder is going to replicate
+exactly this behaviour.
 
 \begin{figure}
   \centering \myfig{graphics/forward_butterfly}{10cm}{1000}
