@@ -28,7 +28,7 @@ class="ecrm-1200">Vicente Gonz</span><span
 class="ecrm-1200">á</span><span 
 class="ecrm-1200">lez Ruiz</span></div><br />
 <div class="date" ><span 
-class="ecrm-1200">August 3, 2020</span></div>
+class="ecrm-1200">August 6, 2020</span></div>
    </div>
    <h3 class="likesectionHead"><a 
  id="x1-1000"></a>Contents</h3>
@@ -126,7 +126,7 @@ class="MathClass-punc">,</mo><mi
 class="MathClass-rel">=</mo> <mn>5</mn></mrow><mo 
 class="MathClass-close">)</mo></mrow></math></a></span>
 <br />   <span class="sectionToc" >10 <a 
-href="#x1-2600010" id="QQ2-1-31">Adaptive motion compensation based on the distortion of the prediction error</a></span>
+href="#x1-2600010" id="QQ2-1-31">Adaptive motion compensation based on the energy of the estimated prediction error</a></span>
                                                                   
 
                                                                   
@@ -8531,8 +8531,8 @@ GOP0                     GOP1
  id="x1-23012"></a>
 <br />                                                                  </p><div class="caption" 
 ><span class="id">
-Figure 9:          :          </span><span  
-class="content">Correlation          pattern          followed          by
+Figure 9:       :       </span><span  
+class="content">Motion       compensation       pattern       followed       by
 <!--l. 939--><math 
  xmlns="http://www.w3.org/1998/Math/MathML"  
 display="inline" ><mstyle mathvariant="monospace"><mi 
@@ -8668,8 +8668,8 @@ display="inline" ><mi
 class="MathClass-rel">=</mo> <mn>4</mn></math>,
 generating <!--l. 1047--><math 
  xmlns="http://www.w3.org/1998/Math/MathML"  
-display="inline" ><mn>3</mn></math> TRLs in this
-case (see Fig. <a 
+display="inline" ><mn>3</mn></math> TRLs
+(see Fig. <a 
 href="#x1-25001r10">10<!--tex4ht:ref: fig:PRMC_2_5_T --></a>), and <!--l. 1048--><math 
  xmlns="http://www.w3.org/1998/Math/MathML"  
 display="inline" ><mn>4</mn></math>
@@ -8698,8 +8698,8 @@ GOP0     GOP1
  id="x1-25002"></a>
 <br />                                                                  </p><div class="caption" 
 ><span class="id">
-Figure 10:          :          </span><span  
-class="content">Correlation          pattern          followed          by
+Figure 10:      :      </span><span  
+class="content">Motion      compensation      pattern      followed      by
 <!--l. 1064--><math 
  xmlns="http://www.w3.org/1998/Math/MathML"  
 display="inline" ><mstyle mathvariant="monospace"><mi 
@@ -8781,8 +8781,8 @@ corresponds with the original resolution of the frames.
                                                                   
    </div><hr class="endfigure" />
    <h3 class="sectionHead"><span class="titlemark">10   </span> <a 
- id="x1-2600010"></a>Adaptive motion compensation based on the distortion of the prediction
-error</h3>
+ id="x1-2600010"></a>Adaptive motion compensation based on the energy of the estimated
+prediction error</h3>
 <!--l. 1102--><p class="noindent" >As can be seen in the MCOLP buﬀerﬂy (see Fig. <a 
 href="#x1-18073r5">5<!--tex4ht:ref: fig:forward_butterfly --></a>), both predictions
 <!--l. 1103--><math 
@@ -9596,18 +9596,19 @@ class="content">Computation of the weighted average prediction.              </s
    <h3 class="sectionHead"><span class="titlemark">11   </span> <a 
  id="x1-2700011"></a>Lossy compression: quantization</h3>
 <!--l. 1170--><p class="noindent" ><a 
-href="https://vicente-gonzalez-ruiz.github.io/quantization/" >Quantization</a> allows to remove information from signals. We will use it in
-MCOLP to achieve higher compression ratios, but at the expense of losing
-visual information (ideally, the less relevant information should be removed
+href="https://vicente-gonzalez-ruiz.github.io/quantization/" >Quantization</a> allows to remove information from signals. We will use it in MCOLP
+to achieve higher compression ratios, but at the expense of losing visual
+information (ideally, the less relevant information for the <a 
+href="https://vicente-gonzalez-ruiz.github.io/human_visual_system/" >HVS</a> should be removed
 ﬁrst).
-</p><!--l. 1175--><p class="indent" >   When the signal cannot be recoverd perfectly, we can use a <a 
+</p><!--l. 1176--><p class="indent" >   When the signal cannot be recoverd perfectly, we can use a <a 
 href="https://vicente-gonzalez-ruiz.github.io/distortion_metrics/" >distortion metric</a> to
 ﬁnd how much error has been generated.
-</p><!--l. 1181--><p class="noindent" >
+</p><!--l. 1182--><p class="noindent" >
 </p>
    <h4 class="subsectionHead"><span class="titlemark">11.1   </span> <a 
  id="x1-2800011.1"></a>Example: Eﬀects caused by the total attenuation of the motion compensated
-(MCed) <!--l. 1181--><math 
+(MCed) <!--l. 1182--><math 
  xmlns="http://www.w3.org/1998/Math/MathML"  
 display="inline" ><mi 
 >H</mi></math>
@@ -9647,15 +9648,15 @@ for i in {0..4}; do ii=$(printf &#x0022;%03d&#x0022; $i); MSE=‘python3
 # PSNR per frame
 for i in {0..4}; do ii=$(printf &#x0022;%03d&#x0022; $i); PSNR=‘python3 -O ../tools/PSNR.py -x ../sequences/stockholm/$ii.png -y /tmp/$ii.png‘; printf &#x0022;PSNR(%s)=%s\n&#x0022; $ii $PSNR; done
 </pre>
-<!--l. 1226--><p class="nopar" >
+<!--l. 1227--><p class="nopar" >
                                                                   
 
                                                                   
-</p><!--l. 1230--><p class="noindent" >
+</p><!--l. 1231--><p class="noindent" >
 </p>
    <h4 class="subsectionHead"><span class="titlemark">11.2   </span> <a 
  id="x1-2900011.2"></a>Example: Eﬀects caused by the quantization of MCed
-<!--l. 1230--><math 
+<!--l. 1231--><math 
  xmlns="http://www.w3.org/1998/Math/MathML"  
 display="inline" ><mi 
 >H</mi></math>
@@ -9688,12 +9689,12 @@ for i in /tmp/00?.png; do python3 ../tools/substract_offset.py -i $i -o
 rm -f /tmp/diff*.png; for i in {0..4}; do ii=$(printf &#x0022;%03d&#x0022; $i); bash ../tools/show_differences.sh -1 /tmp/$ii.png -2 ../sequences/stockholm/$ii.png -o /tmp/diff_$ii.png; done; animate /tmp/diff*.png
 for i in {0..4}; do ii=$(printf &#x0022;%03d&#x0022; $i); MSE=‘python3 -O ../tools/MSE.py -x ../sequences/stockholm/$ii.png -y /tmp/$ii.png‘; printf &#x0022;MSE(%s)=%s\n&#x0022; $ii $MSE; done
 </pre>
-<!--l. 1266--><p class="nopar" >
-</p><!--l. 1270--><p class="noindent" >
+<!--l. 1267--><p class="nopar" >
+</p><!--l. 1271--><p class="noindent" >
 </p>
    <h4 class="subsectionHead"><span class="titlemark">11.3   </span> <a 
  id="x1-3000011.3"></a>Example: Quantization of all
-<!--l. 1270--><math 
+<!--l. 1271--><math 
  xmlns="http://www.w3.org/1998/Math/MathML"  
 display="inline" ><mi 
 >H</mi></math>
@@ -9730,8 +9731,8 @@ for i in /tmp/00?.png; do python3 ../tools/substract_offset.py -i $i -o
 rm -f /tmp/diff*.png; for i in {0..4}; do ii=$(printf &#x0022;%03d&#x0022; $i); bash ../tools/show_differences.sh -1 /tmp/$ii.png -2 ../sequences/stockholm/$ii.png -o /tmp/diff_$ii.png; done; animate /tmp/diff*.png
 for i in {0..4}; do ii=$(printf &#x0022;%03d&#x0022; $i); MSE=‘python3 -O ../tools/MSE.py -x ../sequences/stockholm/$ii.png -y /tmp/$ii.png‘; printf &#x0022;MSE(%s)=%s\n&#x0022; $ii $MSE; done
 </pre>
-<!--l. 1312--><p class="nopar" >
-</p><!--l. 1316--><p class="noindent" >
+<!--l. 1313--><p class="nopar" >
+</p><!--l. 1317--><p class="noindent" >
                                                                   
 
                                                                   
@@ -9778,7 +9779,7 @@ rm -f /tmp/diff*.png; for i in {0..4}; do ii=$(printf &#x0022;%03d&#x00
                                                                   
 for i in {0..4}; do ii=$(printf &#x0022;%03d&#x0022; $i); MSE=‘python3 -O ../tools/MSE.py -x ../sequences/stockholm/$ii.png -y /tmp/$ii.png‘; printf &#x0022;MSE(%s)=%s\n&#x0022; $ii $MSE; done
 </pre>
-<!--l. 1363--><p class="nopar" >
+<!--l. 1364--><p class="nopar" >
 </p>
     
 </body> 
