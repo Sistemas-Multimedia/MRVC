@@ -45,7 +45,7 @@ basically, in two stages: (1) a transform in the
 \href{https://www.quora.com/What-is-spatial-domain-in-image-processing}{spatial}
 domains that produces a collection of
 \href{https://en.wikipedia.org/wiki/Decorrelation}{uncorrelated}
-\href{https://en.wikipedia.org/wiki/Discrete_wavelet_transform}{coefficients},
+\href{https://en.wikipedia.org/wiki/Discrete_wavelet_transform}{subbands},
 and (2) an
 \href{https://en.wikipedia.org/wiki/Entropy_encoding}{entropy
   encoding} stage which removes the statistical redundancy that can
@@ -61,15 +61,14 @@ coefficients have two interesting features:
   \textbf{\href{https://en.wikipedia.org/wiki/Image_resolution}{multiresolution
       representation} (in space and time)} of the visual
   information. This provides the posibility of decoding the sequence
-  of images using a smaller resolution (in space and time). This
-  feature is known as \mylink{video_compression}{spatio-temporal
-    scalability in video}.
+  of images using a smaller resolution. This feature is known as
+  \mylink{video_compression}{spatio-temporal scalability in video}.
 \item Usually, \textbf{most of the
   \href{https://en.wikipedia.org/wiki/Energy_(signal_processing)}{signal
     energy}} (and therefore, generally, most of the information
   interesting for the humans) \textbf{is represented by
     \href{https://vicente-gonzalez-ruiz.github.io/image_transformations_for_coding}{a
-      small number of coefficients}}. This helps to improve the
+      small number of subbands}}. This helps to improve the
   compression ratio and to prioritize the data in
   \mylink{media_encoding_models}{progressive transmission scenarios}.
 \end{enumerate}
@@ -82,14 +81,15 @@ coefficients have two interesting features:
 \href{https://vicente-gonzalez-ruiz.github.io/image_transformations_for_coding/#x1-3100020}{The
   2D-DWT (2-Dimensions Distrete Wavelet Transform)\footnote{In this
     document, we will use the term DWT to refeer to the 2D-DWT.}} is a
-digital transform that, applied to an image, performs a spatial
-decorrelation of the pixels and obtains a
+digital transform that, applied to an image, performs a accumulation
+of the energy of the image in a small number of
+\href{https://en.wikipedia.org/wiki/Sub-band_coding}{subbands} and
+obtains a
 \href{https://vicente-gonzalez-ruiz.github.io/image_transformations_for_coding/index.html#x1-3500024}{multiresolution
-  (generally dyadic) representation} of such image, conforming a
-collection of spatial subbands or
-\href{https://en.wikipedia.org/wiki/Sub-band_coding}{decomposition}\footnote{The
-  structure that forms the subbands is called also a decomposition.}
-$\{LL, LH, HL, HH\}$, were $L$ stands for 1D low-pass
+  (generally dyadic) representation} of such image. The subbands
+conform a decomposition\footnote{The structure that forms the subbands
+  is called also a decomposition.}  $\{LL, LH, HL, HH\}$, were $L$
+stands for 1D low-pass
 \href{https://en.wikipedia.org/wiki/Filter_bank}{analysis}
 \href{https://en.wikipedia.org/wiki/Filter_(signal_processing)}{filtering}
 and $H$ for 1D high-pass analysis filtering. Thus, for example, $LH$
@@ -98,9 +98,10 @@ downsample\footnote{This operation is also called ``decimation'' and
   ``subsampling''.} the output by a factor of 2, and then applying the
 $H$ filter to the columns of the previous decomposition and again,
 donwsampling by a factor of 2. The subbands are populated by
-coefficients representing different spatial areas, depending on
+coefficients representing different spatial areas, depending on the
 localization of the coefficient and the resolution level. Notice that
-it is possible to compute the (2D-)DWT using 1D filters the DWT is
+it is possible to compute the (2D-)DWT using 1D filters. Therefore,
+the DWT is
 \href{http://home.ustc.edu.cn/~xuedixiu/image.ustc/course/dip/DIP14-ch3.pdf}{separable}.
 
 The downsampling operation generates a critically sampled structure,
