@@ -1,9 +1,9 @@
-# H-MCTF/src
+# MCDWT/src
 
 Source (program) files.
 
-* DWT.py: An implementation of the color DWT (Discrete Wavelet Transform).
+* DWT.py: An implementation of the color DWT.
 * IO: Input/Output of images and pyramids.
-* H-MCTF.py: An implementation of the H-MCTF (High-frequency Motion Compensated Temporal Filtering).
-* MDWT.py: An implementation of the MDWT (Motion DWT).
+* MCDWT.py: An implementation of the MCDWT.
+* MDWT.py: An implementation of the MDWT.
 * tests: Some useful tests of the used libraries.

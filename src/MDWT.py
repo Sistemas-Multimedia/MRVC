@@ -14,10 +14,10 @@ from src.IO import decomposition
 
 class MDWT:
 
-    def __init__(self):
-        self.dwt = DWT()
+    def __init__(self, wavelet = "bior3.5"):
+        self.dwt = DWT(wavelet)
 
-    def forward(self, prefix = "/tmp/", N = 5):
+    def forward(self, prefix="/tmp/", N=5):
         '''1-iteration Motion 2D DWT of a sequence of images.
 
         Compute the forward 2D-DWT of each image of the sequence
@@ -40,7 +40,7 @@ class MDWT:
             pyr = self.dwt.forward(img)
             decomposition.write(pyr, prefix, "{:03d}".format(i))
 
-    def backward(self, prefix = "/tmp/", N = 5):
+    def backward(self, prefix="/tmp/", N=5):
         '''1-iteration Inverse Motion 2D DWT of a sequence of decompositions.
 
         Compute the inverse 2D-DWT of each decomposition of the
@@ -82,15 +82,15 @@ if __name__ == "__main__":
     parser.add_argument("-b", "--backward", action='store_true', help="Performs backward transform")
     parser.add_argument("-p", "--prefix", help="Dir where the files the I/O files are placed", default="/tmp/")
     parser.add_argument("-N", help="Number of images/decompositions", default=5, type=int)
+    parser.add_argument("-w", "--wavelet", help="Wavelet name", default="bior3.5")
 
     args = parser.parse_args()
-
-    d = MDWT()
+    mdwt = MDWT(args.wavelet)
     if args.backward:
         if __debug__:
             print("Backward transform")
-        d.backward(args.prefix, args.N)
+        mdwt.backward(args.prefix, args.N)
     else:
         if __debug__:
             print("Forward transform")
-        p = d.forward(args.prefix, args.N)
+        mdwt.forward(args.prefix, args.N)

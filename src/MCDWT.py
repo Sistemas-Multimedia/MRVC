@@ -17,15 +17,15 @@ from DWT import DWT
 sys.path.insert(0, "..")
 from src.IO import decomposition
 
-class MCOLP:
+class MCDWT:
 
-    def __init__(self, shape, wavelet = "bior3.5"):
+    def __init__(self, shape):
         self.zero_L = np.zeros(shape, np.float64)
         self.zero_H = (np.zeros(shape, np.float64), np.zeros(shape, np.float64), np.zeros(shape, np.float64))
-        self.dwt = DWT(wavelet)
+        self.dwt = DWT()
 
     def __forward_butterfly(self, aL, aH, bL, bH, cL, cH):
-        '''Forward MCOLP butterfly.
+        '''Forward MCDWT butterfly.
 
         Input:
         -----
@@ -53,7 +53,7 @@ class MCOLP:
         return residue_bH[1]
 
     def __backward_butterfly(self, aL, aH, bL, residue_bH, cL, cH):
-        '''Backward MCOLP butterfly.
+        '''Backward MCDWT butterfly.
 
         Input:
         -----
@@ -81,14 +81,12 @@ class MCOLP:
         return bH[1]
 
     def forward(self, prefix = "/tmp/", N=5, T=2):
-        '''Forward MCOLP.
+        '''Forward MCDWT.
 
-        Compute a MC 1D-DWT, estimating in the L subbands and
-        compensaing in the H subbands of the Orthogonal Laplacian
-        Pyramid. The input video (as a sequence of 1-iteration
-        decompositions) must be stored in disk in the directory
-        <prefix>, and the output (as a 1-iteration MC decompositions)
-        will generated in the same directory.
+        Compute the MC 1D-DWT. The input video (as a sequence of
+        1-iteration decompositions) must be stored in disk in the
+        directory <prefix>, and the output (as a 1-iteration MC
+        decompositions) will generated in the same directory.
 
         Input
         -----
@@ -104,7 +102,7 @@ class MCOLP:
 
              T : int
 
-                Number of iterations of the MCOLP (temporal scales).
+                Number of iterations of the MCDWT (temporal scales).
                 Controls the GOP size.
 
                   T | GOP_size
@@ -141,7 +139,7 @@ class MCOLP:
             #print('\n')
 
     def backward(self, prefix = "/tmp/", N=5, T=2):
-        '''Backward MCOLP.
+        '''Backward MCDWT.
 
         Compute the inverse MC 1D-DWT. The input sequence of
         1-iteration MC decompositions must be stored in disk in the
@@ -162,7 +160,7 @@ class MCOLP:
 
              T : int
 
-                Number of iterations of the MCOLP (temporal scales).
+                Number of iterations of the MCDWT (temporal scales).
 
         Returns
         -------
@@ -192,12 +190,12 @@ if __name__ == "__main__":
 
 #        "  yes | cp -rf ../sequences/stockholm/ /tmp/\n"
     parser = argparse.ArgumentParser(
-        description = "Motion Compensation in the Orthogonal Laplacian Pyramid\n\n"
+        description = "Motion Compensated 2D Discrete Wavelet Transform\n\n"
         "Example:\n\n"
         "  yes | cp ../sequences/stockholm/* /tmp/\n"
         "  python3 -O MDWT.py     -p /tmp/\n"
-        "  python3 -O MCOLP.py    -p /tmp/\n"
-        "  python3 -O MCOLP.py -b -p /tmp/\n"
+        "  python3 -O MCDWT.py    -p /tmp/\n"
+        "  python3 -O MCDWT.py -b -p /tmp/\n"
         "  python3 -O MDWT.py  -b -p /tmp/\n",
         formatter_class=CustomFormatter)
 
@@ -205,7 +203,6 @@ if __name__ == "__main__":
     parser.add_argument("-p", "--prefix", help="Dir where the files the I/O files are placed", default="/tmp/")
     parser.add_argument("-N", "--decompositions", help="Number of input decompositions", default=5, type=int)
     parser.add_argument("-T", "--iterations", help="Number of temporal iterations", default=2, type=int)
-    parser.add_argument("-w", "--wavelet", help="Wavelet name", default="bior3.5")
     parser.add_argument("-P", "--predictor", help="Predictor to use (0=none, 1=MC average, 2=MC weighted average, 3=left, 4=right, 5=MC left, 6=MC right, 7=offset)", default=1, type=int)
 
     args = parser.parse_args()
@@ -227,15 +224,21 @@ if __name__ == "__main__":
     if args.predictor == 7:
         import offset_prediction as predictor
 
-    # The first image is read only for getting the dimensions of
-    # the images.
-    p = decomposition.readL(args.prefix, "000")
-    mcolp = MCOLP(shape=p.shape, wavelet=args.wavelet)
     if args.backward:
         if __debug__:
             print("Backward transform")
-        mcolp.backward(args.prefix, args.decompositions, args.iterations)
+
+        # The first image is read only for knowing the dimenssions of
+        # the images.
+        p = decomposition.readL(args.prefix, "000")
+        d = MCDWT(p.shape)
+
+        d.backward(args.prefix, args.decompositions, args.iterations)
     else:
         if __debug__:
             print("Forward transform")
-        mcolp.forward(args.prefix, args.decompositions, args.iterations)
+
+        p = decomposition.readL(args.prefix, "000")
+        d = MCDWT(p.shape)
+
+        p = d.forward(args.prefix, args.decompositions, args.iterations)

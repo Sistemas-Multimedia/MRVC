@@ -24,7 +24,7 @@ from src.IO import decomposition
 
 class DWT:
 
-    def __init__(self, wavelet = "bior3.5", ncomp = 3):
+    def __init__(self, wavelet = "bior3.5", ncomp=3):
         self.wavelet = wavelet
         self.ncomp = ncomp
 
