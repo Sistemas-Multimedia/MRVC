@@ -13,13 +13,14 @@
 \section*{Abstract}
 %{{{
 
-PRMC is transform that inputs a video (sequence of frames) and outputs a sequence of spatio-temporal subbands. It consists of two stages:
+PRMC is a transform that inputs a video (sequence of frames) and
+outputs a sequence of spatio-temporal subbands. It consists of two
+stages:
 
 \begin{enumerate}
 \item MDWT (Motion Discrete Wavelet Transform), that computes the
-  2D-DWT (2 Dimensional - Discrete Wavelet Transform) to every frame,
-  resulting a video representation with $2$ SRLs (Spatial Resolution
-  Levels).
+  1-levels 2D-DWT to every video frame, resulting a representation
+  with $2$ SRLs (Spatial Resolution Levels).
 \item MCOLP (Motion Compensated in the Orthogonal Laplacian Pyramid),
   which estimates the motion in the lower SRL and compensates the
   motion in the high-frequencies of the higher SRL, using a Orthogonal
