@@ -13,9 +13,9 @@
 \section*{Abstract}
 %{{{
 
-PRMC is a transform that inputs a video (sequence of frames) and
-outputs a sequence of spatio-temporal subbands. It consists of two
-stages:
+PRMC is a transform that inputs a video (a sequence of frames of
+pixels) and outputs a decomposition (a sequence of spatio-temporal
+subbands of coefficients). It consists of two stages:
 
 \begin{enumerate}
 \item MDWT (Motion Discrete Wavelet Transform), that computes the
@@ -27,7 +27,11 @@ stages:
   Lapacial Pyramid structure that has a critical representation in the
   2D-DWT domain.
 \end{enumerate}
-PRMC can be applied recursively to the lower SLR, producing a number of SRLs and compensating the motion of the sequence.
+PRMC can be applied recursively to the lower SLR, producing a
+multiresolution representation of the video and compensating the
+motion of the sequence. The output decomposition concentrates most of
+the energy in a small number of subbands (usually, those representing
+the low frquencies) which enables the lossy compression of the video.
 
 %}}}
 
