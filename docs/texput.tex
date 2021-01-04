@@ -1,9 +1,11 @@
 % Emacs, this is -*-latex-*-
 
-% DWT Discrete Wavelet Transform (critically-sampled octave-band decomposition (R=1 (basis expansion))
-% LPT Laplacian Pyramid Transform (expanded octave-band decomposition (R=2 (frame expansion))
-% CSLPT Critically Sampled LPT (critically-sampled octave-band decomposition (R=1 (basis expansion))
-% CSSIDWT Critically-Sampled Shift-Invariant DWT (critically-sampled octave-band decomposition (R=1 (basis expansion))
+% DWT - Discrete Wavelet Transform (critically-sampled octave-band decomposition (R=1 (basis expansion))
+% LPT - Laplacian Pyramid Transform (expanded octave-band decomposition (R=2 (frame expansion))
+% CS-LPT - Critically Sampled LPT (critically-sampled octave-band decomposition (R=1 (basis expansion))
+% ---- CS-SI-DWT - Critically-Sampled Shift-Invariant DWT (spatial critically-sampled octave-band decomposition (R=1 (basis expansion))
+% MC-DWT - Motion Compensated DWT (spatial/temporal critically-sampled octave-band decomposition (R=1 (basis expansion))
+% MC-CS-LPT - Motion Compensated Critically Sampled LPT (spatoo-temporal critically-sampled octave-band decomposition (R=1 (basis expansion))
 
 \title{\href{https://github.com/Sistemas-Multimedia/PRMC}{Progressive Resolution Motion Compensation (PRMC)}}
 
@@ -32,6 +34,7 @@ subbands of coefficients). It consists of two stages:
   Lapacial Pyramid structure that has a critical representation in the
   2D-DWT domain.
 \end{enumerate}
+
 PRMC can be applied recursively to the lower SLR, producing a
 multiresolution representation of the video and compensating the
 motion of the sequence. The output decomposition concentrates most of
@@ -503,8 +506,7 @@ animate /tmp/*.png.norm
 To remove both, spatial and temporal redundancies, two different
 alternatives are available:
 \begin{enumerate}
-\item In a \textbf{``t+2D'' transform}, the video is first
-  \href{https://en.wikipedia.org/wiki/Digital_filter\#Analysis_techniques}{analyzed}
+\item In a \textbf{``t+2D'' transform}, the video is first analyzed
   (transformed) along the time domain and next, over the space domain.
 \item A \textbf{``2D+t'' transform} does just the opposite.
 \end{enumerate}
@@ -514,7 +516,7 @@ in a ``t+2D'' transform we can apply directly any
 \href{https://en.wikipedia.org/wiki/Motion_estimation}{Motion
   Estimation (ME)} because the input is a normal video. On the
 contrary, if we implement a ``2D+t'' transform, the input to the
-motion estimator is a sequence decompositions.
+motion estimator is a sequence of decompositions.
 \href{http://www.polyvalens.com/blog/wavelets/theory}{The overwhelming
   majority of DWT's} are not
 \href{http://www.polyvalens.com/blog/wavelets/theory}{shift
