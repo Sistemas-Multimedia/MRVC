@@ -266,7 +266,7 @@ Y/2 |     L^1     |
 
 %{{{ Examples
 
-\subsection*{Example: A 1-iteration DWT}
+\subsection{Example: A 1-iteration DWT}
 %{{{
 
 An image is transformed, generating four subbands $LL$, $LH$, $HL$ and
@@ -301,7 +301,7 @@ display /tmp/diffs.png
 
 %}}}
 
-\subsection*{Example: A 2-iterations DWT ($2\times\mathtt{DWT}$)}
+\subsection{Example: A 2-iterations DWT ($2\times\mathtt{DWT}$)}
 %{{{
 
 \begin{verbatim}
@@ -396,7 +396,7 @@ transformed independently.
 
 %{{{ Examples
 
-\subsection*{Example: 1-iteration MDWT ($\mathtt{MDWT}(N=5)$)}
+\subsection{Example: 1-iteration MDWT ($\mathtt{MDWT}(N=5)$)}
 %{{{
 
 \begin{verbatim}
@@ -433,7 +433,7 @@ animate /tmp/diff*.png
 
 %}}}
 
-\subsection*{Example: 2-iterations MDWT ($2\times\mathtt{MDWT}(N=5)$)}
+\subsection{Example: 2-iterations MDWT ($2\times\mathtt{MDWT}(N=5)$)}
 %{{{
 
 \begin{verbatim}
@@ -462,7 +462,7 @@ animate /tmp/diff*.png
 
 %}}}
 
-\subsection*{Example: Interpolating (a sequence) with the DWT}
+\subsection{Example: Interpolating (a sequence) with the DWT}
 %{{{
 
 If we apply an inverse transform to the original frames\footnote{In
@@ -1557,7 +1557,7 @@ using a 2-iterations DWT, to obtain $\tilde{b}$.
 \section{Bit allocation}
 En la mariposa (o en un esquema IPPP...) la subbanda $\tilde{H}_b$ compensada depende de las subbandas $L^a^{[q]}$, $L^b$ y $L^c$, para generar los campos de movimiento adecuados. $\tilde{H}_b$ también depende de $H^a$ y $H^b$ 
 
-\subsection*{Example: Lossy compression of the MC $H$ subbands}
+\subsection{Example: Lossy compression of the MC $H$ subbands}
 %{{{
 
 \begin{verbatim}
@@ -1602,7 +1602,7 @@ rm -f /tmp/diff*.png; for i in {0..4}; do ii=$(printf "%03d" $i); bash ../tools/
 
 %}}}
 
-\subsection*{Example: Lossy compression of all $H$ subbands}
+\subsection{Example: Lossy compression of all $H$ subbands}
 %{{{
 
 \begin{verbatim}
@@ -1661,7 +1661,7 @@ rm -f /tmp/diff*.png; for i in {0..4}; do ii=$(printf "%03d" $i); bash ../tools/
 
 %}}}
 
-\subsection*{Example: Lossy compression of all subbands}
+\subsection{Example: Lossy compression of all subbands}
 %{{{
 
 \begin{verbatim}

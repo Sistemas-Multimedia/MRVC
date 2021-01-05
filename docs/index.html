@@ -42,10 +42,50 @@ href="#x1-50002.1" id="QQ2-1-5">Implementation of the 3 components &#x0028;usual
 href="#x1-60003" id="QQ2-1-7">Multi-level DWT structures</a></span>
 <br />   <span class="sectionToc" >4 <a 
 href="#x1-70004" id="QQ2-1-8">Scalability provided by the DWT</a></span>
+<br />   &#x00A0;<span class="subsectionToc" >4.1 <a 
+href="#x1-80004.1" id="QQ2-1-9">Example: A 1-iteration DWT</a></span>
+<br />   &#x00A0;<span class="subsectionToc" >4.2             <a 
+href="#x1-90004.2" id="QQ2-1-10">Example:             A             2-iterations             DWT
+&#x0028;<!--l. 13--><math 
+ xmlns="http://www.w3.org/1998/Math/MathML"  
+display="inline" ><mn>2</mn> <mo 
+class="MathClass-bin">&#x00D7;</mo><mstyle mathvariant="monospace"><mi 
+>D</mi><mi 
+>W</mi><mi 
+>T</mi></mstyle></math>&#x0029;</a></span>
 <br />   <span class="sectionToc" >5 <a 
 href="#x1-100005" id="QQ2-1-11">Motion DWT &#x0028;MDWT&#x0029;</a></span>
 <br />   <span class="sectionToc" >6 <a 
 href="#x1-110006" id="QQ2-1-13">Scalability provided by MDWT</a></span>
+<br />   &#x00A0;<span class="subsectionToc" >6.1                 <a 
+href="#x1-120006.1" id="QQ2-1-14">Example:                 1-iteration                 MDWT
+&#x0028;<!--l. 19--><math 
+ xmlns="http://www.w3.org/1998/Math/MathML"  
+display="inline" ><mstyle mathvariant="monospace"><mi 
+>M</mi><mi 
+>D</mi><mi 
+>W</mi><mi 
+>T</mi></mstyle><mo 
+class="MathClass-open">&#x0028;</mo><mi 
+>N</mi> <mo 
+class="MathClass-rel">=</mo> <mn>5</mn><mo 
+class="MathClass-close">&#x0029;</mo></math>&#x0029;</a></span>
+<br />   &#x00A0;<span class="subsectionToc" >6.2                 <a 
+href="#x1-130006.2" id="QQ2-1-15">Example:                 2-iterations                 MDWT
+&#x0028;<!--l. 20--><math 
+ xmlns="http://www.w3.org/1998/Math/MathML"  
+display="inline" ><mn>2</mn> <mo 
+class="MathClass-bin">&#x00D7;</mo><mstyle mathvariant="monospace"><mi 
+>M</mi><mi 
+>D</mi><mi 
+>W</mi><mi 
+>T</mi></mstyle><mo 
+class="MathClass-open">&#x0028;</mo><mi 
+>N</mi> <mo 
+class="MathClass-rel">=</mo> <mn>5</mn><mo 
+class="MathClass-close">&#x0029;</mo></math>&#x0029;</a></span>
+<br />   &#x00A0;<span class="subsectionToc" >6.3 <a 
+href="#x1-140006.3" id="QQ2-1-16">Example: Interpolating &#x0028;a sequence&#x0029; with the DWT</a></span>
 <br />   <span class="sectionToc" >7 <a 
 href="#x1-150007" id="QQ2-1-17">Video transform alternatives</a></span>
 <br />   <span class="sectionToc" >8 <a 
@@ -90,6 +130,9 @@ class="MathClass-rel">=</mo> <mn>5</mn><mo
 class="MathClass-close">&#x0029;</mo></math></a></span>
 <br />   &#x00A0;<span class="subsectionToc" >9.5 <a 
 href="#x1-220009.5" id="QQ2-1-27">Simpli&#xFB01;cation of the notation</a></span>
+                                                                  
+
+                                                                  
 <br />   &#x00A0;<span class="subsectionToc" >9.6                                                                           <a 
 href="#x1-230009.6" id="QQ2-1-28">Example:
 <!--l. 37--><math 
@@ -128,9 +171,6 @@ class="MathClass-close">&#x0029;</mo></math></a></span>
 href="#x1-2600010" id="QQ2-1-31">Adaptive motion compensation based on the energy of the estimated prediction error</a></span>
 <br />   <span class="sectionToc" >11 <a 
 href="#x1-2700011" id="QQ2-1-33">Lossy compression: quantization</a></span>
-                                                                  
-
-                                                                  
 <br />   &#x00A0;<span class="subsectionToc" >11.1 <a 
 href="#x1-2800011.1" id="QQ2-1-34">Example: E&#xFB00;ects caused by the total attenuation of the motion compensated
 &#x0028;MCed&#x0029; <!--l. 47--><math 
@@ -181,6 +221,9 @@ representation of the video and compensating the motion of the sequence. The out
 decomposition concentrates most of the energy in a small number of subbands
 &#x0028;usually, those representing the low frquencies&#x0029; which enables the lossy compression
 of the video.
+                                                                  
+
+                                                                  
 </p><!--l. 47--><p class="noindent" >
 </p>
    <h3 class="sectionHead"><span class="titlemark">1   </span> <a 
@@ -190,9 +233,6 @@ href="https://en.wikipedia.org/wiki/Video" >Video</a> data contain high amounts 
 href="https://vicente-gonzalez-ruiz.github.io/redundancy/" >redundancy</a>, spatial and temporal.
 For this reason, most of <a 
 href="https://vicente-gonzalez-ruiz.github.io/video_compression/" >video encoders</a> compress an input sequence of
-                                                                  
-
-                                                                  
 <a 
 href="https://en.wikipedia.org/wiki/Digital_image" >images</a><span class="footnote-mark"><a 
 href="index2.html#fn1x0"><sup class="textsuperscript">1</sup></a></span><a 
@@ -273,6 +313,9 @@ class="MathClass-close">&#x007D;</mo></math>, were
  xmlns="http://www.w3.org/1998/Math/MathML"  
 display="inline" ><mi 
 >L</mi></math> stands for 1D low-pass
+                                                                  
+
+                                                                  
 <a 
 href="https://en.wikipedia.org/wiki/Filter_bank" >analysis</a> <a 
 href="https://en.wikipedia.org/wiki/Filter_(signal_processing)" >&#xFB01;ltering</a> and <!--l. 109--><math 
@@ -289,9 +332,6 @@ the <!--l. 110--><math
  xmlns="http://www.w3.org/1998/Math/MathML"  
 display="inline" ><mi 
 >L</mi></math> &#xFB01;lter to the rows
-                                                                  
-
-                                                                  
 and downsample<span class="footnote-mark"><a 
 href="index5.html#fn4x0"><sup class="textsuperscript">4</sup></a></span><a 
  id="x1-4003f4"></a> 
@@ -398,6 +438,9 @@ href="https://nbviewer.jupyter.org/github/Sistemas-Multimedia/MRVC/blob/master/d
 </p>
    <h4 class="subsectionHead"><span class="titlemark">2.1   </span> <a 
  id="x1-50002.1"></a>Implementation of the 3 components &#x0028;usually color&#x0029; DWT step</h4>
+                                                                  
+
+                                                                  
 <!--l. 153--><p class="noindent" ><a 
 href="https://github.com/Sistemas-Multimedia/MRVC/blob/master/src/DWT.py" >DWT.py</a> &#x0028;see Fig.&#x00A0;<a 
 href="#x1-5103r1">1<!--tex4ht:ref: fig:DWT --></a>&#x0029; implements the forward &#x0028;DWT&#x0029; and backward &#x0028;iDWT&#x0029;
@@ -2868,8 +2911,8 @@ class="MathClass-rel">=</mo> <mi
      <!--l. 262--><p class="nopar" ></p></li></ul>
 <!--l. 269--><p class="noindent" >
 </p>
-   <h4 class="likesubsectionHead"><a 
- id="x1-80004"></a>Example: A 1-iteration DWT</h4>
+   <h4 class="subsectionHead"><span class="titlemark">4.1   </span> <a 
+ id="x1-80004.1"></a>Example: A 1-iteration DWT</h4>
 <!--l. 272--><p class="noindent" >An image is transformed, generating four subbands
 <!--l. 272--><math 
  xmlns="http://www.w3.org/1998/Math/MathML"  
@@ -2925,8 +2968,9 @@ display&#x00A0;/tmp/diffs.png
 <!--l. 300--><p class="nopar" >
 </p><!--l. 304--><p class="noindent" >
 </p>
-   <h4 class="likesubsectionHead"><a 
- id="x1-90004"></a>Example: A 2-iterations DWT &#x0028;<!--l. 304--><math 
+   <h4 class="subsectionHead"><span class="titlemark">4.2   </span> <a 
+ id="x1-90004.2"></a>Example: A 2-iterations DWT
+&#x0028;<!--l. 304--><math 
  xmlns="http://www.w3.org/1998/Math/MathML"  
 display="inline" ><mn>2</mn> <mo 
 class="MathClass-bin">&#x00D7;</mo><mstyle mathvariant="monospace"><mi 
@@ -3985,8 +4029,9 @@ images randomly&#x0029; because each image of the input sequence is transformed
 independently.
 </p><!--l. 399--><p class="noindent" >
 </p>
-   <h4 class="likesubsectionHead"><a 
- id="x1-120006"></a>Example: 1-iteration MDWT &#x0028;<!--l. 399--><math 
+   <h4 class="subsectionHead"><span class="titlemark">6.1   </span> <a 
+ id="x1-120006.1"></a>Example: 1-iteration MDWT
+&#x0028;<!--l. 399--><math 
  xmlns="http://www.w3.org/1998/Math/MathML"  
 display="inline" ><mstyle mathvariant="monospace"><mi 
 >M</mi><mi 
@@ -4034,8 +4079,9 @@ animate&#x00A0;/tmp/diff*.png
 <!--l. 432--><p class="nopar" >
 </p><!--l. 436--><p class="noindent" >
 </p>
-   <h4 class="likesubsectionHead"><a 
- id="x1-130006"></a>Example: 2-iterations MDWT &#x0028;<!--l. 436--><math 
+   <h4 class="subsectionHead"><span class="titlemark">6.2   </span> <a 
+ id="x1-130006.2"></a>Example: 2-iterations MDWT
+&#x0028;<!--l. 436--><math 
  xmlns="http://www.w3.org/1998/Math/MathML"  
 display="inline" ><mn>2</mn> <mo 
 class="MathClass-bin">&#x00D7;</mo><mstyle mathvariant="monospace"><mi 
@@ -4076,8 +4122,8 @@ animate&#x00A0;/tmp/diff*.png
 <!--l. 461--><p class="nopar" >
 </p><!--l. 465--><p class="noindent" >
 </p>
-   <h4 class="likesubsectionHead"><a 
- id="x1-140006"></a>Example: Interpolating &#x0028;a sequence&#x0029; with the DWT</h4>
+   <h4 class="subsectionHead"><span class="titlemark">6.3   </span> <a 
+ id="x1-140006.3"></a>Example: Interpolating &#x0028;a sequence&#x0029; with the DWT</h4>
 <!--l. 468--><p class="noindent" >If we apply an inverse transform to the original
 frames<span class="footnote-mark"><a 
 href="index8.html#fn7x0"><sup class="textsuperscript">7</sup></a></span><a 
