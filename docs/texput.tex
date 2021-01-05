@@ -21,7 +21,7 @@
 \section*{Abstract}
 %{{{
 
-PRMC is a transform that inputs a video (a sequence of frames of
+MRVC is a transform that inputs a video (a sequence of frames of
 pixels) and outputs a decomposition (a sequence of spatio-temporal
 subbands of coefficients). It consists of two stages:
 
@@ -36,7 +36,7 @@ subbands of coefficients). It consists of two stages:
   2D-DWT domain.
 \end{enumerate}
 
-PRMC can be applied recursively to the lower SLR, producing a
+MRVC can be applied recursively to the lower SLR, producing a
 multiresolution representation of the video and compensating the
 motion of the sequence. The output decomposition concentrates most of
 the energy in a small number of subbands (usually, those representing
@@ -142,7 +142,7 @@ completely indenpendent.
 For the sake of simplicity, we will denote the 1-iteration DWT spatial
 decomposition as $\{L, H\}$ where $L=LL$ and $H=\{LH, HL, HH\}$. See
 also
-\href{https://nbviewer.jupyter.org/github/Sistemas-Multimedia/PRMC/blob/master/docs/DWT_vs_LPT.ipynb}{DWT
+\href{https://nbviewer.jupyter.org/github/Sistemas-Multimedia/MRVC/blob/master/docs/DWT_vs_LPT.ipynb}{DWT
   vs OLP}.
 
 %}}}
@@ -150,13 +150,13 @@ also
 \subsection{Implementation of the 3 components (usually color) DWT step}
 %{{{
 
-\href{https://github.com/Sistemas-Multimedia/PRMC/blob/master/src/DWT.py}{DWT.py}
+\href{https://github.com/Sistemas-Multimedia/MRVC/blob/master/src/DWT.py}{DWT.py}
 (see Fig.~\ref{fig:DWT}) implements the forward (DWT) and backward
 (iDWT) 1-iteration (step) DWT for color images.
 
 \begin{figure}
   \lstinputlisting[firstline=25, lastline=124, language=python, caption=1-iteration DWT
-    (\href{https://github.com/Sistemas-Multimedia/PRMC/blob/master/src/DWT.py}{DWT.py}).]{../src/DWT.py}
+    (\href{https://github.com/Sistemas-Multimedia/MRVC/blob/master/src/DWT.py}{DWT.py}).]{../src/DWT.py}
   \caption{Implementation of the multicomponent 1-iteration DWT
     (forward and backward). More information about the implementation
     can be found at
@@ -374,7 +374,7 @@ the Fig.~\ref{fig:MDWT-implementation} for more details.
 \begin{figure}
   \lstinputlisting[firstline=15, lastline=65, language=python,
     caption=MDWT
-    (\href{https://github.com/Sistemas-Multimedia/PRMC/blob/master/src/MDWT.py}{MDWT.py}).]{../src/MDWT.py}.
+    (\href{https://github.com/Sistemas-Multimedia/MRVC/blob/master/src/MDWT.py}{MDWT.py}).]{../src/MDWT.py}.
   \caption{Implementation of the MDWT.} %
   \label{fig:MDWT-implementation}
 \end{figure}
@@ -603,7 +603,7 @@ available at the decoder), it is not necessary to send the motion
 information in the code-stream. Notice also that this process can be
 used for any number of spatial resolution levels, simply by using
 MCLOPT iteratively on the low spatial resolution level (resulting of
-the previous iteration of PRMC that applies first a MDWT).
+the previous iteration of MRVC that applies first a MDWT).
 
 A peculiar feature of MCLOP is that the predict step used in the
 ``t''-DWT is performed in the OLP domain, which is shift invariant
@@ -647,10 +647,10 @@ exactly this behaviour.
   \centering \myfig{graphics/forward_butterfly}{10cm}{1000}
   \lstinputlisting[firstline=20, lastline=81, language=python,
     caption={MCOLP butterfly
-      (\href{https://github.com/Sistemas-Multimedia/PRMC/blob/master/src/MCOLP.py}{MCOLP.py}).}]{../src/MCOLP.py}
+      (\href{https://github.com/Sistemas-Multimedia/MRVC/blob/master/src/MCOLP.py}{MCOLP.py}).}]{../src/MCOLP.py}
   \lstinputlisting[firstline=4, lastline=9, language=python,
     caption={Computation of the prediction
-      frame (\href{https://github.com/Sistemas-Multimedia/PRMC/blob/master/src/simple_average.py}{simple\_average.py}).}]{../src/simple_average.py}
+      frame (\href{https://github.com/Sistemas-Multimedia/MRVC/blob/master/src/simple_average.py}{simple\_average.py}).}]{../src/simple_average.py}
   \caption{Forward and inverse MCOLP butterflies, and computation of
     the prediction frame.}
   \label{fig:forward_butterfly}
@@ -685,7 +685,7 @@ MCOLP, the involved frames are multiple of $2^t$.
 \begin{figure}
   \centering
   %\myfig{graphics/temporal_decorrelation_2x1}{10cm}{1000}
-  \lstinputlisting[firstline=83, lastline=184, language=python, caption={MCOLP (\href{https://github.com/Sistemas-Multimedia/PRMC/blob/master/src/MCOLP.py}{MCOLP.py}).}]{../src/MCOLP.py}
+  \lstinputlisting[firstline=83, lastline=184, language=python, caption={MCOLP (\href{https://github.com/Sistemas-Multimedia/MRVC/blob/master/src/MCOLP.py}{MCOLP.py}).}]{../src/MCOLP.py}
   \caption{Implementation of the MCOLP.}
   \label{fig:MCOLP}
 \end{figure}
@@ -696,10 +696,10 @@ sequence, all the $H$-subbands are compensated.
 
 %}}}
 
-\subsection{Example: $\mathtt{PRMC}(T=1, N=5)$}
+\subsection{Example: $\mathtt{MRVC}(T=1, N=5)$}
 %{{{
 
-In this example (see Fig.~\ref{fig:1xPRMC1}), a sequence of five
+In this example (see Fig.~\ref{fig:1xMRVC1}), a sequence of five
 frames is transformed first with $\mathtt{MDWT}(N=5)$, producing 2
 SRLs by frame. Next, the $H$ subbands of the odd frames (frames 1 and
 3) are motion compensated using $\mathtt{MCOLP}(T=1, N=5)$.
@@ -754,7 +754,7 @@ animate /tmp/diff*.png
 \begin{figure}
   \centering
   \myfig{graphics/temporal_decorrelation_1x1}{10cm}{1000}
-  \caption{Subbands generated after running $\mathtt{PRMC}(T=1, N=5)$:
+  \caption{Subbands generated after running $\mathtt{MRVC}(T=1, N=5)$:
     (1) subband $\{F_i\}.L$, that provides spatial resolution level
     $1$ of the sequence, (2) subband $\{F_{2i}\}.H$, which provides
     spatial resolution level $0$ for the even frames (temporal
@@ -763,19 +763,19 @@ animate /tmp/diff*.png
     $0$ for the odd frames (temporal resolution level $0$ at full
     spatial resolution, considering that $\{F_{2i}\}.H$ has been
     already decoded).}
-  \label{fig:1xPRMC1}
+  \label{fig:1xMRVC1}
 \end{figure}
 
 %}}}
 
-\subsection{Example: $\mathtt{PRMC}(T=2, N=5)$}
+\subsection{Example: $\mathtt{MRVC}(T=2, N=5)$}
 %{{{
 
 This example is similar to the previous, but now the number of
 iterations of MCOLP is $T=2$, and therefore, the second iteration of
 MCOLP compensates also the $H$ subband of the frame 2. This example
 matches exactly with the described in the
-Fig.~\ref{fig:1xPRMC2}. Notice that the GOP size is $4$ ($3$ TRLs) and
+Fig.~\ref{fig:1xMRVC2}. Notice that the GOP size is $4$ ($3$ TRLs) and
 the number of SRLs is $2$.
 
 \begin{verbatim}
@@ -883,7 +883,7 @@ python3 ../tools/show_statistics.py -i /tmp/diff_002.png
 \begin{figure}
   \centering
   \myfig{graphics/temporal_decorrelation_1x2}{10cm}{1000}
-  \caption{Subbands generated after running $\mathtt{PRMC}(T=2, N=5)$:
+  \caption{Subbands generated after running $\mathtt{MRVC}(T=2, N=5)$:
     (1) subband $\{F_i\}.L$, that provides spatial resolution level
     $1$ of the sequence, (2) $\{F_{2^2i}\}.H$, which provides spatial
     resolution level $0$ for frames with number $2^2i$ (temporal
@@ -896,7 +896,7 @@ python3 ../tools/show_statistics.py -i /tmp/diff_002.png
     odd images (temporal resolution level $0$ at full spatial
     resolution, considering the previouly decoded temporal resolution
     levels).}
-  \label{fig:1xPRMC2}
+  \label{fig:1xMRVC2}
 \end{figure}
 
 %}}}
@@ -906,7 +906,7 @@ python3 ../tools/show_statistics.py -i /tmp/diff_002.png
 
 For the sake of simplifying the notation, we will represent
 $\{F_t\}.L^s$ by $L_t^s$, and $\{F_t\}.H^s$ by $H_t^s$. Thus, for
-example, the subbands shown in the Fig.~\ref{fig:1xPRMC2} can be
+example, the subbands shown in the Fig.~\ref{fig:1xMRVC2} can be
 represented as: (1) $L$ (that is a version of the sequence with
 spatial resolution $X/2\times Y/2$), (2) $H_{2^2i}$ (made up of
 intra-coded high-frequency spatial information of the frames with
@@ -918,7 +918,7 @@ decorrelating frames with distance $2$).
 
 %}}}
 
-\subsection{Example: $\mathtt{PRMC}(T=4, N=17)$}
+\subsection{Example: $\mathtt{MRVC}(T=4, N=17)$}
 %{{{
 
 An example with $G=2^4=16$, i.e. $5$ TRLs and $2$ SRLs. The subbands
@@ -936,7 +936,7 @@ generated are:
 
 The temporal decorrelation pattern followed by $\mathtt{iMCOLP(T=4,
   N=17)}$ is (notice that the hexadecimal notation has been followed
-for indexing the frames) shown in the Fig.~\ref{fig:PRMC_4_17}.
+for indexing the frames) shown in the Fig.~\ref{fig:MRVC_4_17}.
 
 \begin{figure}
 \begin{verbatim}
@@ -951,7 +951,7 @@ GOP0                     GOP1
     N=17)}$. The temporal resolution levels (TRLs) are considering
   only the frames that has been reconstructed at the original spatial
   resolution.}
-\label{fig:PRMC_4_17}
+\label{fig:MRVC_4_17}
 \end{figure}
 
 \begin{verbatim}
@@ -1025,7 +1025,7 @@ case of MCOLP) only a dyadic access to the frames.
 
 %}}}
 
-\subsection{Example: 3-iters of $\mathtt{PRMC}(T=2, N=5)$}
+\subsection{Example: 3-iters of $\mathtt{MRVC}(T=2, N=5)$}
 %{{{
 
 \begin{verbatim}
@@ -1059,8 +1059,8 @@ animate /tmp/diff*.png
 \end{verbatim}
 
 In this case, $G=4$, generating $3$ TRLs (see
-Fig.~\ref{fig:PRMC_2_5_T}), and $4$ is the number of SRLs (see
-Fig.~\ref{fig:PRMC_2_5_S}).
+Fig.~\ref{fig:MRVC_2_5_T}), and $4$ is the number of SRLs (see
+Fig.~\ref{fig:MRVC_2_5_S}).
 
 \begin{figure}
 \begin{verbatim}
@@ -1076,7 +1076,7 @@ GOP0     GOP1
   \caption{Motion compensation pattern followed by $\mathtt{MCOLP(T=2,
       N=5)}$. The TRLs consider only the frames that has been
     reconstructed at the original spatial resolution.}
-  \label{fig:PRMC_2_5_T}
+  \label{fig:MRVC_2_5_T}
 \end{figure}
 
 \begin{figure}
@@ -1103,9 +1103,9 @@ GOP0     GOP1
 |                               |
 +-------------------------------+
 \end{verbatim}
-\caption{SRLs generated by $3$ iterations of $\mathtt{PRMC}$. $0$
+\caption{SRLs generated by $3$ iterations of $\mathtt{MRVC}$. $0$
     corresponds with the original resolution of the frames.}
-  \label{fig:PRMC_2_5_S}
+  \label{fig:MRVC_2_5_S}
 \end{figure}
 
 %}}}
