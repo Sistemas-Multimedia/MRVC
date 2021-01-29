@@ -42,10 +42,50 @@ href="#x1-50002.1" id="QQ2-1-5">Implementation of the 3 components &#x0028;usual
 href="#x1-60003" id="QQ2-1-7">Multi-level DWT structures</a></span>
 <br />   <span class="sectionToc" >4 <a 
 href="#x1-70004" id="QQ2-1-8">Scalability provided by the DWT</a></span>
+<br />   &#x00A0;<span class="subsectionToc" >4.1 <a 
+href="#x1-80004.1" id="QQ2-1-9">Example: A 1-iteration DWT</a></span>
+<br />   &#x00A0;<span class="subsectionToc" >4.2             <a 
+href="#x1-90004.2" id="QQ2-1-10">Example:             A             2-iterations             DWT
+&#x0028;<!--l. 13--><math 
+ xmlns="http://www.w3.org/1998/Math/MathML"  
+display="inline" ><mn>2</mn> <mo 
+class="MathClass-bin">&#x00D7;</mo><mstyle mathvariant="monospace"><mi 
+>D</mi><mi 
+>W</mi><mi 
+>T</mi></mstyle></math>&#x0029;</a></span>
 <br />   <span class="sectionToc" >5 <a 
 href="#x1-100005" id="QQ2-1-11">Motion DWT &#x0028;MDWT&#x0029;</a></span>
 <br />   <span class="sectionToc" >6 <a 
 href="#x1-110006" id="QQ2-1-13">Scalability provided by MDWT</a></span>
+<br />   &#x00A0;<span class="subsectionToc" >6.1                 <a 
+href="#x1-120006.1" id="QQ2-1-14">Example:                 1-iteration                 MDWT
+&#x0028;<!--l. 19--><math 
+ xmlns="http://www.w3.org/1998/Math/MathML"  
+display="inline" ><mstyle mathvariant="monospace"><mi 
+>M</mi><mi 
+>D</mi><mi 
+>W</mi><mi 
+>T</mi></mstyle><mo 
+class="MathClass-open">&#x0028;</mo><mi 
+>N</mi> <mo 
+class="MathClass-rel">=</mo> <mn>5</mn><mo 
+class="MathClass-close">&#x0029;</mo></math>&#x0029;</a></span>
+<br />   &#x00A0;<span class="subsectionToc" >6.2                 <a 
+href="#x1-130006.2" id="QQ2-1-15">Example:                 2-iterations                 MDWT
+&#x0028;<!--l. 20--><math 
+ xmlns="http://www.w3.org/1998/Math/MathML"  
+display="inline" ><mn>2</mn> <mo 
+class="MathClass-bin">&#x00D7;</mo><mstyle mathvariant="monospace"><mi 
+>M</mi><mi 
+>D</mi><mi 
+>W</mi><mi 
+>T</mi></mstyle><mo 
+class="MathClass-open">&#x0028;</mo><mi 
+>N</mi> <mo 
+class="MathClass-rel">=</mo> <mn>5</mn><mo 
+class="MathClass-close">&#x0029;</mo></math>&#x0029;</a></span>
+<br />   &#x00A0;<span class="subsectionToc" >6.3 <a 
+href="#x1-140006.3" id="QQ2-1-16">Example: Interpolating &#x0028;a sequence&#x0029; with the DWT</a></span>
 <br />   <span class="sectionToc" >7 <a 
 href="#x1-150007" id="QQ2-1-17">Video transform alternatives</a></span>
 <br />   <span class="sectionToc" >8 <a 
@@ -61,9 +101,9 @@ href="#x1-200009.3" id="QQ2-1-25">Example:
 <!--l. 32--><math 
  xmlns="http://www.w3.org/1998/Math/MathML"  
 display="inline" ><mstyle mathvariant="monospace"><mi 
->P</mi><mi 
->R</mi><mi 
 >M</mi><mi 
+>R</mi><mi 
+>V</mi><mi 
 >C</mi></mstyle><mo 
 class="MathClass-open">&#x0028;</mo><mi 
 >T</mi> <mo 
@@ -77,9 +117,9 @@ href="#x1-210009.4" id="QQ2-1-26">Example:
 <!--l. 34--><math 
  xmlns="http://www.w3.org/1998/Math/MathML"  
 display="inline" ><mstyle mathvariant="monospace"><mi 
->P</mi><mi 
->R</mi><mi 
 >M</mi><mi 
+>R</mi><mi 
+>V</mi><mi 
 >C</mi></mstyle><mo 
 class="MathClass-open">&#x0028;</mo><mi 
 >T</mi> <mo 
@@ -90,14 +130,17 @@ class="MathClass-rel">=</mo> <mn>5</mn><mo
 class="MathClass-close">&#x0029;</mo></math></a></span>
 <br />   &#x00A0;<span class="subsectionToc" >9.5 <a 
 href="#x1-220009.5" id="QQ2-1-27">Simpli&#xFB01;cation of the notation</a></span>
+                                                                  
+
+                                                                  
 <br />   &#x00A0;<span class="subsectionToc" >9.6                                                                           <a 
 href="#x1-230009.6" id="QQ2-1-28">Example:
 <!--l. 37--><math 
  xmlns="http://www.w3.org/1998/Math/MathML"  
 display="inline" ><mstyle mathvariant="monospace"><mi 
->P</mi><mi 
->R</mi><mi 
 >M</mi><mi 
+>R</mi><mi 
+>V</mi><mi 
 >C</mi></mstyle><mo 
 class="MathClass-open">&#x0028;</mo><mi 
 >T</mi> <mo 
@@ -113,9 +156,9 @@ href="#x1-250009.8" id="QQ2-1-30">Example:                      3-iters         
 <!--l. 40--><math 
  xmlns="http://www.w3.org/1998/Math/MathML"  
 display="inline" ><mstyle mathvariant="monospace"><mi 
->P</mi><mi 
->R</mi><mi 
 >M</mi><mi 
+>R</mi><mi 
+>V</mi><mi 
 >C</mi></mstyle><mo 
 class="MathClass-open">&#x0028;</mo><mi 
 >T</mi> <mo 
@@ -128,9 +171,6 @@ class="MathClass-close">&#x0029;</mo></math></a></span>
 href="#x1-2600010" id="QQ2-1-31">Adaptive motion compensation based on the energy of the estimated prediction error</a></span>
 <br />   <span class="sectionToc" >11 <a 
 href="#x1-2700011" id="QQ2-1-33">Lossy compression: quantization</a></span>
-                                                                  
-
-                                                                  
 <br />   &#x00A0;<span class="subsectionToc" >11.1 <a 
 href="#x1-2800011.1" id="QQ2-1-34">Example: E&#xFB00;ects caused by the total attenuation of the motion compensated
 &#x0028;MCed&#x0029; <!--l. 47--><math 
@@ -158,7 +198,7 @@ href="#x1-3100011.4" id="QQ2-1-37">Example: Quantization of all subbands</a></sp
 </p>
    <h3 class="likesectionHead"><a 
  id="x1-2000"></a>Abstract</h3>
-<!--l. 24--><p class="noindent" >PRMC is a transform that inputs a video &#x0028;a sequence of frames of pixels&#x0029; and
+<!--l. 24--><p class="noindent" >MRVC is a transform that inputs a video &#x0028;a sequence of frames of pixels&#x0029; and
 outputs a decomposition &#x0028;a sequence of spatio-temporal subbands of coe&#xFB03;cients&#x0029;. It
 consists of two stages:
 </p><!--l. 28--><p class="indent" >
@@ -176,11 +216,14 @@ display="inline" ><mn>2</mn></math>
      in the high-frequencies of the higher SRL, using a Orthogonal Lapacial
      Pyramid  structure  that  has  a  critical  representation  in  the  2D-DWT
      domain.</li></ol>
-<!--l. 39--><p class="indent" >   PRMC can be applied recursively to the lower SLR, producing a multiresolution
+<!--l. 39--><p class="indent" >   MRVC can be applied recursively to the lower SLR, producing a multiresolution
 representation of the video and compensating the motion of the sequence. The output
 decomposition concentrates most of the energy in a small number of subbands
 &#x0028;usually, those representing the low frquencies&#x0029; which enables the lossy compression
 of the video.
+                                                                  
+
+                                                                  
 </p><!--l. 47--><p class="noindent" >
 </p>
    <h3 class="sectionHead"><span class="titlemark">1   </span> <a 
@@ -190,9 +233,6 @@ href="https://en.wikipedia.org/wiki/Video" >Video</a> data contain high amounts 
 href="https://vicente-gonzalez-ruiz.github.io/redundancy/" >redundancy</a>, spatial and temporal.
 For this reason, most of <a 
 href="https://vicente-gonzalez-ruiz.github.io/video_compression/" >video encoders</a> compress an input sequence of
-                                                                  
-
-                                                                  
 <a 
 href="https://en.wikipedia.org/wiki/Digital_image" >images</a><span class="footnote-mark"><a 
 href="index2.html#fn1x0"><sup class="textsuperscript">1</sup></a></span><a 
@@ -273,6 +313,9 @@ class="MathClass-close">&#x007D;</mo></math>, were
  xmlns="http://www.w3.org/1998/Math/MathML"  
 display="inline" ><mi 
 >L</mi></math> stands for 1D low-pass
+                                                                  
+
+                                                                  
 <a 
 href="https://en.wikipedia.org/wiki/Filter_bank" >analysis</a> <a 
 href="https://en.wikipedia.org/wiki/Filter_(signal_processing)" >&#xFB01;ltering</a> and <!--l. 109--><math 
@@ -289,9 +332,6 @@ the <!--l. 110--><math
  xmlns="http://www.w3.org/1998/Math/MathML"  
 display="inline" ><mi 
 >L</mi></math> &#xFB01;lter to the rows
-                                                                  
-
-                                                                  
 and downsample<span class="footnote-mark"><a 
 href="index5.html#fn4x0"><sup class="textsuperscript">4</sup></a></span><a 
  id="x1-4003f4"></a> 
@@ -394,12 +434,15 @@ class="MathClass-punc">,</mo><mi
 >H</mi><mo 
 class="MathClass-close">&#x007D;</mo></math>.
 See also <a 
-href="https://nbviewer.jupyter.org/github/Sistemas-Multimedia/PRMC/blob/master/docs/DWT_vs_LPT.ipynb" >DWT vs OLP</a>.
+href="https://nbviewer.jupyter.org/github/Sistemas-Multimedia/MRVC/blob/master/docs/DWT_vs_LPT.ipynb" >DWT vs OLP</a>.
 </p>
    <h4 class="subsectionHead"><span class="titlemark">2.1   </span> <a 
  id="x1-50002.1"></a>Implementation of the 3 components &#x0028;usually color&#x0029; DWT step</h4>
+                                                                  
+
+                                                                  
 <!--l. 153--><p class="noindent" ><a 
-href="https://github.com/Sistemas-Multimedia/PRMC/blob/master/src/DWT.py" >DWT.py</a> &#x0028;see Fig.&#x00A0;<a 
+href="https://github.com/Sistemas-Multimedia/MRVC/blob/master/src/DWT.py" >DWT.py</a> &#x0028;see Fig.&#x00A0;<a 
 href="#x1-5103r1">1<!--tex4ht:ref: fig:DWT --></a>&#x0029; implements the forward &#x0028;DWT&#x0029; and backward &#x0028;iDWT&#x0029;
 1-iteration &#x0028;step&#x0029; DWT for color images.
 </p>
@@ -419,7 +462,7 @@ href="#x1-5103r1">1<!--tex4ht:ref: fig:DWT --></a>&#x0029; implements the forwar
 <br /> <div class="caption" 
 ><span class="id">Listing&#x00A0;1: </span><span  
 class="content">1-iteration DWT &#x0028;<a 
-href="https://github.com/Sistemas-Multimedia/PRMC/blob/master/src/DWT.py" >DWT.py</a>&#x0029;.</span></div><!--tex4ht:label?: x1-5001r2 --><span 
+href="https://github.com/Sistemas-Multimedia/MRVC/blob/master/src/DWT.py" >DWT.py</a>&#x0029;.</span></div><!--tex4ht:label?: x1-5001r2 --><span 
 class="ectt-1000">&#x00A0;</span><br /><span class="label"><a 
  id="x1-5003r1"></a></span><span 
 class="ectt-1000">class</span><span 
@@ -2868,8 +2911,8 @@ class="MathClass-rel">=</mo> <mi
      <!--l. 262--><p class="nopar" ></p></li></ul>
 <!--l. 269--><p class="noindent" >
 </p>
-   <h4 class="likesubsectionHead"><a 
- id="x1-80004"></a>Example: A 1-iteration DWT</h4>
+   <h4 class="subsectionHead"><span class="titlemark">4.1   </span> <a 
+ id="x1-80004.1"></a>Example: A 1-iteration DWT</h4>
 <!--l. 272--><p class="noindent" >An image is transformed, generating four subbands
 <!--l. 272--><math 
  xmlns="http://www.w3.org/1998/Math/MathML"  
@@ -2925,8 +2968,9 @@ display&#x00A0;/tmp/diffs.png
 <!--l. 300--><p class="nopar" >
 </p><!--l. 304--><p class="noindent" >
 </p>
-   <h4 class="likesubsectionHead"><a 
- id="x1-90004"></a>Example: A 2-iterations DWT &#x0028;<!--l. 304--><math 
+   <h4 class="subsectionHead"><span class="titlemark">4.2   </span> <a 
+ id="x1-90004.2"></a>Example: A 2-iterations DWT
+&#x0028;<!--l. 304--><math 
  xmlns="http://www.w3.org/1998/Math/MathML"  
 display="inline" ><mn>2</mn> <mo 
 class="MathClass-bin">&#x00D7;</mo><mstyle mathvariant="monospace"><mi 
@@ -3161,7 +3205,7 @@ class="content">Subbands produced by the MDWT.                           </span>
 <br /> <div class="caption" 
 ><span class="id">Listing&#x00A0;2: </span><span  
 class="content">MDWT &#x0028;<a 
-href="https://github.com/Sistemas-Multimedia/PRMC/blob/master/src/MDWT.py" >MDWT.py</a>&#x0029;.</span></div><!--tex4ht:label?: x1-10003r5 --><span 
+href="https://github.com/Sistemas-Multimedia/MRVC/blob/master/src/MDWT.py" >MDWT.py</a>&#x0029;.</span></div><!--tex4ht:label?: x1-10003r5 --><span 
 class="ectt-1000">&#x00A0;</span><br /><span class="label"><a 
  id="x1-10005r1"></a></span><span 
 class="ectt-1000">class</span><span 
@@ -3985,8 +4029,9 @@ images randomly&#x0029; because each image of the input sequence is transformed
 independently.
 </p><!--l. 399--><p class="noindent" >
 </p>
-   <h4 class="likesubsectionHead"><a 
- id="x1-120006"></a>Example: 1-iteration MDWT &#x0028;<!--l. 399--><math 
+   <h4 class="subsectionHead"><span class="titlemark">6.1   </span> <a 
+ id="x1-120006.1"></a>Example: 1-iteration MDWT
+&#x0028;<!--l. 399--><math 
  xmlns="http://www.w3.org/1998/Math/MathML"  
 display="inline" ><mstyle mathvariant="monospace"><mi 
 >M</mi><mi 
@@ -4034,8 +4079,9 @@ animate&#x00A0;/tmp/diff*.png
 <!--l. 432--><p class="nopar" >
 </p><!--l. 436--><p class="noindent" >
 </p>
-   <h4 class="likesubsectionHead"><a 
- id="x1-130006"></a>Example: 2-iterations MDWT &#x0028;<!--l. 436--><math 
+   <h4 class="subsectionHead"><span class="titlemark">6.2   </span> <a 
+ id="x1-130006.2"></a>Example: 2-iterations MDWT
+&#x0028;<!--l. 436--><math 
  xmlns="http://www.w3.org/1998/Math/MathML"  
 display="inline" ><mn>2</mn> <mo 
 class="MathClass-bin">&#x00D7;</mo><mstyle mathvariant="monospace"><mi 
@@ -4076,8 +4122,8 @@ animate&#x00A0;/tmp/diff*.png
 <!--l. 461--><p class="nopar" >
 </p><!--l. 465--><p class="noindent" >
 </p>
-   <h4 class="likesubsectionHead"><a 
- id="x1-140006"></a>Example: Interpolating &#x0028;a sequence&#x0029; with the DWT</h4>
+   <h4 class="subsectionHead"><span class="titlemark">6.3   </span> <a 
+ id="x1-140006.3"></a>Example: Interpolating &#x0028;a sequence&#x0029; with the DWT</h4>
 <!--l. 468--><p class="noindent" >If we apply an inverse transform to the original
 frames<span class="footnote-mark"><a 
 href="index8.html#fn7x0"><sup class="textsuperscript">7</sup></a></span><a 
@@ -4251,7 +4297,7 @@ level, and because the motion is estimated using the previous lower resolution l
 &#x0028;which is available at the decoder&#x0029;, it is not necessary to send the motion information
 in the code-stream. Notice also that this process can be used for any number of
 spatial resolution levels, simply by using MCLOPT iteratively on the low spatial
-resolution level &#x0028;resulting of the previous iteration of PRMC that applies &#xFB01;rst a
+resolution level &#x0028;resulting of the previous iteration of MRVC that applies &#xFB01;rst a
 MDWT&#x0029;.
 </p><!--l. 608--><p class="indent" >   A peculiar feature of MCLOP is that the predict step used in the &#x201C;t&#x201D;-DWT is
 performed in the OLP domain, which is shift invariant because the coe&#xFB03;cients have
@@ -4420,7 +4466,7 @@ behaviour.
 <br /> <div class="caption" 
 ><span class="id">Listing&#x00A0;3: </span><span  
 class="content">MCOLP butter&#xFB02;y &#x0028;<a 
-href="https://github.com/Sistemas-Multimedia/PRMC/blob/master/src/MCOLP.py" >MCOLP.py</a>&#x0029;.</span></div><!--tex4ht:label?: x1-18001r9 --><span 
+href="https://github.com/Sistemas-Multimedia/MRVC/blob/master/src/MCOLP.py" >MCOLP.py</a>&#x0029;.</span></div><!--tex4ht:label?: x1-18001r9 --><span 
 class="ectt-1000">&#x00A0;</span><br /><span class="label"><a 
  id="x1-18003r1"></a></span><span 
 class="ectt-1000">class</span><span 
@@ -5526,7 +5572,7 @@ class="ectt-1000">&#x005B;1&#x005D;</span>
 ><span class="id">Listing&#x00A0;4:        </span><span  
 class="content">Computation        of        the        prediction        frame
 &#x0028;<a 
-href="https://github.com/Sistemas-Multimedia/PRMC/blob/master/src/simple_average.py" >simple_average.py</a>&#x0029;.</span></div><!--tex4ht:label?: x1-18065r9 --><span 
+href="https://github.com/Sistemas-Multimedia/MRVC/blob/master/src/simple_average.py" >simple_average.py</a>&#x0029;.</span></div><!--tex4ht:label?: x1-18065r9 --><span 
 class="ectt-1000">&#x00A0;</span><br /><span class="label"><a 
  id="x1-18067r1"></a></span><span 
 class="ectt-1000">&#x00A0;</span><br /><span class="label"><a 
@@ -5675,7 +5721,7 @@ display="inline" ><msup><mrow
 <br /> <div class="caption" 
 ><span class="id">Listing&#x00A0;5: </span><span  
 class="content">MCOLP &#x0028;<a 
-href="https://github.com/Sistemas-Multimedia/PRMC/blob/master/src/MCOLP.py" >MCOLP.py</a>&#x0029;.</span></div><!--tex4ht:label?: x1-19001r9 --><span 
+href="https://github.com/Sistemas-Multimedia/MRVC/blob/master/src/MCOLP.py" >MCOLP.py</a>&#x0029;.</span></div><!--tex4ht:label?: x1-19001r9 --><span 
 class="ectt-1000">&#x00A0;</span><br /><span class="label"><a 
  id="x1-19003r1"></a></span><span 
 class="ectt-1000">&#x00A0;</span><span 
@@ -7804,9 +7850,9 @@ are compensated.
  id="x1-200009.3"></a>Example: <!--l. 699--><math 
  xmlns="http://www.w3.org/1998/Math/MathML"  
 display="inline" ><mstyle mathvariant="monospace"><mi 
->P</mi><mi 
->R</mi><mi 
 >M</mi><mi 
+>R</mi><mi 
+>V</mi><mi 
 >C</mi></mstyle><mo 
 class="MathClass-open">&#x0028;</mo><mi 
 >T</mi> <mo 
@@ -7816,7 +7862,7 @@ class="MathClass-punc">,</mo><mi
 class="MathClass-rel">=</mo> <mn>5</mn><mo 
 class="MathClass-close">&#x0029;</mo></math></h4>
 <!--l. 702--><p class="noindent" >In this example &#x0028;see Fig.&#x00A0;<a 
-href="#x1-20001r7">7<!--tex4ht:ref: fig:1xPRMC1 --></a>&#x0029;, a sequence of &#xFB01;ve frames is transformed &#xFB01;rst with
+href="#x1-20001r7">7<!--tex4ht:ref: fig:1xMRVC1 --></a>&#x0029;, a sequence of &#xFB01;ve frames is transformed &#xFB01;rst with
 <!--l. 703--><math 
  xmlns="http://www.w3.org/1998/Math/MathML"  
 display="inline" ><mstyle mathvariant="monospace"><mi 
@@ -7922,9 +7968,9 @@ class="content">Subbands            generated            after            runnin
 <!--l. 765--><math 
  xmlns="http://www.w3.org/1998/Math/MathML"  
 display="inline" ><mstyle mathvariant="monospace"><mi 
->P</mi><mi 
->R</mi><mi 
 >M</mi><mi 
+>R</mi><mi 
+>V</mi><mi 
 >C</mi></mstyle><mo 
 class="MathClass-open">&#x0028;</mo><mi 
 >T</mi> <mo 
@@ -8012,9 +8058,9 @@ has been already decoded&#x0029;.                                           </sp
  id="x1-210009.4"></a>Example: <!--l. 771--><math 
  xmlns="http://www.w3.org/1998/Math/MathML"  
 display="inline" ><mstyle mathvariant="monospace"><mi 
->P</mi><mi 
->R</mi><mi 
 >M</mi><mi 
+>R</mi><mi 
+>V</mi><mi 
 >C</mi></mstyle><mo 
 class="MathClass-open">&#x0028;</mo><mi 
 >T</mi> <mo 
@@ -8035,7 +8081,7 @@ and therefore, the second iteration of MCOLP compensates also the
 display="inline" ><mi 
 >H</mi></math> subband of
 the frame 2. This example matches exactly with the described in the Fig.&#x00A0;<a 
-href="#x1-21001r8">8<!--tex4ht:ref: fig:1xPRMC2 --></a>. Notice that the
+href="#x1-21001r8">8<!--tex4ht:ref: fig:1xMRVC2 --></a>. Notice that the
 GOP size is <!--l. 778--><math 
  xmlns="http://www.w3.org/1998/Math/MathML"  
 display="inline" ><mn>4</mn></math>
@@ -8177,9 +8223,9 @@ class="content">Subbands            generated            after            runnin
 <!--l. 898--><math 
  xmlns="http://www.w3.org/1998/Math/MathML"  
 display="inline" ><mstyle mathvariant="monospace"><mi 
->P</mi><mi 
->R</mi><mi 
 >M</mi><mi 
+>R</mi><mi 
+>V</mi><mi 
 >C</mi></mstyle><mo 
 class="MathClass-open">&#x0028;</mo><mi 
 >T</mi> <mo 
@@ -8363,7 +8409,7 @@ display="inline" ><msubsup><mrow
 >s</mi></mrow></msubsup 
 ></math>.
 Thus, for example, the subbands shown in the Fig.&#x00A0;<a 
-href="#x1-21001r8">8<!--tex4ht:ref: fig:1xPRMC2 --></a> can be represented as: &#x0028;1&#x0029;
+href="#x1-21001r8">8<!--tex4ht:ref: fig:1xMRVC2 --></a> can be represented as: &#x0028;1&#x0029;
 <!--l. 910--><math 
  xmlns="http://www.w3.org/1998/Math/MathML"  
 display="inline" ><mi 
@@ -8438,9 +8484,9 @@ display="inline" ><mn>2</mn></math>&#x0029;.
  id="x1-230009.6"></a>Example: <!--l. 921--><math 
  xmlns="http://www.w3.org/1998/Math/MathML"  
 display="inline" ><mstyle mathvariant="monospace"><mi 
->P</mi><mi 
->R</mi><mi 
 >M</mi><mi 
+>R</mi><mi 
+>V</mi><mi 
 >C</mi></mstyle><mo 
 class="MathClass-open">&#x0028;</mo><mi 
 >T</mi> <mo 
@@ -8563,7 +8609,7 @@ class="MathClass-rel">=</mo> <mi
 class="MathClass-close">&#x0029;</mo></mstyle></math> is
 &#x0028;notice that the hexadecimal notation has been followed for indexing the frames&#x0029;
 shown in the Fig.&#x00A0;<a 
-href="#x1-23011r9">9<!--tex4ht:ref: fig:PRMC_4_17 --></a>.
+href="#x1-23011r9">9<!--tex4ht:ref: fig:MRVC_4_17 --></a>.
 </p>
    <hr class="figure" /><div class="figure" 
 >
@@ -8691,9 +8737,9 @@ dyadic access to the frames.
  id="x1-250009.8"></a>Example: 3-iters of <!--l. 1028--><math 
  xmlns="http://www.w3.org/1998/Math/MathML"  
 display="inline" ><mstyle mathvariant="monospace"><mi 
->P</mi><mi 
->R</mi><mi 
 >M</mi><mi 
+>R</mi><mi 
+>V</mi><mi 
 >C</mi></mstyle><mo 
 class="MathClass-open">&#x0028;</mo><mi 
 >T</mi> <mo 
@@ -8744,11 +8790,11 @@ generating <!--l. 1061--><math
  xmlns="http://www.w3.org/1998/Math/MathML"  
 display="inline" ><mn>3</mn></math> TRLs
 &#x0028;see Fig.&#x00A0;<a 
-href="#x1-25001r10">10<!--tex4ht:ref: fig:PRMC_2_5_T --></a>&#x0029;, and <!--l. 1062--><math 
+href="#x1-25001r10">10<!--tex4ht:ref: fig:MRVC_2_5_T --></a>&#x0029;, and <!--l. 1062--><math 
  xmlns="http://www.w3.org/1998/Math/MathML"  
 display="inline" ><mn>4</mn></math>
 is the number of SRLs &#x0028;see Fig.&#x00A0;<a 
-href="#x1-25003r11">11<!--tex4ht:ref: fig:PRMC_2_5_S --></a>&#x0029;.
+href="#x1-25003r11">11<!--tex4ht:ref: fig:MRVC_2_5_S --></a>&#x0029;.
 </p>
    <hr class="figure" /><div class="figure" 
 >
@@ -8844,9 +8890,9 @@ display="inline" ><mn>3</mn></math>
 iterations of <!--l. 1107--><math 
  xmlns="http://www.w3.org/1998/Math/MathML"  
 display="inline" ><mstyle mathvariant="monospace"><mi 
->P</mi><mi 
->R</mi><mi 
 >M</mi><mi 
+>R</mi><mi 
+>V</mi><mi 
 >C</mi></mstyle></math>.
 <!--l. 1107--><math 
  xmlns="http://www.w3.org/1998/Math/MathML"  
