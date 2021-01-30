@@ -14,7 +14,9 @@ except ImportError:
 
 parser = argparse.ArgumentParser(formatter_class=argparse.ArgumentDefaultsHelpFormatter)
 parser.add_argument("-i", "--input", type=str, help="Prefix path input sequence")
-parser.add_argument("-o", "--output", type=str, help="Prefix path output sequence")
+parser.add_argument("-o", "--output", type=str, help="Prefix path
+output sequence")
+parser.add_argument("-l", "--length", type=str, help="Length in frames of the output sequence")
     
 class Deflate():
     def __init__(self):
@@ -37,7 +39,7 @@ class Deflate():
         frame = frame.astype(np.uint16)
         cv2.imwrite(f"{prefix}.png", frame)
 
-    def encode_seq(self, prefix, length):
+    def encode_frames(self, prefix, length):
         for i in range(length):
             self.encode_frame(self.decode_frame(prefix), prefix)
    
@@ -50,7 +52,7 @@ if __name__ == "__main__":
         argcomplete.autocomplete(deflate.parser)
     except Exception:
         if __debug__:
-            print("argcomplete not working :-/")
+            print("argcomplete is not working :-/")
         else:
             pass
     deflate.args = deflate.parser.parse_known_args()[0]
@@ -59,6 +61,6 @@ if __name__ == "__main__":
     else:
         codec = Deflate()
     try:
-        codec.run()
+        codec.encode_frames(args.prefix, args.length)
     except KeyboardInterrupt:
         codec.parser.exit("\nInterrupted by user")
