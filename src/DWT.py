@@ -12,19 +12,20 @@ def analyze(color_frame, wavelet=WAVELET, n_levels=N_LEVELS):
     color_decomposition = [None]*n_channels
     for c in range(n_channels):
         color_decomposition[c] = pywt.wavedec2(data=color_frame[:,:,c], wavelet=wavelet, mode='per', level=n_levels)
-    return color_decomposition # A list of "gray" decompositions
+    #L = []
+    #H = []
+    #for c in range(n_channels):
+    #    L.append(color_decomposition[c][0])
+    #    H.append(color_decomposition[c][1])
+    #return L, H
+    return color_decomposition
 
+#def synthesize(L, H, wavelet=WAVELET):
 def synthesize(color_decomposition, wavelet=WAVELET):
-    n_channels = len(color_decomposition)
-    #n_levels = len(color_decomposition[0])-1
-    # color_decomposition[0] <- First channel
-    # color_decomposition[0][0] <- cAn (lowest frequecy subband) of the first channel
-    # color_decomposition[0][1] <- (cHn, cVn, cDn) (lowest high-frequency subbands) of the first channel
-    # color_decomposition[0][1][0] <- cHn (LH subband) of the first channel
-    # See https://pywavelets.readthedocs.io/en/latest/ref/2d-dwt-and-idwt.html#d-multilevel-decomposition-using-wavedec2
+    n_channels = len(L)
     _color_frame = []
     for c in range(n_channels):
-        frame = pywt.waverec2(color_decomposition[c], wavelet=wavelet, mode='per')
+        frame = pywt.waverec2([L[c], H[c]], wavelet=wavelet, mode='per')
         _color_frame.append(frame)
     n_rows = _color_frame[0].shape[0]
     n_columns = _color_frame[0].shape[1]
