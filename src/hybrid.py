@@ -32,6 +32,7 @@ def read_L(prefix, frame_number):
     return subband # [rows, columns, components]
 
 def write_L(L, prefix, frame_number):
+    #print(L.shape)
     subband = np.array(L, dtype=np.float64)
     #subband = subband.astype(np.float64)
     subband += 32768.0
@@ -66,7 +67,13 @@ def write_H(H, prefix, frame_number):
         sb += 1
 
 def interpolate_L(L):
-    H = [(None, None, None)]*3
+    #H = ((None, None, None))*3
+    #H = [(None, None, None)]*3
+    #H = (None, None, None)
+    LH = np.zeros(shape=(L.shape), dtype=np.float64)
+    HL = np.zeros(shape=(L.shape), dtype=np.float64)
+    HH = np.zeros(shape=(L.shape), dtype=np.float64)
+    H = (LH, HL, HH)
     _L_ = DWT.synthesize(L, H)
     return _L_
 
@@ -75,8 +82,9 @@ def reduce_L(_L_):
     return L
 
 def interpolate_H(H):
-    L = [None]*3
-    _H_ = DWT.synthesize(L, H)
+    #L = [None]*3
+    LL = np.zeros(shape=(H[0].shape), dtype=np.float64)
+    _H_ = DWT.synthesize(LL, H)
     return _H_
 
 def reduce_H(_H_):
@@ -98,8 +106,8 @@ def encode(prefix=PREFIX, n_frames=5):
     reconstructed__V_k_H = dequantized__E_k_H # (l)
     reconstructed__V_k_1_H = reconstructed__V_k_H # (m)
     quantized_E_k_H = reduce_H(quantized__E_k_H) # (o)
-    #write_L(V_k_L, prefix, ASCII_k) # (p)
-    #write_H(quantized_E_k_H, prefix, ASCII_k) # (p)
+    write_L(V_k_L, prefix, ASCII_k) # (p)
+    write_H(quantized_E_k_H, prefix, ASCII_k) # (p)
     for k in range(1, n_frames):
         ASCII_k = str(k).zfill(3)
         V_k = load_frame(prefix, ASCII_k)
@@ -118,12 +126,12 @@ def encode(prefix=PREFIX, n_frames=5):
         quantized__E_k_H = deadzone.quantize(_E_k_H, q_step=Q_STEP) # (j)
         dequantized__E_k_H = deadzone.dequantize(quantized__E_k_H, q_step=Q_STEP) # (k)
         reconstructed__V_k_H = dequantized__E_k_H + IP_prediction__V_k_H # (l)
-        write_H(reconstructed__V_k_H, prefix + "reconstructed_encoder", ASCII_k)
+        write_H(reconstructed__V_k_H, "/tmp/reconstructed_encoder_", ASCII_k)
         reconstructed__V_k_1_H = reconstructed__V_k_H # (m)
 
         quantized_E_k_H = reduce_H(quantized__E_k_H) # (o)
-        #write_L(V_k_L, prefix, ASCII_k) # (p)
-        #write_H(quantized_E_k_H, prefix, ASCII_k) # (p)
+        write_L(V_k_L, prefix, ASCII_k) # (p)
+        write_H(quantized_E_k_H, prefix, ASCII_k) # (p)
     
 def decode(prefix=PREFIX, n_frames=5):
     k = 0
