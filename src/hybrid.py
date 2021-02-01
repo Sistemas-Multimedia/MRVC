@@ -11,12 +11,12 @@ import H
 
 INPUT_SEQ = "../sequences/stockholm/"
 OUTPUT_SEQ = "/tmp/"
-Q_STEP = 16
+Q_STEP = 1
 
 def encode(input_seq=INPUT_SEQ, output_seq=OUTPUT_SEQ, n_frames=5):
     k = 0
     V_k = frame.read(input_seq, k)
-    V_k = YCoCg.from_RGB(V_k)
+    #V_k = YCoCg.from_RGB(V_k)
     V_k_L, V_k_H = DWT.analyze(V_k) # (a)
     _V_k_L = L.interpolate(V_k_L) # (E.a)
     _V_k_1_L = _V_k_L # (E.b)
@@ -31,7 +31,7 @@ def encode(input_seq=INPUT_SEQ, output_seq=OUTPUT_SEQ, n_frames=5):
     H.write(quantized_E_k_H, output_seq, k) # (g)
     for k in range(1, n_frames):
         V_k = frame.read(input_seq, k)
-        V_k = YCoCg.from_RGB(V_k)
+        #V_k = YCoCg.from_RGB(V_k)
         V_k_L, V_k_H = DWT.analyze(V_k) # (a)
         _V_k_L = L.interpolate(V_k_L) # (E.a)
         flow = motion.estimate(_V_k_L[:,:,0], _V_k_1_L[:,:,0]) # (E.c)
@@ -70,8 +70,8 @@ def decode(input_seq=INPUT_SEQ, output_seq=OUTPUT_SEQ, n_frames=5):
     reconstructed__V_k_1_H = reconstructed__V_k_H # (E.i)
     reconstructed_V_k_H = H.reduce(reconstructed__V_k_H) # (i)
     reconstructed_V_k = DWT.synthesize(V_k_L, reconstructed_V_k_H) # (k)
-    reconstructed_V_k = YCoCg.to_RGB(reconstructed_V_k)
-    frame.write(reconstructed_V_k, output_seq, k)
+    #reconstructed_V_k = YCoCg.to_RGB(reconstructed_V_k)
+    frame.write(reconstructed_V_k, output_seq + "reconstructed_decoder_", k)
     for k in range(1, n_frames):
         V_k_L = L.read(input_seq, k) # (g)
         quantized_E_k_H = H.read(input_seq, k) # (g)
@@ -86,10 +86,10 @@ def decode(input_seq=INPUT_SEQ, output_seq=OUTPUT_SEQ, n_frames=5):
         dequantized__E_k_H = deadzone.dequantize(quantized__E_k_H) # (E.g)
         reconstructed__V_k_H = dequantized__E_k_H + IP_prediction__V_k_H # (E.h)
         reconstructed__V_k_1_H = reconstructed__V_k_H # (E.i)
-        reconstructed_V_k_H = H.reduce(reconstructed_V_k_H) # (j)
+        reconstructed_V_k_H = H.reduce(reconstructed__V_k_H) # (j)
         reconstructed_V_k = DWT.synthesize(V_k_L, reconstructed_V_k_H) # (k)
-        reconstructed_V_k = YCoCg.to_RGB(reconstructed_V_k)
-        frame.write(reconstructed_V_k, output_seq + "reconstructed_decoder", k)
+        #reconstructed_V_k = YCoCg.to_RGB(reconstructed_V_k)
+        frame.write(reconstructed_V_k, output_seq + "reconstructed_decoder_", k)
 
 print("Encoding ...")
 encode()

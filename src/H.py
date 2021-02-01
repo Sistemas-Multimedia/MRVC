@@ -29,6 +29,7 @@ def write(H, prefix, frame_number):
         subband = subband.astype(np.uint16)
         fn = f"{prefix}{sbn}{ASCII_frame_number}.png"
         print(subband.shape, fn)
+        subband = cv2.cvtColor(subband, cv2.COLOR_RGB2BGR)
         cv2.imwrite(fn, subband)
         sb += 1
 

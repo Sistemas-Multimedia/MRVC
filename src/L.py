@@ -20,6 +20,7 @@ def write(L, prefix, frame_number):
     ASCII_frame_number = str(frame_number).zfill(3)
     fn = f"{prefix}LL{ASCII_frame_number}.png"
     print(subband.shape, fn)
+    subband = cv2.cvtColor(subband, cv2.COLOR_RGB2BGR)
     cv2.imwrite(fn, subband)
 
 def interpolate(L):
