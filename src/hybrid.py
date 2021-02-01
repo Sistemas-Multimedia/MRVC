@@ -98,8 +98,8 @@ def encode(prefix=PREFIX, n_frames=5):
     reconstructed__V_k_H = dequantized__E_k_H # (l)
     reconstructed__V_k_1_H = reconstructed__V_k_H # (m)
     quantized_E_k_H = reduce_H(quantized__E_k_H) # (o)
-    write_L(V_k_L, prefix, ASCII_k) # (p)
-    write_H(quantized_E_k_H, prefix, ASCII_k) # (p)
+    #write_L(V_k_L, prefix, ASCII_k) # (p)
+    #write_H(quantized_E_k_H, prefix, ASCII_k) # (p)
     for k in range(1, n_frames):
         ASCII_k = str(k).zfill(3)
         V_k = load_frame(prefix, ASCII_k)
@@ -122,8 +122,8 @@ def encode(prefix=PREFIX, n_frames=5):
         reconstructed__V_k_1_H = reconstructed__V_k_H # (m)
 
         quantized_E_k_H = reduce_H(quantized__E_k_H) # (o)
-        write_L(V_k_L, prefix, ASCII_k) # (p)
-        write_H(quantized_E_k_H, prefix, ASCII_k) # (p)
+        #write_L(V_k_L, prefix, ASCII_k) # (p)
+        #write_H(quantized_E_k_H, prefix, ASCII_k) # (p)
     
 def decode(prefix=PREFIX, n_frames=5):
     k = 0
