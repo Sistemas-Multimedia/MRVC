@@ -13,7 +13,7 @@ def read(prefix, frame_number):
         fn = f"{prefix}{sbn}{ASCII_frame_number}.png"
         subband = cv2.imread(fn, cv2.IMREAD_UNCHANGED)
         subband = cv2.cvtColor(subband, cv2.COLOR_BGR2RGB)
-        subband = np.array(subband, dtype=np.float64)
+        subband = np.array(subband, dtype=np.float64) # Ojo, quizás se pueda cambiar a np.int16
         subband -= 32768.0
         H.append(subband)
     return H # [LH, HL, HH], each one [rows, columns, components]
@@ -23,7 +23,7 @@ def write(H, prefix, frame_number):
     subband_names = ["LH", "HL", "HH"]
     sb = 0
     for sbn in subband_names:
-        subband = np.array(H[sb], dtype=np.float64)
+        subband = np.array(H[sb], dtype=np.float64) # Ojo, quizás se puede quitar
         #subband = H[i].astype(np.float32)
         subband += 32768.0
         subband = subband.astype(np.uint16)
