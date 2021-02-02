@@ -13,13 +13,12 @@ def read(prefix, frame_number):
     return frame # [rows, columns, components]
 
 def _write(frame, prefix, frame_number):
-    if __debug__:
-        ASCII_frame_number = str(frame_number).zfill(3)
-        fn = f"{prefix}{ASCII_frame_number}.png"
-        print(frame.shape, fn)
-        frame = frame.astype(np.uint8)
-        frame = cv2.cvtColor(frame, cv2.COLOR_RGB2BGR)
-        cv2.imwrite(fn, frame)
+    ASCII_frame_number = str(frame_number).zfill(3)
+    fn = f"{prefix}{ASCII_frame_number}.png"
+    print(frame.shape, fn)
+    frame = frame.astype(np.uint8)
+    frame = cv2.cvtColor(frame, cv2.COLOR_RGB2BGR)
+    cv2.imwrite(fn, frame)
 
 def debug_write(frame, prefix, frame_number):
     if __debug__:

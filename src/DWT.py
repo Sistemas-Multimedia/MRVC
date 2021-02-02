@@ -3,8 +3,8 @@
 import numpy as np
 import pywt
 
-WAVELET = pywt.Wavelet("haar")
-#WAVELET = pywt.Wavelet("db5")
+#WAVELET = pywt.Wavelet("haar")
+WAVELET = pywt.Wavelet("db5")
 #WAVELET = pywt.Wavelet("bior3.5")
 
 def analyze(color_frame, wavelet=WAVELET):
