@@ -1,4 +1,4 @@
-''' MRVC/hybrid.py '''
+''' MRVC/H.py '''
 
 import numpy as np
 import DWT
