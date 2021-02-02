@@ -1,101 +1,1 @@
-''' MRVC/hybrid.py '''
-
-import numpy as np
-import DWT
-import deadzone
-import YCoCg
-import motion
-import frame
-import L
-import H
-
-ORIGINAL_SEQ = "../sequences/stockholm/"
-CODESTREAM_SEQ = "/tmp/"
-DECODED_SEQ = "/tmp/"
-Q_STEP = 1
-
-def encode(original_seq=ORIGINAL_SEQ, codestream_seq=CODESTREAM_SEQ, n_frames=5):
-    k = 0
-    V_k = frame.read(original_seq, k)
-    V_k = YCoCg.from_RGB(V_k)
-    V_k_L, V_k_H = DWT.analyze(V_k) # (a)
-    L.write(V_k_L, codestream_seq, k) # (g)
-    _V_k_L = L.interpolate(V_k_L) # (E.a)
-    _V_k_1_L = _V_k_L # (E.b)
-    _V_k_H = H.interpolate(V_k_H) # (b)
-    _E_k_H = _V_k_H # (c)
-    quantized__E_k_H = deadzone.quantize(_E_k_H, q_step=Q_STEP) # (d)
-    dequantized__E_k_H = deadzone.dequantize(quantized__E_k_H, q_step=Q_STEP) # (E.g)
-    reconstructed__V_k_H = dequantized__E_k_H # (E.h)
-    reconstructed__V_k_1_H = reconstructed__V_k_H # (E.i)
-    quantized_E_k_H = H.reduce(quantized__E_k_H) # (f)
-    H.write(quantized_E_k_H, codestream_seq, k) # (g)
-    for k in range(1, n_frames):
-        V_k = frame.read(original_seq, k)
-        V_k = YCoCg.from_RGB(V_k)
-        V_k_L, V_k_H = DWT.analyze(V_k) # (a)
-        _V_k_L = L.interpolate(V_k_L) # (E.a)
-        flow = motion.estimate(_V_k_L[:,:,0], _V_k_1_L[:,:,0]) # (E.c)
-        prediction__V_k_L = motion.predict(_V_k_1_L, flow) # (E.d)
-        frame.debug_write(prediction__V_k_L, codestream_seq + "prediction_L_", k)
-        _V_k_1_L = _V_k_L # (E.b)
-        _E_k_L = _V_k_L - prediction__V_k_L # (E.e)
-        frame.debug_write(_V_k_L, codestream_seq + "predicted_L_", k)
-        S_k = _E_k_L < _V_k_L # (E.f)
-        frame.debug_write(S_k*64 + 128, codestream_seq + "selection_", k)
-        _V_k_H = H.interpolate(V_k_H) # (b)
-        prediction__V_k_H = motion.predict(reconstructed__V_k_1_H, flow) # (E.j)
-        frame.debug_write(prediction__V_k_H + 128, codestream_seq + "prediction_H_", k)
-        IP_prediction__V_k_H = np.where(S_k, prediction__V_k_H, 0) # (E.k)
-        frame.write(IP_prediction__V_k_H + 128, codestream_seq + "IP_prediction_H_", k)
-        _E_k_H = _V_k_H - IP_prediction__V_k_H # (c)
-        frame.debug_write(_E_k_H + 128, codestream_seq + "prediction_error_H_", k)
-        quantized__E_k_H = deadzone.quantize(_E_k_H, q_step=Q_STEP) # (d)
-        dequantized__E_k_H = deadzone.dequantize(quantized__E_k_H, q_step=Q_STEP) # (E.g)
-        reconstructed__V_k_H = dequantized__E_k_H + IP_prediction__V_k_H # (E.h)
-        frame.debug_write(reconstructed__V_k_H + 128, codestream_seq + "reconstructed_encoder_", k)
-        reconstructed__V_k_1_H = reconstructed__V_k_H # (E.i)
-        quantized_E_k_H = H.reduce(quantized__E_k_H) # (f)
-        L.write(V_k_L, "/tmp/", k) # (g)
-        H.write(quantized_E_k_H, "/tmp/", k) # (g)
-
-def decode(codestream_seq=CODESTREAM_SEQ, decoded_seq=DECODED_SEQ, n_frames=5):
-    k = 0
-    V_k_L = L.read(codestream_seq, k) # (h)
-    quantized_E_k_H = H.read(codestream_seq, k) # (h)
-    quantized__E_k_H = H.interpolate(quantized_E_k_H) # (i)
-    _V_k_L = L.interpolate(V_k_L) # (E.a)
-    _V_k_1_L = _V_k_L # (E.b)
-    dequantized__E_k_H = deadzone.dequantize(quantized__E_k_H) # (E.g)
-    reconstructed__V_k_H = dequantized__E_k_H # (E.h)
-    reconstructed__V_k_1_H = reconstructed__V_k_H # (E.i)
-    reconstructed_V_k_H = H.reduce(reconstructed__V_k_H) # (i)
-    reconstructed_V_k = DWT.synthesize(V_k_L, reconstructed_V_k_H) # (k)
-    reconstructed_V_k = YCoCg.to_RGB(reconstructed_V_k)
-    reconstructed_V_k = np.clip(reconstructed_V_k, 0, 255)
-    frame.write(reconstructed_V_k, decoded_seq + "reconstructed_decoder_", k)
-    for k in range(1, n_frames):
-        V_k_L = L.read(codestream_seq, k) # (g)
-        quantized_E_k_H = H.read(codestream_seq, k) # (g)
-        _V_k_L = L.interpolate(V_k_L) # (E.a)
-        flow = motion.estimate(_V_k_L[:,:,0], _V_k_1_L[:,:,0]) # (E.c)
-        prediction__V_k_L = motion.predict(_V_k_1_L, flow) # (E.d)
-        _V_k_1_L = _V_k_L # (E.b)
-        _E_k_L = _V_k_L - prediction__V_k_L # (E.e)
-        S_k = _E_k_L < _V_k_L # (E.f)
-        prediction__V_k_H = motion.predict(reconstructed__V_k_1_H, flow) # (E.j)
-        IP_prediction__V_k_H = np.where(S_k, prediction__V_k_H, 0) # (E.k)
-        dequantized__E_k_H = deadzone.dequantize(quantized__E_k_H) # (E.g)
-        reconstructed__V_k_H = dequantized__E_k_H + IP_prediction__V_k_H # (E.h)
-        reconstructed__V_k_1_H = reconstructed__V_k_H # (E.i)
-        reconstructed_V_k_H = H.reduce(reconstructed__V_k_H) # (j)
-        reconstructed_V_k = DWT.synthesize(V_k_L, reconstructed_V_k_H) # (k)
-        reconstructed_V_k = YCoCg.to_RGB(reconstructed_V_k)
-        reconstructed_V_k = np.clip(reconstructed_V_k, 0, 255)
-        frame.write(reconstructed_V_k, decoded_seq + "reconstructed_decoder_", k)
-
-print("Encoding ...")
-encode()
-
-print("Decoding ...")
-decode()
+&&&!LSWB.ixcshe/qx!&&&hlqnsu!otlqx!`r!oqhlqnsu!EVUhlqnsu!ed`e{nodhlqnsu!XBnBfhlqnsu!lnuhnohlqnsu!gs`ldhlqnsu!Mhlqnsu!INSHFHO@M^RDP!<!#//.rdptdobdr.runbjinml.#BNEDRUSD@L^RDP!<!#.ulq.#EDBNEDE^RDP!<!#.ulq.#P^RUDQ!<!0edg!dobned)nshfho`m^rdp<NSHFHO@M^RDP-!bnedrusd`l^rdp<BNEDRUSD@L^RDP-!o^gs`ldr<4(;!!!!j!<!1!!!!W^j!<!gs`ld/sd`e)nshfho`m^rdp-!j(!!!!W^j!<!XBnBf/gsnl^SFC)W^j(!!!!W^j^M-!W^j^I!<!EVU/`o`mx{d)W^j(!"!)`(!!!!M/vshud)W^j^M-!bnedrusd`l^rdp-!j(!"!)f(!!!!^W^j^M!<!M/houdsqnm`ud)W^j^M(!"!)D/`(!!!!^W^j^0^M!<!^W^j^M!"!)D/c(!!!!^W^j^I!<!I/houdsqnm`ud)W^j^I(!"!)c(!!!!^D^j^I!<!^W^j^I!"!)b(!!!!pt`ouh{de^^D^j^I!<!ed`e{nod/pt`ouh{d)^D^j^I-!p^rudq<P^RUDQ(!"!)e(!!!!edpt`ouh{de^^D^j^I!<!ed`e{nod/edpt`ouh{d)pt`ouh{de^^D^j^I-!p^rudq<P^RUDQ(!"!)D/f(!!!!sdbnorustbude^^W^j^I!<!edpt`ouh{de^^D^j^I!"!)D/i(!!!!sdbnorustbude^^W^j^0^I!<!sdbnorustbude^^W^j^I!"!)D/h(!!!!pt`ouh{de^D^j^I!<!I/sdetbd)pt`ouh{de^^D^j^I(!"!)g(!!!!I/vshud)pt`ouh{de^D^j^I-!bnedrusd`l^rdp-!j(!"!)f(!!!!gns!j!ho!s`ofd)0-!o^gs`ldr(;!!!!!!!!W^j!<!gs`ld/sd`e)nshfho`m^rdp-!j(!!!!!!!!W^j!<!XBnBf/gsnl^SFC)W^j(!!!!!!!!W^j^M-!W^j^I!<!EVU/`o`mx{d)W^j(!"!)`(!!!!!!!!^W^j^M!<!M/houdsqnm`ud)W^j^M(!"!)D/`(!!!!!!!!gmnv!<!lnuhno/druhl`ud)^W^j^MZ;-;-1\-!^W^j^0^MZ;-;-1\(!"!)D/b(!!!!!!!!qsdehbuhno^^W^j^M!<!lnuhno/qsdehbu)^W^j^0^M-!gmnv(!"!)D/e(!!!!!!!!gs`ld/edctf^vshud)qsdehbuhno^^W^j^M-!bnedrusd`l^rdp!*!#qsdehbuhno^M^#-!j(!!!!!!!!^W^j^0^M!<!^W^j^M!"!)D/c(!!!!!!!!^D^j^M!<!^W^j^M!,!qsdehbuhno^^W^j^M!"!)D/d(!!!!!!!!gs`ld/edctf^vshud)^W^j^M-!bnedrusd`l^rdp!*!#qsdehbude^M^#-!j(!!!!!!!!R^j!<!^D^j^M!=!^W^j^M!"!)D/g(!!!!!!!!gs`ld/edctf^vshud)R^j+75!*!039-!bnedrusd`l^rdp!*!#rdmdbuhno^#-!j(!!!!!!!!^W^j^I!<!I/houdsqnm`ud)W^j^I(!"!)c(!!!!!!!!qsdehbuhno^^W^j^I!<!lnuhno/qsdehbu)sdbnorustbude^^W^j^0^I-!gmnv(!"!)D/k(!!!!!!!!gs`ld/edctf^vshud)qsdehbuhno^^W^j^I!*!039-!bnedrusd`l^rdp!*!#qsdehbuhno^I^#-!j(!!!!!!!!HQ^qsdehbuhno^^W^j^I!<!oq/vidsd)R^j-!qsdehbuhno^^W^j^I-!1(!"!)D/j(!!!!!!!!gs`ld/vshud)HQ^qsdehbuhno^^W^j^I!*!039-!bnedrusd`l^rdp!*!#HQ^qsdehbuhno^I^#-!j(!!!!!!!!^D^j^I!<!^W^j^I!,!HQ^qsdehbuhno^^W^j^I!"!)b(!!!!!!!!gs`ld/edctf^vshud)^D^j^I!*!039-!bnedrusd`l^rdp!*!#qsdehbuhno^dssns^I^#-!j(!!!!!!!!pt`ouh{de^^D^j^I!<!ed`e{nod/pt`ouh{d)^D^j^I-!p^rudq<P^RUDQ(!"!)e(!!!!!!!!edpt`ouh{de^^D^j^I!<!ed`e{nod/edpt`ouh{d)pt`ouh{de^^D^j^I-!p^rudq<P^RUDQ(!"!)D/f(!!!!!!!!sdbnorustbude^^W^j^I!<!edpt`ouh{de^^D^j^I!*!HQ^qsdehbuhno^^W^j^I!"!)D/i(!!!!!!!!gs`ld/edctf^vshud)sdbnorustbude^^W^j^I!*!039-!bnedrusd`l^rdp!*!#sdbnorustbude^dobneds^#-!j(!!!!!!!!sdbnorustbude^^W^j^0^I!<!sdbnorustbude^^W^j^I!"!)D/h(!!!!!!!!pt`ouh{de^D^j^I!<!I/sdetbd)pt`ouh{de^^D^j^I(!"!)g(!!!!!!!!M/vshud)W^j^M-!#.ulq.#-!j(!"!)f(!!!!!!!!I/vshud)pt`ouh{de^D^j^I-!#.ulq.#-!j(!"!)f(edg!edbned)bnedrusd`l^rdp<BNEDRUSD@L^RDP-!edbnede^rdp<EDBNEDE^RDP-!o^gs`ldr<4(;!!!!j!<!1!!!!W^j^M!<!M/sd`e)bnedrusd`l^rdp-!j(!"!)i(!!!!pt`ouh{de^D^j^I!<!I/sd`e)bnedrusd`l^rdp-!j(!"!)i(!!!!pt`ouh{de^^D^j^I!<!I/houdsqnm`ud)pt`ouh{de^D^j^I(!"!)h(!!!!^W^j^M!<!M/houdsqnm`ud)W^j^M(!"!)D/`(!!!!^W^j^0^M!<!^W^j^M!"!)D/c(!!!!edpt`ouh{de^^D^j^I!<!ed`e{nod/edpt`ouh{d)pt`ouh{de^^D^j^I(!"!)D/f(!!!!sdbnorustbude^^W^j^I!<!edpt`ouh{de^^D^j^I!"!)D/i(!!!!sdbnorustbude^^W^j^0^I!<!sdbnorustbude^^W^j^I!"!)D/h(!!!!sdbnorustbude^W^j^I!<!I/sdetbd)sdbnorustbude^^W^j^I(!"!)h(!!!!sdbnorustbude^W^j!<!EVU/rxouidrh{d)W^j^M-!sdbnorustbude^W^j^I(!"!)j(!!!!sdbnorustbude^W^j!<!XBnBf/un^SFC)sdbnorustbude^W^j(!!!!sdbnorustbude^W^j!<!oq/bmhq)sdbnorustbude^W^j-!1-!344(!!!!gs`ld/vshud)sdbnorustbude^W^j-!edbnede^rdp!*!#sdbnorustbude^edbneds^#-!j(!!!!gns!j!ho!s`ofd)0-!o^gs`ldr(;!!!!!!!!W^j^M!<!M/sd`e)bnedrusd`l^rdp-!j(!"!)f(!!!!!!!!pt`ouh{de^D^j^I!<!I/sd`e)bnedrusd`l^rdp-!j(!"!)f(!!!!!!!!^W^j^M!<!M/houdsqnm`ud)W^j^M(!"!)D/`(!!!!!!!!gmnv!<!lnuhno/druhl`ud)^W^j^MZ;-;-1\-!^W^j^0^MZ;-;-1\(!"!)D/b(!!!!!!!!qsdehbuhno^^W^j^M!<!lnuhno/qsdehbu)^W^j^0^M-!gmnv(!"!)D/e(!!!!!!!!^W^j^0^M!<!^W^j^M!"!)D/c(!!!!!!!!^D^j^M!<!^W^j^M!,!qsdehbuhno^^W^j^M!"!)D/d(!!!!!!!!R^j!<!^D^j^M!=!^W^j^M!"!)D/g(!!!!!!!!qsdehbuhno^^W^j^I!<!lnuhno/qsdehbu)sdbnorustbude^^W^j^0^I-!gmnv(!"!)D/k(!!!!!!!!HQ^qsdehbuhno^^W^j^I!<!oq/vidsd)R^j-!qsdehbuhno^^W^j^I-!1(!"!)D/j(!!!!!!!!edpt`ouh{de^^D^j^I!<!ed`e{nod/edpt`ouh{d)pt`ouh{de^^D^j^I(!"!)D/f(!!!!!!!!sdbnorustbude^^W^j^I!<!edpt`ouh{de^^D^j^I!*!HQ^qsdehbuhno^^W^j^I!"!)D/i(!!!!!!!!sdbnorustbude^^W^j^0^I!<!sdbnorustbude^^W^j^I!"!)D/h(!!!!!!!!sdbnorustbude^W^j^I!<!I/sdetbd)sdbnorustbude^^W^j^I(!"!)k(!!!!!!!!sdbnorustbude^W^j!<!EVU/rxouidrh{d)W^j^M-!sdbnorustbude^W^j^I(!"!)j(!!!!!!!!sdbnorustbude^W^j!<!XBnBf/un^SFC)sdbnorustbude^W^j(!!!!!!!!sdbnorustbude^W^j!<!oq/bmhq)sdbnorustbude^W^j-!1-!344(!!!!!!!!gs`ld/vshud)sdbnorustbude^W^j-!edbnede^rdp!*!#sdbnorustbude^edbneds^#-!j(qshou)#Dobnehof!///#(dobned)(qshou)#Edbnehof!///#(edbned)(
