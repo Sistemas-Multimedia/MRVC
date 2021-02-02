@@ -1,4 +1,4 @@
-''' MRVC/deadzone.py '''
+''' MRVC/YCoCg.py '''
 
 import numpy as np
 
