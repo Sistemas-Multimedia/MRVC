@@ -1,6 +1,7 @@
-if test -f "football_422_ntsc.y4m"; then
+FILE=/tmp/football_422_ntsc.y4m
+if test -f "$FILE"; then
     echo "$FILE exists."
 else
-    wget https://media.xiph.org/video/derf/y4m/football_422_ntsc.y4m
+    wget https://media.xiph.org/video/derf/y4m/football_422_ntsc.y4m -P /tmp/
 fi
-ffmpeg -i football_422_ntsc.y4m -start_number 0 /tmp/football%03d.png
+ffmpeg -i $FILE -start_number 0 /tmp/football_%03d.png
