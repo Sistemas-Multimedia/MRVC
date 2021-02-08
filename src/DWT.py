@@ -3,6 +3,7 @@
 import numpy as np
 import pywt
 
+#WAVELET = pywt.Wavelet("haar")
 WAVELET = pywt.Wavelet("db5")
 #WAVELET = pywt.Wavelet("bior3.5")
 
