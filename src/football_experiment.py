@@ -28,9 +28,9 @@ except Exception:
 args = parser.parse_known_args()[0]
 
 print("Encoding ...")
-IPP.encode(video="/tmp/football_", codestream="/tmp/football_codestream_", n_frames=128)
+IPP.encode(video="/tmp/football_", codestream="/tmp/football_codestream_", n_frames=128, q_step=128)
 #IPP.encode(video="/tmp/LL", codestream="/tmp/LL", n_frames=16)
 
 print("Decoding ...")
 #IPP.decode(codestream="/tmp/LL", video="/tmp/decoded_LL", n_frames=16)
-IPP.decode(codestream="/tmp/football_codestream_", video="/tmp/football_decoded_", n_frames=128)
+IPP.decode(codestream="/tmp/football_codestream_", video="/tmp/football_decoded_", n_frames=128, q_step=128)
