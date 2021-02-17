@@ -28,9 +28,9 @@ def interpolate(L):
     HL = np.zeros(shape=L.shape, dtype=np.float64)
     HH = np.zeros(shape=L.shape, dtype=np.float64)
     H = (LH, HL, HH)
-    _L_ = DWT.synthesize(L, H)
+    _L_ = DWT.synthesize_step(L, H)
     return _L_
 
 def reduce(_L_):
-    L, _ = DWT.analyze(_L_)
+    L, _ = DWT.analyze_step(_L_)
     return L

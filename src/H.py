@@ -35,9 +35,9 @@ def write(H, prefix, frame_number):
 
 def interpolate(H):
     LL = np.zeros(shape=(H[0].shape), dtype=np.float64)
-    _H_ = DWT.synthesize(LL, H)
+    _H_ = DWT.synthesize_step(LL, H)
     return _H_
 
 def reduce(_H_):
-    _, H = DWT.analyze(_H_)
+    _, H = DWT.analyze_step(_H_)
     return H

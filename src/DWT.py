@@ -6,8 +6,9 @@ import pywt
 #WAVELET = pywt.Wavelet("haar")
 WAVELET = pywt.Wavelet("db5")
 #WAVELET = pywt.Wavelet("bior3.5")
+LEVELS = 3
 
-def analyze(color_frame, wavelet=WAVELET):
+def analyze_step(color_frame, wavelet=WAVELET):
     n_channels = color_frame.shape[2]
     color_decomposition = [None]*n_channels
     for c in range(n_channels):
@@ -31,7 +32,7 @@ def analyze(color_frame, wavelet=WAVELET):
     return (LL, (LH, HL, HH))
     #return color_decomposition
 
-def synthesize(LL, H, wavelet=WAVELET):
+def synthesize_step(LL, H, wavelet=WAVELET):
 #def synthesize(color_decomposition, wavelet=WAVELET):
     #print(type(H))
     LH, HL, HH = H
@@ -47,3 +48,6 @@ def synthesize(LL, H, wavelet=WAVELET):
     for c in range(n_channels):
         color_frame[:,:,c] = _color_frame[c][:,:]
     return color_frame
+
+def synthesize(color_frame, wavelet=WAVELET, levels=LEVELS):
+    pass
