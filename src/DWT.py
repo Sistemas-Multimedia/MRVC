@@ -23,23 +23,15 @@ def analyze_step(color_frame, wavelet=WAVELET):
         LH[:,:,c] = color_decomposition[c][1][0][:,:]
         HL[:,:,c] = color_decomposition[c][1][1][:,:]
         HH[:,:,c] = color_decomposition[c][1][2][:,:]
-    #L = []
-    #H = []
-    #for c in range(n_channels):
-    #    L.append(color_decomposition[c][0])
-    #    H.append(color_decomposition[c][1])
-    #return L, H
     return (LL, (LH, HL, HH))
-    #return color_decomposition
 
 def synthesize_step(LL, H, wavelet=WAVELET):
-#def synthesize(color_decomposition, wavelet=WAVELET):
-    #print(type(H))
     LH, HL, HH = H
     n_channels = LL.shape[2] #len(LL)
     _color_frame = []
     for c in range(n_channels):
         frame = pywt.idwt2((LL[:,:,c], (LH[:,:,c], HL[:,:,c], HH[:,:,c])), wavelet=wavelet, mode='per')
+        #frame = pywt.idwt2((LL[:,:,c], np.array(H)[:,:,c]), wavelet=wavelet, mode='per')
         _color_frame.append(frame)
     n_rows, n_columns = _color_frame[0].shape
     #n_rows = _color_frame[0].shape[0]
@@ -49,5 +41,16 @@ def synthesize_step(LL, H, wavelet=WAVELET):
         color_frame[:,:,c] = _color_frame[c][:,:]
     return color_frame
 
-def synthesize(color_frame, wavelet=WAVELET, levels=LEVELS):
-    pass
+def analyze(color_frame, wavelet=WAVELET, levels=LEVELS):
+    H = [None]*levels
+    L, H[0] = analyze_step(color_frame, wavelet)
+    for i in range(levels-1):
+        L, H[i+1] = analyze_step(L, wavelet)
+    return [L, H[::-1]]
+
+def synthesize(color_decomposition, wavelet=WAVELET, levels=LEVELS):
+    color_frame = synthesize_step(color_decomposition[0], color_decomposition[1], wavelet)
+    for i in range(levels-1):
+        color_frame = synthesize_step(color_frame, color_decomposition[i], wavelet)
+    return color_frame
+
