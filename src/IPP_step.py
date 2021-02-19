@@ -87,6 +87,7 @@ def encode(L_sequence=CODESTREAM_PREFIX + "L", H_sequence=CODESTREAM_PREFIX + "H
     quantized__E_k_H = deadzone.quantize(_E_k_H, q_step=q_step) # (d)
     dequantized__E_k_H = deadzone.dequantize(quantized__E_k_H, q_step=q_step) # (E.g)
     reconstructed__V_k_H = dequantized__E_k_H # (E.h)
+    H.write(reconstructed__V_k_H, codestream + "reconstructed_H", k)
     reconstructed__V_k_1_H = reconstructed__V_k_H # (E.i)
     quantized_E_k_H = H.reduce(quantized__E_k_H) # (f)
     H.write(quantized_E_k_H, codestream, k) # (g)
@@ -130,6 +131,7 @@ def encode(L_sequence=CODESTREAM_PREFIX + "L", H_sequence=CODESTREAM_PREFIX + "H
 
         #assert (dequantized__E_k_H == _E_k_H.astype(np.int16)).all()
         reconstructed__V_k_H = dequantized__E_k_H + IP_prediction__V_k_H # (E.h)
+        H.write(reconstructed__V_k_H, codestream + "reconstructed_H", k)
         #assert (reconstructed__V_k_H == _V_k_H.astype(np.int16)).all()
         frame.debug_write(reconstructed__V_k_H + 128, codestream + "encoder_reconstructed_", k)
         reconstructed__V_k_1_H = reconstructed__V_k_H # (E.i)
