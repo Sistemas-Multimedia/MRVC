@@ -69,11 +69,15 @@ class Encoder():
         L.write(V_k_L, self.codestream, self.k) # (g)
         H.write(quantized_E_k_H, self.codestream, self.k) # (g)
 
-def encode(video=VIDEO_PREFIX, codestream=CODESTREAM_PREFIX, n_frames=N_FRAMES, q_step=Q_STEP):
+def encode(L_sequence=CODESTREAM_PREFIX + "L", H_sequence=CODESTREAM_PREFIX + "H", codestream=CODESTREAM_PREFIX, n_frames=N_FRAMES, q_step=Q_STEP):
+        
+#def encode(video=VIDEO_PREFIX, codestream=CODESTREAM_PREFIX, n_frames=N_FRAMES, q_step=Q_STEP):
     k = 0
-    V_k = frame.read(video, k)
+    #V_k = frame.read(video, k)
     #V_k = YCoCg.from_RGB(V_k)
-    V_k_L, V_k_H = DWT.analyze_step(V_k) # (a)
+    #V_k_L, V_k_H = DWT.analyze_step(V_k) # (a)
+    V_k_L = L.read(L_sequence, k)
+    V_k_H = H.read(H_sequence, k)
     #L.write(YCoCg.to_RGB(V_k_L), codestream, k) # (g)
     L.write(V_k_L, codestream, k) # (g)
     _V_k_L = L.interpolate(V_k_L) # (E.a)
@@ -87,9 +91,11 @@ def encode(video=VIDEO_PREFIX, codestream=CODESTREAM_PREFIX, n_frames=N_FRAMES, 
     quantized_E_k_H = H.reduce(quantized__E_k_H) # (f)
     H.write(quantized_E_k_H, codestream, k) # (g)
     for k in range(1, n_frames):
-        V_k = frame.read(video, k)
+        #V_k = frame.read(video, k)
         #V_k = YCoCg.from_RGB(V_k)
-        V_k_L, V_k_H = DWT.analyze_step(V_k) # (a)
+        #V_k_L, V_k_H = DWT.analyze_step(V_k) # (a)
+        V_k_L = L.read(L_sequence, k)
+        V_k_H = H.read(H_sequence, k)
         _V_k_L = L.interpolate(V_k_L) # (E.a)
         flow = motion.estimate(_V_k_L[:,:,0], _V_k_1_L[:,:,0]) # (E.c)
         prediction__V_k_L = motion.predict(_V_k_1_L, flow) # (E.d)
@@ -178,6 +184,8 @@ class Decoder():
         frame.write(reconstructed_V_k, self.video, self.k)
 
 def decode(codestream=CODESTREAM_PREFIX, video=DECODED_VIDEO_PREFIX, n_frames=N_FRAMES, q_step=Q_STEP):
+        
+#def decode(codestream=CODESTREAM_PREFIX, video=DECODED_VIDEO_PREFIX, n_frames=N_FRAMES, q_step=Q_STEP):
     k = 0
     #V_k_L = YCoCg.from_RGB(L.read(codestream, k)) # (h)
     V_k_L = L.read(codestream, k) # (h)
