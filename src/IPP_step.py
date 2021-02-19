@@ -22,7 +22,7 @@ class Encoder():
         self.q_step = q_step
         self.k = 0
 
-        # Encode first frame
+        # Encode first frame I-type
         self.V_k = frame.read(self.video, self.k)
         self.V_k_L, self.V_k_H = DWT.analyze_step(V_k) # (a)
         L.write(V_k_L, self.codestream, self.k) # (g)
