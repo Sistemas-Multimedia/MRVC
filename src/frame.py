@@ -2,12 +2,17 @@
 
 import numpy as np
 import cv2
+import colors
 
 def read(prefix, frame_number):
     ASCII_frame_number = str(frame_number).zfill(3)
     fn = f"{prefix}{ASCII_frame_number}.png"
     frame = cv2.imread(fn, cv2.IMREAD_UNCHANGED)
-    frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+    try:
+        frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+    except cv2.error:
+        print(colors.red(f'frame.read: Unable to read "{fn}"'))
+        raise
     frame = np.array(frame, dtype=np.float64)
     #print(frame.shape)
     return frame # [rows, columns, components]

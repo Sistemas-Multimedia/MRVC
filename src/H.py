@@ -3,6 +3,7 @@
 import numpy as np
 import DWT
 import cv2
+import colors
 
 def read(prefix, frame_number):
     ASCII_frame_number = str(frame_number).zfill(3)
@@ -12,7 +13,10 @@ def read(prefix, frame_number):
     for sbn in subband_names:
         fn = f"{prefix}{sbn}{ASCII_frame_number}.png"
         subband = cv2.imread(fn, cv2.IMREAD_UNCHANGED)
-        subband = cv2.cvtColor(subband, cv2.COLOR_BGR2RGB)
+        try:
+            subband = cv2.cvtColor(subband, cv2.COLOR_BGR2RGB)
+        except cv2.error:
+            print(colors.red(f'H.read: Unable to read "{fn}"'))
         subband = np.array(subband, dtype=np.float64) # Ojo, quizás se pueda cambiar a np.int16
         subband -= 32768.0
         H.append(subband)
