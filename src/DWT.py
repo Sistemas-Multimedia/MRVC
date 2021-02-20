@@ -46,7 +46,8 @@ def analyze(color_frame, wavelet=WAVELET, levels=LEVELS):
     L, H[0] = analyze_step(color_frame, wavelet)
     for i in range(levels-1):
         L, H[i+1] = analyze_step(L, wavelet)
-    return [L, *H[::-1]]
+    #return [L, *H[::-1]]
+    return [L, *H]
 
 def synthesize(color_decomposition, wavelet=WAVELET, levels=LEVELS):
     color_frame = synthesize_step(color_decomposition[0], color_decomposition[1], wavelet)

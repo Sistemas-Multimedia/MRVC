@@ -15,14 +15,15 @@ DECODED_VIDEO_PREFIX = "/tmp/decoder_"
 Q_STEP = 128
 N_FRAMES = 16
 
-def encode(L_sequence=CODESTREAM_PREFIX + "L", H_sequence=CODESTREAM_PREFIX + "H", codestream=CODESTREAM_PREFIX, n_frames=N_FRAMES, q_step=Q_STEP):
+#def encode(L_sequence=CODESTREAM_PREFIX + "L", H_sequence=CODESTREAM_PREFIX + "H", codestream=CODESTREAM_PREFIX, n_frames=N_FRAMES, q_step=Q_STEP):
+def encode(video=VIDEO_PREFIX, codestream=CODESTREAM_PREFIX, n_frames=N_FRAMES, q_step=Q_STEP):
     try:
         k = 0
         #V_k = frame.read(video, k)
         #V_k = YCoCg.from_RGB(V_k)
         #V_k_L, V_k_H = DWT.analyze_step(V_k) # (a)
-        V_k_L = L.read(L_sequence, k)
-        V_k_H = H.read(H_sequence, k)
+        V_k_L = L.read(video, k)#V_k_L = L.read(L_sequence, k)
+        V_k_H = H.read(video, k)#V_k_H = H.read(H_sequence, k)
         #L.write(YCoCg.to_RGB(V_k_L), codestream, k) # (g)
         L.write(V_k_L, codestream, k) # (g)
         _V_k_L = L.interpolate(V_k_L) # (E.a)
@@ -32,7 +33,7 @@ def encode(L_sequence=CODESTREAM_PREFIX + "L", H_sequence=CODESTREAM_PREFIX + "H
         quantized__E_k_H = deadzone.quantize(_E_k_H, q_step=q_step) # (d)
         dequantized__E_k_H = deadzone.dequantize(quantized__E_k_H, q_step=q_step) # (E.g)
         reconstructed__V_k_H = dequantized__E_k_H # (E.h)
-        frame.write(reconstructed__V_k_H, codestream + "reconstructed_H", k)
+        frame.write(reconstructed__V_k_H, video + "reconstructed_H", k)
         reconstructed__V_k_1_H = reconstructed__V_k_H # (E.i)
         quantized_E_k_H = H.reduce(quantized__E_k_H) # (f)
         H.write(quantized_E_k_H, codestream, k) # (g)
@@ -40,8 +41,8 @@ def encode(L_sequence=CODESTREAM_PREFIX + "L", H_sequence=CODESTREAM_PREFIX + "H
             #V_k = frame.read(video, k)
             #V_k = YCoCg.from_RGB(V_k)
             #V_k_L, V_k_H = DWT.analyze_step(V_k) # (a)
-            V_k_L = L.read(L_sequence, k)
-            V_k_H = H.read(H_sequence, k)
+            V_k_L = L.read(video, k)#V_k_L = L.read(L_sequence, k)
+            V_k_H = H.read(video, k)#V_k_H = H.read(H_sequence, k)
             _V_k_L = L.interpolate(V_k_L) # (E.a)
             flow = motion.estimate(_V_k_L[:,:,0], _V_k_1_L[:,:,0]) # (E.c)
             prediction__V_k_L = motion.predict(_V_k_1_L, flow) # (E.d)
@@ -76,7 +77,7 @@ def encode(L_sequence=CODESTREAM_PREFIX + "L", H_sequence=CODESTREAM_PREFIX + "H
 
             #assert (dequantized__E_k_H == _E_k_H.astype(np.int16)).all()
             reconstructed__V_k_H = dequantized__E_k_H + IP_prediction__V_k_H # (E.h)
-            frame.write(reconstructed__V_k_H, codestream + "reconstructed_H", k)
+            frame.write(reconstructed__V_k_H, video + "reconstructed_H", k)
             #assert (reconstructed__V_k_H == _V_k_H.astype(np.int16)).all()
             frame.debug_write(reconstructed__V_k_H + 128, codestream + "encoder_reconstructed_", k)
             reconstructed__V_k_1_H = reconstructed__V_k_H # (E.i)
@@ -85,7 +86,7 @@ def encode(L_sequence=CODESTREAM_PREFIX + "L", H_sequence=CODESTREAM_PREFIX + "H
             L.write(V_k_L, codestream, k) # (g)
             H.write(quantized_E_k_H, codestream, k) # (g)
     except:
-        print(colors.red(f'IPP_step.encode(L_sequence="{L_sequence}", H_sequence="{H_sequence}", codestream="{codestream}", n_frames={n_frames}, q_step={q_step})'))
+        print(colors.red(f'IPP_step.encode(video="{video}", codestream="{codestream}", n_frames={n_frames}, q_step={q_step})'))
         raise
 
 def decode(codestream=CODESTREAM_PREFIX, video=DECODED_VIDEO_PREFIX, n_frames=N_FRAMES, q_step=Q_STEP):

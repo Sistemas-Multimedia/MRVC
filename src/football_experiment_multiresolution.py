@@ -20,28 +20,32 @@ for k in range(n_frames):
     V_k = frame.read(input_video, k)
     V_k = YCoCg.from_RGB(V_k)
     decomposition = DWT.analyze(V_k, levels=levels)
-    L.write(decomposition[0], f"{input_video}_L{levels}", k)
-    for l in range(levels, 1, -1):
-        H.write(decomposition[l-1], f"{input_video}_H{l}", k)
-
+    L.write(decomposition[0], f"{input_video}{levels}_", k)
+    for l in range(levels, 0, -1):
+        H.write(decomposition[l], f"{input_video}{l}_", k)
+#quit()
 print("IPP... encoding")
 
 print(f"Computing SRL {levels}")
-IPP_step.encode(f"{input_video}_L{levels}", f"{input_video}_H{levels}", codestream, n_frames, q_step)
+IPP_step.encode(f"{input_video}{levels}_", f"{codestream}{levels}_", n_frames, q_step)
 for k in range(n_frames):
-    reconstruction__V_k_H = frame.read(f"{codestream}_reconstructed_H", k)
-    V_k_L = L.read(f"{input_video}_L{levels}", k)
+    reconstruction__V_k_H = frame.read(f"{input_video}{levels}_reconstructed_H", k)
+    V_k_L = L.read(f"{input_video}{levels}_", k)
     reconstruction_V_k_H = H.reduce(reconstruction__V_k_H)
     reconstruction_V_k = DWT.synthesize_step(V_k_L, reconstruction_V_k_H)
-    frame.write(reconstruction_V_k, f"{input_video}_reconstructed_L{levels}", k)
+    #frame.write(reconstruction_V_k, f"{input_video}{levels}_reconstructed_LL", k)
+    frame.write(reconstruction_V_k, f"{input_video}{levels-1}_LL", k)
 
-for l in range(levels, 1, -1):
-    print(f"Computing SRL {l+1}")
-    IPP_step.encode(f"{input_video}_reconstructed_L{l}", f"{input_video}_H{l}", codestream, n_frames, q_step)
+for l in range(levels-1, 0, -1):
+    print(f"Computing SRL {l}")
+    #IPP_step.encode(f"{input_video}{l}_reconstructed_", f"{codestream}{l}_", n_frames, q_step)
+    IPP_step.encode(f"{input_video}{l}_", f"{codestream}{l}_", n_frames, q_step)
     for k in range(n_frames):
-        reconstruction__V_k_H = frame.read(f"{codestream}_reconstructed_H", k)
-        V_k_L = frame.read(f"{input_video}L{l}", k)
+        reconstruction__V_k_H = frame.read(f"{input_video}{l}_reconstructed_H", k)
+        V_k_L = frame.read(f"{input_video}{l}_LL", k)
         reconstruction_V_k_H = H.reduce(reconstruction__V_k_H)
         reconstruction_V_k = DWT.synthesize_step(V_k_L, reconstruction_V_k_H)
-        frame.write(reconstruction_V_k, f"{input_video}_reconstructed_L{l}", k)
+        #frame.write(reconstruction_V_k, f"{input_video}{l}_reconstructed_LL", k)
+        frame.write(reconstruction_V_k, f"{input_video}{l-1}_LL", k)
+        
 
