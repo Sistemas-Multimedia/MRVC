@@ -33,7 +33,8 @@ def encode(video=VIDEO_PREFIX, codestream=CODESTREAM_PREFIX, n_frames=N_FRAMES, 
         quantized__E_k_H = deadzone.quantize(_E_k_H, q_step=q_step) # (d)
         dequantized__E_k_H = deadzone.dequantize(quantized__E_k_H, q_step=q_step) # (E.g)
         reconstructed__V_k_H = dequantized__E_k_H # (E.h)
-        frame.write(reconstructed__V_k_H, video + "reconstructed_H", k)
+        #frame.write(reconstructed__V_k_H, video + "reconstructed_H", k)
+        L.write(reconstructed__V_k_H, video + "reconstructed_H", k)
         reconstructed__V_k_1_H = reconstructed__V_k_H # (E.i)
         quantized_E_k_H = H.reduce(quantized__E_k_H) # (f)
         H.write(quantized_E_k_H, codestream, k) # (g)
@@ -77,7 +78,8 @@ def encode(video=VIDEO_PREFIX, codestream=CODESTREAM_PREFIX, n_frames=N_FRAMES, 
 
             #assert (dequantized__E_k_H == _E_k_H.astype(np.int16)).all()
             reconstructed__V_k_H = dequantized__E_k_H + IP_prediction__V_k_H # (E.h)
-            frame.write(reconstructed__V_k_H, video + "reconstructed_H", k)
+            #frame.write(reconstructed__V_k_H, video + "reconstructed_H", k) # Ojo, reconstructed__V_k_H está a 16 bits!!
+            L.write(reconstructed__V_k_H, video + "reconstructed_H", k)
             #assert (reconstructed__V_k_H == _V_k_H.astype(np.int16)).all()
             frame.debug_write(reconstructed__V_k_H + 128, codestream + "encoder_reconstructed_", k)
             reconstructed__V_k_1_H = reconstructed__V_k_H # (E.i)
