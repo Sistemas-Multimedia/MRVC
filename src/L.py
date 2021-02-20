@@ -3,12 +3,17 @@
 import numpy as np
 import DWT
 import cv2
+from colors import red
 
 def read(prefix, frame_number):
     ASCII_frame_number = str(frame_number).zfill(3)
     fn = f"{prefix}LL{ASCII_frame_number}.png"
     subband = cv2.imread(fn, cv2.IMREAD_UNCHANGED) # [rows, columns, components]
-    subband = cv2.cvtColor(subband, cv2.COLOR_BGR2RGB)
+    try:
+        subband = cv2.cvtColor(subband, cv2.COLOR_BGR2RGB)
+    except cv2.error:
+        print(red(f'Unable to read "{fn}"'))
+        raise
     subband = np.array(subband, dtype=np.float64)
     subband -= 32768.0
     return subband # [rows, columns, components]
