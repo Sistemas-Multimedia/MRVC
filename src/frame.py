@@ -17,6 +17,17 @@ def read(prefix, frame_number):
     #print(frame.shape)
     return frame # [rows, columns, components]
 
+def load(name: str) -> np.ndarray: # [component, row, column]
+    fn = name + ".png"
+    frame = cv2.imread(fn, cv2.IMREAD_UNCHANGED)
+    try:
+        B,G,R = cv2.split(frame)
+    except ValueError:
+        print(colors.red(f'frame.load: Unable to read "{fn}"'))
+        raise
+    frame = np.array([R, G, B], dtype=np.int16)
+    return frame
+
 def _write(frame, prefix, frame_number):
     ASCII_frame_number = str(frame_number).zfill(3)
     fn = f"{prefix}{ASCII_frame_number}.png"
@@ -31,3 +42,9 @@ def debug_write(frame, prefix, frame_number):
 
 def write(frame, prefix, frame_number):
     _write(frame, prefix, frame_number)
+
+def normalize(frame):
+    max_component = np.max(frame)
+    min_component = np.min(frame)
+    max_min_component = max_component - min_component
+    return (frame - min_component) / max_min_component
