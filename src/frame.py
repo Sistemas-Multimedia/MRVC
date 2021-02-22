@@ -26,8 +26,19 @@ def load(name: str) -> np.ndarray: # [component, row, column]
         print(colors.red(f'frame.load: Unable to read "{fn}"'))
         raise
     frame = np.array([R, G, B], dtype=np.int16)
+    if __debug__:
+        print(f"frame.load({name})", frame.shape)
     return frame
 
+def save(frame: np.ndarray, name: str) -> None:
+    fn = name + ".png"
+    frame = cv2.merge((frame[0], frame[1], frame[2]))
+    cv2.imwrite(fn, frame)
+
+def debug_save(frame: np.ndarray, name: str) -> None:
+    if __debug__:
+        save(frame, name)
+    
 def _write(frame, prefix, frame_number):
     ASCII_frame_number = str(frame_number).zfill(3)
     fn = f"{prefix}{ASCII_frame_number}.png"

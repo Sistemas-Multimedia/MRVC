@@ -6,7 +6,6 @@ Q_STEP = 1
 
 def quantize(x, q_step=Q_STEP):
     k = (x / q_step).astype(np.int16)
-    #return x
     return k
 
 def dequantize(k, q_step=Q_STEP):
