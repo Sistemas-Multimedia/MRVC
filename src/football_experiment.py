@@ -16,10 +16,14 @@ output_video = "/tmp/football_decoded_"
 
 print("Computing DWT")
 for k in range(n_frames):
-    V_k = frame.read(input_video, k)
-    V_k = YCoCg.from_RGB(V_k)
+    V_k = frame.read(f"{input_video}{k:03d}")
+    V_k = YCoCg.from_RGB(V_k.astype(np.int16))
     V_k_L, V_k_H = DWT.analyze_step(V_k) # (a)
-    L.write(V_k_L, input_video, k) # (g) L.write(V_k_L, input_video + "L", k)
+    V_k_L += 32768
+    L.write(V_k_L.astype(np.uint16), input_video, k) # (g) L.write(V_k_L, input_video + "L", k)
+    for s in V_k_H:
+        s += 32768
+        s = s.astype(np.uint16)
     H.write(V_k_H, input_video, k) #H.write(V_k_H, input_video + "H", k)
 
 print("IPP... encoding")
@@ -35,7 +39,7 @@ print("IPP ... Decoding")
 IPP_step.decode(codestream, output_video, n_frames, q_step)
 
 for k in range(n_frames):
-    V_k = frame.read(output_video, k)
+    V_k = frame.read(f"{output_video}{k:03d}")
     V_k = YCoCg.to_RGB(V_k)
     V_k = np.clip(V_k, 0, 255)
     frame.write(V_k, output_video + "R_", k)

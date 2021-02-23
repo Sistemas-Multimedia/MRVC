@@ -9,11 +9,19 @@ WAVELET = pywt.Wavelet("db5")
 N_LEVELS = 3
 
 def analyze_step(color_frame: np.ndarray, wavelet: pywt.Wavelet =WAVELET) -> list:
-    n_channels = color_frame.shape[2]
-    color_decomposition = [None]*n_channels
+    n_rows, n_columns, n_channels = color_frame.shape[0]//2, color_frame.shape[1]//2, color_frame.shape[2]
+    LL = np.empty(shape=(n_rows, n_columns, n_channels), dtype=np.float64)
+    LH = np.empty(shape=(n_rows, n_columns, n_channels), dtype=np.float64)
+    HL = np.empty(shape=(n_rows, n_columns, n_channels), dtype=np.float64)
+    HH = np.empty(shape=(n_rows, n_columns, n_channels), dtype=np.float64)
+    #n_channels = color_frame.shape[2]
+    #color_decomposition = [None]*n_channels
     for c in range(n_channels):
-        color_decomposition[c] = pywt.dwt2(data=color_frame[:,:,c], wavelet=wavelet, mode='per')
-    return color_decomposition
+        #color_decomposition[c] = pywt.dwt2(data=color_frame[:,:,c], wavelet=wavelet, mode='per')
+        LL[:,:,c], (LH[:,:,c], HL[:,:,c], HH[:,:,c]) = pywt.dwt2(data=color_frame[:,:,c], wavelet=wavelet, mode='per')
+    #return color_decomposition
+    #return np.array([color_decomposition[0][0], color_decomposition[1][0], color_decomposition[2][0]]), ()
+    return (LL, (LH, HL, HH))
 
 def synthesize_step(color_decomposition: list, wavelet: pywt.Wavelet =WAVELET) -> np.ndarray:
     n_channels = len(color_decomposition)
@@ -30,7 +38,7 @@ def analyze(color_frame: np.ndarray, wavelet: pywt.Wavelet =WAVELET, n_levels: i
         color_decomposition[c] = pywt.wavedec2(data=color_frame[:,:,c], wavelet=wavelet, mode='per', level=n_levels)
     return color_decomposition # A list of "gray" decompositions
 
-def synthesize(color_decomposition: list, wavelet: pywt.Wavelet =WAVELET) -> ndarray:
+def synthesize(color_decomposition: list, wavelet: pywt.Wavelet =WAVELET) -> np.ndarray:
     n_channels = len(color_decomposition)
     _color_frame = []
     for c in range(n_channels):
@@ -42,6 +50,8 @@ def synthesize(color_decomposition: list, wavelet: pywt.Wavelet =WAVELET) -> nda
     for c in range(n_channels):
         color_frame[:,:,c] = _color_frame[c][:,:]
     return color_frame
+
+################
 
 def __analyze_step(color_frame, wavelet=WAVELET):
     n_channels = color_frame.shape[2]

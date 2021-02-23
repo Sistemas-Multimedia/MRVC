@@ -5,7 +5,7 @@ import DWT
 import cv2
 import colors
 
-def read(prefix, frame_number):
+def read(prefix: str, frame_number: int) -> np.ndarray: # [LH, HL, HH], each one [rows, columns, components]
     ASCII_frame_number = str(frame_number).zfill(3)
     subband_names = ["LH", "HL", "HH"]
     H = []
@@ -18,28 +18,32 @@ def read(prefix, frame_number):
         except cv2.error:
             print(colors.red(f'H.read: Unable to read "{fn}"'))
         subband = np.array(subband, dtype=np.float64) # Ojo, quizás se pueda cambiar a np.int16
-        subband -= 32768.0
+        subband -= 32768
+        if __debug__:
+            print(f"H.read({prefix}, {frame_number})", subband.shape, subband.dtype)
         H.append(subband)
-    return H # [LH, HL, HH], each one [rows, columns, components]
+    return H
 
-def write(H, prefix, frame_number):
+def write(H: np.ndarray, prefix: str, frame_number: int) -> None:
     ASCII_frame_number = str(frame_number).zfill(3)
     subband_names = ["LH", "HL", "HH"]
     sb = 0
     for sbn in subband_names:
-        subband = np.array(H[sb], dtype=np.float64) # Ojo, quizás se puede quitar
+        #subband = np.array(H[sb], dtype=np.float64) # Ojo, quizás se puede quitar
+        subband = H[sb]
         #subband = H[i].astype(np.float32)
-        subband += 32768.0
+        subband += 32768
         subband = subband.astype(np.uint16)
         fn = f"{prefix}{sbn}{ASCII_frame_number}.png"
-        print(subband.shape, fn)
+        if __debug__:
+            print(f"H.write({prefix}, {frame_number})", subband.shape, subband.dtype)
         subband = cv2.cvtColor(subband, cv2.COLOR_RGB2BGR)
         cv2.imwrite(fn, subband)
         sb += 1
 
 def interpolate(H):
     LL = np.zeros(shape=(H[0].shape), dtype=np.float64)
-    _H_ = DWT.synthesize_step(LL, H)
+    _H_ = DWT.synthesize_step((LL, H))
     return _H_
 
 def reduce(_H_):
