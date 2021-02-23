@@ -4,18 +4,40 @@ import numpy as np
 import cv2
 import colors
 
-def read(prefix, frame_number):
-    ASCII_frame_number = str(frame_number).zfill(3)
-    fn = f"{prefix}{ASCII_frame_number}.png"
-    frame = cv2.imread(fn, cv2.IMREAD_UNCHANGED)
+def read(name: str) -> np.ndarray: # [row, column, component]
+    fn = name + ".png"
+    img = cv2.imread(fn, cv2.IMREAD_UNCHANGED)
     try:
-        frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+        img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
     except cv2.error:
         print(colors.red(f'frame.read: Unable to read "{fn}"'))
         raise
-    frame = np.array(frame, dtype=np.float64)
-    #print(frame.shape)
-    return frame # [rows, columns, components]
+    #img = np.array(img, dtype=np.float32)
+    if __debug__:
+        print(f"frame.read({name})", img.shape, img.dtype)
+    return img
+
+def _write(img: np.ndarray, name: str) -> None:
+    fn = name + ".png"
+    if __debug__:
+        print(f"frame.write({name})", img.shape, img.dtype)
+    img = cv2.cvtColor(img, cv2.COLOR_RGB2BGR)
+    cv2.imwrite(fn, img)
+
+def debug_write(img: np.ndarray, name: str) -> None:
+    if __debug__:
+        _write(img, name)
+
+def write(img: np.ndarray, name: str) -> None:
+    _write(img, name)
+
+def normalize(img: np.ndarray) -> np.ndarray: # [row, column, component]
+    max_component = np.max(img)
+    min_component = np.min(img)
+    max_min_component = max_component - min_component
+    return (img - min_component) / max_min_component
+
+##########
 
 def load(name: str) -> np.ndarray: # [component, row, column]
     fn = name + ".png"
@@ -39,23 +61,3 @@ def debug_save(frame: np.ndarray, name: str) -> None:
     if __debug__:
         save(frame, name)
     
-def _write(frame, prefix, frame_number):
-    ASCII_frame_number = str(frame_number).zfill(3)
-    fn = f"{prefix}{ASCII_frame_number}.png"
-    print(frame.shape, fn)
-    frame = frame.astype(np.uint8)
-    frame = cv2.cvtColor(frame, cv2.COLOR_RGB2BGR)
-    cv2.imwrite(fn, frame)
-
-def debug_write(frame, prefix, frame_number):
-    if __debug__:
-        _write(frame, prefix, frame_number)
-
-def write(frame, prefix, frame_number):
-    _write(frame, prefix, frame_number)
-
-def normalize(frame):
-    max_component = np.max(frame)
-    min_component = np.min(frame)
-    max_min_component = max_component - min_component
-    return (frame - min_component) / max_min_component
