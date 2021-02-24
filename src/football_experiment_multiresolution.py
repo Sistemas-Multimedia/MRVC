@@ -13,7 +13,7 @@ n_frames = 32
 input_video = "/tmp/football_"
 codestream = "/tmp/football_codestream_"
 output_video = "/tmp/football_decoded_"
-levels = 2
+levels = 3
 
 print("Computing DWT")
 for k in range(n_frames):
