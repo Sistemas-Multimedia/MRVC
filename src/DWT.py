@@ -64,7 +64,7 @@ def analyze(color_frame: np.ndarray, wavelet: pywt.Wavelet =WAVELET, n_levels: i
     output.append((LH, HL, HH))
     
      # For the rest of SRLs
-    for r in range(2, n_levels):
+    for r in range(2, n_levels+1):
         n_rows_subband, n_columns_subband = color_decomposition[0][r][0].shape
         LH = np.empty(shape=(n_rows_subband, n_columns_subband, n_channels), dtype=np.float64)
         HL = np.empty(shape=(n_rows_subband, n_columns_subband, n_channels), dtype=np.float64)
