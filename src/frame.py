@@ -3,6 +3,8 @@
 import numpy as np
 import cv2
 import colors
+if __debug__:
+    import os
 
 def read(name: str) -> np.ndarray: # [row, column, component]
     fn = name + ".png"
@@ -14,15 +16,15 @@ def read(name: str) -> np.ndarray: # [row, column, component]
         raise
     #img = np.array(img, dtype=np.float32)
     if __debug__:
-        print(f"frame.read({name})", img.shape, img.dtype)
+        print(f"frame.read({name})", img.shape, img.dtype, os.path.getsize(fn))
     return img.astype(np.int32)
 
 def _write(img: np.ndarray, name: str) -> None:
     fn = name + ".png"
-    if __debug__:
-        print(f"frame.write({name})", img.shape, img.dtype)
     img = cv2.cvtColor(img, cv2.COLOR_RGB2BGR)
     cv2.imwrite(fn, img)
+    if __debug__:
+        print(f"frame.write({name})", img.shape, img.dtype, os.path.getsize(fn))
 
 def write(img: np.ndarray, name: str) -> None:
     _write(img, name)

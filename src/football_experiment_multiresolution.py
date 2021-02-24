@@ -17,11 +17,11 @@ levels = 3
 
 print("Computing DWT")
 for k in range(n_frames):
-    V_k = frame.read(input_video, k)
+    V_k = frame.read(f"{input_video}{k:03d}")
     #V_k = YCoCg.from_RGB(V_k)
-    decomposition = DWT.analyze(V_k, levels=levels)
-    L.write(decomposition[0], f"{input_video}{levels}_", k)
-    for l in range(levels, 0, -1):
+    decomposition = DWT.analyze(V_k, n_levels=levels)
+    L.write(decomposition[0], f"{input_video}{0}_", k)
+    for l in range(1, levels):
         H.write(decomposition[l], f"{input_video}{l}_", k)
 #quit()
 print("IPP... encoding")
@@ -58,5 +58,5 @@ for l in range(levels, -1, -1):
     for k in range(n_frames):
         V_k = L.read(f"{input_video}{l}_", k)
         V_k = YCoCg.to_RGB(V_k)
-        V_k = np.clip(V_k, 0, 255)
+        V_k = np.clip(V_k, 0, 255).astype(np.uint8)
         frame.write(V_k, f"{input_video}{l}_R_", k)

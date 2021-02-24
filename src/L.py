@@ -4,6 +4,8 @@ import numpy as np
 import DWT
 import cv2
 import colors
+if __debug__:
+    import os
 
 def read(prefix: str, frame_number:int) -> np.ndarray: # [row, column, component]
     #ASCII_frame_number = str(frame_number).zfill(3)
@@ -16,7 +18,7 @@ def read(prefix: str, frame_number:int) -> np.ndarray: # [row, column, component
         print(colors.red(f'L.read: Unable to read "{fn}"'))
         raise
     if __debug__:
-        print(f"L.read({prefix}, {frame_number})", L.shape, L.dtype)
+        print(f"L.read({prefix}, {frame_number})", L.shape, L.dtype, os.path.getsize(fn))
     L_int32 = np.array(L, dtype=np.int32)
     #tmp = np.array(L.shape, dtype=np.
     #subband = np.array(subband, dtype=np.float64)
@@ -28,7 +30,7 @@ def read(prefix: str, frame_number:int) -> np.ndarray: # [row, column, component
 
 def write(L: np.ndarray, prefix: str, frame_number: int) -> None:
     if __debug__:
-        print(f"L.write({prefix}, {frame_number})", L.shape, L.dtype)
+        print(f"L.write({prefix}, {frame_number})", L.shape, L.dtype, end=' ')
     #subband = np.array(L, dtype=np.float64)
     L_int32 = np.array(L, dtype=np.int32)
     L_int32 += 32768
@@ -40,6 +42,8 @@ def write(L: np.ndarray, prefix: str, frame_number: int) -> None:
     L = cv2.cvtColor(L, cv2.COLOR_RGB2BGR)
     fn = f"{prefix}LL{frame_number:03d}.png"
     cv2.imwrite(fn, L)
+    if __debug__:
+        print(os.path.getsize(fn))
 
 def interpolate(L: np.ndarray) -> np.ndarray:
     LH = np.zeros(shape=L.shape, dtype=np.float64)
