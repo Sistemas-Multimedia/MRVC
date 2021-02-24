@@ -15,7 +15,7 @@ def read(name: str) -> np.ndarray: # [row, column, component]
     #img = np.array(img, dtype=np.float32)
     if __debug__:
         print(f"frame.read({name})", img.shape, img.dtype)
-    return img
+    return img.astype(np.int32)
 
 def _write(img: np.ndarray, name: str) -> None:
     fn = name + ".png"
@@ -24,12 +24,12 @@ def _write(img: np.ndarray, name: str) -> None:
     img = cv2.cvtColor(img, cv2.COLOR_RGB2BGR)
     cv2.imwrite(fn, img)
 
-def debug_write(img: np.ndarray, name: str) -> None:
-    if __debug__:
-        _write(img, name)
-
 def write(img: np.ndarray, name: str) -> None:
     _write(img, name)
+
+def debug_write(img: np.ndarray, name: str) -> None:
+    if __debug__:
+        _write(img.astype(np.uint16), name)
 
 def normalize(img: np.ndarray) -> np.ndarray: # [row, column, component]
     max_component = np.max(img)
