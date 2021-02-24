@@ -8,8 +8,8 @@ import L
 import H
 import numpy as np
 
-q_step = 128
-n_frames = 16
+q_step = 1
+n_frames = 3
 input_video = "/tmp/football_"
 codestream = "/tmp/football_codestream_"
 output_video = "/tmp/football_decoded_"

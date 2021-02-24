@@ -7,7 +7,7 @@ import colors
 if __debug__:
     import os
 
-def read(prefix: str, frame_number: int) -> np.ndarray: # [LH, HL, HH], each one [rows, columns, components]
+def read(prefix: str, frame_number: int) -> tuple: # [LH, HL, HH], each one [rows, columns, components]
     ASCII_frame_number = str(frame_number).zfill(3)
     subband_names = ["LH", "HL", "HH"]
     H = []
@@ -24,9 +24,9 @@ def read(prefix: str, frame_number: int) -> np.ndarray: # [LH, HL, HH], each one
         subband_int32 = np.array(subband, dtype=np.int32)
         subband_int32 -= 32768
         H.append(subband_int32)
-    return H
+    return tuple(H)
 
-def write(H: np.ndarray, prefix: str, frame_number: int) -> None:
+def write(H: tuple, prefix: str, frame_number: int) -> None:
     ASCII_frame_number = str(frame_number).zfill(3)
     subband_names = ["LH", "HL", "HH"]
     sb = 0
@@ -45,11 +45,11 @@ def write(H: np.ndarray, prefix: str, frame_number: int) -> None:
         if __debug__:
             print(os.path.getsize(fn))
 
-def interpolate(H: np.ndarray) -> np.ndarray:
+def interpolate(H: tuple) -> np.ndarray:
     LL = np.zeros(shape=(H[0].shape), dtype=np.float64)
     _H_ = DWT.synthesize_step(LL, H)
     return _H_
 
-def reduce(_H_: np.ndarray) -> np.ndarray:
+def reduce(_H_: np.ndarray) -> tuple:
     _, H = DWT.analyze_step(_H_)
     return H

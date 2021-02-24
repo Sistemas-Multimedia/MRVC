@@ -80,6 +80,7 @@ def encode(video=VIDEO_PREFIX, codestream=CODESTREAM_PREFIX, n_frames=N_FRAMES, 
             reconstructed__V_k_H = dequantized__E_k_H + IP_prediction__V_k_H # (E.h)
             #frame.write(reconstructed__V_k_H, video + "reconstructed_H", k) # Ojo, reconstructed__V_k_H está a 16 bits!!
             L.write(reconstructed__V_k_H, video + "reconstructed_H", k)
+            #print("->", reconstructed__V_k_H.max(), reconstructed__V_k_H.min())
             #assert (reconstructed__V_k_H == _V_k_H.astype(np.int16)).all()
             frame.debug_write(reconstructed__V_k_H + 128, f"{codestream}encoder_reconstructed_{k:03d}")
             reconstructed__V_k_1_H = reconstructed__V_k_H # (E.i)
