@@ -1,11 +1,11 @@
 ''' MRVC/config.py '''
 
-q_step = 64
-n_frames = 3
+q_step = 32
+n_frames = 32
 input_video = "/tmp/original_"
 codestream = "/tmp/codestream_"
 output_video = "/tmp/reconstructed_"
-n_levels = 3
+n_levels = 7
 fps = 30
 
 print("Quantization step =", q_step)

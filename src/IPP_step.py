@@ -72,6 +72,7 @@ def encode(video=VIDEO_PREFIX, codestream=CODESTREAM_PREFIX, n_frames=N_FRAMES, 
             IP_prediction__V_k_H[:,:,1] = np.where(S_k, prediction__V_k_H[:,:,1], 0) # (E.k)
             IP_prediction__V_k_H[:,:,2] = np.where(S_k, prediction__V_k_H[:,:,2], 0) # (E.k)
             #IP_prediction__V_k_H = np.zeros_like(S_k) # (E.k)
+            #IP_prediction__V_k_H = prediction__V_k_H
             frame.debug_write(norm(IP_prediction__V_k_H), f"{codestream}encoder_IP_prediction_H_{k:03d}")
             _E_k_H = _V_k_H - IP_prediction__V_k_H # (c)
             #assert (IP_prediction__V_k_H == 0).all()
