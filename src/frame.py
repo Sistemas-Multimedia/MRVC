@@ -31,7 +31,8 @@ def write(img: np.ndarray, name: str) -> None:
 
 def debug_write(img: np.ndarray, name: str) -> None:
     if __debug__:
-        _write(img.astype(np.uint16), name)
+        #_write(img.astype(np.uint16), name)
+        _write(img, name)
 
 def normalize(img: np.ndarray) -> np.ndarray: # [row, column, component]
     max_component = np.max(img)
