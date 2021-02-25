@@ -66,7 +66,7 @@ def encode(video=VIDEO_PREFIX, codestream=CODESTREAM_PREFIX, n_frames=N_FRAMES, 
             _E_k_H = _V_k_H - IP_prediction__V_k_H # (c)
             #assert (IP_prediction__V_k_H == 0).all()
             #assert (_E_k_H == _V_k_H).all()
-            print("IP_prediction__V_k_H.max() =", IP_prediction__V_k_H.max())
+            #print("IP_prediction__V_k_H.max() =", IP_prediction__V_k_H.max())
             frame.debug_write(_E_k_H + 128, f"{codestream}encoder_prediction_error_H_{k:03d}")
             quantized__E_k_H = deadzone.quantize(_E_k_H, q_step=q_step) # (d)
             dequantized__E_k_H = deadzone.dequantize(quantized__E_k_H, q_step=q_step) # (E.g)

@@ -3,16 +3,25 @@
 import numpy as np
 import pywt
 
-#WAVELET = pywt.Wavelet("haar")
-WAVELET = pywt.Wavelet("db5")
+WAVELET = pywt.Wavelet("haar")
+#WAVELET = pywt.Wavelet("db5")
 #WAVELET = pywt.Wavelet("bior3.5")
 N_LEVELS = 3
+MODE = "symmetric" # default
+#MODE = "constant"
+#MODE = "reflect"
+#MODE = "periodic"
+#MODE = "smooth"
+#MODE = "antisymmetric"
+#MODE = "antireflect"
+#MODE = "periodization" # Gets the inimal number of coeffs
 
 def analyze_step(color_frame: np.ndarray, wavelet: pywt.Wavelet =WAVELET) -> tuple:
     n_channels = color_frame.shape[2]
     color_decomposition = [None]*n_channels
     for c in range(n_channels):
-        color_decomposition[c] = pywt.dwt2(data=color_frame[:,:,c], wavelet=wavelet, mode='per')
+        color_decomposition[c] = pywt.dwt2(data=color_frame[:,:,c], wavelet=wavelet, mode=MODE)
+    assert color_decomposition[0][0].shape == color_decomposition[0][1][0].shape
     n_rows_subband, n_columns_subband = color_decomposition[0][0].shape # All subbands have the same shape
     LL = np.empty(shape=(n_rows_subband, n_columns_subband, n_channels), dtype=np.float64)
     LH = np.empty(shape=(n_rows_subband, n_columns_subband, n_channels), dtype=np.float64)
@@ -30,8 +39,8 @@ def synthesize_step(LL: np.ndarray, H: tuple, wavelet: pywt.Wavelet =WAVELET) ->
     n_channels = LL.shape[2] #len(LL)
     _color_frame = []
     for c in range(n_channels):
-        frame = pywt.idwt2((LL[:,:,c], (LH[:,:,c], HL[:,:,c], HH[:,:,c])), wavelet=wavelet, mode='per')
-        #frame = pywt.idwt2((LL[:,:,c], np.array(H)[:,:,c]), wavelet=wavelet, mode='per')
+        frame = pywt.idwt2((LL[:,:,c], (LH[:,:,c], HL[:,:,c], HH[:,:,c])), wavelet=wavelet, mode=MODE)
+        #frame = pywt.idwt2((LL[:,:,c], np.array(H)[:,:,c]), wavelet=wavelet, mode=MODE)
         _color_frame.append(frame)
     n_rows, n_columns = _color_frame[0].shape
     #n_rows = _color_frame[0].shape[0]
@@ -45,16 +54,17 @@ def analyze(color_frame: np.ndarray, wavelet: pywt.Wavelet =WAVELET, n_levels: i
     n_channels = color_frame.shape[2]
     color_decomposition = [None]*n_channels
     for c in range(n_channels):
-        color_decomposition[c] = pywt.wavedec2(data=color_frame[:,:,c], wavelet=wavelet, mode='per', level=n_levels)
+        color_decomposition[c] = pywt.wavedec2(data=color_frame[:,:,c], wavelet=wavelet, mode=MODE, level=n_levels)
 
     output = []
-        
     # LL^n_levels and H^n_levels subbands
     n_rows_subband, n_columns_subband = color_decomposition[0][0].shape # All subbands in the SRL with the same shape
+    #prev_n_rows_subband = n_rows_subband
+    #prev_n_columns_subband = n_columns_subband
     LL = np.empty(shape=(n_rows_subband, n_columns_subband, n_channels), dtype=np.float64)
-    LH = np.empty(shape=(n_rows_subband, n_columns_subband, n_channels), dtype=np.float64)
-    HL = np.empty(shape=(n_rows_subband, n_columns_subband, n_channels), dtype=np.float64)
-    HH = np.empty(shape=(n_rows_subband, n_columns_subband, n_channels), dtype=np.float64)
+    LH = np.zeros(shape=(n_rows_subband, n_columns_subband, n_channels), dtype=np.float64)
+    HL = np.zeros(shape=(n_rows_subband, n_columns_subband, n_channels), dtype=np.float64)
+    HH = np.zeros(shape=(n_rows_subband, n_columns_subband, n_channels), dtype=np.float64)
     for c in range(n_channels): # For each color component
         LL[:,:,c] = color_decomposition[c][0][:,:]
         LH[:,:,c] = color_decomposition[c][1][0][:,:]
@@ -66,9 +76,15 @@ def analyze(color_frame: np.ndarray, wavelet: pywt.Wavelet =WAVELET, n_levels: i
      # For the rest of SRLs
     for r in range(2, n_levels+1):
         n_rows_subband, n_columns_subband = color_decomposition[0][r][0].shape
-        LH = np.empty(shape=(n_rows_subband, n_columns_subband, n_channels), dtype=np.float64)
-        HL = np.empty(shape=(n_rows_subband, n_columns_subband, n_channels), dtype=np.float64)
-        HH = np.empty(shape=(n_rows_subband, n_columns_subband, n_channels), dtype=np.float64)
+        #if prev_n_rows_subband * 2 < n_rows_subband:
+        #    n_rows_subband += 1
+        #prev_n_rows_subband = n_rows_subband
+        #if prev_n_columns_subband * 2 < n_columns_subband:
+        #    n_columns_subband += 1
+        prev_n_columns_subband = n_columns_subband
+        LH = np.zeros(shape=(n_rows_subband, n_columns_subband, n_channels), dtype=np.float64)
+        HL = np.zeros(shape=(n_rows_subband, n_columns_subband, n_channels), dtype=np.float64)
+        HH = np.zeros(shape=(n_rows_subband, n_columns_subband, n_channels), dtype=np.float64)
         for c in range(n_channels):
             LH[:,:,c] = color_decomposition[c][r][0][:,:]
             HL[:,:,c] = color_decomposition[c][r][1][:,:]
@@ -81,7 +97,7 @@ def synthesize(color_decomposition: list, wavelet: pywt.Wavelet =WAVELET) -> np.
     n_channels = len(color_decomposition)
     _color_frame = []
     for c in range(n_channels):
-        channel = pywt.waverec2(color_decomposition[c], wavelet=wavelet, mode='per')
+        channel = pywt.waverec2(color_decomposition[c], wavelet=wavelet, mode=MODE)
         _color_frame.append(channel)
     n_rows = _color_frame[0].shape[0]
     n_columns = _color_frame[0].shape[1]

@@ -8,19 +8,19 @@ import L
 import H
 import numpy as np
 
-q_step = 12800
-n_frames = 32
+q_step = 64
+n_frames = 3
 input_video = "/tmp/football_"
 codestream = "/tmp/football_codestream_"
 output_video = "/tmp/football_decoded_"
-levels = 3
+levels = 4
 
 print("Computing DWT")
 for k in range(n_frames):
     V_k = frame.read(f"{input_video}{k:03d}")
     V_k = YCoCg.from_RGB(V_k)
     decomposition = DWT.analyze(V_k, n_levels=levels)
-    print("len =", len(decomposition))
+    #print("len =", len(decomposition))
     L.write(decomposition[0], f"{input_video}{levels}_", k)
     for l in range(0, levels):
         H.write(decomposition[l+1], f"{input_video}{levels-l}_", k)
@@ -53,7 +53,7 @@ for l in range(levels-1, 0, -1):
         V_k_L = L.read(f"{input_video}{l}_", k)
         reconstructed_V_k_H = H.reduce(reconstructed__V_k_H)
         reconstructed_V_k = DWT.synthesize_step(V_k_L, reconstructed_V_k_H)
-        print(reconstructed_V_k.max())
+        #print(reconstructed_V_k.max())
         #frame.write(reconstructed_V_k, f"{input_video}{l}_reconstructed_LL", k)
         #frame.write(reconstructed_V_k, f"{input_video}{l-1}_LL", k)
         L.write(reconstructed_V_k, f"{input_video}{l-1}_", k)
