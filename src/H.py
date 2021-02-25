@@ -7,7 +7,7 @@ import colors
 if __debug__:
     import os
 
-def read(prefix: str, frame_number: int, shape) -> tuple: # [LH, HL, HH], each one [rows, columns, components]
+def read(prefix: str, frame_number: int, shape: tuple) -> tuple: # [LH, HL, HH], each one [rows, columns, components]
     ASCII_frame_number = str(frame_number).zfill(3)
     subband_names = ["LH", "HL", "HH"]
     H = []

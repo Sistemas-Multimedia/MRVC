@@ -3,6 +3,7 @@
 width=1280
 height=768
 n_frames=32
+prefix=/tmp/black_
 
 usage() {
     echo $0
@@ -10,12 +11,13 @@ usage() {
     echo "  [-w width ($width)]"
     echo "  [-h height ($height)]"
     echo "  [-n n_frames ($n_frames)]"
+    echo "  [-p prefix ($prefix)]"
     echo "  [-? help]"
 }
 
 echo $0: parsing: $@
 
-while getopts "w:h:?" opt; do
+while getopts "w:h:n:p:?" opt; do
     case ${opt} in
         w)
             width="${OPTARG}"
@@ -28,6 +30,10 @@ while getopts "w:h:?" opt; do
         n)
             n_frames="${OPTARG}"
             echo "n_frames =" $n_frames
+            ;;
+        p)
+            prefix="${OPTARG}"
+            echo "prefix =" $prefix
             ;;
         ?)
             usage
@@ -53,7 +59,7 @@ i=0
 while [[ $i -le $n_frames ]]
 do
     ii=$(printf "%03d" $i);
-    bash ../../tools/create_black_image.sh -o /tmp/$ii.png -w $width -h $height;
+    bash ../../tools/create_black_image.sh -o $prefix$ii.png -w $width -h $height;
     ((i = i + 1))
 done
 

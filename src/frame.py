@@ -2,7 +2,7 @@
 
 import numpy as np
 import cv2
-import colors
+import colors # pip install --user ansicolors
 if __debug__:
     import os
 
