@@ -1,4 +1,4 @@
-''' MRVC/stockholm_experiment_multiresolution.py '''
+''' MRVC/IPP_compressor.py '''
 
 import IPP_step
 import DWT

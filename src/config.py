@@ -1,7 +1,7 @@
 ''' MRVC/config.py '''
 
 q_step = 64
-n_frames = 3
+n_frames = 36
 input_video = "/tmp/original_"
 codestream = "/tmp/codestream_"
 output_video = "/tmp/reconstructed_"
