@@ -9,11 +9,11 @@ import H
 import numpy as np
 
 q_step = 64
-n_frames = 3
+n_frames = 128
 input_video = "/tmp/football_"
 codestream = "/tmp/football_codestream_"
 output_video = "/tmp/football_decoded_"
-levels = 4
+levels = 5
 
 print("Computing DWT")
 for k in range(n_frames):
