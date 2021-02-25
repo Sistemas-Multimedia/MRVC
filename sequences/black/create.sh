@@ -2,12 +2,14 @@
 
 width=1280
 height=768
+n_frames=32
 
 usage() {
     echo $0
     echo "Creates this sequence"
     echo "  [-w width ($width)]"
     echo "  [-h height ($height)]"
+    echo "  [-n n_frames ($n_frames)]"
     echo "  [-? help]"
 }
 
@@ -22,6 +24,10 @@ while getopts "w:h:?" opt; do
         h)
             height="${OPTARG}"
             echo "height =" $height
+            ;;
+        n)
+            n_frames="${OPTARG}"
+            echo "n_frames =" $n_frames
             ;;
         ?)
             usage
@@ -42,9 +48,13 @@ done
 
 set -x
 
-for i in {0..4}; do
+i=0
+#for i in {0..${n_frames}}; do
+while [[ $i -le $n_frames ]]
+do
     ii=$(printf "%03d" $i);
-    bash ../../tools/create_black_image.sh -o $ii.png -w $width -h $height;
+    bash ../../tools/create_black_image.sh -o /tmp/$ii.png -w $width -h $height;
+    ((i = i + 1))
 done
 
 set +x

@@ -76,6 +76,6 @@ i=0
 while [ $i -le $((frames-1)) ]
 do
     ii=$(printf "%03d" $i)
-    convert -size ${image_width}x${image_height} xc:skyblue -fill white -stroke black -draw "circle $((x_initial+i)),$y_initial $((x_initial+diameter+i)),$y_initial" ${output_seq_prefix}${ii}.png
+    convert -size ${image_width}x${image_height} xc:skyblue -fill white -stroke black -draw "circle $((x_initial+i)),$y_initial $((x_initial+diameter+i)),$y_initial" -depth 8 ${output_seq_prefix}${ii}.png
     i=$(( $i + 1 ))
 done

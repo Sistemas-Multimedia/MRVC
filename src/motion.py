@@ -3,7 +3,7 @@
 import cv2
 import numpy as np
 
-def estimate(predicted, reference, flow=None):
+def estimate(predicted: np.ndarray, reference: np.ndarray, flow: np.ndarray =None) -> np.ndarray:
     flow = cv2.calcOpticalFlowFarneback(
         prev=predicted,
         next=reference,
@@ -17,7 +17,7 @@ def estimate(predicted, reference, flow=None):
         flags=0)
     return flow
 
-def predict(reference, flow):
+def make_prediction(reference: np.ndarray, flow: np.ndarray) -> np.ndarray:
     height, width = flow.shape[:2]
     map_x = np.tile(np.arange(width), (height, 1))
     map_y = np.swapaxes(np.tile(np.arange(height), (width, 1)), 0, 1)

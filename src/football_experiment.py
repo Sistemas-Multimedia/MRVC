@@ -1,36 +1,41 @@
 ''' MRVC/stockholm_experiment.py '''
 
-import IPP
-import argparse
-try:
-    import argcomplete  # <tab> completion for argparse.
-except ImportError:
-    print("Unable to import argcomplete")
+import IPP_step
+import DWT
+import YCoCg
+import frame
+import L
+import H
+import numpy as np
 
-def int_or_str(text):
-    '''Helper function for argument parsing.
-    '''
-    try:
-        return int(text)
-    except ValueError:
-        return text
+q_step = 1
+n_frames = 3
+input_video = "/tmp/football_"
+codestream = "/tmp/football_codestream_"
+output_video = "/tmp/football_decoded_"
 
-parser = argparse.ArgumentParser(formatter_class=argparse.ArgumentDefaultsHelpFormatter)
-parser.add_argument("-i", "--input-device", type=int_or_str, help="Input device ID or substring")
-parser.add_argument("-o", "--output-device", type=int_or_str, help="Output device ID or substring")
-parser.add_argument("-d", "--list-devices", action="store_true", help="Print the available audio devices and quit")
+print("Computing DWT")
+for k in range(n_frames):
+    V_k = frame.read(f"{input_video}{k:03d}")
+    V_k = YCoCg.from_RGB(V_k)
+    V_k_L, V_k_H = DWT.analyze_step(V_k) # (a)
+    L.write(V_k_L, input_video, k) # (g) L.write(V_k_L, input_video + "L", k)
+    H.write(V_k_H, input_video, k) #H.write(V_k_H, input_video + "H", k)
 
-parser.description = __doc__
-try:
-    argcomplete.autocomplete(parser)
-except Exception:
-    print("argcomplete not working :-/")
-args = parser.parse_known_args()[0]
+print("IPP... encoding")
+#IPP_step.encode(input_video + "L", input_video + "H", codestream, n_frames, q_step)
+IPP_step.encode(input_video, codestream, n_frames, q_step)
 
-print("Encoding ...")
-IPP.encode(video="/tmp/football_", codestream="/tmp/football_codestream_", n_frames=128, q_step=128)
-#IPP.encode(video="/tmp/LL", codestream="/tmp/LL", n_frames=16)
+#n_frames = 16
+#encoder = IPP_step.Encoder(video="/tmp/football_", codestream="/tmp/football_codestream_", q_step=128)
+#for k in range(1, n_frames):
+#    encoder.encode_next_frame()
 
-print("Decoding ...")
-#IPP.decode(codestream="/tmp/LL", video="/tmp/decoded_LL", n_frames=16)
-IPP.decode(codestream="/tmp/football_codestream_", video="/tmp/football_decoded_", n_frames=128, q_step=128)
+print("IPP ... Decoding")
+IPP_step.decode(codestream, output_video, n_frames, q_step)
+
+for k in range(n_frames):
+    V_k = frame.read(f"{output_video}{k:03d}")
+    V_k = YCoCg.to_RGB(V_k)
+    V_k = np.clip(V_k, 0, 255).astype(np.uint8)
+    frame.write(V_k, f"{output_video}R_{k:03d}")
