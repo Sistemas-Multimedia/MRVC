@@ -3,7 +3,7 @@
 width=1280
 height=768
 n_frames=32
-prefix=/tmp/black_
+prefix=/tmp/original_
 
 usage() {
     echo $0
