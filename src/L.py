@@ -14,6 +14,7 @@ OFFSET = 32768
 def read(prefix: str, frame_number: int) -> np.ndarray: # [row, column, component]
     fn = f"{prefix}LL{frame_number:03d}.png"
     subband = cv2.imread(fn, cv2.IMREAD_UNCHANGED)
+    subband = cv2.cvtColor(subband, cv2.COLOR_BGR2RGB)
     if __debug__:
         print(f"L.read({prefix}, {frame_number})", subband.shape, subband.dtype, os.path.getsize(fn))
     #subband = subband.astype(np.int32)
@@ -22,10 +23,13 @@ def read(prefix: str, frame_number: int) -> np.ndarray: # [row, column, componen
     return subband#.astype(np.int16)
 
 def write(subband: np.ndarray, prefix: str, frame_number: int) -> None:
+    if __debug__:
+        print(f"L.write({prefix}, {frame_number})", subband.shape, subband.dtype, end=' ')
     #subband = subband.astype(np.int32)
     subband = np.array(subband, dtype=np.int32)
     subband += OFFSET
     subband = subband.astype(np.uint16)
+    subband = cv2.cvtColor(subband, cv2.COLOR_RGB2BGR)
     fn = f"{prefix}LL{frame_number:03d}.png"
     cv2.imwrite(fn, subband)
     if __debug__:
