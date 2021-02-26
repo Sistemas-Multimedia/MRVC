@@ -2,12 +2,13 @@
 
 import numpy as np
 import pywt
+import config
 
 #WAVELET = pywt.Wavelet("haar")
-WAVELET = pywt.Wavelet("db5")
+WAVELET = pywt.Wavelet(config.wavelet)
 #WAVELET = pywt.Wavelet("bior3.5")
 N_LEVELS = 3
-MODE = "symmetric" # default
+#MODE = "symmetric" # default
 #MODE = "constant"
 #MODE = "reflect"
 #MODE = "periodic"
@@ -15,6 +16,7 @@ MODE = "symmetric" # default
 #MODE = "antisymmetric"
 #MODE = "antireflect"
 #MODE = "periodization" # Gets the inimal number of coeffs
+MODE = config.extension_mode
 
 def analyze_step(color_frame: np.ndarray, wavelet: pywt.Wavelet =WAVELET) -> tuple:
     n_channels = color_frame.shape[2]
