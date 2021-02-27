@@ -49,14 +49,14 @@ optical_flow_interations = 5
 #optical_flow_interations = 5
 
 # Signal extension mode used in the OFCA. See https://docs.opencv.org/3.4/d2/de8/group__core__array.html
-#ofca_extension_mode = cv2.BORDER_CONSTANT
-ofca_extension_mode = cv2.BORDER_REPLICATE
-#ofca_extension_mode = cv2.BORDER_REFLECT
+ofca_extension_mode = cv2.BORDER_CONSTANT
 #ofca_extension_mode = cv2.BORDER_WRAP
+#ofca_extension_mode = cv2.BORDER_DEFAULT
+#ofca_extension_mode = cv2.BORDER_REPLICATE
+#ofca_extension_mode = cv2.BORDER_REFLECT
 #ofca_extension_mode = cv2.BORDER_REFLECT_101
 #ofca_extension_mode = cv2.BORDER_TRANSPARENT
 #ofca_extension_mode = cv2.BORDER_REFLECT101
-#ofca_extension_mode = cv2.BORDER_DEFAULT
 #ofca_extension_mode = BORDER_ISOLATED
 
 # Frames per second.

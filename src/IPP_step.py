@@ -60,7 +60,8 @@ def encode(video=VIDEO_PREFIX, codestream=CODESTREAM_PREFIX, n_frames=N_FRAMES, 
                 unique, counts = np.unique(S_k, return_counts=True)
                 #print(unique, counts)
                 print("Number of I-type coeffs =", counts[0])
-                print("Number of P-type coeffs =", counts[1])
+                if len(unique) > 1:
+                    print("Number of P-type coeffs =", counts[1])
             frame.debug_write(cv2.merge((S_k.astype(np.uint8),S_k.astype(np.uint8),S_k.astype(np.uint8))), f"{codestream}encoder_selection_{k:03d}")
             _V_k_H = H.interpolate(V_k_H) # (b)
             frame.debug_write(norm(_V_k_H), f"{codestream}encoder_predicted_H_{k:03d}")
