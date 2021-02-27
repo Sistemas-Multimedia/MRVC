@@ -67,4 +67,7 @@ def interpolate(H: tuple) -> np.ndarray:
 
 def reduce(_H_: np.ndarray) -> tuple:
     _, H = DWT.analyze_step(_H_)
+    if __debug__:
+        unique, counts = np.unique(_, return_counts=True)
+        print(f"H.reduce: unique={unique} counts={counts} ({len(counts)})")
     return H

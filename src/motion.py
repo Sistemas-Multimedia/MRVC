@@ -2,6 +2,7 @@
 
 import cv2
 import numpy as np
+import config
 
 def estimate(predicted: np.ndarray, reference: np.ndarray, flow: np.ndarray =None) -> np.ndarray:
     flow = cv2.calcOpticalFlowFarneback(
@@ -9,9 +10,9 @@ def estimate(predicted: np.ndarray, reference: np.ndarray, flow: np.ndarray =Non
         next=reference,
         flow=flow,
         pyr_scale=0.5,
-        levels=3,
-        winsize=7,
-        iterations=3,
+        levels=config.optical_flow_pyramid_levels,
+        winsize=config.optical_flow_window_size,
+        iterations=config.optical_flow_interations,
         poly_n=5,
         poly_sigma=1.2,
         flags=0)
