@@ -16,7 +16,7 @@ N_LEVELS = 3
 #MODE = "antisymmetric"
 #MODE = "antireflect"
 #MODE = "periodization" # Gets the inimal number of coeffs
-MODE = config.extension_mode
+MODE = config.dwt_extension_mode
 
 def analyze_step(color_frame: np.ndarray, wavelet: pywt.Wavelet =WAVELET) -> tuple:
     n_channels = color_frame.shape[2]

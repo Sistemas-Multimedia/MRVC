@@ -23,6 +23,4 @@ def make_prediction(reference: np.ndarray, flow: np.ndarray) -> np.ndarray:
     map_x = np.tile(np.arange(width), (height, 1))
     map_y = np.swapaxes(np.tile(np.arange(height), (width, 1)), 0, 1)
     map_xy = (flow + np.dstack((map_x, map_y))).astype('float32')
-    return cv2.remap(reference, map_xy, None, 
-            interpolation=cv2.INTER_LINEAR,
-            borderMode=cv2.BORDER_REPLICATE)
+    return cv2.remap(reference, map_xy, None, interpolation=cv2.INTER_LINEAR, borderMode=config.ofca_extension_mode)

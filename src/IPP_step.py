@@ -86,7 +86,7 @@ def encode(video=VIDEO_PREFIX, codestream=CODESTREAM_PREFIX, n_frames=N_FRAMES, 
             #        for k in range(dequantized__E_k_H.shape[2]):
             #            if dequantized__E_k_H[i,j,k] != _E_k_H[i,j,k]:
             #                print(dequantized__E_k_H[i,j,k], _E_k_H[i,j,k])
-
+            frame.debug_write(norm(dequantized__E_k_H), f"{codestream}encoder_dequantized_prediction_error_H_{k:03d}")
             #assert (dequantized__E_k_H == _E_k_H.astype(np.int16)).all()
             reconstructed__V_k_H = dequantized__E_k_H + IP_prediction__V_k_H # (E.h)
             #frame.write(reconstructed__V_k_H, video + "reconstructed_H", k) # Ojo, reconstructed__V_k_H está a 16 bits!!
