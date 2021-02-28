@@ -6,6 +6,7 @@ import cv2
 import colors
 if __debug__:
     import os
+    import frame
 
 def read(prefix: str, frame_number: int, shape: tuple) -> tuple: # [LH, HL, HH], each one [rows, columns, components]
     ASCII_frame_number = str(frame_number).zfill(3)
@@ -65,9 +66,15 @@ def interpolate(H: tuple) -> np.ndarray:
     _H_ = DWT.synthesize_step(LL, H)
     return _H_
 
+#if __debug__:
+#    k = 0
+
 def reduce(_H_: np.ndarray) -> tuple:
     _, H = DWT.analyze_step(_H_)
     if __debug__:
+        global k
         unique, counts = np.unique(_, return_counts=True)
         print(f"H.reduce: unique={unique} counts={counts} ({len(counts)})")
+        #frame.debug_write(frame.normalize(_).astype(np.uint8), f"/tmp/__{k:03d}")
+        #k += 1
     return H

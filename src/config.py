@@ -18,9 +18,9 @@ output_video = "/tmp/reconstructed_"
 n_levels = 3
 
 # DWT filters.
-wavelet = "haar"
+#wavelet = "haar"
 #wavelet = "db5"
-#wavelet = "bior3.5"
+wavelet = "bior3.5"
 
 # Signal extension mode used in the DWT.
 dwt_extension_mode = "periodization" # Gets the minimal number of coefficients

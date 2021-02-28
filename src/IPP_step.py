@@ -55,6 +55,7 @@ def encode(video=VIDEO_PREFIX, codestream=CODESTREAM_PREFIX, n_frames=N_FRAMES, 
             _V_k_1_L = _V_k_L # (E.b)
             _E_k_L = _V_k_L - prediction__V_k_L # (E.e)
             frame.debug_write(norm(_V_k_L), f"{codestream}encoder_predicted_L_{k:03d}")
+            frame.debug_write(norm(_E_k_L), f"{codestream}encoder_prediction_error_L_{k:03d}")
             S_k = _E_k_L[:,:,0] < _V_k_L[:,:,0] # (E.f)
             if __debug__:
                 unique, counts = np.unique(S_k, return_counts=True)
