@@ -3,12 +3,13 @@
 import cv2
 
 # Quantization step.
-#q_step = 1
+q_step = 1
 #q_step = 54
-q_step = 128
+#q_step = 128
 
 # Number of frames to compress.
-n_frames = 36
+n_frames = 3
+#n_frames = 36
 
 # Input, output, and codestream prefixes.
 input_video = "/tmp/original_"
@@ -25,9 +26,9 @@ wavelet = "db5"
 #wavelet = "bior3.5"
 
 # Signal extension mode used in the DWT.
-#dwt_extension_mode = "periodization" # Gets the minimal number of coefficients
+dwt_extension_mode = "periodization" # Gets the minimal number of coefficients (important for the compression ratio)
 #dwt_extension_mode = "symmetric" # Default
-dwt_extension_mode = "constant"
+#dwt_extension_mode = "constant"
 #dwt_extension_mode = "reflect"
 #dwt_extension_mode = "periodic"
 #dwt_extension_mode = "smooth"
@@ -42,13 +43,13 @@ optical_flow_pyramid_levels = 5
 
 # Window size used in the Farneback's OFCA. This value controls the
 # coherence of the OF.
-optical_flow_window_size = 33
 #optical_flow_window_size = 5
+optical_flow_window_size = 33
 
 # Number of iterations of the Farneback's OFCA. This value controls
 # the accuracy of the OF.
-optical_flow_interations = 5
-#optical_flow_interations = 5
+#optical_flow_iterations = 3
+optical_flow_iterations = 5
 
 # Signal extension mode used in the OFCA. See https://docs.opencv.org/3.4/d2/de8/group__core__array.html
 ofca_extension_mode = cv2.BORDER_CONSTANT

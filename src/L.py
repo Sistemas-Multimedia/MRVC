@@ -28,6 +28,8 @@ def write(subband: np.ndarray, prefix: str, frame_number: int) -> None:
     #subband = subband.astype(np.int32)
     subband = np.array(subband, dtype=np.int32)
     subband += OFFSET
+    assert subband.all() < 65536
+    assert subband.all() > -1
     subband = subband.astype(np.uint16)
     subband = cv2.cvtColor(subband, cv2.COLOR_RGB2BGR)
     fn = f"{prefix}LL{frame_number:03d}.png"

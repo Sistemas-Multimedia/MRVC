@@ -42,7 +42,7 @@ def normalize(img: np.ndarray) -> np.ndarray: # [row, column, component]
 
 ##########
 
-def load(name: str) -> np.ndarray: # [component, row, column]
+def __load(name: str) -> np.ndarray: # [component, row, column]
     fn = name + ".png"
     frame = cv2.imread(fn, cv2.IMREAD_UNCHANGED)
     try:
@@ -55,12 +55,12 @@ def load(name: str) -> np.ndarray: # [component, row, column]
         print(f"frame.load({name})", frame.shape)
     return frame
 
-def save(frame: np.ndarray, name: str) -> None:
+def __save(frame: np.ndarray, name: str) -> None:
     fn = name + ".png"
     frame = cv2.merge((frame[0], frame[1], frame[2]))
     cv2.imwrite(fn, frame)
 
-def debug_save(frame: np.ndarray, name: str) -> None:
+def __debug_save(frame: np.ndarray, name: str) -> None:
     if __debug__:
         save(frame, name)
     

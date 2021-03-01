@@ -53,6 +53,8 @@ def write(H: tuple, prefix: str, frame_number: int) -> None:
         #subband = H[sb]
         #subband = H[i].astype(np.float32)
         subband += 32768
+        assert subband.all() < 65536
+        assert subband.all() > -1
         subband = subband.astype(np.uint16)
         subband = cv2.cvtColor(subband, cv2.COLOR_RGB2BGR)
         fn = f"{prefix}{sbn}{ASCII_frame_number}.png"
