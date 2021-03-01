@@ -48,13 +48,13 @@ def write(H: tuple, prefix: str, frame_number: int) -> None:
     sb = 0
     for sbn in subband_names:
         if __debug__:
-            print(f"H.write({prefix}, {frame_number})", H[sb].shape, H[sb].dtype, end=' ')
+            print(f"H.write({prefix}, {frame_number})", H[sb].shape, H[sb].max(), H[sb].min(), H[sb].dtype, end=' ')
         subband = np.array(H[sb], dtype=np.int32)
         #subband = H[sb]
         #subband = H[i].astype(np.float32)
         subband += 32768
-        assert subband.all() < 65536
-        assert subband.all() > -1
+        assert (subband < 65536).all()
+        assert (subband > -1).all()
         subband = subband.astype(np.uint16)
         subband = cv2.cvtColor(subband, cv2.COLOR_RGB2BGR)
         fn = f"{prefix}{sbn}{ASCII_frame_number}.png"

@@ -3,13 +3,13 @@
 import cv2
 
 # Quantization step.
-q_step = 1
+#q_step = 1
 #q_step = 54
-#q_step = 128
+q_step = 128
 
 # Number of frames to compress.
-n_frames = 3
-#n_frames = 36
+#n_frames = 3
+n_frames = 36
 
 # Input, output, and codestream prefixes.
 input_video = "/tmp/original_"
@@ -21,8 +21,8 @@ output_video = "/tmp/reconstructed_"
 n_levels = 7
 
 # DWT filters.
-#wavelet = "haar"
-wavelet = "db5"
+wavelet = "haar"
+#wavelet = "db5"
 #wavelet = "bior3.5"
 
 # Signal extension mode used in the DWT.

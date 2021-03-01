@@ -24,12 +24,12 @@ def read(prefix: str, frame_number: int) -> np.ndarray: # [row, column, componen
 
 def write(subband: np.ndarray, prefix: str, frame_number: int) -> None:
     if __debug__:
-        print(f"L.write({prefix}, {frame_number})", subband.shape, subband.dtype, end=' ')
+        print(f"L.write({prefix}, {frame_number})", subband.max(), subband.min(), subband.shape, subband.dtype, end=' ')
     #subband = subband.astype(np.int32)
     subband = np.array(subband, dtype=np.int32)
     subband += OFFSET
-    assert subband.all() < 65536
-    assert subband.all() > -1
+    assert (subband < 65536).all()
+    assert (subband > -1).all()
     subband = subband.astype(np.uint16)
     subband = cv2.cvtColor(subband, cv2.COLOR_RGB2BGR)
     fn = f"{prefix}LL{frame_number:03d}.png"
