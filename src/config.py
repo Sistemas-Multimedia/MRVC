@@ -3,9 +3,10 @@
 import cv2
 
 # Quantization step.
-#q_step = 1
+q_step = 1
+#q_step = 16
 #q_step = 54
-q_step = 128
+#q_step = 128
 
 # Number of frames to compress.
 #n_frames = 3
@@ -17,13 +18,14 @@ codestream = "/tmp/codestream_"
 output_video = "/tmp/reconstructed_"
 
 # Number of levels of the DWT.
-#n_levels = 3
-n_levels = 7
+n_levels = 3
+#n_levels = 7
 
 # DWT filters.
-wavelet = "haar"
+#wavelet = "haar"
 #wavelet = "db5"
 #wavelet = "bior3.5"
+wavelet = "db20"
 
 # Signal extension mode used in the DWT.
 dwt_extension_mode = "periodization" # Gets the minimal number of coefficients (important for the compression ratio)
@@ -70,9 +72,9 @@ print("Number of frames to encode =", n_frames)
 print("Original video =", input_video)
 print("Codestream =", codestream)
 print("Reconstructed video =", output_video)
-print("Number of spatial resolution levels ", n_levels)
+print("Number of spatial resolution levels =", n_levels)
 print("Frames per second =", fps)
 print("Wavelet =", wavelet)
-print("DWT extension mode=", dwt_extension_mode)
-print("OFCA extension mode=", ofca_extension_mode)
+print("DWT extension mode =", dwt_extension_mode)
+print("OFCA extension mode =", ofca_extension_mode)
 
