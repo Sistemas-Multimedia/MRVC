@@ -19,6 +19,9 @@ N_FRAMES = 16
 def norm(x):
     return (frame.normalize(x)*255).astype(np.uint8)
 
+def clip(x):
+    return(np.clip(x+128, 0 ,255).astype(np.uint8))
+
 #def encode(L_sequence=CODESTREAM_PREFIX + "L", H_sequence=CODESTREAM_PREFIX + "H", codestream=CODESTREAM_PREFIX, n_frames=N_FRAMES, q_step=Q_STEP):
 def encode(video=VIDEO_PREFIX, codestream=CODESTREAM_PREFIX, n_frames=N_FRAMES, q_step=Q_STEP):
     try:
@@ -55,7 +58,7 @@ def encode(video=VIDEO_PREFIX, codestream=CODESTREAM_PREFIX, n_frames=N_FRAMES, 
             _V_k_1_L = _V_k_L # (E.b)
             _E_k_L = _V_k_L - prediction__V_k_L # (E.e)
             frame.debug_write(norm(_V_k_L), f"{codestream}encoder_predicted_L_{k:03d}")
-            frame.debug_write(norm(_E_k_L), f"{codestream}encoder_prediction_error_L_{k:03d}")
+            frame.debug_write(clip(_E_k_L), f"{codestream}encoder_prediction_error_L_{k:03d}")
             S_k = _E_k_L[:,:,0] < _V_k_L[:,:,0] # (E.f)
             if __debug__:
                 unique, counts = np.unique(S_k, return_counts=True)
@@ -65,22 +68,26 @@ def encode(video=VIDEO_PREFIX, codestream=CODESTREAM_PREFIX, n_frames=N_FRAMES, 
                     print("Number of P-type coeffs =", counts[1])
             frame.debug_write(cv2.merge((S_k.astype(np.uint8),S_k.astype(np.uint8),S_k.astype(np.uint8))), f"{codestream}encoder_selection_{k:03d}")
             _V_k_H = H.interpolate(V_k_H) # (b)
-            frame.debug_write(norm(_V_k_H), f"{codestream}encoder_predicted_H_{k:03d}")
+            frame.debug_write(clip(_V_k_H), f"{codestream}encoder_predicted_H_{k:03d}")
             prediction__V_k_H = motion.make_prediction(reconstructed__V_k_1_H, flow) # (E.j)
-            frame.debug_write(norm(prediction__V_k_H), f"{codestream}encoder_prediction_H_{k:03d}")
+            frame.debug_write(clip(prediction__V_k_H), f"{codestream}encoder_prediction_H_{k:03d}")
             #IP_prediction__V_k_H = np.where(S_k, prediction__V_k_H, 0) # (E.k)
             IP_prediction__V_k_H = np.empty_like(prediction__V_k_H)
-            IP_prediction__V_k_H[:,:,0] = np.where(S_k, prediction__V_k_H[:,:,0], 0) # (E.k)
-            IP_prediction__V_k_H[:,:,1] = np.where(S_k, prediction__V_k_H[:,:,1], 0) # (E.k)
-            IP_prediction__V_k_H[:,:,2] = np.where(S_k, prediction__V_k_H[:,:,2], 0) # (E.k)
+            for c in range(3):
+                #IP_prediction__V_k_H[:,:,c] = np.zeros_like(S_k) # (E.k)
+                IP_prediction__V_k_H[:,:,c] = np.where(S_k, prediction__V_k_H[:,:,c], 0) # (E.k)
+                #IP_prediction__V_k_H[:,:,c] = np.where(S_k, 0, prediction__V_k_H[:,:,c]) # (E.k)
+            #IP_prediction__V_k_H[:,:,0] = np.where(S_k, prediction__V_k_H[:,:,0], 0) # (E.k)
+            #IP_prediction__V_k_H[:,:,1] = np.where(S_k, prediction__V_k_H[:,:,1], 0) # (E.k)
+            #IP_prediction__V_k_H[:,:,2] = np.where(S_k, prediction__V_k_H[:,:,2], 0) # (E.k)
             #IP_prediction__V_k_H = np.zeros_like(S_k) # (E.k)
             #IP_prediction__V_k_H = prediction__V_k_H
-            frame.debug_write(norm(IP_prediction__V_k_H), f"{codestream}encoder_IP_prediction_H_{k:03d}")
+            frame.debug_write(clip(IP_prediction__V_k_H), f"{codestream}encoder_IP_prediction_H_{k:03d}")
             _E_k_H = _V_k_H - IP_prediction__V_k_H # (c)
             #assert (IP_prediction__V_k_H == 0).all()
             #assert (_E_k_H == _V_k_H).all()
             #print("IP_prediction__V_k_H.max() =", IP_prediction__V_k_H.max())
-            frame.debug_write(norm(_E_k_H), f"{codestream}encoder_prediction_error_H_{k:03d}")
+            frame.debug_write(clip(_E_k_H), f"{codestream}encoder_prediction_error_H_{k:03d}")
             quantized__E_k_H = deadzone.quantize(_E_k_H, q_step=q_step) # (d)
             dequantized__E_k_H = deadzone.dequantize(quantized__E_k_H, q_step=q_step) # (E.g)
             #for i in range(dequantized__E_k_H.shape[0]):
@@ -88,14 +95,14 @@ def encode(video=VIDEO_PREFIX, codestream=CODESTREAM_PREFIX, n_frames=N_FRAMES, 
             #        for k in range(dequantized__E_k_H.shape[2]):
             #            if dequantized__E_k_H[i,j,k] != _E_k_H[i,j,k]:
             #                print(dequantized__E_k_H[i,j,k], _E_k_H[i,j,k])
-            frame.debug_write(norm(dequantized__E_k_H), f"{codestream}encoder_dequantized_prediction_error_H_{k:03d}")
+            frame.debug_write(clip(dequantized__E_k_H), f"{codestream}encoder_dequantized_prediction_error_H_{k:03d}")
             #assert (dequantized__E_k_H == _E_k_H.astype(np.int16)).all()
             reconstructed__V_k_H = dequantized__E_k_H + IP_prediction__V_k_H # (E.h)
             #frame.write(reconstructed__V_k_H, video + "reconstructed_H", k) # Ojo, reconstructed__V_k_H está a 16 bits!!
             L.write(reconstructed__V_k_H, video + "reconstructed_H", k)
             #print("->", reconstructed__V_k_H.max(), reconstructed__V_k_H.min())
             #assert (reconstructed__V_k_H == _V_k_H.astype(np.int16)).all()
-            frame.debug_write(norm(reconstructed__V_k_H), f"{codestream}encoder_reconstructed_{k:03d}")
+            frame.debug_write(clip(reconstructed__V_k_H), f"{codestream}encoder_reconstructed_{k:03d}")
             reconstructed__V_k_1_H = reconstructed__V_k_H # (E.i)
             quantized_E_k_H = H.reduce(quantized__E_k_H) # (f)
             #L.write(YCoCg.to_RGB(V_k_L), codestream, k) # (g)

@@ -2,7 +2,8 @@
 
 import IPP_step
 import DWT
-import YCoCg
+import YCoCg as color_transform
+#import YCrCb as color_transform
 import frame
 import L
 import H
@@ -12,7 +13,7 @@ import config
 print("Computing DWT")
 for k in range(config.n_frames):
     V_k = frame.read(f"{config.input_video}{k:03d}")
-    V_k = YCoCg.from_RGB(V_k)
+    V_k = color_transform.from_RGB(V_k)
     decomposition = DWT.analyze(V_k, n_levels=config.n_levels)
     #print("len =", len(decomposition))
     L.write(decomposition[0], f"{config.input_video}{config.n_levels}_", k)
@@ -43,6 +44,9 @@ for l in range(config.n_levels-1, 0, -1):
 for l in range(config.n_levels, -1, -1):
     for k in range(config.n_frames):
         V_k = L.read(f"{config.input_video}{l}_", k)
-        V_k = YCoCg.to_RGB(V_k)
+        V_k = color_transform.to_RGB(V_k)
         V_k = np.clip(V_k, 0, 255).astype(np.uint8)
         frame.write(V_k, f"{config.output_video}{l}_{k:03d}")
+
+config._print()
+
