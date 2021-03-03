@@ -7,7 +7,7 @@ import LP as spatial_transform
 import L_LP as L
 #import H_DWT as H
 import H_LP as H
-import deadzone_const as Q
+import deadzone as Q
 import motion
 import frame
 import colors
