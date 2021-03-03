@@ -7,7 +7,7 @@ import LP as spatial_transform
 import L_LP as L
 #import H_DWT as H
 import H_LP as H
-import deadzone
+import deadzone_const as Q
 import motion
 import frame
 import colors
@@ -40,8 +40,8 @@ def encode(video=VIDEO_PREFIX, codestream=CODESTREAM_PREFIX, n_frames=N_FRAMES, 
         _V_k_1_L = _V_k_L # (E.b)
         _V_k_H = H.interpolate(V_k_H) # (b)
         _E_k_H = _V_k_H # (c)
-        quantized__E_k_H = deadzone.quantize(_E_k_H, q_step=q_step) # (d)
-        dequantized__E_k_H = deadzone.dequantize(quantized__E_k_H, q_step=q_step) # (E.g)
+        quantized__E_k_H = Q.quantize(_E_k_H, q_step=q_step) # (d)
+        dequantized__E_k_H = Q.dequantize(quantized__E_k_H, q_step=q_step) # (E.g)
         reconstructed__V_k_H = dequantized__E_k_H # (E.h)
         #frame.write(reconstructed__V_k_H, video + "reconstructed_H", k)
         L.write(reconstructed__V_k_H, video + "reconstructed_H", k)
@@ -91,8 +91,8 @@ def encode(video=VIDEO_PREFIX, codestream=CODESTREAM_PREFIX, n_frames=N_FRAMES, 
             #assert (_E_k_H == _V_k_H).all()
             #print("IP_prediction__V_k_H.max() =", IP_prediction__V_k_H.max())
             frame.debug_write(clip(_E_k_H), f"{codestream}encoder_prediction_error_H_{k:03d}")
-            quantized__E_k_H = deadzone.quantize(_E_k_H, q_step=q_step) # (d)
-            dequantized__E_k_H = deadzone.dequantize(quantized__E_k_H, q_step=q_step) # (E.g)
+            quantized__E_k_H = Q.quantize(_E_k_H, q_step=q_step) # (d)
+            dequantized__E_k_H = Q.dequantize(quantized__E_k_H, q_step=q_step) # (E.g)
             #for i in range(dequantized__E_k_H.shape[0]):
             #    for j in range(dequantized__E_k_H.shape[1]):
             #        for k in range(dequantized__E_k_H.shape[2]):
@@ -126,7 +126,7 @@ def decode(codestream=CODESTREAM_PREFIX, video=DECODED_VIDEO_PREFIX, n_frames=N_
     _V_k_L = L.interpolate(V_k_L) # (E.a)
     #assert (quantized__E_k_H.shape == _V_k_L.shape).all()
     _V_k_1_L = _V_k_L # (E.b)
-    dequantized__E_k_H = deadzone.dequantize(quantized__E_k_H, q_step=q_step) # (E.g)
+    dequantized__E_k_H = Q.dequantize(quantized__E_k_H, q_step=q_step) # (E.g)
     reconstructed__V_k_H = dequantized__E_k_H # (E.h)
     reconstructed__V_k_1_H = reconstructed__V_k_H # (E.i)
     reconstructed_V_k_H = H.reduce(reconstructed__V_k_H) # (i)
@@ -152,7 +152,7 @@ def decode(codestream=CODESTREAM_PREFIX, video=DECODED_VIDEO_PREFIX, n_frames=N_
         IP_prediction__V_k_H[:,:,1] = np.where(S_k, prediction__V_k_H[:,:,1], 0) # (E.k)
         IP_prediction__V_k_H[:,:,2] = np.where(S_k, prediction__V_k_H[:,:,2], 0) # (E.k)
         #IP_prediction__V_k_H = np.zeros_like(S_k, dtype=np.float64) # (E.k)
-        dequantized__E_k_H = deadzone.dequantize(quantized__E_k_H, q_step=q_step) # (E.g)
+        dequantized__E_k_H = Q.dequantize(quantized__E_k_H, q_step=q_step) # (E.g)
         #assert (dequantized__E_k_H.shape == _V_k_L.shape).all()
         reconstructed__V_k_H = dequantized__E_k_H + IP_prediction__V_k_H # (E.h)
         #reconstructed__V_k_H = quantized__E_k_H + IP_prediction__V_k_H # (E.h)
