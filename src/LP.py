@@ -3,6 +3,7 @@
 import numpy as np
 import cv2 as cv
 import config
+import MSE
 
 def analyze_step(frame: np.ndarray) -> tuple:
     L = cv.pyrDown(frame)
@@ -38,3 +39,24 @@ def synthesize(P: list, n_levels: int =config.n_levels) -> np.ndarray:
         #frame = synthesize_step((P[n_levels-l-1], frame))
         frame = synthesize_step(frame, P[l+1])
     return frame
+
+def compute_delta_factors(n_levels):
+    attenuations = []
+    dims = (512, 512, 3)
+    x = np.zeros(dims)
+    L = analyze(x, n_levels)
+    L[0][1, 1, :] = [100, 100, 100]
+    y = synthesize(L, n_levels)
+    e = MSE.average_energy(y)
+    for l in range(1, n_levels):
+        x = np.zeros(dims)
+        L = analyze(x, n_levels)
+        L[l][1, 1, :] = [100, 100, 100]
+        y = synthesize(L, n_levels)
+        ee = MSE.average_energy(y)
+        gain = e/ee
+        gain.append(e/ee)
+        e = ee
+    for l in range(n_levels):
+        gain[l] 
+    return delta

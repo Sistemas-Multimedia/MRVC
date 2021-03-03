@@ -3,6 +3,7 @@
 import numpy as np
 import pywt
 import config
+import MSE
 
 #WAVELET = pywt.Wavelet("haar")
 WAVELET = pywt.Wavelet(config.wavelet)
@@ -108,6 +109,26 @@ def synthesize(color_decomposition: list, n_levels: int =None) -> np.ndarray:
     for c in range(n_channels):
         color_frame[:,:,c] = _color_frame[c][:,:]
     return color_frame
+
+def compute_deltas(n_levels):
+    delta = []
+    dims = (512, 512, 3)
+    x = np.zeros(dims)
+    L = DWT.analyze(x, n_levels)
+    L[0][1,1,:] = [100, 100, 100]
+    y = DWT.synthesize(L, l)
+    e = MSE.average_energy(y)
+    for l in range(1, n_levels):
+        x = np.zeros(dims)
+        L = LP.analyze(x, n_levels)
+        L[l][1,1,:] = [100, 100, 100]
+        y = DWT.synthesize(L)
+        ee = MSE.average_energy(y)
+        gain = e/ee
+        delta.append(gain)
+        print(gain)
+        e = ee
+    return delta
 
 ################
 

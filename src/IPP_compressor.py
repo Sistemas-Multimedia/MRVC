@@ -13,6 +13,9 @@ import frame
 import numpy as np
 import config
 
+delta = spatial_transform.compute_deltas(config.n_levels)
+print(delta)
+
 print("Computing Spatial Transform")
 for k in range(config.n_frames):
     V_k = frame.read(f"{config.input_video}{k:03d}")
