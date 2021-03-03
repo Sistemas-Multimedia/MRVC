@@ -1,12 +1,15 @@
 ''' MRVC/IPP_step.py '''
 
 import numpy as np
-import DWT
+#import DWT as spatial_transform
+import LP as spatial_transform
+#import L_DWT as L
+import L_LP as L
+#import H_DWT as H
+import H_LP as H
 import deadzone
 import motion
 import frame
-import L
-import H
 import colors
 import cv2
 
@@ -53,6 +56,7 @@ def encode(video=VIDEO_PREFIX, codestream=CODESTREAM_PREFIX, n_frames=N_FRAMES, 
             V_k_H = H.read(video, k, V_k_L.shape)#V_k_H = H.read(H_sequence, k)
             _V_k_L = L.interpolate(V_k_L) # (E.a)
             flow = motion.estimate(_V_k_L[:,:,0], _V_k_1_L[:,:,0]) # (E.c)
+            print("------------->", _V_k_L[:,:,0].dtype, _V_k_1_L[:,:,0].dtype)
             prediction__V_k_L = motion.make_prediction(_V_k_1_L, flow) # (E.d)
             frame.debug_write(norm(prediction__V_k_L), f"{codestream}encoder_prediction_L_{k:03d}")
             _V_k_1_L = _V_k_L # (E.b)
@@ -127,7 +131,7 @@ def decode(codestream=CODESTREAM_PREFIX, video=DECODED_VIDEO_PREFIX, n_frames=N_
     reconstructed__V_k_H = dequantized__E_k_H # (E.h)
     reconstructed__V_k_1_H = reconstructed__V_k_H # (E.i)
     reconstructed_V_k_H = H.reduce(reconstructed__V_k_H) # (i)
-    reconstructed_V_k = DWT.synthesize_step(V_k_L, reconstructed_V_k_H) # (k)
+    reconstructed_V_k = spatial_transform.synthesize_step(V_k_L, reconstructed_V_k_H) # (k)
     #reconstructed_V_k = YCoCg.to_RGB(reconstructed_V_k)
     reconstructed_V_k = np.clip(reconstructed_V_k, 0, 255).astype(np.uint8)
     frame.write(reconstructed_V_k, f"{video}{k:03d}")
@@ -158,7 +162,7 @@ def decode(codestream=CODESTREAM_PREFIX, video=DECODED_VIDEO_PREFIX, n_frames=N_
         #assert (reconstructed__V_k_H == dequantized__E_k_H).all()
         reconstructed__V_k_1_H = reconstructed__V_k_H # (E.i)
         reconstructed_V_k_H = H.reduce(reconstructed__V_k_H) # (j)
-        reconstructed_V_k = DWT.synthesize_step(V_k_L, reconstructed_V_k_H) # (k)
+        reconstructed_V_k = spatial_transform.synthesize_step(V_k_L, reconstructed_V_k_H) # (k)
         #reconstructed_V_k = YCoCg.to_RGB(reconstructed_V_k)
         reconstructed_V_k = np.clip(reconstructed_V_k, 0, 255).astype(np.uint8)
         frame.write(reconstructed_V_k, f"{video}{k:03d}")

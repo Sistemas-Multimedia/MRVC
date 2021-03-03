@@ -17,7 +17,7 @@ def read(name: str) -> np.ndarray: # [row, column, component]
     #img = np.array(img, dtype=np.float32)
     if __debug__:
         print(f"frame.read({name})", img.shape, img.dtype, os.path.getsize(fn))
-    return img.astype(np.int32)
+    return img.astype(np.int16)
 
 def _write(img: np.ndarray, name: str) -> None:
     fn = name + ".png"
