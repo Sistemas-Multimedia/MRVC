@@ -1,14 +1,14 @@
 ''' MRVC/stockholm_experiment.py '''
 
 import IPP_step
-import DWT as spatial_transform
-#import LP as spatial_transform
+#import DWT as spatial_transform
+import LP as spatial_transform
 import YCoCg as YUV
 import frame
-import L_DWT as L
-#import L_LP as L
-import H_DWT as H
-#import H_LP as H
+#import L_DWT as L
+import L_LP as L
+#import H_DWT as H
+import H_LP as H
 import numpy as np
 import config
 

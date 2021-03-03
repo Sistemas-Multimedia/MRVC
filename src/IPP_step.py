@@ -56,7 +56,6 @@ def encode(video=VIDEO_PREFIX, codestream=CODESTREAM_PREFIX, n_frames=N_FRAMES, 
             V_k_H = H.read(video, k, V_k_L.shape)#V_k_H = H.read(H_sequence, k)
             _V_k_L = L.interpolate(V_k_L) # (E.a)
             flow = motion.estimate(_V_k_L[:,:,0], _V_k_1_L[:,:,0]) # (E.c)
-            print("------------->", _V_k_L[:,:,0].dtype, _V_k_1_L[:,:,0].dtype)
             prediction__V_k_L = motion.make_prediction(_V_k_1_L, flow) # (E.d)
             frame.debug_write(norm(prediction__V_k_L), f"{codestream}encoder_prediction_L_{k:03d}")
             _V_k_1_L = _V_k_L # (E.b)
@@ -87,7 +86,7 @@ def encode(video=VIDEO_PREFIX, codestream=CODESTREAM_PREFIX, n_frames=N_FRAMES, 
             #IP_prediction__V_k_H = np.zeros_like(S_k) # (E.k)
             #IP_prediction__V_k_H = prediction__V_k_H
             frame.debug_write(clip(IP_prediction__V_k_H), f"{codestream}encoder_IP_prediction_H_{k:03d}")
-            _E_k_H = _V_k_H - IP_prediction__V_k_H # (c)
+            _E_k_H = _V_k_H - IP_prediction__V_k_H[:_V_k_H.shape[0], :_V_k_H.shape[1], :] # (c)
             #assert (IP_prediction__V_k_H == 0).all()
             #assert (_E_k_H == _V_k_H).all()
             #print("IP_prediction__V_k_H.max() =", IP_prediction__V_k_H.max())
@@ -101,7 +100,7 @@ def encode(video=VIDEO_PREFIX, codestream=CODESTREAM_PREFIX, n_frames=N_FRAMES, 
             #                print(dequantized__E_k_H[i,j,k], _E_k_H[i,j,k])
             frame.debug_write(clip(dequantized__E_k_H), f"{codestream}encoder_dequantized_prediction_error_H_{k:03d}")
             #assert (dequantized__E_k_H == _E_k_H.astype(np.int16)).all()
-            reconstructed__V_k_H = dequantized__E_k_H + IP_prediction__V_k_H # (E.h)
+            reconstructed__V_k_H = dequantized__E_k_H + IP_prediction__V_k_H[:dequantized__E_k_H.shape[0], :dequantized__E_k_H.shape[1], :] # (E.h)
             #frame.write(reconstructed__V_k_H, video + "reconstructed_H", k) # Ojo, reconstructed__V_k_H está a 16 bits!!
             L.write(reconstructed__V_k_H, video + "reconstructed_H", k)
             #print("->", reconstructed__V_k_H.max(), reconstructed__V_k_H.min())

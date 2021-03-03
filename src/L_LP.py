@@ -17,7 +17,7 @@ def read(prefix: str, frame_number: int) -> np.ndarray: # [row, column, componen
     subband = cv.cvtColor(subband, cv.COLOR_BGR2RGB)
     if __debug__:
         print(f"L.read({prefix}, {frame_number})", subband.shape, subband.dtype, os.path.getsize(fn))
-    subband = np.array(subband, dtype=np.int32)
+    subband = np.array(subband, dtype=np.int16)
     subband -= OFFSET
     return subband
 
@@ -36,7 +36,7 @@ def write(subband: np.ndarray, prefix: str, frame_number: int) -> None:
         print(os.path.getsize(fn))
 
 def interpolate(L: np.ndarray) -> np.ndarray:
-    return L.astype(np.float64)
+    return cv.pyrUp(L).astype(np.float64)
 
 def reduce(_L_: np.ndarray) -> np.ndarray:
     return _L_

@@ -18,11 +18,11 @@ N_LEVELS = 3
 #MODE = "periodization" # Gets the inimal number of coeffs
 MODE = config.dwt_extension_mode
 
-def analyze_step(color_frame: np.ndarray, wavelet: pywt.Wavelet =WAVELET) -> tuple:
+def analyze_step(color_frame: np.ndarray) -> tuple:
     n_channels = color_frame.shape[2]
     color_decomposition = [None]*n_channels
     for c in range(n_channels):
-        color_decomposition[c] = pywt.dwt2(data=color_frame[:,:,c], wavelet=wavelet, mode=MODE)
+        color_decomposition[c] = pywt.dwt2(data=color_frame[:,:,c], wavelet=WAVELET, mode=MODE)
     assert color_decomposition[0][0].shape == color_decomposition[0][1][0].shape
     n_rows_subband, n_columns_subband = color_decomposition[0][0].shape # All subbands have the same shape
     LL = np.empty(shape=(n_rows_subband, n_columns_subband, n_channels), dtype=np.float64)
@@ -36,12 +36,12 @@ def analyze_step(color_frame: np.ndarray, wavelet: pywt.Wavelet =WAVELET) -> tup
         HH[:,:,c] = color_decomposition[c][1][2][:,:]
     return (LL, (LH, HL, HH))
 
-def synthesize_step(LL: np.ndarray, H: tuple, wavelet: pywt.Wavelet =WAVELET) -> np.ndarray:
+def synthesize_step(LL: np.ndarray, H: tuple) -> np.ndarray:
     LH, HL, HH = H
     n_channels = LL.shape[2] #len(LL)
     _color_frame = []
     for c in range(n_channels):
-        frame = pywt.idwt2((LL[:,:,c], (LH[:,:,c], HL[:,:,c], HH[:,:,c])), wavelet=wavelet, mode=MODE)
+        frame = pywt.idwt2((LL[:,:,c], (LH[:,:,c], HL[:,:,c], HH[:,:,c])), wavelet=WAVELET, mode=MODE)
         #frame = pywt.idwt2((LL[:,:,c], np.array(H)[:,:,c]), wavelet=wavelet, mode=MODE)
         _color_frame.append(frame)
     n_rows, n_columns = _color_frame[0].shape
@@ -52,11 +52,11 @@ def synthesize_step(LL: np.ndarray, H: tuple, wavelet: pywt.Wavelet =WAVELET) ->
         color_frame[:,:,c] = _color_frame[c][:,:]
     return color_frame
 
-def analyze(color_frame: np.ndarray, wavelet: pywt.Wavelet =WAVELET, n_levels: int =N_LEVELS) -> list:
+def analyze(color_frame: np.ndarray, n_levels: int =N_LEVELS) -> list:
     n_channels = color_frame.shape[2]
     color_decomposition = [None]*n_channels
     for c in range(n_channels):
-        color_decomposition[c] = pywt.wavedec2(data=color_frame[:,:,c], wavelet=wavelet, mode=MODE, level=n_levels)
+        color_decomposition[c] = pywt.wavedec2(data=color_frame[:,:,c], wavelet=WAVELET, mode=MODE, level=n_levels)
 
     output = []
     # LL^n_levels and H^n_levels subbands
@@ -95,11 +95,12 @@ def analyze(color_frame: np.ndarray, wavelet: pywt.Wavelet =WAVELET, n_levels: i
 
     return output
 
-def synthesize(color_decomposition: list, wavelet: pywt.Wavelet =WAVELET) -> np.ndarray:
+# No está terminado. Hay que crear las matrices en color a partir de las matrices monocromo.
+def synthesize(color_decomposition: list, n_levels: int =None) -> np.ndarray:
     n_channels = len(color_decomposition)
     _color_frame = []
     for c in range(n_channels):
-        channel = pywt.waverec2(color_decomposition[c], wavelet=wavelet, mode=MODE)
+        channel = pywt.waverec2(color_decomposition[c], wavelet=WAVELET, mode=MODE)
         _color_frame.append(channel)
     n_rows = _color_frame[0].shape[0]
     n_columns = _color_frame[0].shape[1]
