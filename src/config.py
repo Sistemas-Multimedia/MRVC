@@ -8,7 +8,8 @@ import cv2
 n_frames = 500
 
 # Input, output, and codestream prefixes.
-prefix = "/media/sdc1"
+prefix = "/media/sdc1/Q8L3_LP"
+#prefix = "/media/sdc1/Q54L3_DWT"
 input_video = f"{prefix}/original_"
 codestream = f"{prefix}/codestream_"
 output_video = f"{prefix}/reconstructed_"
