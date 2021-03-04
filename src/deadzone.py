@@ -2,14 +2,22 @@
 
 import numpy as np
 
-Q_STEP = 1
+# Quantization step.
+#step = 0.5
+#step = 1
+step = 8
+#step = 16
+#step = 54
+#step = 128
 
-def quantize(x: np.ndarray, q_step: float=Q_STEP) -> np.ndarray:
-    k = (x / q_step).astype(np.int16)
-    #k = (x / q_step).astype(np.int32)
+print("Quantization step =", step)
+
+def quantize(x: np.ndarray, step: float=step) -> np.ndarray:
+    k = (x / step).astype(np.int16)
+    #k = (x / step).astype(np.int32)
     #return k.astype(np.float32)
     return k
 
-def dequantize(k: np.ndarray, q_step: float=Q_STEP) -> np.ndarray:
-    y = q_step * k
+def dequantize(k: np.ndarray, step: float=step) -> np.ndarray:
+    y = step * k
     return y

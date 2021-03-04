@@ -5,6 +5,9 @@ import cv2 as cv
 import config
 import MSE
 
+# Number of levels of the LP
+N_LEVELS = config.n_levels
+
 def analyze_step(frame: np.ndarray) -> tuple:
     L = cv.pyrDown(frame)
     interpolated_L = cv.pyrUp(L)
@@ -14,7 +17,7 @@ def analyze_step(frame: np.ndarray) -> tuple:
     H = _frame - interpolated_L
     return (L, H)
 
-def analyze(frame: np.ndarray, n_levels: int =config.n_levels) -> list:
+def analyze(frame: np.ndarray, n_levels: int =N_LEVELS) -> list:
     L, H = analyze_step(frame)
     P = [H]
     for l in range(n_levels-1):
@@ -30,7 +33,7 @@ def synthesize_step(L: np.ndarray, H:np.ndarray) -> np.ndarray:
     frame = _H + interpolated_L
     return frame
 
-def synthesize(P: list, n_levels: int =config.n_levels) -> np.ndarray:
+def synthesize(P: list, n_levels: int =N_LEVELS) -> np.ndarray:
     #frame = P[n_levels]
     frame = P[0]
     for l in range(n_levels):

@@ -12,6 +12,7 @@ import YCrCb as YUV
 #import RGB as YUV
 import frame
 import numpy as np
+import deadzone as Q
 import config
 
 gains = spatial_transform.compute_gains(config.n_levels)
@@ -30,7 +31,7 @@ for k in range(config.n_frames):
 print("IPP... encoding")
 
 print(f"Computing SRL {config.n_levels}")
-delta = config.q_step*gains[0]
+delta = Q.step*gains[0]
 print("delta =", delta)
 if delta < 1:
     delta = 1
@@ -44,7 +45,7 @@ for k in range(config.n_frames):
 
 for l in range(config.n_levels-1, 0, -1):
     print(f"Computing SRL {l}")
-    delta = config.q_step*gains[config.n_levels-l-1]
+    delta = Q.step*gains[config.n_levels-l-1]
     print("delta =", delta)
     if delta < 1:
         delta = 1
@@ -63,5 +64,4 @@ for l in range(config.n_levels, -1, -1):
         V_k = np.clip(V_k, 0, 255).astype(np.uint8)
         frame.write(V_k, f"{config.output_video}{l}_{k:03d}")
 
-config._print()
 
