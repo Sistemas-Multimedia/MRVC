@@ -3,14 +3,14 @@
 import cv2
 
 # Quantization step.
-#q_step = 1
-q_step = 16
+q_step = 0.1
+#q_step = 16
 #q_step = 54
 #q_step = 128
 
 # Number of frames to compress.
-#n_frames = 3
-n_frames = 36
+n_frames = 3
+#n_frames = 36
 
 # Input, output, and codestream prefixes.
 input_video = "/tmp/original_"

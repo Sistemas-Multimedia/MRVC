@@ -40,8 +40,8 @@ def synthesize(P: list, n_levels: int =config.n_levels) -> np.ndarray:
         frame = synthesize_step(frame, P[l+1])
     return frame
 
-def compute_delta_factors(n_levels):
-    attenuations = []
+def compute_gains(n_levels):
+    gains = []
     dims = (512, 512, 3)
     x = np.zeros(dims)
     L = analyze(x, n_levels)
@@ -55,8 +55,8 @@ def compute_delta_factors(n_levels):
         y = synthesize(L, n_levels)
         ee = MSE.average_energy(y)
         gain = e/ee
-        gain.append(e/ee)
+        gains.append(gain)
         e = ee
-    for l in range(n_levels):
-        gain[l] 
-    return delta
+    #for l in range(n_levels):
+    #    gains[l] 
+    return gains

@@ -13,8 +13,8 @@ import frame
 import numpy as np
 import config
 
-delta = spatial_transform.compute_deltas(config.n_levels)
-print(delta)
+gains = spatial_transform.compute_gains(config.n_levels)
+print(gains)
 
 print("Computing Spatial Transform")
 for k in range(config.n_frames):
@@ -29,7 +29,11 @@ for k in range(config.n_frames):
 print("IPP... encoding")
 
 print(f"Computing SRL {config.n_levels}")
-IPP_step.encode(f"{config.input_video}{config.n_levels}_", f"{config.codestream}{config.n_levels}_", config.n_frames, config.q_step)
+delta = config.q_step
+print("delta =", delta)
+if delta < 1:
+    _delta = 1
+IPP_step.encode(f"{config.input_video}{config.n_levels}_", f"{config.codestream}{config.n_levels}_", config.n_frames, _delta)
 for k in range(config.n_frames):
     reconstructed__V_k_H = L.read(f"{config.input_video}{config.n_levels}_reconstructed_H", k)
     V_k_L = L.read(f"{config.input_video}{config.n_levels}_", k)
@@ -39,7 +43,11 @@ for k in range(config.n_frames):
 
 for l in range(config.n_levels-1, 0, -1):
     print(f"Computing SRL {l}")
-    IPP_step.encode(f"{config.input_video}{l}_", f"{config.codestream}{l}_", config.n_frames, config.q_step)
+    delta *= gains[config.n_levels-l-1]
+    print("delta =", delta)
+    if delta < 1:
+        _delta = 1
+    IPP_step.encode(f"{config.input_video}{l}_", f"{config.codestream}{l}_", config.n_frames, _delta)
     for k in range(config.n_frames):
         reconstructed__V_k_H = L.read(f"{config.input_video}{l}_reconstructed_H", k)
         V_k_L = L.read(f"{config.input_video}{l}_", k)
