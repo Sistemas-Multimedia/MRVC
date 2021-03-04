@@ -41,22 +41,24 @@ def synthesize(P: list, n_levels: int =config.n_levels) -> np.ndarray:
     return frame
 
 def compute_gains(n_levels):
-    gains = []
-    dims = (512, 512, 3)
-    x = np.zeros(dims)
-    L = analyze(x, n_levels)
-    L[0][1, 1, :] = [100, 100, 100]
-    y = synthesize(L, n_levels)
-    e = MSE.average_energy(y)
-    for l in range(1, n_levels):
-        x = np.zeros(dims)
-        L = analyze(x, n_levels)
-        L[l][1, 1, :] = [100, 100, 100]
-        y = synthesize(L, n_levels)
-        ee = MSE.average_energy(y)
-        gain = e/ee
-        gains.append(gain)
-        e = ee
-    #for l in range(n_levels):
-    #    gains[l] 
+    gains = [1.0]*n_levels
+    #dims = (8192, 8, 3)
+    #x = np.zeros(dims, dtype=np.int16)
+    #L = analyze(x, n_levels)
+    #L[0][1, 1, :] = [100, 100, 100]
+    #y = synthesize(L, n_levels)
+    #e = MSE.average_energy(y)
+    #for l in range(1, n_levels):
+    #    x = np.zeros(dims)
+    #    L = analyze(x, n_levels)
+    #    L[l][0, 0, :] = [100, 100, 100]
+    #    y = synthesize(L, n_levels)
+    #    ee = MSE.average_energy(y)
+    #    gain = e/ee
+    #    gains.append(gain)
+    #    e = ee
+    #gains = [None]*len(_gains)
+    for l in range(1,n_levels):
+    #    gains[l] = gains[l-1]*gains[l]
+        gains[l] = gains[l-1]*4
     return gains

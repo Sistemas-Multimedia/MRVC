@@ -15,8 +15,9 @@ for k in range(config.n_frames):
     fn = f"{config.codestream}{config.n_levels}_LL{k:03d}.png"
     _bytes = os.path.getsize(fn)
     debug_print(fn, _bytes)
-    total_bytes += _bytes
+    bytes_by_level += _bytes
 print("bit-rate by level", config.n_levels+1, "=", bytes_by_level*8/sequence_time/1000, "(kbps)")
+print("bytes by level", bytes_by_level)
 total_bytes += bytes_by_level
 
 for l in range(config.n_levels, 0, -1):
@@ -27,6 +28,7 @@ for l in range(config.n_levels, 0, -1):
         debug_print(fn, _bytes)
         bytes_by_level += _bytes
     print("bit-rate by level", l, "=", bytes_by_level*8/sequence_time/1000, "(kbps)")
+    print("bytes by level", bytes_by_level)
     total_bytes += bytes_by_level
 
 print("total_bytes =", total_bytes)

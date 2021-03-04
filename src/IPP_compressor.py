@@ -7,8 +7,9 @@ import LP as spatial_transform
 import L_LP as L
 #import H_DWT as H
 import H_LP as H
-import YCoCg as YUV
-#import YCrCb as color_transform
+#import YCoCg as YUV
+import YCrCb as YUV
+#import RGB as YUV
 import frame
 import numpy as np
 import config
@@ -29,11 +30,11 @@ for k in range(config.n_frames):
 print("IPP... encoding")
 
 print(f"Computing SRL {config.n_levels}")
-delta = config.q_step
+delta = config.q_step*gains[0]
 print("delta =", delta)
 if delta < 1:
-    _delta = 1
-IPP_step.encode(f"{config.input_video}{config.n_levels}_", f"{config.codestream}{config.n_levels}_", config.n_frames, _delta)
+    delta = 1
+IPP_step.encode(f"{config.input_video}{config.n_levels}_", f"{config.codestream}{config.n_levels}_", config.n_frames, delta)
 for k in range(config.n_frames):
     reconstructed__V_k_H = L.read(f"{config.input_video}{config.n_levels}_reconstructed_H", k)
     V_k_L = L.read(f"{config.input_video}{config.n_levels}_", k)
@@ -43,11 +44,11 @@ for k in range(config.n_frames):
 
 for l in range(config.n_levels-1, 0, -1):
     print(f"Computing SRL {l}")
-    delta *= gains[config.n_levels-l-1]
+    delta = config.q_step*gains[config.n_levels-l-1]
     print("delta =", delta)
     if delta < 1:
-        _delta = 1
-    IPP_step.encode(f"{config.input_video}{l}_", f"{config.codestream}{l}_", config.n_frames, _delta)
+        delta = 1
+    IPP_step.encode(f"{config.input_video}{l}_", f"{config.codestream}{l}_", config.n_frames, delta)
     for k in range(config.n_frames):
         reconstructed__V_k_H = L.read(f"{config.input_video}{l}_reconstructed_H", k)
         V_k_L = L.read(f"{config.input_video}{l}_", k)
