@@ -20,11 +20,11 @@ N_LEVELS = config.n_levels
 #EXTENSION_MODE = "smooth"
 #EXTENSION_MODE = "antisymmetric"
 #EXTENSION_MODE = "antireflect"
-#EXTENSION_MODE = "periodization" # Gets the inimal number of coeffs
-EXTENSION_MODE = config.dwt_extension_mode
+EXTENSION_MODE = "periodization" # Gets the inimal number of coeffs
+#EXTENSION_MODE = config.dwt_extension_mode
 
-print("Wavelet =", wavelet)
-print("DWT extension mode =", dwt_extension_mode)
+print("Wavelet =", WAVELET)
+print("DWT extension mode =", EXTENSION_MODE)
 
 def analyze_step(color_frame: np.ndarray) -> tuple:
     n_channels = color_frame.shape[2]
@@ -136,6 +136,12 @@ def compute_deltas(n_levels):
         print(gain)
         e = ee
     return delta
+
+def compute_gains(n_levels):
+    gains = [1.0]*n_levels
+    for l in range(1,n_levels):
+        gains[l] = gains[l-1]*1
+    return gains
 
 ################
 
