@@ -2,7 +2,7 @@
 
 import numpy as np
 import pywt
-import config
+#import config
 import MSE
 
 #WAVELET = pywt.Wavelet("haar")
@@ -10,7 +10,8 @@ WAVELET = pywt.Wavelet("db5")
 #WAVELET = pywt.Wavelet("bior3.5")
 
 # Number of levels of the DWT
-N_LEVELS = config.n_levels
+#N_LEVELS = config.n_levels
+N_LEVELS = 3
 
 # Signal extension mode
 #EXTENSION_MODE = "symmetric" # default

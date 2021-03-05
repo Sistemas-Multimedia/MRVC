@@ -39,4 +39,5 @@ def interpolate(L: np.ndarray) -> np.ndarray:
     return cv.pyrUp(L).astype(np.float64)
 
 def reduce(_L_: np.ndarray) -> np.ndarray:
+    print("Not used, and not implemented")
     return _L_
