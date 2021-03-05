@@ -68,7 +68,7 @@ def analyze(color_frame: np.ndarray, n_levels: int =N_LEVELS) -> list:
         color_decomposition[c] = pywt.wavedec2(data=color_frame[:,:,c], wavelet=WAVELET, mode=EXTENSION_MODE, level=n_levels)
 
     output = []
-    # LL^n_levels and H^n_levels subbands
+    # LL^n_levels and H^n_levels subbands (both have the same resolution)
     n_rows_subband, n_columns_subband = color_decomposition[0][0].shape # All subbands in the SRL with the same shape
     #prev_n_rows_subband = n_rows_subband
     #prev_n_columns_subband = n_columns_subband
@@ -84,7 +84,7 @@ def analyze(color_frame: np.ndarray, n_levels: int =N_LEVELS) -> list:
     output.append(LL)
     output.append((LH, HL, HH))
     
-     # For the rest of SRLs
+     # For the rest of SRLs (have increasing resolutions)
     for r in range(2, n_levels+1):
         n_rows_subband, n_columns_subband = color_decomposition[0][r][0].shape
         #if prev_n_rows_subband * 2 < n_rows_subband:
@@ -102,23 +102,43 @@ def analyze(color_frame: np.ndarray, n_levels: int =N_LEVELS) -> list:
             HH[:,:,c] = color_decomposition[c][r][2][:,:]
         output.append((LH, HL, HH))
 
-    return output
+    return output # [LL^n, (LH^n, HL^n, HH^n), ..., (LH^1, HL^1, HH^1)], each subband panchromatic.
 
 # No está terminado. Hay que crear las matrices en color a partir de las matrices monocromo.
 def synthesize(color_decomposition: list, n_levels: int =None) -> np.ndarray:
-    n_channels = len(color_decomposition)
     _color_frame = []
+    n_channels = color_decomposition[0].shape[2]
     for c in range(n_channels):
-        channel = pywt.waverec2(color_decomposition[c], wavelet=WAVELET, mode=EXTENSION_MODE)
-        _color_frame.append(channel)
-    n_rows = _color_frame[0].shape[0]
-    n_columns = _color_frame[0].shape[1]
-    color_frame = np.ndarray((n_rows, n_columns, n_channels), np.float64)
+        decomposition = [color_decomposition[0][:,:,c]] # LL^n
+        for l in range(1, n_levels+1):
+            decomposition.append((color_decomposition[l][0][:,:,c], color_decomposition[l][1][:,:,c], color_decomposition[l][2][:,:,c])) # (LH^l, HL^l, HH^l)
+        _color_frame.append(pywt.waverec2(decomposition, wavelet=WAVELET, mode=EXTENSION_MODE))
+    color_frame = np.ndarray((_color_frame[0].shape[0], _color_frame[0].shape[1], n_channels), dtype=_color_frame[0].dtype)
+    print(_color_frame[0].shape, color_frame.shape)
     for c in range(n_channels):
         color_frame[:,:,c] = _color_frame[c][:,:]
+    
+    #print(n_channels)
+    #_color_frame = []
+    #for c in range(n_channels):
+    #    channel = pywt.waverec2(color_decomposition[c], wavelet=WAVELET, mode=EXTENSION_MODE)
+    #    _color_frame.append(channel)
+    #n_rows = _color_frame[0].shape[0]
+    #n_columns = _color_frame[0].shape[1]
+    #color_frame = np.ndarray((n_rows, n_columns, n_channels), np.float64)
+    #for c in range(n_channels):
+    #    color_frame[:,:,c] = _color_frame[c][:,:]
     return color_frame
 
-def compute_deltas(n_levels):
+def compute_gains(n_levels):
+    gains = [1.0]*n_levels
+    for l in range(1,n_levels):
+        gains[l] = gains[l-1]*1
+    return gains
+
+################
+
+def __compute_deltas(n_levels):
     delta = []
     dims = (512, 512, 3)
     x = np.zeros(dims)
@@ -137,14 +157,6 @@ def compute_deltas(n_levels):
         print(gain)
         e = ee
     return delta
-
-def compute_gains(n_levels):
-    gains = [1.0]*n_levels
-    for l in range(1,n_levels):
-        gains[l] = gains[l-1]*1
-    return gains
-
-################
 
 def __analyze_step(color_frame, wavelet=WAVELET):
     n_rows, n_columns, n_channels = color_frame.shape[0]//2, color_frame.shape[1]//2, color_frame.shape[2]
