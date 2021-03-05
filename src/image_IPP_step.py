@@ -1,5 +1,6 @@
 ''' MRVC/image_IPP_step.py '''
 
+import DWT
 import numpy as np
 import L_LP as L
 import H_LP as H
@@ -13,7 +14,7 @@ import YCoCg as YUV
 VIDEO_PREFIX = "../sequences/complete_stockholm/"
 CODESTREAM_PREFIX = "/tmp/"
 DECODED_VIDEO_PREFIX = "/tmp/decoder_"
-Q_STEP = 128
+#Q_STEP = 128
 N_FRAMES = 16
 
 def norm(x):
@@ -22,7 +23,6 @@ def norm(x):
 def clip(x):
     return(np.clip(x+128, 0 ,255).astype(np.uint8))
 
-#def encode(L_sequence=CODESTREAM_PREFIX + "L", H_sequence=CODESTREAM_PREFIX + "H", codestream=CODESTREAM_PREFIX, n_frames=N_FRAMES, q_step=Q_STEP):
 def encode(video=VIDEO_PREFIX, codestream=CODESTREAM_PREFIX, n_frames=N_FRAMES, q_step=Q.step):
     try:
         k = 0
