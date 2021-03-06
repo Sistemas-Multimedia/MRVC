@@ -37,6 +37,33 @@ def write(subband: np.ndarray, prefix: str, frame_number: int) -> None:
     if __debug__:
         print(os.path.getsize(fn))
 
+###############
+        
+def __write(subband: np.ndarray, fn:str) -> None:
+    if __debug__:
+        print(f"L.write({prefix}, {fn})", subband.max(), subband.min(), subband.shape, subband.dtype, end=' ')
+    subband = np.array(subband, dtype=np.int32)
+    subband += OFFSET
+    assert (subband < 65536).all()
+    assert (subband > -1).all()
+    subband = subband.astype(np.uint16)
+    subband = cv2.cvtColor(subband, cv2.COLOR_RGB2BGR)
+    fn = fn + ".png"
+    cv2.imwrite(fn, subband)
+    if __debug__:
+        print(os.path.getsize(fn))
+
+def __read(fn:str) -> np.ndarray: # [row, column, component]
+    fn = fn + ".png"
+    subband = cv2.imread(fn, cv2.IMREAD_UNCHANGED)
+    subband = cv2.cvtColor(subband, cv2.COLOR_BGR2RGB)
+    if __debug__:
+        print(f"L.read({prefix}, {frame_number})", subband.shape, subband.dtype, os.path.getsize(fn))
+    #subband = subband.astype(np.int32)
+    subband = np.array(subband, dtype=np.int32)
+    subband -= OFFSET
+    return subband#.astype(np.int16)
+
 def __read(prefix: str, frame_number: int) -> np.ndarray: # [row, column, component]
     #ASCII_frame_number = str(frame_number).zfill(3)
     fn = f"{prefix}LL{frame_number:03d}.png"

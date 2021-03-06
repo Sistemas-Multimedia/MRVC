@@ -3,7 +3,10 @@
 import numpy as np
 import pywt
 #import config
-import distortion
+#import distortion
+import frame
+import L_DWT as L
+import H_DWT as H
 
 #WAVELET = pywt.Wavelet("haar")
 WAVELET = pywt.Wavelet("db5")
@@ -11,7 +14,7 @@ WAVELET = pywt.Wavelet("db5")
 
 # Number of levels of the DWT
 #N_LEVELS = config.n_levels
-N_LEVELS = 3
+N_LEVELS = 5
 
 # Signal extension mode
 #EXTENSION_MODE = "symmetric" # default
@@ -84,7 +87,7 @@ def analyze(color_frame: np.ndarray, n_levels: int =N_LEVELS) -> list:
     output.append(LL)
     output.append((LH, HL, HH))
     
-     # For the rest of SRLs (have increasing resolutions)
+    # For the rest of SRLs (have increasing resolutions)
     for r in range(2, n_levels+1):
         n_rows_subband, n_columns_subband = color_decomposition[0][r][0].shape
         #if prev_n_rows_subband * 2 < n_rows_subband:
@@ -136,6 +139,65 @@ def compute_gains(n_levels):
         gains[l] = gains[l-1]*1
     return gains
 
+# Write each subband of a decomposition in a different PNG file using
+# <prefix><frame_number><LL|LH|HL|HH><level>.png filename.
+def write(color_decomposition:list, prefix:str, frame_number:int) -> None:
+    n_channels = color_decomposition[0].shape[2]
+    #_color_frame = [None]*n_channels
+    n_resolutions = len(color_decomposition)
+    LL = color_decomposition[0]
+    L.write(LL, f"{prefix}{n_resolutions-1}", frame_number)
+    resolution_index = n_resolutions-1
+    for resolution in color_decomposition[1:]:
+        H.write(resolution, f"{prefix}{resolution_index}", frame_number)
+        resolution_index -= 1
+        
+    #for c in range(n_channels):
+    #    decomposition = [color_decomposition[0][:,:,c]]
+    #    LL = decomposition[0]
+    #    for l in range(1, n_levels+1):
+    #        decomp.append((color_decomp[l][0][:,:,c], color_decomp[l][1][:,:,c], color_decomp[l][2][:,:,c]))
+    #    _color_frame[c], slices = pywt.coeffs_to_array(decomp)
+    #color_frame = np.ndarray((_color_frame[0].shape[0], _color_frame[0].shape[1], n_channels), dtype=_color_frame[0].dtype)
+    #for c in range(n_channels):
+    #    color_frame[:,:,c] = _color_frame[c][:,:]
+    #frame.write(color_frame.astype(np.int16), fn)
+    #return slices
+
+#def read(prefix:str, slices:list=None) -> np.ndarray: 
+def read(prefix:str, frame_number:int) -> np.ndarray: 
+    color_frame = frame.read(fn)
+    n_channels = color_frame.shape[2]
+    color_decomp = [None]*n_channels
+    for c in range(n_channels):
+        color_decomp[c] = pywt.array_to_coeffs(color_frame[:,:,c], slices, output_format='wavedec2')
+    output = []
+    n_rows_subband, n_columns_subband = color_decomposition[0][0].shape
+    LL = np.empty(shape=(n_rows_subband, n_columns_subband, n_channels), dtype=np.float64)
+    LH = np.zeros(shape=(n_rows_subband, n_columns_subband, n_channels), dtype=np.float64)
+    HL = np.zeros(shape=(n_rows_subband, n_columns_subband, n_channels), dtype=np.float64)
+    HH = np.zeros(shape=(n_rows_subband, n_columns_subband, n_channels), dtype=np.float64)
+    for c in range(n_channels): # For each color component
+        LL[:,:,c] = color_decomposition[c][0][:,:]
+        LH[:,:,c] = color_decomposition[c][1][0][:,:]
+        HL[:,:,c] = color_decomposition[c][1][1][:,:]
+        HH[:,:,c] = color_decomposition[c][1][2][:,:]
+    output.append(LL)
+    output.append((LH, HL, HH))
+    for r in range(2, n_levels+1):
+        n_rows_subband, n_columns_subband = color_decomposition[0][r][0].shape
+        prev_n_columns_subband = n_columns_subband
+        LH = np.zeros(shape=(n_rows_subband, n_columns_subband, n_channels), dtype=np.float64)
+        HL = np.zeros(shape=(n_rows_subband, n_columns_subband, n_channels), dtype=np.float64)
+        HH = np.zeros(shape=(n_rows_subband, n_columns_subband, n_channels), dtype=np.float64)
+        for c in range(n_channels):
+            LH[:,:,c] = color_decomposition[c][r][0][:,:]
+            HL[:,:,c] = color_decomposition[c][r][1][:,:]
+            HH[:,:,c] = color_decomposition[c][r][2][:,:]
+        output.append((LH, HL, HH))
+
+    return output
+    
 ################
 
 def __compute_deltas(n_levels):

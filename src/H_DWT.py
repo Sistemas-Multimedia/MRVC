@@ -80,3 +80,31 @@ def reduce(_H_: np.ndarray) -> tuple:
         #frame.debug_write(frame.normalize(_).astype(np.uint8), f"/tmp/__{k:03d}")
         #k += 1
     return H
+
+####################
+
+def __read(fn:str, shape: tuple) -> tuple: # [LH, HL, HH], each one [rows, columns, components]
+    fn = fn + ".png"
+    resolution = cv2.imread(fn, cv2.IMREAD_UNCHANGED)
+    ASCII_frame_number = str(frame_number).zfill(3)
+    subband_names = ["LH", "HL", "HH"]
+    H = []
+    sb = 0
+    for sbn in subband_names:
+        fn = f"{prefix}{sbn}{ASCII_frame_number}.png"
+        subband = cv2.imread(fn, cv2.IMREAD_UNCHANGED)
+        try:
+            subband = cv2.cvtColor(subband, cv2.COLOR_BGR2RGB)
+        except cv2.error:
+            print(colors.red(f'H.read: Unable to read "{fn}"'))
+        if __debug__:
+            print(f"H.read({prefix}, {frame_number})", subband.shape, subband.dtype, os.path.getsize(fn))
+        subband_int32 = np.array(subband, dtype=np.int32)
+        subband_int32 -= 32768
+        padded_subband = np.zeros(shape)
+        pad = (shape[0] - subband_int32.shape[0], shape[1] - subband_int32.shape[1])
+        print("padding with", pad)
+        padded_subband[:subband_int32.shape[0], :subband_int32.shape[1], :] = subband_int32
+        H.append(padded_subband)
+    return tuple(H)
+
