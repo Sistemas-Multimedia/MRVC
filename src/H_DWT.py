@@ -14,7 +14,7 @@ def read(prefix: str, frame_number: int, shape: tuple) -> tuple: # [LH, HL, HH],
     H = []
     sb = 0
     for sbn in subband_names:
-        fn = f"{prefix}{sbn}{ASCII_frame_number}.png"
+        fn = f"{prefix}_{ASCII_frame_number}_{sbn}.png"
         subband = cv2.imread(fn, cv2.IMREAD_UNCHANGED)
         try:
             subband = cv2.cvtColor(subband, cv2.COLOR_BGR2RGB)
@@ -44,11 +44,13 @@ def read(prefix: str, frame_number: int, shape: tuple) -> tuple: # [LH, HL, HH],
 
 def write(H: tuple, prefix: str, frame_number: int) -> None:
     ASCII_frame_number = str(frame_number).zfill(3)
+    if __debug__:
+        print(f"H.write({prefix}, {frame_number})", end=' ')
     subband_names = ["LH", "HL", "HH"]
     sb = 0
     for sbn in subband_names:
         if __debug__:
-            print(f"H.write({prefix}, {frame_number})", H[sb].shape, H[sb].max(), H[sb].min(), H[sb].dtype, end=' ')
+            print(H[sb].shape, H[sb].max(), H[sb].min(), H[sb].dtype, end=' ')
         subband = np.array(H[sb], dtype=np.int32)
         #subband = H[sb]
         #subband = H[i].astype(np.float32)
@@ -57,7 +59,7 @@ def write(H: tuple, prefix: str, frame_number: int) -> None:
         assert (subband > -1).all()
         subband = subband.astype(np.uint16)
         subband = cv2.cvtColor(subband, cv2.COLOR_RGB2BGR)
-        fn = f"{prefix}{sbn}{ASCII_frame_number}.png"
+        fn = f"{prefix}_{ASCII_frame_number}_{sbn}.png"
         cv2.imwrite(fn, subband)
         sb += 1
         if __debug__:

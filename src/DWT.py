@@ -141,15 +141,16 @@ def compute_gains(n_levels):
 
 # Write each subband of a decomposition in a different PNG file using
 # <prefix><frame_number><LL|LH|HL|HH><level>.png filename.
-def write(color_decomposition:list, prefix:str, frame_number:int) -> None:
+def write(color_decomposition:list, prefix:str, frame_number:int, n_levels:int) -> None:
     n_channels = color_decomposition[0].shape[2]
     #_color_frame = [None]*n_channels
-    n_resolutions = len(color_decomposition)
+    #n_resolutions = len(color_decomposition)
+    n_resolutions = n_levels+1
     LL = color_decomposition[0]
-    L.write(LL, f"{prefix}{n_resolutions-1}", frame_number)
-    resolution_index = n_resolutions-1
+    L.write(LL, f"{prefix}_{n_resolutions}", frame_number)
+    resolution_index = n_resolutions
     for resolution in color_decomposition[1:]:
-        H.write(resolution, f"{prefix}{resolution_index}", frame_number)
+        H.write(resolution, f"{prefix}_{resolution_index}", frame_number)
         resolution_index -= 1
         
     #for c in range(n_channels):
@@ -165,38 +166,47 @@ def write(color_decomposition:list, prefix:str, frame_number:int) -> None:
     #return slices
 
 #def read(prefix:str, slices:list=None) -> np.ndarray: 
-def read(prefix:str, frame_number:int) -> np.ndarray: 
-    color_frame = frame.read(fn)
-    n_channels = color_frame.shape[2]
-    color_decomp = [None]*n_channels
-    for c in range(n_channels):
-        color_decomp[c] = pywt.array_to_coeffs(color_frame[:,:,c], slices, output_format='wavedec2')
-    output = []
-    n_rows_subband, n_columns_subband = color_decomposition[0][0].shape
-    LL = np.empty(shape=(n_rows_subband, n_columns_subband, n_channels), dtype=np.float64)
-    LH = np.zeros(shape=(n_rows_subband, n_columns_subband, n_channels), dtype=np.float64)
-    HL = np.zeros(shape=(n_rows_subband, n_columns_subband, n_channels), dtype=np.float64)
-    HH = np.zeros(shape=(n_rows_subband, n_columns_subband, n_channels), dtype=np.float64)
-    for c in range(n_channels): # For each color component
-        LL[:,:,c] = color_decomposition[c][0][:,:]
-        LH[:,:,c] = color_decomposition[c][1][0][:,:]
-        HL[:,:,c] = color_decomposition[c][1][1][:,:]
-        HH[:,:,c] = color_decomposition[c][1][2][:,:]
-    output.append(LL)
-    output.append((LH, HL, HH))
-    for r in range(2, n_levels+1):
-        n_rows_subband, n_columns_subband = color_decomposition[0][r][0].shape
-        prev_n_columns_subband = n_columns_subband
-        LH = np.zeros(shape=(n_rows_subband, n_columns_subband, n_channels), dtype=np.float64)
-        HL = np.zeros(shape=(n_rows_subband, n_columns_subband, n_channels), dtype=np.float64)
-        HH = np.zeros(shape=(n_rows_subband, n_columns_subband, n_channels), dtype=np.float64)
-        for c in range(n_channels):
-            LH[:,:,c] = color_decomposition[c][r][0][:,:]
-            HL[:,:,c] = color_decomposition[c][r][1][:,:]
-            HH[:,:,c] = color_decomposition[c][r][2][:,:]
-        output.append((LH, HL, HH))
+def read(prefix:str, frame_number:int, n_levels:int) -> np.ndarray:
+    LL = L.read(f"{prefix}_{n_levels+1}", frame_number)
+    color_decomposition = [LL]
+    shape = list(LL.shape)
+    for l in range(n_levels+1, 0, -1):
+        resolution = H.read(f"{prefix}_{l}", frame_number, tuple(shape))
+        color_decomposition.append(resolution)
+        shape[0] *= 2
+        shape[1] *= 2
+    return color_decomposition
+    #color_frame = frame.read(f)
+    #n_channels = color_frame.shape[2]
+    #color_decomp = [None]*n_channels
+    #for c in range(n_channels):
+    #    color_decomp[c] = pywt.array_to_coeffs(color_frame[:,:,c], slices, output_format='wavedec2')
+    #output = []
+    #n_rows_subband, n_columns_subband = color_decomposition[0][0].shape
+    #LL = np.empty(shape=(n_rows_subband, n_columns_subband, n_channels), dtype=np.float64)
+    #LH = np.zeros(shape=(n_rows_subband, n_columns_subband, n_channels), dtype=np.float64)
+    #HL = np.zeros(shape=(n_rows_subband, n_columns_subband, n_channels), dtype=np.float64)
+    #HH = np.zeros(shape=(n_rows_subband, n_columns_subband, n_channels), dtype=np.float64)
+    #for c in range(n_channels): # For each color component
+    #    LL[:,:,c] = color_decomposition[c][0][:,:]
+    #    LH[:,:,c] = color_decomposition[c][1][0][:,:]
+    #    HL[:,:,c] = color_decomposition[c][1][1][:,:]
+    #    HH[:,:,c] = color_decomposition[c][1][2][:,:]
+    #output.append(LL)
+    #output.append((LH, HL, HH))
+    #for r in range(2, n_levels+1):
+    #    n_rows_subband, n_columns_subband = color_decomposition[0][r][0].shape
+    #    prev_n_columns_subband = n_columns_subband
+    #    LH = np.zeros(shape=(n_rows_subband, n_columns_subband, n_channels), dtype=np.float64)
+    #    HL = np.zeros(shape=(n_rows_subband, n_columns_subband, n_channels), dtype=np.float64)
+    #    HH = np.zeros(shape=(n_rows_subband, n_columns_subband, n_channels), dtype=np.float64)
+    #    for c in range(n_channels):
+    #        LH[:,:,c] = color_decomposition[c][r][0][:,:]
+    #        HL[:,:,c] = color_decomposition[c][r][1][:,:]
+    #        HH[:,:,c] = color_decomposition[c][r][2][:,:]
+    #    output.append((LH, HL, HH))
 
-    return output
+    #return output
     
 ################
 
