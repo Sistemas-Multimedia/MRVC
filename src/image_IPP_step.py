@@ -23,17 +23,33 @@ def norm(x):
 def clip(x):
     return(np.clip(x+128, 0 ,255).astype(np.uint8))
 
-def E_codec(E_k, n_levels, delta, prefix, k):
+def E_codec(E_k, n_levels, q_step, prefix, k):
     decom = DWT.analyze(E_k, n_levels)
-    q_decom = DWT.quantize(decom, delta)
-    DWT.write(q_decom, prefix, k)
-    dq_decom = DWT.dequantize(q_decom, delta)
+    LL = decom[0]
+    decom[0] = Q.quantize(LL, q_step)
+    for resolution in decom[1:]:
+        LH = resolution[0]
+        resolution[0] = Q.quantize(LH, q_step)
+        HL = resolution[1]
+        resolution[1] = Q.quantize(HL, q_step)
+        HH = resolution[2]
+        resolution[2] = Q.quantize(HH, q_step)
+    DWT.write(q_decom, prefix, k, n_levels)
+    LL = q_decom[0]
+    dq_decom = Q.dequantize(LL, q_step)
+    for resolution in q_decom[1:]:
+        LH = resolution[0]
+        resolution[0] = Q.dequantize(LH, q_step)
+        HL = resolution[1]
+        resolution[1] = Q.dequantize(HL, q_step)
+        LH = resolution[1]
+        resolution[1] = Q.dequantize(HH, q_step)
     dq_E_k = DWT.synthesize(dq_decom)
     return dq_E_k
 
 def V_codec(motion, n_levels, delta, prefix, k):
-    decom_Y = pywt.wavedec2(motion[:,0], 'db1', mode='per', levels=3)
-    decom_X = pywt.wavedec2(motion[:,1], 'db1', mode='per', levels=3)
+    decom_Y = pywt.wavedec2(motion[:,:,0], 'db1', mode='per', levels=3)
+    decom_X = pywt.wavedec2(motion[:,:,1], 'db1', mode='per', levels=3)
     L.write(decom_Y[0], prefix, k)
     L.write(decom_Y[1], prefix, k)
     H_subbands_decom_Y = decom_Y[1:]
@@ -48,7 +64,10 @@ def V_codec(motion, n_levels, delta, prefix, k):
         resolution[2][:,:] = 0
     pywt.waverec2(decom_Y, 'db1')
     pywt.waverec2(decom_X, 'db1')
-    # Falta retornar los vectores
+    _motion = np.empty_like(motion)
+    _motion[:,:,0] = decom_Y[:,:]
+    _motion[:,:,0] = decom_X[:,:]
+    return _motion
 
 def encode(video=VIDEO_PREFIX, codestream=CODESTREAM_PREFIX, n_frames=N_FRAMES, q_step=Q.step):
     try:
