@@ -5,9 +5,9 @@ import numpy as np
 # Quantization step.
 #step = 0.5
 #step = 1
-step = 8
+#step = 8
 #step = 16
-#step = 54
+step = 54
 #step = 128
 
 print("Quantization step =", step)

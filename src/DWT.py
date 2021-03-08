@@ -30,7 +30,7 @@ EXTENSION_MODE = "periodization" # Gets the inimal number of coeffs
 print("Wavelet =", WAVELET)
 print("DWT extension mode =", EXTENSION_MODE)
 
-def analyze_step(color_frame: np.ndarray) -> tuple:
+def analyze_step(color_frame:np.ndarray) -> tuple:
     n_channels = color_frame.shape[2]
     color_decomposition = [None]*n_channels
     for c in range(n_channels):
@@ -48,7 +48,7 @@ def analyze_step(color_frame: np.ndarray) -> tuple:
         HH[:,:,c] = color_decomposition[c][1][2][:,:]
     return (LL, (LH, HL, HH))
 
-def synthesize_step(LL: np.ndarray, H: tuple) -> np.ndarray:
+def synthesize_step(LL:np.ndarray, H:tuple) -> np.ndarray:
     LH, HL, HH = H
     n_channels = LL.shape[2] #len(LL)
     _color_frame = []
@@ -64,7 +64,7 @@ def synthesize_step(LL: np.ndarray, H: tuple) -> np.ndarray:
         color_frame[:,:,c] = _color_frame[c][:,:]
     return color_frame
 
-def analyze(color_frame: np.ndarray, n_levels: int =N_LEVELS) -> list:
+def analyze(color_frame:np.ndarray, n_levels:int) -> list:
     n_channels = color_frame.shape[2]
     color_decomposition = [None]*n_channels
     for c in range(n_channels):
@@ -107,8 +107,7 @@ def analyze(color_frame: np.ndarray, n_levels: int =N_LEVELS) -> list:
 
     return output # [LL^n, (LH^n, HL^n, HH^n), ..., (LH^1, HL^1, HH^1)], each subband panchromatic.
 
-# No está terminado. Hay que crear las matrices en color a partir de las matrices monocromo.
-def synthesize(color_decomposition: list, n_levels: int =None) -> np.ndarray:
+def synthesize(color_decomposition:list, n_levels:int) -> np.ndarray:
     _color_frame = []
     n_channels = color_decomposition[0].shape[2]
     for c in range(n_channels):

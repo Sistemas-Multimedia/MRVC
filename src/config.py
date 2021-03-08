@@ -3,17 +3,19 @@
 import cv2
 
 # Number of frames to compress.
-n_frames = 3
+#n_frames = 3
 #n_frames = 36
+n_frames = 360
 #n_frames = 500
 
 # Input, output, and codestream prefixes.
+prefix = "/tmp"
 #prefix = "/media/sdc1/Q8L3_LP"
 #prefix = "/media/sdc1/Q54L3_DWT"
-prefix = "/media/sdc1"
-input_video = f"{prefix}/original_"
-codestream = f"{prefix}/codestream_"
-output_video = f"{prefix}/reconstructed_"
+#prefix = "/media/sdc1"
+input_video = f"{prefix}/original"
+codestream = f"{prefix}/codestream"
+output_video = f"{prefix}/reconstructed"
 
 # Number of spatial resolution levels = n_levels + 1
 n_levels = 5

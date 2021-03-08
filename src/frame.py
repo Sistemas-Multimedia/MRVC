@@ -8,7 +8,7 @@ if __debug__:
 
 def read(prefix:str, frame_number:int) -> np.ndarray: # [row, column, component]
     #fn = name + ".png"
-    fn = f"{prefix}{frame_number:03d}.png"
+    fn = f"{prefix}_{frame_number:03d}.png"
     img = cv2.imread(fn, cv2.IMREAD_UNCHANGED)
     try:
         img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
@@ -21,20 +21,20 @@ def read(prefix:str, frame_number:int) -> np.ndarray: # [row, column, component]
     return img.astype(np.int16)
 
 def write(img:np.ndarray, prefix:str, frame_number:int) -> None:
-    _write(img, prefix)
+    _write(img, prefix, frame_number)
 
 def debug_write(img:np.ndarray, prefix:str, frame_number:int) -> None:
     if __debug__:
         #_write(img.astype(np.uint16), name)
-        _write(img, prefix)
+        _write(img, prefix, frame_number)
 
 def _write(img:np.ndarray, prefix:str, frame_number:int) -> None:
     #fn = name + ".png"
-    fn = f"{prefix}{frame_number:03d}"
+    fn = f"{prefix}_{frame_number:03d}.png"
     img = cv2.cvtColor(img, cv2.COLOR_RGB2BGR)
     cv2.imwrite(fn, img)
     if __debug__:
-        print(f"frame.write({name})", img.shape, img.dtype, os.path.getsize(fn))
+        print(f"frame.write({prefix}, {frame_number})", img.shape, img.dtype, os.path.getsize(fn))
 
 def normalize(img: np.ndarray) -> np.ndarray: # [row, column, component]
     max_component = np.max(img)
