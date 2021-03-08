@@ -17,7 +17,7 @@ def analyze_step(frame: np.ndarray) -> tuple:
     H = _frame - interpolated_L
     return (L, H)
 
-def analyze(frame: np.ndarray, n_levels:int=N_LEVELS) -> list:
+def analyze(frame: np.ndarray, n_levels:int) -> list:
     L, H = analyze_step(frame)
     P = [H]
     for l in range(n_levels-1):
@@ -33,7 +33,7 @@ def synthesize_step(L: np.ndarray, H:np.ndarray) -> np.ndarray:
     frame = _H + interpolated_L
     return frame
 
-def synthesize(P: list, n_levels:int=N_LEVELS) -> np.ndarray:
+def synthesize(P: list, n_levels:int) -> np.ndarray:
     #frame = P[n_levels]
     frame = P[0]
     for l in range(n_levels):
