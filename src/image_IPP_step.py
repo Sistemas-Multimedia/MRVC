@@ -64,6 +64,7 @@ def E_codec(E_k, n_levels, q_step, prefix, k):
 def E_codec2(E_k, prefix, k):
     print(E_k.max(), E_k.min())
     L.write(YUV.to_RGB(E_k), prefix+"___", k)
+    # https://stackoverflow.com/questions/34123272/ffmpeg-transmux-mpegts-to-mp4-gives-error-muxer-does-not-support-non-seekable
     #os.system()
 
 def V_codec(motion, n_levels, prefix, frame_number):
