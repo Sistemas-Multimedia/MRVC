@@ -144,10 +144,10 @@ def write(color_decomposition:list, prefix:str, frame_number:int, n_levels:int) 
     n_channels = color_decomposition[0].shape[2]
     #_color_frame = [None]*n_channels
     #n_resolutions = len(color_decomposition)
-    n_resolutions = n_levels+1
+    #n_resolutions = n_levels+1
     LL = color_decomposition[0]
-    L.write(LL, f"{prefix}_{n_resolutions}", frame_number)
-    resolution_index = n_resolutions
+    L.write(LL, f"{prefix}_{n_levels}", frame_number)
+    resolution_index = n_levels
     for resolution in color_decomposition[1:]:
         H.write(resolution, f"{prefix}_{resolution_index}", frame_number)
         resolution_index -= 1
