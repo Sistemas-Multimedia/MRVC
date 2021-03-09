@@ -61,6 +61,7 @@ def E_codec(E_k, n_levels, q_step, prefix, k):
     #return E_k-dq_E_k
     #return E_k
 
+# ffmpeg -blocksize 1 -i /tmp/original_000.png -blocksize 1 -flush_packets 1 -movflags frag_keyframe+empty_moov -f mp4 - | ffmpeg -blocksize 1 -i - -blocksize 1 -flush_packets 1 /tmp/decoded_%3d.png
 def E_codec2(E_k, prefix, k):
     print(E_k.max(), E_k.min())
     L.write(YUV.to_RGB(E_k), prefix+"___", k)
