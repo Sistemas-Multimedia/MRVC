@@ -16,7 +16,7 @@ def read(prefix: str, frame_number: int) -> np.ndarray: # [row, column, componen
     if __debug__:
         print(colored.fore.GREEN + f"L.read({prefix}, {frame_number})", end='')
     subband = cv2.imread(fn, cv2.IMREAD_UNCHANGED)
-    subband = cv2.cvtColor(subband, cv2.COLOR_BGR2RGB)
+    #subband = cv2.cvtColor(subband, cv2.COLOR_BGR2RGB)
     if __debug__:
         print(colored.fore.GREEN, subband.shape, subband.dtype, os.path.getsize(fn), colored.style.RESET)
     #subband = subband.astype(np.int32)
@@ -33,7 +33,7 @@ def write(subband: np.ndarray, prefix: str, frame_number: int) -> None:
     assert (subband < 65536).all()
     assert (subband > -1).all()
     subband = subband.astype(np.uint16)
-    subband = cv2.cvtColor(subband, cv2.COLOR_RGB2BGR)
+    #subband = cv2.cvtColor(subband, cv2.COLOR_RGB2BGR)
     fn = f"{prefix}_{frame_number:03d}_LL.png"
     cv2.imwrite(fn, subband)
     if __debug__:

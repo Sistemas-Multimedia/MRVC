@@ -2,7 +2,7 @@
 
 import numpy as np
 import cv2
-import colors # pip install --user ansicolors
+import colored
 if __debug__:
     import os
 
@@ -10,14 +10,14 @@ def read(prefix:str, frame_number:int) -> np.ndarray: # [row, column, component]
     #fn = name + ".png"
     fn = f"{prefix}_{frame_number:03d}.png"
     img = cv2.imread(fn, cv2.IMREAD_UNCHANGED)
-    try:
-        img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
-    except cv2.error:
-        print(colors.red(f'frame.read: Unable to read "{fn}"'))
-        raise
+    #try:
+    #    img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
+    #except cv2.error:
+    #    print(colored.fore.RED + f'frame.read: Unable to read "{fn}"')
+    #    raise
     #img = np.array(img, dtype=np.float32)
     if __debug__:
-        print(f"frame.read({prefix}, {frame_number})", img.shape, img.dtype, os.path.getsize(fn))
+        print(colored.fore.GREEN + f"frame.read({prefix}, {frame_number})", img.shape, img.dtype, os.path.getsize(fn), colored.style.RESET)
     return img.astype(np.int16)
 
 def write(img:np.ndarray, prefix:str, frame_number:int) -> None:
@@ -31,10 +31,10 @@ def debug_write(img:np.ndarray, prefix:str, frame_number:int) -> None:
 def _write(img:np.ndarray, prefix:str, frame_number:int) -> None:
     #fn = name + ".png"
     fn = f"{prefix}_{frame_number:03d}.png"
-    img = cv2.cvtColor(img, cv2.COLOR_RGB2BGR)
+    #img = cv2.cvtColor(img, cv2.COLOR_RGB2BGR)
     cv2.imwrite(fn, img)
     if __debug__:
-        print(f"frame.write({prefix}, {frame_number})", img.shape, img.dtype, os.path.getsize(fn))
+        print(colored.fore.GREEN + f"frame.write({prefix}, {frame_number})", img.shape, img.dtype, os.path.getsize(fn), colored.style.RESET)
 
 def normalize(img: np.ndarray) -> np.ndarray: # [row, column, component]
     max_component = np.max(img)

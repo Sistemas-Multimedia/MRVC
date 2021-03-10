@@ -111,6 +111,7 @@ def encode(video=VIDEO_PREFIX, codestream=CODESTREAM_PREFIX, n_frames=N_FRAMES, 
         V_k_1 = V_k # (b)
         E_k = V_k # (d)
         dequantized_E_k = E_codec(E_k, N_LEVELS, q_step, codestream, 0) # (g and h)
+        #dequantized_E_k = E_codec2(E_k, codestream, 0) # (g and h)
         reconstructed_V_k = dequantized_E_k # (i)
         frame.debug_write(clip(YUV.to_RGB(reconstructed_V_k)), f"{video}_reconstructed", k) # Decoder's output
         reconstructed_V_k_1 = reconstructed_V_k # (j)
@@ -126,8 +127,8 @@ def encode(video=VIDEO_PREFIX, codestream=CODESTREAM_PREFIX, n_frames=N_FRAMES, 
             E_k = V_k - prediction_V_k[:V_k.shape[0], :V_k.shape[1], :] # (f)
             print(E_k.dtype)
             frame.debug_write(clip(YUV.to_RGB(E_k)), f"{codestream}_encoder_prediction_error", k)
-            #dequantized_E_k = E_codec(E_k, 5, q_step, codestream, k) # (g and h)
-            dequantized_E_k = E_codec2(E_k, codestream, k) # (g and h)
+            dequantized_E_k = E_codec(E_k, 5, q_step, codestream, k) # (g and h)
+            #dequantized_E_k = E_codec2(E_k, codestream, k) # (g and h)
             #quantized_E_k = Q.quantize(E_k, step=q_step) # (e)
             #dequantized_E_k = Q.dequantize(quantized_E_k, step=q_step) # (f)
             frame.debug_write(clip(YUV.to_RGB(dequantized_E_k)), f"{codestream}_encoder_dequantized_prediction_error", k)

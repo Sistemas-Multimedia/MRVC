@@ -16,10 +16,10 @@ def read(prefix: str, frame_number: int, shape: tuple) -> tuple: # [LH, HL, HH],
     for sbn in subband_names:
         fn = f"{prefix}_{ASCII_frame_number}_{sbn}.png"
         subband = cv2.imread(fn, cv2.IMREAD_UNCHANGED)
-        try:
-            subband = cv2.cvtColor(subband, cv2.COLOR_BGR2RGB)
-        except cv2.error:
-            print(colored.fore.RED + f'H.read: Unable to read "{fn}"')
+        #try:
+        #    subband = cv2.cvtColor(subband, cv2.COLOR_BGR2RGB)
+        #except cv2.error:
+        #    print(colored.fore.RED + f'H.read: Unable to read "{fn}"')
         if __debug__:
             print(colored.fore.GREEN + f"H.read({prefix}, {frame_number})", subband.shape, subband.dtype, os.path.getsize(fn), colored.style.RESET)
         subband_int32 = np.array(subband, dtype=np.int32)
@@ -45,12 +45,12 @@ def read(prefix: str, frame_number: int, shape: tuple) -> tuple: # [LH, HL, HH],
 def write(H: tuple, prefix: str, frame_number: int) -> None:
     ASCII_frame_number = str(frame_number).zfill(3)
     if __debug__:
-        print(colored.fore.GREEN + f"H.write({prefix}, {frame_number})", end='')
+        print(colored.fore.GREEN + f"H.write({prefix}, {frame_number})", end=' ')
     subband_names = ["LH", "HL", "HH"]
     sb = 0
     for sbn in subband_names:
         if __debug__:
-            print(colored.fore.GREEN, H[sb].shape, H[sb].max(), H[sb].min(), H[sb].dtype, end='')
+            print(H[sb].shape, H[sb].max(), H[sb].min(), end=' ')
         subband = np.array(H[sb], dtype=np.int32)
         #subband = H[sb]
         #subband = H[i].astype(np.float32)
@@ -58,12 +58,14 @@ def write(H: tuple, prefix: str, frame_number: int) -> None:
         assert (subband < 65536).all()
         assert (subband > -1).all()
         subband = subband.astype(np.uint16)
-        subband = cv2.cvtColor(subband, cv2.COLOR_RGB2BGR)
+        #subband = cv2.cvtColor(subband, cv2.COLOR_RGB2BGR)
         fn = f"{prefix}_{ASCII_frame_number}_{sbn}.png"
         cv2.imwrite(fn, subband)
         sb += 1
         if __debug__:
-            print(colored.fore.GREEN, os.path.getsize(fn), colored.style.RESET)
+            print(os.path.getsize(fn), end=' ')
+    if __debug__:
+        print(colored.style.RESET)
 
 def interpolate(H: tuple) -> np.ndarray:
     LL = np.zeros(shape=(H[0].shape), dtype=np.float64)
