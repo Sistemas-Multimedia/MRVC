@@ -3,8 +3,8 @@
 import DWT
 import LP
 import numpy as np
-import L_LP as L
-import H_LP as H
+import L_DWT as L
+import H_DWT as H
 import deadzone as Q
 import motion
 import frame
@@ -66,10 +66,10 @@ def E_codec(E_k, n_levels, q_step, prefix, k):
 # https://video.stackexchange.com/questions/16958/ffmpeg-encode-in-all-i-mode-h264-and-h265-streams: fmpeg -i input -c:v libx264 -intra output / ffmpeg -i input -c:v libx265 -x265-params frame-threads=4:keyint=1:ref=1:no-open-gop=1:weightp=0:weightb=0:cutree=0:rc-lookahead=0:bframes=0:scenecut=0:b-adapt=0:repeat-headers=1 output
 def E_codec2(E_k, prefix, k):
     print(E_k.max(), E_k.min())
-    L.write(YUV.to_RGB(E_k), prefix + "to_mp4", k)
-    os.system(f"ffmpeg -i {prefix}_to_mp4_LL_{k:03d}.png {prefix}_{k:03d}.mp4")
-    os.system(f"ffmpeg -i {prefix}_{k:03d}.mp4 {prefix}_from_mp4_LL_{k:03d}.png")
-    dq_E_k = YUV.from_RGB(L.read(prefix + "from_mp4", k))
+    L.write(YUV.to_RGB(E_k), prefix + "_to_mp4", k)
+    os.system(f"ffmpeg -y -i {prefix}_to_mp4_{k:03d}_LL.png {prefix}_{k:03d}.mp4")
+    os.system(f"ffmpeg -y -i {prefix}_{k:03d}.mp4 {prefix}_from_mp4_{k:03d}_LL.png")
+    dq_E_k = YUV.from_RGB(L.read(prefix + "_from_mp4", k))
     return dq_E_k
 
 def V_codec(motion, n_levels, prefix, frame_number):
@@ -126,8 +126,8 @@ def encode(video=VIDEO_PREFIX, codestream=CODESTREAM_PREFIX, n_frames=N_FRAMES, 
             E_k = V_k - prediction_V_k[:V_k.shape[0], :V_k.shape[1], :] # (f)
             print(E_k.dtype)
             frame.debug_write(clip(YUV.to_RGB(E_k)), f"{codestream}_encoder_prediction_error", k)
-            dequantized_E_k = E_codec(E_k, 5, q_step, codestream, k) # (g and h)
-            E_codec2(E_k, codestream, k)
+            #dequantized_E_k = E_codec(E_k, 5, q_step, codestream, k) # (g and h)
+            dequantized_E_k = E_codec2(E_k, codestream, k) # (g and h)
             #quantized_E_k = Q.quantize(E_k, step=q_step) # (e)
             #dequantized_E_k = Q.dequantize(quantized_E_k, step=q_step) # (f)
             frame.debug_write(clip(YUV.to_RGB(dequantized_E_k)), f"{codestream}_encoder_dequantized_prediction_error", k)

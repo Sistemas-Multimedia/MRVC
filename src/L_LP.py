@@ -12,11 +12,13 @@ MAX = 10000 #32767
 OFFSET = 32768
 
 def read(prefix: str, frame_number: int) -> np.ndarray: # [row, column, component]
-    fn = f"{prefix}LL{frame_number:03d}.png"
+    fn = f"{prefix}_{frame_number:03d}_LL.png"
+    if __debug__:
+        print(f"L.read({prefix}, {frame_number})", end=' ')
     subband = cv.imread(fn, cv.IMREAD_UNCHANGED)
     subband = cv.cvtColor(subband, cv.COLOR_BGR2RGB)
     if __debug__:
-        print(f"L.read({prefix}, {frame_number})", subband.shape, subband.dtype, os.path.getsize(fn))
+        print(subband.shape, subband.dtype, os.path.getsize(fn))
     subband = np.array(subband, dtype=np.int16)
     subband -= OFFSET
     return subband
@@ -30,7 +32,7 @@ def write(subband: np.ndarray, prefix: str, frame_number: int) -> None:
     assert (subband > -1).all()
     subband = subband.astype(np.uint16)
     subband = cv.cvtColor(subband, cv.COLOR_RGB2BGR)
-    fn = f"{prefix}LL{frame_number:03d}.png"
+    fn = f"{prefix}_{frame_number:03d}_LL.png"
     cv.imwrite(fn, subband)
     if __debug__:
         print(os.path.getsize(fn))

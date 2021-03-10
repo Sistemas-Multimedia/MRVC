@@ -3,7 +3,7 @@
 import numpy as np
 import DWT
 import cv2
-import colors
+import colored
 if __debug__:
     import os
     import frame
@@ -19,9 +19,9 @@ def read(prefix: str, frame_number: int, shape: tuple) -> tuple: # [LH, HL, HH],
         try:
             subband = cv2.cvtColor(subband, cv2.COLOR_BGR2RGB)
         except cv2.error:
-            print(colors.red(f'H.read: Unable to read "{fn}"'))
+            print(colored.fore.RED + f'H.read: Unable to read "{fn}"')
         if __debug__:
-            print(f"H.read({prefix}, {frame_number})", subband.shape, subband.dtype, os.path.getsize(fn))
+            print(colored.fore.GREEN + f"H.read({prefix}, {frame_number})", subband.shape, subband.dtype, os.path.getsize(fn), colored.style.RESET)
         subband_int32 = np.array(subband, dtype=np.int32)
         subband_int32 -= 32768
         padded_subband = np.zeros(shape)
@@ -45,12 +45,12 @@ def read(prefix: str, frame_number: int, shape: tuple) -> tuple: # [LH, HL, HH],
 def write(H: tuple, prefix: str, frame_number: int) -> None:
     ASCII_frame_number = str(frame_number).zfill(3)
     if __debug__:
-        print(f"H.write({prefix}, {frame_number})", end=' ')
+        print(colored.fore.GREEN + f"H.write({prefix}, {frame_number})", end='')
     subband_names = ["LH", "HL", "HH"]
     sb = 0
     for sbn in subband_names:
         if __debug__:
-            print(H[sb].shape, H[sb].max(), H[sb].min(), H[sb].dtype, end=' ')
+            print(colored.fore.GREEN, H[sb].shape, H[sb].max(), H[sb].min(), H[sb].dtype, end='')
         subband = np.array(H[sb], dtype=np.int32)
         #subband = H[sb]
         #subband = H[i].astype(np.float32)
@@ -63,7 +63,7 @@ def write(H: tuple, prefix: str, frame_number: int) -> None:
         cv2.imwrite(fn, subband)
         sb += 1
         if __debug__:
-            print(os.path.getsize(fn))
+            print(colored.fore.GREEN, os.path.getsize(fn), colored.style.RESET)
 
 def interpolate(H: tuple) -> np.ndarray:
     LL = np.zeros(shape=(H[0].shape), dtype=np.float64)

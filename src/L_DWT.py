@@ -3,7 +3,7 @@
 import numpy as np
 import DWT
 import cv2
-import colors
+import colored
 if __debug__:
     import os
 
@@ -14,11 +14,11 @@ OFFSET = 32768
 def read(prefix: str, frame_number: int) -> np.ndarray: # [row, column, component]
     fn = f"{prefix}_{frame_number:03d}_LL.png"
     if __debug__:
-        print(f"L.read({prefix}, {frame_number})", end=' ')
+        print(colored.fore.GREEN + f"L.read({prefix}, {frame_number})", end='')
     subband = cv2.imread(fn, cv2.IMREAD_UNCHANGED)
     subband = cv2.cvtColor(subband, cv2.COLOR_BGR2RGB)
     if __debug__:
-        print(subband.shape, subband.dtype, os.path.getsize(fn))
+        print(colored.fore.GREEN, subband.shape, subband.dtype, os.path.getsize(fn), colored.style.RESET)
     #subband = subband.astype(np.int32)
     subband = np.array(subband, dtype=np.int32)
     subband -= OFFSET
@@ -26,7 +26,7 @@ def read(prefix: str, frame_number: int) -> np.ndarray: # [row, column, componen
 
 def write(subband: np.ndarray, prefix: str, frame_number: int) -> None:
     if __debug__:
-        print(f"L.write({prefix}, {frame_number})", subband.max(), subband.min(), subband.shape, subband.dtype, end=' ')
+        print(colored.fore.GREEN + f"L.write({prefix}, {frame_number})", subband.max(), subband.min(), subband.shape, subband.dtype, end='')
     #subband = subband.astype(np.int32)
     subband = np.array(subband, dtype=np.int32)
     subband += OFFSET
@@ -37,7 +37,7 @@ def write(subband: np.ndarray, prefix: str, frame_number: int) -> None:
     fn = f"{prefix}_{frame_number:03d}_LL.png"
     cv2.imwrite(fn, subband)
     if __debug__:
-        print(os.path.getsize(fn))
+        print(colored.fore.GREEN, os.path.getsize(fn), colored.style.RESET)
 
 ###############
         
