@@ -86,10 +86,10 @@ def E_codec3(E_k, prefix, k):
 def E_codec4(E_k, prefix, k):
     print("-------------", E_k.max(), E_k.min())
     #frame.write(clip(YUV.to_RGB(E_k)), prefix + "_to_mp4", k)
-    frame.write(YUV.to_RGB(E_k)/1+128, prefix + "_to_mp4", k)
+    frame.write(clip(YUV.to_RGB(E_k)+128), prefix + "_to_mp4", k)
     os.system(f"ffmpeg -y -i {prefix}_to_mp4_{k:03d}.png -crf 32 {prefix}_{k:03d}.mp4")
     os.system(f"ffmpeg -y -i {prefix}_{k:03d}.mp4 {prefix}_from_mp4_{k:03d}.png")
-    dq_E_k = (YUV.from_RGB(frame.read(prefix + "_from_mp4", k)-128)*1)
+    dq_E_k = (YUV.from_RGB(frame.read(prefix + "_from_mp4", k)-128))
     return dq_E_k.astype(np.float64)
 
 def V_codec(motion, n_levels, prefix, frame_number):
