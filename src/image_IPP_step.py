@@ -61,12 +61,16 @@ def E_codec(E_k, n_levels, q_step, prefix, k):
     #return E_k-dq_E_k
     #return E_k
 
-# ffmpeg -blocksize 1 -i /tmp/original_000.png -blocksize 1 -flush_packets 1 -movflags frag_keyframe+empty_moov -f mp4 - | ffmpeg -blocksize 1 -i - -blocksize 1 -flush_packets 1 /tmp/decoded_%3d.png
+# https://stackoverflow.com/questions/34123272/ffmpeg-transmux-mpegts-to-mp4-gives-error-muxer-does-not-support-non-seekable: ffmpeg -blocksize 1 -i /tmp/original_000.png -blocksize 1 -flush_packets 1 -movflags frag_keyframe+empty_moov -f mp4 - | ffmpeg -blocksize 1 -i - -blocksize 1 -flush_packets 1 /tmp/decoded_%3d.png
+
+# https://video.stackexchange.com/questions/16958/ffmpeg-encode-in-all-i-mode-h264-and-h265-streams: fmpeg -i input -c:v libx264 -intra output / ffmpeg -i input -c:v libx265 -x265-params frame-threads=4:keyint=1:ref=1:no-open-gop=1:weightp=0:weightb=0:cutree=0:rc-lookahead=0:bframes=0:scenecut=0:b-adapt=0:repeat-headers=1 output
 def E_codec2(E_k, prefix, k):
     print(E_k.max(), E_k.min())
-    L.write(YUV.to_RGB(E_k), prefix+"___", k)
-    # https://stackoverflow.com/questions/34123272/ffmpeg-transmux-mpegts-to-mp4-gives-error-muxer-does-not-support-non-seekable
-    #os.system()
+    L.write(YUV.to_RGB(E_k), prefix + "to_mp4", k)
+    os.system(f"ffmpeg -i {prefix}_to_mp4_LL_{k:03d}.png {prefix}_{k:03d}.mp4")
+    os.system(f"ffmpeg -i {prefix}_{k:03d}.mp4 {prefix}_from_mp4_LL_{k:03d}.png")
+    dq_E_k = YUV.from_RGB(L.read(prefix + "from_mp4", k))
+    return dq_E_k
 
 def V_codec(motion, n_levels, prefix, frame_number):
     pyramid = LP.analyze(motion, n_levels)
