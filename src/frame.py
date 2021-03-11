@@ -42,6 +42,10 @@ def normalize(img: np.ndarray) -> np.ndarray: # [row, column, component]
     max_min_component = max_component - min_component
     return (img - min_component) / max_min_component
 
+def get_frame_shape(prefix:str) -> int:
+    img = read(prefix, 0)
+    return img.shape
+
 ##########
 
 def __read(name: str) -> np.ndarray: # [row, column, component]

@@ -21,6 +21,10 @@ print("IPP... encoding")
 delta = Q.step
 print("delta =", delta)
 
-IPP_step.encode(f"{config.input_video}", f"{config.codestream}", config.n_frames, delta)
+# Rename to image_IPP
+#IPP_step.encode(f"{config.input_video}", f"{config.codestream}", config.n_frames, delta)
 
-
+IPP_step.compute_br(prefix=config.codestream,
+                    frames_per_second=config.fps,
+                    frame_shape=frame.get_frame_shape(config.input_video),
+                    n_frames=config.n_frames)
