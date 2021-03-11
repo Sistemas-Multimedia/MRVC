@@ -8,7 +8,7 @@ import config
 # optical flow computation algorith (OFCA). This value controls the
 # search area size.
 #optical_flow_pyramid_levels = 3
-optical_flow_pyramid_levels = 5
+optical_flow_pyramid_levels = 4
 
 # Window size used in the Farneback's OFCA. This value controls the
 # coherence of the OF.
@@ -17,8 +17,8 @@ optical_flow_window_size = 33
 
 # Number of iterations of the Farneback's OFCA. This value controls
 # the accuracy of the OF.
-#optical_flow_iterations = 3
-optical_flow_iterations = 5
+optical_flow_iterations = 3
+#optical_flow_iterations = 5
 
 # Signal extension mode used in the OFCA. See https://docs.opencv.org/3.4/d2/de8/group__core__array.html
 ofca_extension_mode = cv2.BORDER_CONSTANT
@@ -43,7 +43,7 @@ def estimate(predicted: np.ndarray, reference: np.ndarray, flow: np.ndarray =Non
         winsize=optical_flow_window_size,
         iterations=optical_flow_iterations,
         poly_n=5,
-        poly_sigma=1.2,
+        poly_sigma=1.3,
         flags=0)
     return flow
 

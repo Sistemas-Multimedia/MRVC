@@ -1,6 +1,6 @@
-''' MRVC/imae_IPP_compressor.py '''
+''' MRVC/image_IPP_compressor.py '''
 
-import image_IPP_step as IPP_step
+import image_IPP as IPP
 import DWT as spatial_transform
 #import LP as spatial_transform
 import L_DWT as L
@@ -22,9 +22,9 @@ delta = Q.step
 print("delta =", delta)
 
 # Rename to image_IPP
-#IPP_step.encode(f"{config.input_video}", f"{config.codestream}", config.n_frames, delta)
+IPP.encode(f"{config.input_video}", f"{config.codestream}", config.n_frames, delta)
 
-IPP_step.compute_br(prefix=config.codestream,
-                    frames_per_second=config.fps,
-                    frame_shape=frame.get_frame_shape(config.input_video),
-                    n_frames=config.n_frames)
+IPP.compute_br(prefix=config.codestream,
+               frames_per_second=config.fps,
+               frame_shape=frame.get_frame_shape(config.input_video),
+               n_frames=config.n_frames)
