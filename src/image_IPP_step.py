@@ -159,3 +159,9 @@ def encode(video=VIDEO_PREFIX, codestream=CODESTREAM_PREFIX, n_frames=N_FRAMES, 
     except:
         print(colors.red(f'image_IPP_step.encode(video="{video}", codestream="{codestream}", n_frames={n_frames}, q_step={q_step})'))
         raise
+
+def compute_br(prefix):
+    os.system(f"ffmpeg -i {prefix}_from_mp4_%03d.png -c:v libx264 -x264-params keyint=1 -crf 0 image_IPP_texture.mp4"}
+    os.system(f"ffmpeg -i {prefix}_y_%03d.png -c:v libx264 -x264-params keyint=1 -crf 0 motion_IPP_y.mp4")
+    os.system(f"ffmpeg -i {prefix}_x_%03d.png -c:v libx264 -x264-params keyint=1 -crf 0 motion_IPP_x.mp4"
+
