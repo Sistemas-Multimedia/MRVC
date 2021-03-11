@@ -1,6 +1,6 @@
 ''' MRVC/motion.py '''
 
-import cv2
+import cv2 as cv
 import numpy as np
 import config
 
@@ -8,12 +8,12 @@ import config
 # optical flow computation algorith (OFCA). This value controls the
 # search area size.
 #optical_flow_pyramid_levels = 3
-optical_flow_pyramid_levels = 4
+optical_flow_pyramid_levels = 3
 
 # Window size used in the Farneback's OFCA. This value controls the
 # coherence of the OF.
 #optical_flow_window_size = 5
-optical_flow_window_size = 33
+optical_flow_window_size = 16
 
 # Number of iterations of the Farneback's OFCA. This value controls
 # the accuracy of the OF.
@@ -21,20 +21,20 @@ optical_flow_iterations = 3
 #optical_flow_iterations = 5
 
 # Signal extension mode used in the OFCA. See https://docs.opencv.org/3.4/d2/de8/group__core__array.html
-ofca_extension_mode = cv2.BORDER_CONSTANT
-#ofca_extension_mode = cv2.BORDER_WRAP
-#ofca_extension_mode = cv2.BORDER_DEFAULT
-#ofca_extension_mode = cv2.BORDER_REPLICATE
-#ofca_extension_mode = cv2.BORDER_REFLECT
-#ofca_extension_mode = cv2.BORDER_REFLECT_101
-#ofca_extension_mode = cv2.BORDER_TRANSPARENT
-#ofca_extension_mode = cv2.BORDER_REFLECT101
+ofca_extension_mode = cv.BORDER_CONSTANT
+#ofca_extension_mode = cv.BORDER_WRAP
+#ofca_extension_mode = cv.BORDER_DEFAULT
+#ofca_extension_mode = cv.BORDER_REPLICATE
+#ofca_extension_mode = cv.BORDER_REFLECT
+#ofca_extension_mode = cv.BORDER_REFLECT_101
+#ofca_extension_mode = cv.BORDER_TRANSPARENT
+#ofca_extension_mode = cv.BORDER_REFLECT101
 #ofca_extension_mode = BORDER_ISOLATED
 
 print("OFCA extension mode =", ofca_extension_mode)
 
 def estimate(predicted: np.ndarray, reference: np.ndarray, flow: np.ndarray =None) -> np.ndarray:
-    flow = cv2.calcOpticalFlowFarneback(
+    flow = cv.calcOpticalFlowFarneback(
         prev=predicted,
         next=reference,
         flow=flow,
@@ -43,8 +43,8 @@ def estimate(predicted: np.ndarray, reference: np.ndarray, flow: np.ndarray =Non
         winsize=optical_flow_window_size,
         iterations=optical_flow_iterations,
         poly_n=5,
-        poly_sigma=1.3,
-        flags=0)
+        poly_sigma=1.1,
+        flags=cv.OPTFLOW_USE_INITIAL_FLOW)
     return flow
 
 def make_prediction(reference: np.ndarray, flow: np.ndarray) -> np.ndarray:
@@ -52,4 +52,13 @@ def make_prediction(reference: np.ndarray, flow: np.ndarray) -> np.ndarray:
     map_x = np.tile(np.arange(width), (height, 1))
     map_y = np.swapaxes(np.tile(np.arange(height), (width, 1)), 0, 1)
     map_xy = (flow + np.dstack((map_x, map_y))).astype('float32')
-    return cv2.remap(reference, map_xy, None, interpolation=cv2.INTER_LINEAR, borderMode=ofca_extension_mode)
+    return cv.remap(reference, map_xy, None, interpolation=cv.INTER_LINEAR, borderMode=ofca_extension_mode)
+
+def colorize(flow):
+    hsv = np.zeros((flow.shape[0], flow.shape[1], 3), dtype=np.uint8)
+    hsv[...,1] = 255
+    mag, ang = cv.cartToPolar(flow[...,0], flow[...,1])
+    hsv[...,0] = ang*180/np.pi/2
+    hsv[...,2] = cv.normalize(mag, None, 0, 255, cv.NORM_MINMAX)
+    rgb = cv.cvtColor(hsv, cv.COLOR_HSV2BGR)
+    return rgb
