@@ -53,15 +53,15 @@ def V_codec(motion, n_levels, prefix, frame_number):
 
 def interpolate(frame, n_levels):
     assert n_levels > 0
-    frame = cv.pyrUp(frame)
-    for l in range(n_levels):
-        frame = cv.pyrUp(frame)
-    return frame
+    _frame_ = cv.pyrUp(frame)
+    for l in range(1, n_levels):
+        _frame_ = cv.pyrUp(_frame_)
+    return _frame_
 
-def subsample(frame, n_levels):
+def subsample(_frame_, n_levels):
     assert n_levels > 0
-    frame = cv.pyrDown(frame)
-    for l in range(n_levels):
+    frame = cv.pyrDown(_frame_)
+    for l in range(1, n_levels):
         frame = cv.pyrDown(frame)
     return frame
 
@@ -91,7 +91,6 @@ def encode(video=VIDEO_PREFIX, codestream=CODESTREAM_PREFIX, n_frames=N_FRAMES, 
             print("flow.shape =", flow.shape, "_reconstructed_flow_.shape =", _reconstructed_flow_.shape)
             frame.debug_write(clip(YUV.to_RGB(prediction_V_k)), f"{codestream}_encoder_prediction", k)
             E_k = V_k - prediction_V_k[:V_k.shape[0], :V_k.shape[1], :] # (f)
-            print(E_k.dtype)
             frame.debug_write(clip(YUV.to_RGB(E_k)+128), f"{codestream}_encoder_prediction_error", k)
             dequantized_E_k = E_codec(E_k, codestream, k, q_step) # (g and h)
             frame.debug_write(clip(YUV.to_RGB(dequantized_E_k)), f"{codestream}_encoder_dequantized_prediction_error", k)
