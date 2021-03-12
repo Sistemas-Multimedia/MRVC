@@ -1,6 +1,6 @@
 ''' MRVC/image_IPP_compressor.py '''
 
-import image_IPP as IPP
+import image_interpolated_IPP as IPP
 import config
 import distortion
 import frame
@@ -18,4 +18,4 @@ for q_step in range(50):
 
     amse = distortion.AMSE(config.input_video, f"{config.input_video}_reconstructed", config.n_frames)
 
-    print(bpp, amse)
+    print("RD:", bpp, amse)
