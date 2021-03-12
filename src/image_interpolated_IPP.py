@@ -86,6 +86,7 @@ def encode(video=VIDEO_PREFIX, codestream=CODESTREAM_PREFIX, n_frames=N_FRAMES, 
             _reconstructed_flow_ = V_codec(_flow_, LOG2_BLOCK_SIZE, f"{codestream}_motion", k) # (d and e)
             frame.debug_write(motion.colorize(_flow_), f"{codestream}_flow", k)
             _reconstructed_V_k_1_ = interpolate(reconstructed_V_k_1, n_levels) # (l)
+            print("-------------", _reconstructed_V_k_1_.shape, _reconstructed_flow_.shape) 
             _prediction_V_k_ = motion.make_prediction(_reconstructed_V_k_1_, _reconstructed_flow_) # (j)
             prediction_V_k = subsample(_prediction_V_k_, n_levels) # (m)
             print("flow.shape =", flow.shape, "_reconstructed_flow_.shape =", _reconstructed_flow_.shape)
