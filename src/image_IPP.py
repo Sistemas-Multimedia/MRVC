@@ -68,27 +68,27 @@ def E_codec2(E_k, prefix, k):
     print("-------------", E_k.max(), E_k.min())
     L.write(YUV.to_RGB(E_k), prefix + "_to_mp4", k)
     #frame.write(YUV.to_RGB(E_k), prefix + "_to_mp4", k)
-    os.system(f"ffmpeg -y -i {prefix}_to_mp4_{k:03d}_LL.png -crf 1 {prefix}_{k:03d}.mp4")
-    os.system(f"ffmpeg -y -i {prefix}_{k:03d}.mp4 {prefix}_from_mp4_{k:03d}_LL.png")
+    os.system(f"ffmpeg -loglevel fatal -y -i {prefix}_to_mp4_{k:03d}_LL.png -crf 1 {prefix}_{k:03d}.mp4")
+    os.system(f"ffmpeg -loglevel fatal -y -i {prefix}_{k:03d}.mp4 {prefix}_from_mp4_{k:03d}_LL.png")
     dq_E_k = YUV.from_RGB(L.read(prefix + "_from_mp4", k))
     #dq_E_k = (YUV.from_RGB(frame.read(prefix + "_from_mp4", k)))
     return dq_E_k.astype(np.float64)
 
-def E_codec3(E_k, prefix, k):
+def E_codec3(E_k, prefix, k, q_step):
     print("-------------", E_k.max(), E_k.min())
     #frame.write(clip(YUV.to_RGB(E_k)), prefix + "_to_mp4", k)
     frame.write(YUV.to_RGB(E_k), prefix + "_to_mp4", k)
-    os.system(f"ffmpeg -y -i {prefix}_to_mp4_{k:03d}.png -crf 35 {prefix}_{k:03d}.mp4")
-    os.system(f"ffmpeg -y -i {prefix}_{k:03d}.mp4 {prefix}_from_mp4_{k:03d}.png")
+    os.system(f"ffmpeg -loglevel fatal -y -i {prefix}_to_mp4_{k:03d}.png -crf {q_step} {prefix}_{k:03d}.mp4")
+    os.system(f"ffmpeg -loglevel fatal -y -i {prefix}_{k:03d}.mp4 {prefix}_from_mp4_{k:03d}.png")
     dq_E_k = (YUV.from_RGB(frame.read(prefix + "_from_mp4", k)))
     return dq_E_k.astype(np.float64)
 
-def E_codec4(E_k, prefix, k):
+def E_codec4(E_k, prefix, k, q_step):
     print("-------------", E_k.max(), E_k.min())
     #frame.write(clip(YUV.to_RGB(E_k)), prefix + "_to_mp4", k)
     frame.write(clip(YUV.to_RGB(E_k)+128), prefix + "_to_mp4", k)
-    os.system(f"ffmpeg -y -i {prefix}_to_mp4_{k:03d}.png -crf 35 {prefix}_{k:03d}.mp4")
-    os.system(f"ffmpeg -y -i {prefix}_{k:03d}.mp4 {prefix}_from_mp4_{k:03d}.png")
+    os.system(f"ffmpeg -loglevel fatal -y -i {prefix}_to_mp4_{k:03d}.png -crf {q_step} {prefix}_{k:03d}.mp4")
+    os.system(f"ffmpeg -loglevel fatal -y -i {prefix}_{k:03d}.mp4 {prefix}_from_mp4_{k:03d}.png")
     dq_E_k = (YUV.from_RGB(frame.read(prefix + "_from_mp4", k)-128))
     return dq_E_k.astype(np.float64)
 
@@ -138,7 +138,7 @@ def encode(video=VIDEO_PREFIX, codestream=CODESTREAM_PREFIX, n_frames=N_FRAMES, 
         V_k_1 = V_k # (b)
         E_k = V_k # (d)
         #dequantized_E_k = E_codec(E_k, N_LEVELS, q_step, codestream, 0) # (g and h)
-        dequantized_E_k = E_codec3(E_k, codestream, 0) # (g and h)
+        dequantized_E_k = E_codec3(E_k, codestream, 0, q_step) # (g and h)
         reconstructed_V_k = dequantized_E_k # (i)
         frame.debug_write(clip(YUV.to_RGB(reconstructed_V_k)), f"{video}_reconstructed", k) # Decoder's output
         reconstructed_V_k_1 = reconstructed_V_k # (j)
@@ -156,7 +156,7 @@ def encode(video=VIDEO_PREFIX, codestream=CODESTREAM_PREFIX, n_frames=N_FRAMES, 
             print(E_k.dtype)
             frame.debug_write(clip(YUV.to_RGB(E_k)+128), f"{codestream}_encoder_prediction_error", k)
             #dequantized_E_k = E_codec(E_k, 5, q_step, codestream, k) # (g and h)
-            dequantized_E_k = E_codec4(E_k, codestream, k) # (g and h)
+            dequantized_E_k = E_codec4(E_k, codestream, k, q_step) # (g and h)
             #quantized_E_k = Q.quantize(E_k, step=q_step) # (e)
             #dequantized_E_k = Q.dequantize(quantized_E_k, step=q_step) # (f)
             frame.debug_write(clip(YUV.to_RGB(dequantized_E_k)), f"{codestream}_encoder_dequantized_prediction_error", k)
@@ -171,22 +171,34 @@ def encode(video=VIDEO_PREFIX, codestream=CODESTREAM_PREFIX, n_frames=N_FRAMES, 
 def compute_br(prefix, frames_per_second, frame_shape, n_frames):
     #os.system(f"ffmpeg -y -i {prefix}_from_mp4_%03d.png -c:v libx264 -x264-params keyint=1 -crf 0 /tmp/image_IPP_texture.mp4")
     #os.system(f"ffmpeg -f concat -safe 0 -i <(for f in {prefix}_*.mp4; do echo \"file '$PWD/$f'\"; done) -c copy /tmp/image_IPP_texture.mp4")
-    os.system(f"ffmpeg -y -f concat -safe 0 -i <(for f in {prefix}_*.mp4; do echo \"file '$f'\"; done) -c copy /tmp/image_IPP_texture.mp4")
-    os.system(f"ffmpeg -y -i {prefix}_motion_y_%03d.png -c:v libx264 -x264-params keyint=1 -crf 0 /tmp/image_IPP_y.mp4")
-    os.system(f"ffmpeg -y -i {prefix}_motion_x_%03d.png -c:v libx264 -x264-params keyint=1 -crf 0 /tmp/image_IPP_x.mp4")
+    os.system(f"ffmpeg -loglevel fatal -y -f concat -safe 0 -i <(for f in {prefix}_*.mp4; do echo \"file '$f'\"; done) -c copy /tmp/image_IPP_texture.mp4")
+    os.system(f"ffmpeg -loglevel fatal -y -i {prefix}_motion_y_%03d.png -c:v libx264 -x264-params keyint=1 -crf 0 /tmp/image_IPP_y.mp4")
+    os.system(f"ffmpeg -loglevel fatal -y -i {prefix}_motion_x_%03d.png -c:v libx264 -x264-params keyint=1 -crf 0 /tmp/image_IPP_x.mp4")
 
     frame_height = frame_shape[0]
     frame_width = frame_shape[1]
-    channels = frame_shape[2]
+    n_channels = frame_shape[2]
     sequence_time = n_frames/frames_per_second
+    print(f"height={frame_height} width={frame_width} n_channels={n_channels} sequence_time={sequence_time}")
 
     texture_bytes = os.path.getsize("/tmp/image_IPP_texture.mp4")
-    print(f"texture: {texture_bytes} bytes, {texture_bytes*8/sequence_time/1000} kbps, {texture_bytes*8/(frame_width*frame_height*channels*n_frames)} bpp")
+    kbps = texture_bytes*8/sequence_time/1000
+    bpp = texture_bytes*8/(frame_width*frame_height*n_channels*n_frames)
+    print(f"texture: {texture_bytes} bytes, {kbps} kbps, {bpp} bpp")
+
     total_bytes = texture_bytes
     motion_y_bytes = os.path.getsize("/tmp/image_IPP_y.mp4")
-    print(f"motion (Y direction): {motion_y_bytes} bytes, {motion_y_bytes*8/sequence_time/1000} kbps")
+    kbps = motion_y_bytes*8/sequence_time/1000
+    print(f"motion (Y direction): {motion_y_bytes} bytes, {kbps} kbps")
+
     total_bytes += motion_y_bytes
     motion_x_bytes = os.path.getsize("/tmp/image_IPP_x.mp4")
-    print(f"motion (X direction): {motion_x_bytes} bytes, {motion_x_bytes*8/sequence_time/1000} kbps")
+    kbps = motion_x_bytes*8/sequence_time/1000
+    print(f"motion (X direction): {motion_x_bytes} bytes, {kbps} kbps")
+
     total_bytes += motion_x_bytes
-    print(f"total: {total_bytes*8/sequence_time/1000} kbps, {total_bytes*8/(frame_width*frame_height*3*n_frames)} bpp")
+    kbps = total_bytes*8/sequence_time/1000
+    bpp = total_bytes*8/(frame_width*frame_height*n_channels*n_frames)
+    print(f"total: {kbps} kbps, {bpp} bpp")
+
+    return kbps, bpp
