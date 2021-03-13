@@ -8,7 +8,8 @@ import config
 # optical flow computation algorith (OFCA). This value controls the
 # search area size.
 #optical_flow_pyramid_levels = 3
-optical_flow_pyramid_levels = 3
+optical_flow_pyramid_levels = 5
+#optical_flow_pyramid_levels = 1
 
 # Window size used in the Farneback's OFCA. This value controls the
 # coherence of the OF.
@@ -33,18 +34,24 @@ ofca_extension_mode = cv.BORDER_CONSTANT
 
 print("OFCA extension mode =", ofca_extension_mode)
 
-def estimate(predicted: np.ndarray, reference: np.ndarray, flow: np.ndarray =None) -> np.ndarray:
+def estimate(predicted:np.ndarray, reference:np.ndarray, reference_flow:np.ndarray=None) -> np.ndarray:
     flow = cv.calcOpticalFlowFarneback(
         prev=predicted,
         next=reference,
-        flow=flow,
+        #next=predicted,
+        #prev=reference,
+#        flow=reference_flow,
+        flow=None,
         pyr_scale=0.5,
         levels=optical_flow_pyramid_levels,
         winsize=optical_flow_window_size,
         iterations=optical_flow_iterations,
-        poly_n=5,
-        poly_sigma=1.1,
-        flags=cv.OPTFLOW_USE_INITIAL_FLOW)
+        poly_n=7,
+        poly_sigma=1.5,
+        #flags=cv.OPTFLOW_FARNEBACK_GAUSSIAN)
+        flags=0)
+        #flags=cv.OPTFLOW_USE_INITIAL_FLOW|cv.OPTFLOW_FARNEBACK_GAUSSIAN)
+        #flags=cv.OPTFLOW_USE_INITIAL_FLOW)
     return flow
 
 def make_prediction(reference: np.ndarray, flow: np.ndarray) -> np.ndarray:

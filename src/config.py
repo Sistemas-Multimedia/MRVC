@@ -3,8 +3,9 @@
 import cv2
 
 # Number of frames to compress.
-#n_frames = 5
-n_frames = 100
+n_frames = 5
+n_frames = 36
+#n_frames = 100
 #n_frames = 360
 #n_frames = 500
 

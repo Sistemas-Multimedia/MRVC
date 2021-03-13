@@ -129,7 +129,7 @@ def _V_codec(motion, n_levels, prefix, frame_number):
     frame.write(pyramid[:,:,1], prefix+"_x", frame_number)
     return pyramid
 
-def encode(video="/tmp/original_", codestream="/tmp/codestream_", n_frames=5, q_step=30):
+def encode(video="/tmp/original_", codestream="/tmp/codestream_", n_frames=5, q_step=30, subpixel_accuracy=0):
     try:
         k = 0
         W_k = frame.read(video, k)
