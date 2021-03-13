@@ -5,9 +5,6 @@ import cv2 as cv
 import config
 #import distortion
 
-# Number of levels of the LP
-N_LEVELS = config.n_levels
-
 def analyze_step(frame: np.ndarray) -> tuple:
     L = cv.pyrDown(frame)
     interpolated_L = cv.pyrUp(L)
