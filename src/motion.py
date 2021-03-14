@@ -22,15 +22,15 @@ optical_flow_iterations = 3
 #optical_flow_iterations = 5
 
 # Signal extension mode used in the OFCA. See https://docs.opencv.org/3.4/d2/de8/group__core__array.html
-ofca_extension_mode = cv.BORDER_CONSTANT
+#ofca_extension_mode = cv.BORDER_CONSTANT
 #ofca_extension_mode = cv.BORDER_WRAP
 #ofca_extension_mode = cv.BORDER_DEFAULT
-#ofca_extension_mode = cv.BORDER_REPLICATE
+ofca_extension_mode = cv.BORDER_REPLICATE
 #ofca_extension_mode = cv.BORDER_REFLECT
 #ofca_extension_mode = cv.BORDER_REFLECT_101
 #ofca_extension_mode = cv.BORDER_TRANSPARENT
 #ofca_extension_mode = cv.BORDER_REFLECT101
-#ofca_extension_mode = BORDER_ISOLATED
+#ofca_extension_mode = cv.BORDER_ISOLATED
 
 print("OFCA extension mode =", ofca_extension_mode)
 
@@ -58,8 +58,13 @@ def make_prediction(reference: np.ndarray, flow: np.ndarray) -> np.ndarray:
     height, width = flow.shape[:2]
     map_x = np.tile(np.arange(width), (height, 1))
     map_y = np.swapaxes(np.tile(np.arange(height), (width, 1)), 0, 1)
-    map_xy = (flow + np.dstack((map_x, map_y))).astype('float32')
+    #map_xy = (flow + np.dstack((map_x, map_y))).astype('float32')
+    map_xy = (np.rint(flow) + np.dstack((map_x, map_y)).astype(np.float32))
     return cv.remap(reference, map_xy, None, interpolation=cv.INTER_LINEAR, borderMode=ofca_extension_mode)
+    #return cv.remap(reference, map_xy, None, interpolation=cv.INTER_NEAREST, borderMode=ofca_extension_mode)
+    
+    #return cv.remap(reference, cv.convertMaps(map_x, map_y, dstmap1type=cv.CV_16SC2), interpolation=cv.INTER_LINEAR, borderMode=ofca_extension_mode)
+    #return cv.remap(reference, map_x, map_y, interpolation=cv.INTER_LINEAR, borderMode=ofca_extension_mode)
 
 def colorize(flow):
     hsv = np.zeros((flow.shape[0], flow.shape[1], 3), dtype=np.uint8)
