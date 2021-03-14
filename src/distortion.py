@@ -20,7 +20,7 @@ def AMSE(x_prefix, y_prefix, n_frames):
         x = frame.read(x_prefix, k)
         y = frame.read(y_prefix, k)
         _AMSE = MSE(x, y)
-        print(f"AMSE of frame {k} = {AMSE}")
+        print(f"AMSE of frame {k} = {_AMSE}")
         total_AMSE += _AMSE
     _AMSE = total_AMSE/n_frames
     print("Average Mean Square Error (entire sequence)=", _AMSE)

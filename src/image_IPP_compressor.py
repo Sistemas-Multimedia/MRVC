@@ -1,7 +1,7 @@
 ''' MRVC/image_IPP_compressor.py '''
 
-#import image_interpolated_IPP as IPP
-import image_IPP as IPP
+import image_interpolated_IPP as IPP
+#import image_IPP as IPP
 import config
 import distortion
 import frame

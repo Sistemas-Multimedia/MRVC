@@ -13,13 +13,14 @@ import cv2
 import YCoCg as YUV
 import os
 import cv2 as cv
+import L_DWT as L
 
 VIDEO_PREFIX = "../sequences/complete_stockholm/"
 CODESTREAM_PREFIX = "/tmp/"
 DECODED_VIDEO_PREFIX = "/tmp/decoder_"
 #Q_STEP = 128
 N_FRAMES = 16
-LOG2_BLOCK_SIZE = 4 # BLOCK_SIZE = 1 << LOG2_BLOCK_SIZE
+LOG2_BLOCK_SIZE = 6 # BLOCK_SIZE = 1 << LOG2_BLOCK_SIZE
 N_LEVELS = 5
 
 def norm(x):
@@ -29,6 +30,7 @@ def clip(x):
     return(np.clip(x, 0 ,255).astype(np.uint8))
 
 def I_codec(E_k, prefix, k, q_step):
+    print("Error", E_k.max(), E_k.min())
     frame.write(YUV.to_RGB(E_k), prefix + "_to_mp4_", k)
     os.system(f"ffmpeg -loglevel fatal -y -i {prefix}_to_mp4_{k:03d}.png -crf {q_step} {prefix}_{k:03d}.mp4")
     os.system(f"ffmpeg -loglevel fatal -y -i {prefix}_{k:03d}.mp4 {prefix}_from_mp4_{k:03d}.png")
@@ -36,46 +38,67 @@ def I_codec(E_k, prefix, k, q_step):
     return dq_E_k.astype(np.float64)
 
 def E_codec(E_k, prefix, k, q_step):
+    print("Error", E_k.max(), E_k.min())
     frame.write(clip(YUV.to_RGB(E_k)+128), prefix + "_to_mp4_", k)
     os.system(f"ffmpeg -loglevel fatal -y -i {prefix}_to_mp4_{k:03d}.png -crf {q_step} {prefix}_{k:03d}.mp4")
     os.system(f"ffmpeg -loglevel fatal -y -i {prefix}_{k:03d}.mp4 {prefix}_from_mp4_{k:03d}.png")
     dq_E_k = (YUV.from_RGB(frame.read(prefix + "_from_mp4_", k)-128))
     return dq_E_k.astype(np.float64)
 
-def __V_codec(motion, n_levels, prefix, frame_number):
+def V_codec(motion, n_levels, prefix, frame_number):
     pyramid = LP.analyze(motion, n_levels)
     frame.write(pyramid[0][...,0], prefix+"_y", frame_number)
     frame.write(pyramid[0][...,1], prefix+"_x", frame_number)
     for resolution in pyramid[1:]:
         resolution[...] = 0
     reconstructed_motion = LP.synthesize(pyramid, n_levels)
-    return reconstructed_motion
+    #return reconstructed_motion.astype(np.float32)
+    return np.rint(reconstructed_motion).astype(np.int16)
 
-def V_codec(motion, n_levels, prefix, frame_number):
+def _V_codec(motion, n_levels, prefix, frame_number):
     return motion
 
 def upscale(frame, n_levels):
+    assert n_levels > 0
+    _frame_ = L.interpolate(frame)
+    for l in range(1, n_levels):
+        _frame_ = L.interpolate(_frame_)
+    return _frame_
+def _upscale(frame, n_levels):
     assert n_levels > 0
     _frame_ = cv.pyrUp(frame)
     for l in range(1, n_levels):
         _frame_ = cv.pyrUp(_frame_)
     return _frame_
+def _upscale(frame, n_levels):
+    return frame
 
 def downscale(_frame_, n_levels):
+    assert n_levels > 0
+    frame = L.reduce(_frame_)
+    for l in range(1, n_levels):
+        frame = L.reduce(frame)
+    return frame
+def _downscale(_frame_, n_levels):
     assert n_levels > 0
     frame = cv.pyrDown(_frame_)
     for l in range(1, n_levels):
         frame = cv.pyrDown(frame)
     return frame
+def _downscale(_frame_, n_levels):
+    return _frame_
 
 def encode(video="/tmp/original_", codestream="/tmp/codestream_", n_frames=5, q_step=30, n_levels=1):
     try:
         k = 0
         W_k = frame.read(video, k)
         V_k = YUV.from_RGB(W_k) # (a)
+        #V_k = W_k
         _V_k_1_ = upscale(V_k, n_levels) # (l and b)
         #_flow_ = np.zeros((_V_k_1_.shape[0], _V_k_1_.shape[1], 2), dtype=np.float32)
-        E_k = V_k # (d)
+        E_k = V_k # (f)
+        frame.debug_write(YUV.to_RGB(E_k), f"{codestream}encoder_prediction_error", k)
+        #frame.debug_write(E_k, f"{codestream}encoder_prediction_error", k)
         dequantized_E_k = I_codec(E_k, codestream, 0, q_step) # (g and h)
         reconstructed_V_k = dequantized_E_k # (i)
         frame.debug_write(clip(YUV.to_RGB(reconstructed_V_k)), f"{video}reconstructed", k) # Decoder's output
@@ -89,15 +112,16 @@ def encode(video="/tmp/original_", codestream="/tmp/codestream_", n_frames=5, q_
             #frame.debug_write(YUV.to_RGB(_V_k_1_), "/tmp/pre", k)
             #frame.debug_write(YUV.to_RGB(_V_k_), "/tmp/sig", k)
             #_flow_ = motion.estimate(_V_k_[...,0], _V_k_1_[...,0], _flowf_) # (c)
+            print("COMPUTED flow", _flow_.max(), _flow_.min())
             _V_k_1_ = _V_k_ # (b)
             _reconstructed_flow_ = V_codec(_flow_, LOG2_BLOCK_SIZE, f"{codestream}motion", k) # (d and e)
+            print("USED flow", _reconstructed_flow_.max(), _reconstructed_flow_.min())
             frame.debug_write(motion.colorize(_flow_), f"{codestream}flow", k)
             _reconstructed_V_k_1_ = upscale(reconstructed_V_k_1, n_levels) # (l)
-            print("-------------", _reconstructed_V_k_1_.shape, _reconstructed_flow_.shape) 
             _prediction_V_k_ = motion.make_prediction(_reconstructed_V_k_1_, _reconstructed_flow_) # (j)
             prediction_V_k = downscale(_prediction_V_k_, n_levels) # (m)
-            print("_flow_.shape =", _flow_.shape, "_reconstructed_flow_.shape =", _reconstructed_flow_.shape)
             frame.debug_write(clip(YUV.to_RGB(prediction_V_k)), f"{codestream}encoder_prediction", k)
+            frame.debug_write(clip(YUV.to_RGB(_prediction_V_k_)), f"{codestream}encoder_prediction_", k)
             E_k = V_k - prediction_V_k[:V_k.shape[0], :V_k.shape[1], :] # (f)
             frame.debug_write(clip(YUV.to_RGB(E_k)+128), f"{codestream}encoder_prediction_error", k)
             dequantized_E_k = E_codec(E_k, codestream, k, q_step) # (g and h)

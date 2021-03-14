@@ -75,7 +75,7 @@ def E_codec2(E_k, prefix, k):
     #dq_E_k = (YUV.from_RGB(frame.read(prefix + "_from_mp4", k)))
     return dq_E_k.astype(np.float64)
 
-def E_codec3(E_k, prefix, k, q_step):
+def I_codec(E_k, prefix, k, q_step):
     print("Error", E_k.max(), E_k.min())
     #frame.write(clip(YUV.to_RGB(E_k)), prefix + "_to_mp4", k)
     frame.write(YUV.to_RGB(E_k), prefix + "_to_mp4_", k)
@@ -98,10 +98,10 @@ def E_codec4(E_k, prefix, k, q_step):
 def V_codec(motion, n_levels, prefix, frame_number):
     pyramid = LP.analyze(motion, n_levels)
     #pyramid[0][:,:,:] = 0
-    frame.write(pyramid[0][:,:,0], prefix+"_y", frame_number)
-    frame.write(pyramid[0][:,:,1], prefix+"_x", frame_number)
+    frame.write(pyramid[0][...,0], prefix+"_y", frame_number)
+    frame.write(pyramid[0][...,1], prefix+"_x", frame_number)
     for resolution in pyramid[1:]:
-        resolution[:,:,:] = 0
+        resolution[...] = 0
     reconstructed_motion = LP.synthesize(pyramid, n_levels)
     #print(motion-reconstructed_motion[:motion.shape[0], :motion.shape[1], :])
     return np.rint(reconstructed_motion).astype(np.int16)
@@ -140,16 +140,18 @@ def encode(video="/tmp/original_", codestream="/tmp/codestream_", n_frames=5, q_
         flow = np.zeros((W_k.shape[0], W_k.shape[1], 2), dtype=np.float32)
         V_k = YUV.from_RGB(W_k) # (a)
         V_k_1 = V_k # (b)
-        E_k = V_k # (d)
+        E_k = V_k # (f)
+        frame.debug_write(YUV.to_RGB(E_k), f"{codestream}encoder_prediction_error", k)
         #dequantized_E_k = E_codec(E_k, N_LEVELS, q_step, codestream, 0) # (g and h)
-        dequantized_E_k = E_codec3(E_k, codestream, 0, q_step) # (g and h)
+        dequantized_E_k = I_codec(E_k, codestream, 0, q_step) # (g and h)
         reconstructed_V_k = dequantized_E_k # (i)
         frame.debug_write(clip(YUV.to_RGB(reconstructed_V_k)), f"{video}reconstructed", k) # Decoder's output
         reconstructed_V_k_1 = reconstructed_V_k # (j)
         for k in range(1, n_frames):
             W_k = frame.read(video, k)
             V_k = YUV.from_RGB(W_k) # (a)
-            flow = motion.estimate(V_k[:,:,0], V_k_1[:,:,0], flow) # (c)
+            #flow = motion.estimate(V_k[...,0], V_k_1[...,0], flow) # (c)
+            flow = motion.estimate(V_k[...,0], V_k_1[...,0]) # (c)
             #flow = np.rint(flow)
             #flow = np.random.randint(-1, 1, flow.shape).astype(np.float32)
             #print("flow.dtype=", flow.dtype, "flow.max()=", flow.max(), "flow.min()=", flow.min())
@@ -159,7 +161,8 @@ def encode(video="/tmp/original_", codestream="/tmp/codestream_", n_frames=5, q_
             print("USED flow", reconstructed_flow.max(), reconstructed_flow.min())
             frame.debug_write(motion.colorize(flow), f"{codestream}flow", k)
             frame.debug_write(motion.colorize(reconstructed_flow.astype(np.float32)), f"{codestream}reconstructed_flow", k)
-            prediction_V_k = motion.make_prediction(reconstructed_V_k_1, reconstructed_flow).astype(np.int16) # (j)
+            #prediction_V_k = motion.make_prediction(reconstructed_V_k_1, reconstructed_flow).astype(np.int16) # (j)
+            prediction_V_k = motion.make_prediction(reconstructed_V_k_1, reconstructed_flow) # (j)
             #print("flow.shape =", flow.shape, "reconstructed_flow.shape =", reconstructed_flow.shape)
             frame.debug_write(clip(YUV.to_RGB(prediction_V_k)), f"{codestream}encoder_prediction", k)
             E_k = V_k - prediction_V_k[:V_k.shape[0], :V_k.shape[1], :] # (f)
