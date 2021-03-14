@@ -8,7 +8,7 @@ import frame
 
 print("IPP... encoding")
 
-for q_step in range(0,1):
+for q_step in range(30,31):
 
     IPP.encode(config.input_video, config.codestream, config.n_frames, q_step, config.subpixel_accuracy)
 
