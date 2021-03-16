@@ -1,1 +1,1 @@
-../../tools/moving_circle.sh -o /tmp/original_ -f 100 -x 10 -y 10 -w 64 -h 64 -f 56 -d 10
+../../tools/moving_circle.sh -o ./ -f 100 -x 32 -y 32 -w 64 -h 64 -f 5 -d 10
