@@ -59,7 +59,7 @@ def make_prediction(reference: np.ndarray, flow: np.ndarray) -> np.ndarray:
     map_x = np.tile(np.arange(width), (height, 1))
     map_y = np.swapaxes(np.tile(np.arange(height), (width, 1)), 0, 1)
     #map_xy = (flow + np.dstack((map_x, map_y))).astype('float32')
-    map_xy = (np.rint(flow) + np.dstack((map_x, map_y)).astype(np.float32))
+    map_xy = (np.rint(flow) + np.dstack((map_x, map_y)).astype(np.float32)) # OJO RINT
     return cv.remap(reference, map_xy, None, interpolation=cv.INTER_LINEAR, borderMode=ofca_extension_mode)
     #return cv.remap(reference, map_xy, None, interpolation=cv.INTER_NEAREST, borderMode=ofca_extension_mode)
     

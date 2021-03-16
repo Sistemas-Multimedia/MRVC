@@ -7,6 +7,8 @@ diameter="30"
 frames="10"
 x_initial="80"
 y_initial="40"
+y_increment=0
+x_increment=1
 
 usage() {
     echo $0
@@ -18,12 +20,14 @@ usage() {
     echo "  [-d circle diameter ($diameter)]"
     echo "  [-x initial X coordinate ($x_initial)]"
     echo "  [-y initial Y coordinate ($y_initial)]"
+    echo "  [-a Y increment ($y_increment]"
+    echo "  [-b X increment ($x_increment)]"
     echo "  [-? help]"
 }
 
 echo $0: parsing: $@
 
-while getopts "o:h:w:f:d:y:x:?" opt; do
+while getopts "o:h:w:f:d:y:x:a:b:?" opt; do
     case ${opt} in
         o)
             output_seq_prefix="${OPTARG}"
@@ -53,6 +57,14 @@ while getopts "o:h:w:f:d:y:x:?" opt; do
             x_initial="${OPTARG}"
             echo "Initial X coordinate =" $x_initial
             ;;
+        a)
+            y_increment="${OPTARG}"
+            echo "Y increment =" $y_increment
+            ;;
+        b)
+            x_increment="${OPTARG}"
+            echo "X increment =" $x_increment
+            ;;
         ?)
             usage
             exit 0
@@ -76,6 +88,6 @@ i=0
 while [ $i -le $((frames-1)) ]
 do
     ii=$(printf "%03d" $i)
-    convert -size ${image_width}x${image_height} xc:skyblue -fill white -stroke black -draw "circle $((x_initial+i)),$y_initial $((x_initial+diameter+i)),$y_initial" -depth 8 ${output_seq_prefix}${ii}.png
+    convert -size ${image_width}x${image_height} xc:skyblue -fill white -stroke black -draw "circle $((x_initial+x_increment*i)),$((y_initial+y_increment*i)) $((x_initial+diameter+x_increment*i)),$((y_initial+y_increment*i))" -depth 8 ${output_seq_prefix}${ii}.png
     i=$(( $i + 1 ))
 done
