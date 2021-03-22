@@ -84,6 +84,9 @@ done
 
 set -x
 
+#echo -n "X_increment =" $x_increment
+#echo -n "Y_increment =" $y_increment
+
 i=0
 while [ $i -le $((frames-1)) ]
 do
