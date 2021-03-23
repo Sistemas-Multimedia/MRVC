@@ -7,8 +7,8 @@ import config
 # Number of levels of the gaussian pyramid used in the Farneback's
 # optical flow computation algorith (OFCA). This value controls the
 # search area size.
-#optical_flow_pyramid_levels = 3
-optical_flow_pyramid_levels = 5
+optical_flow_pyramid_levels = 3
+#optical_flow_pyramid_levels = 5
 #optical_flow_pyramid_levels = 1
 
 # Window size used in the Farneback's OFCA. This value controls the
