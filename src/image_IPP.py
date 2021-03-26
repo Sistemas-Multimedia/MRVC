@@ -1,5 +1,7 @@
 ''' MRVC/image_IPP.py '''
 
+# IPP video compressor.
+
 import DWT
 import LP
 import numpy as np
@@ -133,7 +135,7 @@ def _V_codec(motion, n_levels, prefix, frame_number):
     frame.write(pyramid[:,:,1], prefix+"_x", frame_number)
     return pyramid
 
-def encode(video="/tmp/original_", codestream="/tmp/codestream_", n_frames=5, q_step=30, subpixel_accuracy=0):
+def encode(video, codestream, n_frames, q_step=30, subpixel_accuracy=0):
     try:
         k = 0
         W_k = frame.read(video, k)
