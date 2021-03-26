@@ -15,6 +15,8 @@ import os
 import cv2 as cv
 import L_DWT as L
 
+#subpixel_accuracy = 1
+
 VIDEO_PREFIX = "../sequences/complete_stockholm/"
 CODESTREAM_PREFIX = "/tmp/"
 DECODED_VIDEO_PREFIX = "/tmp/decoder_"
@@ -88,7 +90,7 @@ def _downscale(_frame_, n_levels):
 def _downscale(_frame_, n_levels):
     return _frame_
 
-def encode(video="/tmp/original_", codestream="/tmp/codestream_", n_frames=5, q_step=30, n_levels=1):
+def encode(video="/tmp/original_", codestream="/tmp/codestream_", n_frames=5, q_step=30, n_levels=subpixel_accuracy):
     try:
         k = 0
         W_k = frame.read(video, k)
