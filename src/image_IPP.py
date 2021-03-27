@@ -98,10 +98,11 @@ def E_codec4(E_k, prefix, k, q_step):
     return dq_E_k
 
 def V_codec(motion, n_levels, prefix, frame_number):
+    #print(prefix+"_y")
     pyramid = LP.analyze(motion, n_levels)
     #pyramid[0][:,:,:] = 0
-    frame.write(pyramid[0][...,0], prefix+"_y", frame_number)
-    frame.write(pyramid[0][...,1], prefix+"_x", frame_number)
+    frame.write(pyramid[0][...,0], prefix+"_y_", frame_number)
+    frame.write(pyramid[0][...,1], prefix+"_x_", frame_number)
     for resolution in pyramid[1:]:
         resolution[...] = 0
     reconstructed_motion = LP.synthesize(pyramid, n_levels)
@@ -131,8 +132,8 @@ def V_codec(motion, n_levels, prefix, frame_number):
 
 def _V_codec(motion, n_levels, prefix, frame_number):
     pyramid = np.rint(motion).astype(np.int16)
-    frame.write(pyramid[:,:,0], prefix+"_y", frame_number)
-    frame.write(pyramid[:,:,1], prefix+"_x", frame_number)
+    frame.write(pyramid[:,:,0], prefix+"_y_", frame_number)
+    frame.write(pyramid[:,:,1], prefix+"_x_", frame_number)
     return pyramid
 
 def encode(video, codestream, n_frames, q_step=30, subpixel_accuracy=0):
@@ -188,11 +189,13 @@ def encode(video, codestream, n_frames, q_step=30, subpixel_accuracy=0):
         raise
 
 def compute_br(prefix, frames_per_second, frame_shape, n_frames):
+    print("*"*80, prefix)
     #os.system(f"ffmpeg -y -i {prefix}_from_mp4_%03d.png -c:v libx264 -x264-params keyint=1 -crf 0 /tmp/image_IPP_texture.mp4")
     #os.system(f"ffmpeg -f concat -safe 0 -i <(for f in {prefix}_*.mp4; do echo \"file '$PWD/$f'\"; done) -c copy /tmp/image_IPP_texture.mp4")
     os.system(f"ffmpeg -loglevel fatal -y -f concat -safe 0 -i <(for f in {prefix}_*.mp4; do echo \"file '$f'\"; done) -c copy /tmp/image_IPP_texture.mp4")
-    os.system(f"ffmpeg -loglevel fatal -y -i {prefix}_motion_y_%03d.png -c:v libx264 -x264-params keyint=1 -crf 0 /tmp/image_IPP_y.mp4")
-    os.system(f"ffmpeg -loglevel fatal -y -i {prefix}_motion_x_%03d.png -c:v libx264 -x264-params keyint=1 -crf 0 /tmp/image_IPP_x.mp4")
+    print(f"ffmpeg -loglevel fatal -y -i {prefix}motion_y_%03d.png -c:v libx264 -x264-params keyint=1 -crf 0 /tmp/image_IPP_motion_y.mp4")
+    os.system(f"ffmpeg -loglevel fatal -y -i {prefix}motion_y_%03d.png -c:v libx264 -x264-params keyint=1 -crf 0 /tmp/image_IPP_motion_y.mp4")
+    os.system(f"ffmpeg -loglevel fatal -y -i {prefix}motion_x_%03d.png -c:v libx264 -x264-params keyint=1 -crf 0 /tmp/image_IPP_motion_x.mp4")
 
     frame_height = frame_shape[0]
     frame_width = frame_shape[1]
@@ -206,12 +209,12 @@ def compute_br(prefix, frames_per_second, frame_shape, n_frames):
     print(f"texture: {texture_bytes} bytes, {kbps} kbps, {bpp} bpp")
 
     total_bytes = texture_bytes
-    motion_y_bytes = os.path.getsize("/tmp/image_IPP_y.mp4")
+    motion_y_bytes = os.path.getsize("/tmp/image_IPP_motion_y.mp4")
     kbps = motion_y_bytes*8/sequence_time/1000
     print(f"motion (Y direction): {motion_y_bytes} bytes, {kbps} kbps")
 
     total_bytes += motion_y_bytes
-    motion_x_bytes = os.path.getsize("/tmp/image_IPP_x.mp4")
+    motion_x_bytes = os.path.getsize("/tmp/image_IPP_motion_x.mp4")
     kbps = motion_x_bytes*8/sequence_time/1000
     print(f"motion (X direction): {motion_x_bytes} bytes, {kbps} kbps")
 

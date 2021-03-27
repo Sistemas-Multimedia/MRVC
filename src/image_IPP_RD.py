@@ -12,7 +12,7 @@ number_of_frames = 5
 prefix = "/tmp"
 video = prefix + "/original_"
 codestream = prefix + "/codestream_"
-reconstruction = prefix + "/reconstruction_"
+reconstructed = prefix + "/reconstructed_"
 FPS = 30
 subpixel_accuracy = 1
 
@@ -33,7 +33,7 @@ for q_step in range(30,31):
     
     _distortion = distortion.AMSE(
         video,
-        f"{video}reconstruction",
+        f"{video}reconstructed",
         number_of_frames)
 
     print("RD:", bpp, _distortion)
