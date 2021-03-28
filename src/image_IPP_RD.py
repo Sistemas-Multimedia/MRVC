@@ -8,7 +8,7 @@ import config
 import distortion
 import frame
 
-number_of_frames = 5
+number_of_frames = 50
 prefix = "/tmp"
 video = prefix + "/original_"
 codestream = prefix + "/codestream_"
@@ -16,7 +16,7 @@ reconstructed = prefix + "/reconstructed_"
 FPS = 30
 subpixel_accuracy = 1
 
-for q_step in range(30,31):
+for q_step in range(40,41):
 
     IPP.encode(
         video,

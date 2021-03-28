@@ -49,8 +49,8 @@ def E_codec(E_k, prefix, k, q_step):
 
 def V_codec(motion, n_levels, prefix, frame_number):
     pyramid = LP.analyze(motion, n_levels)
-    frame.write(pyramid[0][...,0], prefix+"_y", frame_number)
-    frame.write(pyramid[0][...,1], prefix+"_x", frame_number)
+    frame.write(pyramid[0][...,0], prefix+"_y_", frame_number)
+    frame.write(pyramid[0][...,1], prefix+"_x_", frame_number)
     for resolution in pyramid[1:]:
         resolution[...] = 0
     reconstructed_motion = LP.synthesize(pyramid, n_levels)
@@ -152,12 +152,12 @@ def compute_br(prefix, frames_per_second, frame_shape, n_frames):
     print(f"texture: {texture_bytes} bytes, {kbps} kbps, {bpp} bpp")
 
     total_bytes = texture_bytes
-    motion_y_bytes = os.path.getsize("/tmp/image_IPP_y.mp4")
+    motion_y_bytes = os.path.getsize("/tmp/image_IPP_motion_y.mp4")
     kbps = motion_y_bytes*8/sequence_time/1000
     print(f"motion (Y direction): {motion_y_bytes} bytes, {kbps} kbps")
 
     total_bytes += motion_y_bytes
-    motion_x_bytes = os.path.getsize("/tmp/image_IPP_x.mp4")
+    motion_x_bytes = os.path.getsize("/tmp/image_IPP_motion_x.mp4")
     kbps = motion_x_bytes*8/sequence_time/1000
     print(f"motion (X direction): {motion_x_bytes} bytes, {kbps} kbps")
 
