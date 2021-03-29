@@ -36,4 +36,4 @@ for q_step in range(40,41):
         f"{video}reconstructed",
         number_of_frames)
 
-    print("RD:", bpp, _distortion)
+    print("BPP:", bpp, "KBPS:", kbps, "AMSE", _distortion)
