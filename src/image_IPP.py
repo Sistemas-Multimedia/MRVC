@@ -22,7 +22,7 @@ DECODED_VIDEO_PREFIX = "/tmp/decoder_"
 #Q_STEP = 128
 N_FRAMES = 16
 LOG2_BLOCK_SIZE = 4 # BLOCK_SIZE = 1 << LOG2_BLOCK_SIZE
-N_LEVELS = 5
+N_LEVELS = 3
 
 def norm(x):
     return (frame.normalize(x)*255).astype(np.uint8)
@@ -30,8 +30,9 @@ def norm(x):
 def clip(x):
     return(np.clip(x, 0 ,255).astype(np.uint8))
 
-def E_codec(E_k, n_levels, q_step, prefix, k):
-    decom = DWT.analyze(E_k, n_levels)
+def E_codec(E_k, prefix, k, q_step):
+    assert q_step > 0
+    decom = DWT.analyze(E_k, N_LEVELS)
     #print(decom[0])
     LL = decom[0]
     decom[0] = Q.quantize(LL, q_step)
@@ -44,7 +45,7 @@ def E_codec(E_k, n_levels, q_step, prefix, k):
         HH = resolution[2]
         resolution[2][:] = Q.quantize(HH, q_step)
         resolution = tuple(resolution)
-    DWT.write(decom, prefix, k, n_levels)
+    DWT.write(decom, prefix, k, N_LEVELS)
     LL = decom[0]
     #print(LL)
     decom[0] = Q.dequantize(LL, q_step)
@@ -59,7 +60,7 @@ def E_codec(E_k, n_levels, q_step, prefix, k):
         resolution[2][:] = Q.dequantize(HH, q_step)
         resolution = tuple(resolution)
     #print("->", decom[1][0])
-    dq_E_k = DWT.synthesize(decom, n_levels)
+    dq_E_k = DWT.synthesize(decom, N_LEVELS)
     return dq_E_k
     #return E_k-dq_E_k
     #return E_k
@@ -174,7 +175,8 @@ def encode(video, codestream, n_frames, q_step=30, subpixel_accuracy=0):
             #print(E_k.dtype, E_k.shape)
             frame.debug_write(clip(YUV.to_RGB(E_k)+128), f"{codestream}encoder_prediction_error", k)
             #dequantized_E_k = E_codec(E_k, 5, q_step, codestream, k) # (g and h)
-            dequantized_E_k = E_codec4(E_k, codestream, k, q_step) # (g and h)
+            #dequantized_E_k = E_codec4(E_k, codestream, k, q_step) # (g and h)
+            dequantized_E_k = E_codec(E_k, codestream, k, q_step) # (g and h)
             print(dequantized_E_k.dtype, dequantized_E_k.shape)
             #quantized_E_k = Q.quantize(E_k, step=q_step) # (e)
             #dequantized_E_k = Q.dequantize(quantized_E_k, step=q_step) # (f)
