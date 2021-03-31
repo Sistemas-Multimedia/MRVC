@@ -1,6 +1,8 @@
 ''' MRVC/image_IPP_2.py '''
 
-# IPP video compressor, similar to image_IPP.py, but the prediction image is created .... nosenose
+# IPP video compressor, similar to image_IPP.py, but the blocks can be
+# I-type in a B-type frame. We use the entropy of the motion
+# compensated block to decide the type.
 
 import DWT
 import LP
