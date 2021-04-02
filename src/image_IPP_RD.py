@@ -3,7 +3,8 @@
 # Generate a RD curve for the IPP... encoding scheme.
 
 #import image_interpolated_IPP as IPP
-import image_IPP as IPP
+#import image_IPP as IPP
+import image_IPP_adaptive as IPP
 import config
 import distortion
 import frame
