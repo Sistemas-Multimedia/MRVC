@@ -17,7 +17,7 @@ reconstructed = prefix + "/reconstructed_"
 FPS = 30
 subpixel_accuracy = 1
 
-for q_step in range(40,41):
+for q_step in range(1,2):
 
     IPP.encode(
         video,

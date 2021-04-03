@@ -119,9 +119,12 @@ def E_codec4(E_k, prefix, k, q_step):
     print("Error", E_k.max(), E_k.min())
     #frame.write(clip(YUV.to_RGB(E_k)), prefix + "_to_mp4", k)
     frame.write(clip(YUV.to_RGB(E_k)+128), prefix + "_to_mp4_", k)
+    #frame.write(YUV.to_RGB(E_k)+128, prefix + "_to_mp4_", k)
+    #frame.write(YUV.to_RGB(E_k), prefix + "_to_mp4_", k)
     os.system(f"ffmpeg -loglevel fatal -y -i {prefix}_to_mp4_{k:03d}.png -crf {q_step} {prefix}_{k:03d}.mp4")
     os.system(f"ffmpeg -loglevel fatal -y -i {prefix}_{k:03d}.mp4 {prefix}_from_mp4_{k:03d}.png")
     dq_E_k = (YUV.from_RGB(frame.read(prefix + "_from_mp4_", k)-128))
+    #dq_E_k = YUV.from_RGB(frame.read(prefix + "_from_mp4_", k))
     #return dq_E_k.astype(np.float64)
     return dq_E_k
 
@@ -198,10 +201,13 @@ def encode(video, codestream, n_frames, q_step=30, subpixel_accuracy=0):
             #prediction_V_k [...] = 0
             #print("flow.shape =", flow.shape, "reconstructed_flow.shape =", reconstructed_flow.shape)
             frame.debug_write(clip(YUV.to_RGB(prediction_V_k)), f"{codestream}encoder_prediction", k)
-            #E_k = V_k - prediction_V_k[:V_k.shape[0], :V_k.shape[1], :] # (f)
-            print("****************", prediction_V_k.max(), prediction_V_k.min())
-            print("****************", V_k.max(), V_k.min())
-            E_k = V_k.copy()
+            E_k = V_k - prediction_V_k[:V_k.shape[0], :V_k.shape[1], :] # (f)
+            print("**************** reconstructed_V_k_1", reconstructed_V_k_1.max(), reconstructed_V_k_1.min())
+            print("**************** prediction_V_k", prediction_V_k.max(), prediction_V_k.min())
+            print("**************** V_k", V_k.max(), V_k.min())
+            print("**************** E_k", E_k.max(), E_k.min())
+            #E_k = V_k.copy()
+            
             for y in range(int(V_k.shape[0]/block_y_side)): # <------------------------------
                 for x in range(int(V_k.shape[1]/block_x_side)):
                     E_k_block_entropy = \
@@ -214,18 +220,21 @@ def encode(video, codestream, n_frames, q_step=30, subpixel_accuracy=0):
                         print('B', end='')
                     else:
                         print('I', end='')
-                        #E_k[y*block_y_side:(y+1)*block_y_side,
-                        #    x*block_x_side:(x+1)*block_x_side] = \
-                        #        V_k[y*block_y_side:(y+1)*block_y_side,
-                        #            x*block_x_side:(x+1)*block_x_side]
+                        E_k[y*block_y_side:(y+1)*block_y_side,
+                            x*block_x_side:(x+1)*block_x_side] = \
+                                V_k[y*block_y_side:(y+1)*block_y_side,
+                                    x*block_x_side:(x+1)*block_x_side]
+                        prediction_V_k[y*block_y_side:(y+1)*block_y_side,
+                            x*block_x_side:(x+1)*block_x_side] = 0
                 print('')
+            
             #E_k [...] = V_k - 128
-            print("E_k.shape=",E_k.shape, "V_k.shape=", V_k.shape, "prediction_V_k.shape=", prediction_V_k.shape)
-            #print(E_k.dtype, E_k.shape)
+            #print("E_k.shape=",E_k.shape, "V_k.shape=", V_k.shape, "prediction_V_k.shape=", prediction_V_k.shape)
             frame.debug_write(clip(YUV.to_RGB(E_k)+128), f"{codestream}encoder_prediction_error", k)
-            #dequantized_E_k = E_codec(E_k, 5, q_step, codestream, k) # (g and h)
+            #dequantized_E_k = E_codec(E_k, 3, q_step, codestream, k) # (g and h)
             dequantized_E_k = E_codec4(E_k, codestream, k, q_step) # (g and h)
-            print(dequantized_E_k.dtype, dequantized_E_k.shape)
+            print("**************** dequantized_E_k", dequantized_E_k.max(), dequantized_E_k.min())
+            #print(dequantized_E_k.dtype, dequantized_E_k.shape)
             #quantized_E_k = Q.quantize(E_k, step=q_step) # (e)
             #dequantized_E_k = Q.dequantize(quantized_E_k, step=q_step) # (f)
             frame.debug_write(clip(YUV.to_RGB(dequantized_E_k)), f"{codestream}encoder_dequantized_prediction_error", k)
