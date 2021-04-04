@@ -118,13 +118,13 @@ def I_codec(E_k, prefix, k, q_step):
 def E_codec4(E_k, prefix, k, q_step):
     print("Error", E_k.max(), E_k.min())
     #frame.write(clip(YUV.to_RGB(E_k)), prefix + "_to_mp4", k)
-    frame.write(clip(YUV.to_RGB(E_k)+128), prefix + "_to_mp4_", k)
+    #frame.write(clip(YUV.to_RGB(E_k)+128), prefix + "_to_mp4_", k)
     #frame.write(YUV.to_RGB(E_k)+128, prefix + "_to_mp4_", k)
-    #frame.write(YUV.to_RGB(E_k), prefix + "_to_mp4_", k)
+    frame.write(YUV.to_RGB(E_k), prefix + "_to_mp4_", k)
     os.system(f"ffmpeg -loglevel fatal -y -i {prefix}_to_mp4_{k:03d}.png -crf {q_step} {prefix}_{k:03d}.mp4")
     os.system(f"ffmpeg -loglevel fatal -y -i {prefix}_{k:03d}.mp4 {prefix}_from_mp4_{k:03d}.png")
-    dq_E_k = (YUV.from_RGB(frame.read(prefix + "_from_mp4_", k)-128))
-    #dq_E_k = YUV.from_RGB(frame.read(prefix + "_from_mp4_", k))
+    #dq_E_k = (YUV.from_RGB(frame.read(prefix + "_from_mp4_", k)-128))
+    dq_E_k = YUV.from_RGB(frame.read(prefix + "_from_mp4_", k))
     #return dq_E_k.astype(np.float64)
     return dq_E_k
 
@@ -173,11 +173,14 @@ def encode(video, codestream, n_frames, q_step=30, subpixel_accuracy=0):
         W_k = frame.read(video, k)
         flow = np.zeros((W_k.shape[0], W_k.shape[1], 2), dtype=np.float32)
         V_k = YUV.from_RGB(W_k) # (a)
+        block_types = np.zeros((int(V_k.shape[0]/block_y_side), int(V_k.shape[1]/block_x_side)), dtype=np.uint8)
         V_k_1 = V_k.copy() # (b)
         E_k = V_k.copy() # (f)
         frame.debug_write(YUV.to_RGB(E_k), f"{codestream}encoder_prediction_error", k)
         #dequantized_E_k = E_codec(E_k, N_LEVELS, q_step, codestream, 0) # (g and h)
         dequantized_E_k = I_codec(E_k, codestream, 0, q_step) # (g and h)
+        assert dequantized_E_k.all() >=0
+        assert dequantized_E_k.all() < 256
         reconstructed_V_k = dequantized_E_k # (i)
         frame.debug_write(clip(YUV.to_RGB(reconstructed_V_k)), f"{video}reconstructed", k) # Decoder's output
         reconstructed_V_k_1 = reconstructed_V_k # (j)
@@ -198,10 +201,12 @@ def encode(video, codestream, n_frames, q_step=30, subpixel_accuracy=0):
             frame.debug_write(motion.colorize(reconstructed_flow.astype(np.float32)), f"{codestream}reconstructed_flow", k)
             #prediction_V_k = motion.make_prediction(reconstructed_V_k_1, reconstructed_flow).astype(np.int16) # (j)
             prediction_V_k = motion.make_prediction(reconstructed_V_k_1, reconstructed_flow) # (j)
+            assert prediction_V_k.all() >= 0
+            assert prediction_V_k.all() < 256
             #prediction_V_k [...] = 0
             #print("flow.shape =", flow.shape, "reconstructed_flow.shape =", reconstructed_flow.shape)
             frame.debug_write(clip(YUV.to_RGB(prediction_V_k)), f"{codestream}encoder_prediction", k)
-            E_k = V_k - prediction_V_k[:V_k.shape[0], :V_k.shape[1], :] # (f)
+            E_k = V_k - prediction_V_k[:V_k.shape[0], :V_k.shape[1], :] + 128 # (f)
             print("**************** reconstructed_V_k_1", reconstructed_V_k_1.max(), reconstructed_V_k_1.min())
             print("**************** prediction_V_k", prediction_V_k.max(), prediction_V_k.min())
             print("**************** V_k", V_k.max(), V_k.min())
@@ -218,6 +223,7 @@ def encode(video, codestream, n_frames, q_step=30, subpixel_accuracy=0):
                                     x*block_x_side:(x+1)*block_x_side][..., 0])
                     if E_k_block_entropy < V_k_block_entropy:
                         print('B', end='')
+                        block_types[y, x] = 0
                     else:
                         print('I', end='')
                         E_k[y*block_y_side:(y+1)*block_y_side,
@@ -225,8 +231,10 @@ def encode(video, codestream, n_frames, q_step=30, subpixel_accuracy=0):
                                 V_k[y*block_y_side:(y+1)*block_y_side,
                                     x*block_x_side:(x+1)*block_x_side]
                         prediction_V_k[y*block_y_side:(y+1)*block_y_side,
-                            x*block_x_side:(x+1)*block_x_side] = 0
+                            x*block_x_side:(x+1)*block_x_side] = 128
+                        block_types[y, x] = 1
                 print('')
+            E_k = np.clip(E_k, 0, 255)
             
             #E_k [...] = V_k - 128
             #print("E_k.shape=",E_k.shape, "V_k.shape=", V_k.shape, "prediction_V_k.shape=", prediction_V_k.shape)
@@ -238,7 +246,9 @@ def encode(video, codestream, n_frames, q_step=30, subpixel_accuracy=0):
             #quantized_E_k = Q.quantize(E_k, step=q_step) # (e)
             #dequantized_E_k = Q.dequantize(quantized_E_k, step=q_step) # (f)
             frame.debug_write(clip(YUV.to_RGB(dequantized_E_k)), f"{codestream}encoder_dequantized_prediction_error", k)
-            reconstructed_V_k = dequantized_E_k + prediction_V_k[:dequantized_E_k.shape[0], :dequantized_E_k.shape[1], :] # (i)
+            reconstructed_V_k = dequantized_E_k + prediction_V_k[:dequantized_E_k.shape[0], :dequantized_E_k.shape[1]] # (i)
+            reconstructed_V_k -= 128
+            reconstructed_V_k = np.clip(reconstructed_V_k, 0, 255)
             #print(reconstructed_V_k.dtype, reconstructed_V_k.shape)
             #L.write(reconstructed_V_k, video + "reconstructed", k)
             frame.debug_write(clip(YUV.to_RGB(reconstructed_V_k)), f"{video}reconstructed", k) # Decoder's output
