@@ -15,6 +15,8 @@ import os
 import cv2 as cv
 import L_DWT as L
 
+# 2**subpixel_accuracy-1 is the number of interpolated pixels
+# between the real ones.
 #subpixel_accuracy = 1
 
 VIDEO_PREFIX = "../sequences/complete_stockholm/"
