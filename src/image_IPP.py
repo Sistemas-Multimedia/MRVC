@@ -14,6 +14,7 @@ import frame
 import colors
 import cv2
 import YCoCg as YUV
+#import RGB as YUV
 import os
 import random
 
@@ -155,6 +156,7 @@ def encode(video,    # Prefix of the original sequence of PNG images
         for k in range(1, n_frames):
             W_k = frame.read(video, k)
             V_k = YUV.from_RGB(W_k) # (a)
+            print("V_k", V_k[...,2].max(), V_k[...,2].min())
             #flow = motion.estimate(V_k[...,0], V_k_1[...,0], flow) # (c)
             initial_flow = np.zeros((V_k.shape[0], V_k.shape[1], 2), dtype=np.float32)
             flow = motion.estimate(V_k[...,0], V_k_1[...,0], initial_flow) # (c)
