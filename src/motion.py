@@ -3,6 +3,7 @@
 import cv2
 import numpy as np
 import config
+import debug
 
 ###########################################################################
 # OF section. See:                                                        #
@@ -52,11 +53,7 @@ def estimate(predicted:np.ndarray,
              iters:int=OF_ITERS,
              poly_n:float=POLY_N,
              poly_sigma:float=POLY_SIGMA) -> np.ndarray:
-    print("estimate: levels =", levels)
-    print("estimate: wside =", wside)
-    print("estimate: iters =", iters)
-    print("estimate: poly_n =", poly_n)
-    print("estimate: poly_sigma =", poly_sigma)
+    debug.print(f"estimate: levels={levels} wside={wside} iters={iters} poly_n={poly_n} poly_sigma={poly_sigma}")
     flow = cv2.calcOpticalFlowFarneback(
         prev=predicted,
         next=reference,
@@ -74,8 +71,8 @@ def make_prediction(reference: np.ndarray, flow: np.ndarray) -> np.ndarray:
     height, width = flow.shape[:2]
     map_x = np.tile(np.arange(width), (height, 1))
     map_y = np.swapaxes(np.tile(np.arange(height), (width, 1)), 0, 1)
-    #map_xy = (flow + np.dstack((map_x, map_y))).astype('float32')
-    map_xy = (np.rint(flow) + np.dstack((map_x, map_y)).astype(np.float32)) # OJO RINT
+    map_xy = (flow + np.dstack((map_x, map_y))).astype('float32')
+    #map_xy = (np.rint(flow) + np.dstack((map_x, map_y)).astype(np.float32)) # OJO RINT
     return cv2.remap(reference, map_xy, None, interpolation=cv2.INTER_LINEAR, borderMode=ofca_extension_mode)
     #return cv2.remap(reference, map_xy, None, interpolation=cv2.INTER_NEAREST, borderMode=ofca_extension_mode)
     

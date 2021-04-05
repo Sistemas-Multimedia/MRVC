@@ -3,7 +3,8 @@
 # Generate a RD curve for the IPP... encoding scheme.
 
 #import image_interpolated_IPP as IPP
-import image_IPP as IPP
+#import image_IPP as IPP
+import image_IPP_adaptive as IPP
 import config
 import distortion
 import frame
@@ -16,7 +17,7 @@ reconstructed = prefix + "/reconstructed_"
 FPS = 30
 subpixel_accuracy = 1
 
-for q_step in range(128,129):
+for q_step in range(1,2):
 
     IPP.encode(
         video,
