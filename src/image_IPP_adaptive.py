@@ -20,8 +20,8 @@ import motion
 import frame
 import colors
 import cv2
-#import YCoCg as YUV
-import RGB as YUV
+import YCoCg as YUV
+#import RGB as YUV
 import os
 import random
 import math
