@@ -28,8 +28,9 @@ def norm(x):
 def clip(x):
     return(np.clip(x, 0 ,255).astype(np.uint8))
 
-def E_codec(E_k, n_levels, q_step, prefix, k):
-    decom = DWT.analyze(E_k, n_levels)
+def E_codec(E_k, prefix, k, q_step):
+    assert q_step > 0
+    decom = DWT.analyze(E_k, N_LEVELS)
     #print(decom[0])
     LL = decom[0]
     decom[0] = Q.quantize(LL, q_step)
@@ -42,7 +43,7 @@ def E_codec(E_k, n_levels, q_step, prefix, k):
         HH = resolution[2]
         resolution[2][:] = Q.quantize(HH, q_step)
         resolution = tuple(resolution)
-    DWT.write(decom, prefix, k, n_levels)
+    DWT.write(decom, prefix, k, N_LEVELS)
     LL = decom[0]
     #print(LL)
     decom[0] = Q.dequantize(LL, q_step)
@@ -57,7 +58,7 @@ def E_codec(E_k, n_levels, q_step, prefix, k):
         resolution[2][:] = Q.dequantize(HH, q_step)
         resolution = tuple(resolution)
     #print("->", decom[1][0])
-    dq_E_k = DWT.synthesize(decom, n_levels)
+    dq_E_k = DWT.synthesize(decom, N_LEVELS)
     return dq_E_k
     #return E_k-dq_E_k
     #return E_k
