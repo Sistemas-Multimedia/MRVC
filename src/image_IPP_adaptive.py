@@ -20,8 +20,8 @@ import motion
 import frame
 import colors
 import cv2
-#import YCoCg as YUV
-import RGB as YUV
+import YCoCg as YUV
+#import RGB as YUV
 import os
 import random
 import math
@@ -177,7 +177,7 @@ def encode(video, n_frames, q_step):
         block_types = np.zeros((int(V_k.shape[0]/block_y_side), int(V_k.shape[1]/block_x_side)), dtype=np.uint8)
         V_k_1 = V_k.copy() # (b)
         E_k = V_k.copy() # (f)
-        dequantized_E_k = I_codec(E_k, f"{video}codestream_", 0, q_step) # (g and h)
+        dequantized_E_k = I_codec(E_k, f"{video}codestream_", 0, q_step) # (g and h) # Mismo que E_codec4!!!!
         reconstructed_V_k = dequantized_E_k # (i)
         #frame.debug_write(clip(YUV.to_RGB(reconstructed_V_k)), f"{video}reconstructed_", k) # Decoder's output
         frame.debug_write(clip(YUV.to_RGB(reconstructed_V_k) + 128), f"{video}reconstructed_", k) # Decoder's output
@@ -199,8 +199,10 @@ def encode(video, n_frames, q_step):
             #frame.debug_write(clip(YUV.to_RGB(prediction_V_k)), f"{codestream}encoder_prediction", k)
             E_k = V_k - prediction_V_k[:V_k.shape[0], :V_k.shape[1], :] # (f)
             #E_k = V_k - prediction_V_k[:V_k.shape[0], :V_k.shape[1], :] - 128 # (f)
+            print("V_k", V_k.max(), V_k.min())
+            print("prediction_V_k", prediction_V_k.max(), prediction_V_k.min())
             print("E_k", E_k.max(), E_k.min())
-            '''
+            
             for y in range(int(V_k.shape[0]/block_y_side)):
                 for x in range(int(V_k.shape[1]/block_x_side)):
                     E_k_block_entropy = \
@@ -224,8 +226,9 @@ def encode(video, n_frames, q_step):
                             x*block_x_side:(x+1)*block_x_side] = 0
                         block_types[y, x] = 1
                 print('')
-            '''
+            
             #E_k = np.clip(E_k, 0, 255)
+            E_k = np.clip(E_k, -128, 127)
             
             #frame.debug_write(clip(YUV.to_RGB(E_k)+128), f"{codestream}encoder_prediction_error", k)
             dequantized_E_k = E_codec4(E_k, f"{video}codestream_", k, q_step) # (g and h)
@@ -242,13 +245,19 @@ def encode(video, n_frames, q_step):
         raise
 
 def compute_br(prefix, frames_per_second, frame_shape, n_frames):
-    print("*"*80, prefix)
+    #print("*"*80, prefix)
     #os.system(f"ffmpeg -y -i {prefix}_from_mp4_%03d.png -c:v libx264 -x264-params keyint=1 -crf 0 /tmp/image_IPP_texture.mp4")
     #os.system(f"ffmpeg -f concat -safe 0 -i <(for f in {prefix}_*.mp4; do echo \"file '$PWD/$f'\"; done) -c copy /tmp/image_IPP_texture.mp4")
-    os.system(f"ffmpeg -loglevel fatal -y -f concat -safe 0 -i <(for f in {prefix}_*.mp4; do echo \"file '$f'\"; done) -c copy /tmp/image_IPP_texture.mp4")
-    print(f"ffmpeg -loglevel fatal -y -i {prefix}motion_y_%03d.png -c:v libx264 -x264-params keyint=1 -crf 0 /tmp/image_IPP_motion_y.mp4")
-    os.system(f"ffmpeg -loglevel fatal -y -i {prefix}motion_y_%03d.png -c:v libx264 -x264-params keyint=1 -crf 0 /tmp/image_IPP_motion_y.mp4")
-    os.system(f"ffmpeg -loglevel fatal -y -i {prefix}motion_x_%03d.png -c:v libx264 -x264-params keyint=1 -crf 0 /tmp/image_IPP_motion_x.mp4")
+    command = f"ffmpeg -loglevel fatal -y -f concat -safe 0 -i <(for f in {prefix}codestream_*.mp4; do echo \"file '$f'\"; done) -c copy /tmp/image_IPP_texture.mp4"
+    print(command)
+    os.system(command)
+    #print(f"ffmpeg -loglevel fatal -y -i {prefix}motion_y_%03d.png -c:v libx264 -x264-params keyint=1 -crf 0 /tmp/image_IPP_motion_y.mp4")
+    command = f"ffmpeg -loglevel fatal -y -i {prefix}motion_y_%03d.png -c:v libx264 -x264-params keyint=1 -crf 0 /tmp/image_IPP_motion_y.mp4"
+    print(command)
+    os.system(command)
+    command = f"ffmpeg -loglevel fatal -y -i {prefix}motion_x_%03d.png -c:v libx264 -x264-params keyint=1 -crf 0 /tmp/image_IPP_motion_x.mp4"
+    print(command)
+    os.system(command)
 
     frame_height = frame_shape[0]
     frame_width = frame_shape[1]
