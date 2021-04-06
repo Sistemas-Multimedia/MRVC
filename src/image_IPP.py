@@ -217,21 +217,21 @@ def compute_br(prefix, frames_per_second, frame_shape, n_frames):
     texture_bytes = os.path.getsize("/tmp/image_IPP_texture.mp4")
     kbps = texture_bytes*8/sequence_time/1000
     bpp = texture_bytes*8/(frame_width*frame_height*n_channels*n_frames)
-    print(f"texture: {texture_bytes} bytes, {kbps} kbps, {bpp} bpp")
+    print(f"texture: {texture_bytes} bytes, {kbps} KBPS, {bpp} BPP")
 
     total_bytes = texture_bytes
     motion_y_bytes = os.path.getsize("/tmp/image_IPP_motion_y.mp4")
     kbps = motion_y_bytes*8/sequence_time/1000
-    print(f"motion (Y direction): {motion_y_bytes} bytes, {kbps} kbps")
+    print(f"motion (Y direction): {motion_y_bytes} bytes, {kbps} KBPS")
 
     total_bytes += motion_y_bytes
     motion_x_bytes = os.path.getsize("/tmp/image_IPP_motion_x.mp4")
     kbps = motion_x_bytes*8/sequence_time/1000
-    print(f"motion (X direction): {motion_x_bytes} bytes, {kbps} kbps")
+    print(f"motion (X direction): {motion_x_bytes} bytes, {kbps} KBPS")
 
     total_bytes += motion_x_bytes
     kbps = total_bytes*8/sequence_time/1000
     bpp = total_bytes*8/(frame_width*frame_height*n_channels*n_frames)
-    print(f"total: {kbps} kbps, {bpp} bpp")
+    print(f"total: {kbps} KBPS, {bpp} BPP")
 
     return kbps, bpp

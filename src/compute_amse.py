@@ -15,4 +15,4 @@ for k in range(config.n_frames):
     total_AMSE += AMSE
 
 AMSE = total_AMSE/config.n_frames
-print("Average Mean Square Error (entire sequence)=", AMSE)
+print("Average Mean Square Error (entire sequence) =", AMSE)
