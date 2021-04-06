@@ -8,7 +8,7 @@ import frame
 # --> Select below the codec. <--
 #import image_interpolated_IPP as IPP
 #import image_IPP as IPP
-import image_IPP_adaptive as IPP as IPP
+import image_IPP_adaptive as IPP
 
 # Original video frames (PNG format) with file-names
 # f"{video}_{frame_number:03d}.png".
