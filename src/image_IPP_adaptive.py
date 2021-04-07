@@ -25,6 +25,7 @@ import YCoCg as YUV
 import os
 import random
 import math
+import image_IPP
 
 VIDEO_PREFIX = "../sequences/complete_stockholm/"
 CODESTREAM_PREFIX = "/tmp/"
@@ -248,7 +249,7 @@ def encode(video, n_frames, q_step):
         print(colors.red(f'image_IPP_step.encode(video="{video}", codestream="{codestream}", n_frames={n_frames}, q_step={q_step})'))
         raise
 
-def compute_br(prefix, frames_per_second, frame_shape, n_frames):
+def compute_br2(prefix, frames_per_second, frame_shape, n_frames):
     #print("*"*80, prefix)
     #os.system(f"ffmpeg -y -i {prefix}_from_mp4_%03d.png -c:v libx264 -x264-params keyint=1 -crf 0 /tmp/image_IPP_texture.mp4")
     #os.system(f"ffmpeg -f concat -safe 0 -i <(for f in {prefix}_*.mp4; do echo \"file '$PWD/$f'\"; done) -c copy /tmp/image_IPP_texture.mp4")
@@ -297,4 +298,16 @@ def compute_br(prefix, frames_per_second, frame_shape, n_frames):
     bpp = total_bytes*8/(frame_width*frame_height*n_channels*n_frames)
     #print(f"total: {kbps} KBPS, {bpp} BPP")
 
+    return kbps, bpp
+
+def compute_br(prefix, frames_per_second, frame_shape, n_frames):
+    kbps, bpp = image_IPP.compute_br(prefix, frames_per_second, frame_shape, n_frames)
+
+    # I/B-Types.
+    types_length = 0
+    for k in range(1, n_frames):
+        types_length += os.path.getsize(f"{prefix}types_{k:03d}.png")
+    kbps += types_length*8/sequence_time/1000
+    bpp += types_length*8/(frame_width*frame_height*n_channels*n_frames)
+    print(f"types: {types_length} bytes, {kbps} KBPS, {bpp} BPP")
     return kbps, bpp
