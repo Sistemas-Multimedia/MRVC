@@ -15,6 +15,7 @@ def RMSE(x, y):
     return math.sqrt(MSE(error_signal))
 
 def AMSE(x_prefix, y_prefix, n_frames):
+    print(f"AMSE: comparing {x_prefix} and {y_prefix}")
     total_AMSE = 0
     for k in range(n_frames):
         x = frame.read(x_prefix, k)

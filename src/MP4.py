@@ -9,10 +9,12 @@ def encode(video,    # Prefix of the original sequence of PNG images
            n_frames, # Number of frames to process
            q_step):  # Quantization step
     try:
-        command = f"ffmpeg -y -i {video}%3d.png -crf {q_step} -frames:v {n_frames} -g {n_frames} -bf 0 /tmp/output.mp4"
+        command = f"ffmpeg -start_number 0 -y -i {video}%03d.png -crf {q_step} -frames:v {n_frames} -g {n_frames} -bf 0 /tmp/output.mp4"
+        print("running:", command)
         os.system(command)
 
-        command = f"ffmpeg -y -i /tmp/output.mp4 ${video}reconstructed_%03d.png"
+        command = f"ffmpeg -y -i /tmp/output.mp4 -start_number 0 {video}reconstructed_%03d.png"
+        print("running:", command)
         os.system(command)
         
     except:
