@@ -258,7 +258,7 @@ def compute_br(prefix, frames_per_second, frame_shape, n_frames):
     # Motion. Y component.
     prev_comp = frame.read(prefix + "motion_y_", 1)
     prev_fn = f"{prefix}motion_y_001.png"
-    comp_length = 0
+    comp_length = os.path.getsize(prev_fn)
     for k in range(2, n_frames):
         next_comp = frame.read(prefix + "motion_y_", k)
         next_fn = f"{prefix}motion_y_{k:03d}.png"
@@ -266,8 +266,8 @@ def compute_br(prefix, frames_per_second, frame_shape, n_frames):
         frame.write(diff_comp, prefix + "motion_y_diff_comp_", k)
         comp_length += os.path.getsize(f"{prefix}motion_y_diff_comp_{k:03d}.png")
         # Count the number of common bytes starting and the beginning.
-        counter = -2 # To compensate the encoding of the run.
-        with open(prev_fn, 'rb') as prev_f, open(next_fn, 'rb') as next_f:
+        counter = -2 # 2 bytes for representing the header size.
+        with open(prev_fn, "rb") as prev_f, open(next_fn, "rb") as next_f:
             while True:
                 prev_byte = prev_f.read(1)
                 next_byte = next_f.read(1)
@@ -290,7 +290,7 @@ def compute_br(prefix, frames_per_second, frame_shape, n_frames):
     # Motion. X component.
     prev_comp = frame.read(prefix + "motion_x_", 1)
     prev_fn = f"{prefix}motion_x_001.png"
-    comp_length = -2
+    comp_length = os.path.getsize(prev_fn)
     for k in range(2, n_frames):
         next_comp = frame.read(prefix + "motion_x_", k)
         next_fn = f"{prefix}motion_x_{k:03d}.png"
@@ -298,7 +298,7 @@ def compute_br(prefix, frames_per_second, frame_shape, n_frames):
         frame.write(diff_comp, prefix + "motion_x_diff_comp_", k)
         comp_length += os.path.getsize(f"{prefix}motion_x_diff_comp_{k:03d}.png")
         # Count the number of common bytes starting and the beginning.
-        counter = 0
+        counter = -2
         with open(prev_fn, 'rb') as prev_f, open(next_fn, 'rb') as next_f:
             while True:
                 prev_byte = prev_f.read(1)

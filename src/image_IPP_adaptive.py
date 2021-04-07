@@ -304,10 +304,30 @@ def compute_br(prefix, frames_per_second, frame_shape, n_frames):
     kbps, bpp = image_IPP.compute_br(prefix, frames_per_second, frame_shape, n_frames)
 
     # I/B-Types.
-    types_length = 0
-    for k in range(1, n_frames):
-        types_length += os.path.getsize(f"{prefix}types_{k:03d}.png")
-    kbps += types_length*8/sequence_time/1000
-    bpp += types_length*8/(frame_width*frame_height*n_channels*n_frames)
-    print(f"types: {types_length} bytes, {kbps} KBPS, {bpp} BPP")
-    return kbps, bpp
+    prev_fn = f"{prefix}types_001.png"
+    types_length = os.path.getsize(prev_fn)
+    for k in range(2, n_frames):
+        next_fn = f"{prefix}types_{k:03d}.png"
+        types_length += os.path.getsize(next_fn)
+        counter = -2
+        with open(prev_fn, "rb") as prev_f, open(next_fn, "rb") as next_f:
+            while True:
+                prev_byte = prev_f.read(1)
+                next_byte = next_f.read(1)
+                if prev_byte != next_byte:
+                    break
+                if prev_byte == b'':
+                    break
+                if next_byte == b'':
+                    break
+                counter += 1
+        types_length -= counter
+    frame_height = frame_shape[0]
+    frame_width = frame_shape[1]
+    n_channels = frame_shape[2]
+    sequence_time = n_frames/frames_per_second
+    types_kbps = types_length*8/sequence_time/1000
+    types_bpp = types_length*8/(frame_width*frame_height*n_channels*n_frames)
+    print(f"height={frame_height} width={frame_width} n_channels={n_channels} sequence_time={sequence_time}")
+    print(f"types: {types_length} bytes, {types_kbps} KBPS, {types_bpp} BPP")
+    return kbps + types_kbps, bpp + types_bpp
