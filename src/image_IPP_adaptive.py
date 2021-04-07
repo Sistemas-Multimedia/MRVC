@@ -135,8 +135,8 @@ def V_codec(motion, n_levels, prefix, frame_number):
     #print(prefix+"_y")
     pyramid = LP.analyze(motion, n_levels)
     #pyramid[0][:,:,:] = 0
-    frame.write(pyramid[0][...,0], prefix + "_y_", frame_number)
-    frame.write(pyramid[0][...,1], prefix + "_x_", frame_number)
+    frame.write(pyramid[0][...,0], prefix + "y_", frame_number)
+    frame.write(pyramid[0][...,1], prefix + "x_", frame_number)
     for resolution in pyramid[1:]:
         resolution[...] = 0
     reconstructed_motion = LP.synthesize(pyramid, n_levels)
@@ -193,7 +193,7 @@ def encode(video, n_frames, q_step):
             flow = motion.estimate(V_k[...,0], V_k_1[...,0], initial_flow) # (c)
             print("COMPUTED flow", flow.max(), flow.min())
             V_k_1 = V_k.copy() # (b)
-            reconstructed_flow = V_codec(flow, LOG2_BLOCK_SIDE, f"{video}motion", k) # (d and e)
+            reconstructed_flow = V_codec(flow, LOG2_BLOCK_SIDE, f"{video}motion_", k) # (d and e)
             print("USED flow", reconstructed_flow.max(), reconstructed_flow.min())
             #frame.debug_write(motion.colorize(flow), f"{codestream}flow", k)
             #frame.debug_write(motion.colorize(reconstructed_flow.astype(np.float32)), f"{codestream}reconstructed_flow", k)

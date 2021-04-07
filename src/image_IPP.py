@@ -103,8 +103,8 @@ def V_codec(motion, n_levels, prefix, frame_number):
     #print(prefix+"_y")
     pyramid = LP.analyze(motion, n_levels)
     #pyramid[0][:,:,:] = 0
-    frame.write(pyramid[0][...,0], prefix+"_y_", frame_number)
-    frame.write(pyramid[0][...,1], prefix+"_x_", frame_number)
+    frame.write(pyramid[0][...,0], prefix + "y_", frame_number)
+    frame.write(pyramid[0][...,1], prefix + "x_", frame_number)
     for resolution in pyramid[1:]:
         resolution[...] = 0
     reconstructed_motion = LP.synthesize(pyramid, n_levels)
@@ -150,7 +150,7 @@ def encode(video,    # Prefix of the original sequence of PNG images
         E_k = V_k # (f)
         #frame.debug_write(YUV.to_RGB(E_k), f"{video}_prediction_error", k)
         #dequantized_E_k = E_codec(E_k, N_LEVELS, q_step, codestream, 0) # (g and h)
-        dequantized_E_k = I_codec(E_k, f"{video}codestream_", 0, q_step) # (g and h)
+        dequantized_E_k = I_codec(E_k, f"{video}texture_", 0, q_step) # (g and h)
         reconstructed_V_k = dequantized_E_k # (i)
         frame.debug_write(clip(YUV.to_RGB(reconstructed_V_k)), f"{video}reconstructed_", k) # Decoder's output
         reconstructed_V_k_1 = reconstructed_V_k # (j)
@@ -179,7 +179,7 @@ def encode(video,    # Prefix of the original sequence of PNG images
             #print(E_k.dtype, E_k.shape)
             #frame.debug_write(clip(YUV.to_RGB(E_k)+128), f"{codestream}encoder_prediction_error", k)
             #dequantized_E_k = E_codec(E_k, 5, q_step, codestream, k) # (g and h)
-            dequantized_E_k = E_codec4(E_k, f"{video}codestream_", k, q_step) # (g and h)
+            dequantized_E_k = E_codec4(E_k, f"{video}texture_", k, q_step) # (g and h)
             #print(dequantized_E_k.dtype, dequantized_E_k.shape)
             #quantized_E_k = Q.quantize(E_k, step=q_step) # (e)
             #dequantized_E_k = Q.dequantize(quantized_E_k, step=q_step) # (f)
@@ -190,14 +190,14 @@ def encode(video,    # Prefix of the original sequence of PNG images
             frame.debug_write(clip(YUV.to_RGB(reconstructed_V_k)), f"{video}reconstructed_", k) # Decoder's output
             reconstructed_V_k_1 = reconstructed_V_k # (j)
     except:
-        print(colors.red(f'image_IPP_step.encode(video="{video}", codestream="{codestream}", n_frames={n_frames}, q_step={q_step})'))
+        print(colors.red(f'image_IPP_step.encode(video="{video}", n_frames={n_frames}, q_step={q_step})'))
         raise
 
 def compute_br(prefix, frames_per_second, frame_shape, n_frames):
     #print("*"*80, prefix)
     #os.system(f"ffmpeg -y -i {prefix}_from_mp4_%03d.png -c:v libx264 -x264-params keyint=1 -crf 0 /tmp/image_IPP_texture.mp4")
     #os.system(f"ffmpeg -f concat -safe 0 -i <(for f in {prefix}_*.mp4; do echo \"file '$PWD/$f'\"; done) -c copy /tmp/image_IPP_texture.mp4")
-    command = f"ffmpeg -loglevel fatal -y -f concat -safe 0 -i <(for f in {prefix}codestream_*.mp4; do echo \"file '$f'\"; done) -c copy /tmp/image_IPP_texture.mp4"
+    command = f"ffmpeg -loglevel fatal -y -f concat -safe 0 -i <(for f in {prefix}texture_*.mp4; do echo \"file '$f'\"; done) -c copy /tmp/image_IPP_texture.mp4"
     print(command)
     os.system(command)
     #print(f"ffmpeg -loglevel fatal -y -i {prefix}motion_y_%03d.png -c:v libx264 -x264-params keyint=1 -crf 0 /tmp/image_IPP_motion_y.mp4")
@@ -215,23 +215,24 @@ def compute_br(prefix, frames_per_second, frame_shape, n_frames):
     print(f"height={frame_height} width={frame_width} n_channels={n_channels} sequence_time={sequence_time}")
 
     texture_bytes = os.path.getsize("/tmp/image_IPP_texture.mp4")
+    total_bytes = texture_bytes
     kbps = texture_bytes*8/sequence_time/1000
     bpp = texture_bytes*8/(frame_width*frame_height*n_channels*n_frames)
     print(f"texture: {texture_bytes} bytes, {kbps} KBPS, {bpp} BPP")
-
-    total_bytes = texture_bytes
+    
     motion_y_bytes = os.path.getsize("/tmp/image_IPP_motion_y.mp4")
+    total_bytes += motion_y_bytes
     kbps = motion_y_bytes*8/sequence_time/1000
     print(f"motion (Y direction): {motion_y_bytes} bytes, {kbps} KBPS")
-
-    total_bytes += motion_y_bytes
+    
     motion_x_bytes = os.path.getsize("/tmp/image_IPP_motion_x.mp4")
+    total_bytes += motion_x_bytes
     kbps = motion_x_bytes*8/sequence_time/1000
     print(f"motion (X direction): {motion_x_bytes} bytes, {kbps} KBPS")
 
     total_bytes += motion_x_bytes
     kbps = total_bytes*8/sequence_time/1000
     bpp = total_bytes*8/(frame_width*frame_height*n_channels*n_frames)
-    print(f"total: {kbps} KBPS, {bpp} BPP")
+    #print(f"total: {kbps} KBPS, {bpp} BPP")
 
     return kbps, bpp

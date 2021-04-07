@@ -7,8 +7,8 @@ import frame
 
 # --> Select below the codec. <--
 #import image_interpolated_IPP as IPP
-#import image_IPP as IPP
-import image_IPP_adaptive as IPP
+import image_IPP as IPP
+#import image_IPP_adaptive as IPP
 
 # Original video frames (PNG format) with file-names
 # f"{video}_{frame_number:03d}.png".
@@ -20,7 +20,7 @@ number_of_frames = 30
 # Frames Per Second.
 FPS = 30
 
-for q_step in range(21, 42, 1):
+for q_step in range(41, 42, 1):
 
     IPP.encode(video, number_of_frames, q_step)
 
