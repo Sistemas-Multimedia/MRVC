@@ -322,6 +322,6 @@ def compute_br(prefix, frames_per_second, frame_shape, n_frames):
     # Totals.
     kbps = total_bytes*8/sequence_time/1000
     bpp = total_bytes*8/(frame_width*frame_height*n_channels*n_frames)
-    print(f"total: {kbps} KBPS, {bpp} BPP")
+    #print(f"total: {kbps} KBPS, {bpp} BPP")
 
     return kbps, bpp
