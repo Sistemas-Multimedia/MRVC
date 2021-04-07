@@ -181,7 +181,7 @@ def encode(video, n_frames, q_step):
         block_types = np.zeros((int(V_k.shape[0]/block_y_side), int(V_k.shape[1]/block_x_side)), dtype=np.uint8)
         V_k_1 = V_k.copy() # (b)
         E_k = V_k.copy() # (f)
-        dequantized_E_k = I_codec(E_k, f"{video}codestream_", 0, q_step) # (g and h) # Mismo que E_codec4!!!!
+        dequantized_E_k = I_codec(E_k, f"{video}texture_", 0, q_step) # (g and h) # Mismo que E_codec4!!!!
         reconstructed_V_k = dequantized_E_k # (i)
         #frame.debug_write(clip(YUV.to_RGB(reconstructed_V_k)), f"{video}reconstructed_", k) # Decoder's output
         frame.debug_write(clip(YUV.to_RGB(reconstructed_V_k) + 128), f"{video}reconstructed_", k) # Decoder's output
@@ -236,7 +236,7 @@ def encode(video, n_frames, q_step):
             E_k = np.clip(E_k, -128, 127)
             
             #frame.debug_write(clip(YUV.to_RGB(E_k)+128), f"{codestream}encoder_prediction_error", k)
-            dequantized_E_k = E_codec4(E_k, f"{video}codestream_", k, q_step) # (g and h)
+            dequantized_E_k = E_codec4(E_k, f"{video}texture_", k, q_step) # (g and h)
             print("dequantized_E_k", dequantized_E_k.max(), dequantized_E_k.min())
             #frame.debug_write(clip(YUV.to_RGB(dequantized_E_k)), f"{codestream}encoder_dequantized_prediction_error", k)
             reconstructed_V_k = dequantized_E_k + prediction_V_k[:dequantized_E_k.shape[0], :dequantized_E_k.shape[1]] # (i)
@@ -302,6 +302,7 @@ def compute_br2(prefix, frames_per_second, frame_shape, n_frames):
 
 def compute_br(prefix, frames_per_second, frame_shape, n_frames):
     kbps, bpp = image_IPP.compute_br(prefix, frames_per_second, frame_shape, n_frames)
+    print("desde", kbps, bpp)
 
     # I/B-Types.
     prev_fn = f"{prefix}types_001.png"
