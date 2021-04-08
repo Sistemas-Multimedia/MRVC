@@ -87,3 +87,22 @@ def colorize(flow):
     hsv[...,2] = cv2.normalize(mag, None, 0, 255, cv2.NORM_MINMAX)
     rgb = cv2.cvtColor(hsv, cv2.COLOR_HSV2BGR)
     return rgb
+
+def full_search_motion_estimation(predicted, reference, search_range=32, overlapping_area_side=17):
+    extended_reference = np.zeros((reference.shape[0] + search_range, reference.shape[1] + search_range))
+    extended_reference[search_range//2:reference.shape[0]+search_range//2,
+                       search_range//2:reference.shape[1]+search_range//2] = reference
+    flow = np.zeros((predicted.shape[0], predicted.shape[1], 2), dtype=np.int8)
+    min_error = np.full((predicted.shape[0], predicted.shape[1]), 255, dtype=np.uint8)
+    for y in range(search_range):
+        print(f"{y}/{search_range-1}", end='\r')
+        for x in range(search_range):
+            error = extended_reference[y:predicted.shape[0] + y,
+                                       x:predicted.shape[1] + x] - predicted
+            a_error = abs(error)
+            blur_a_error = cv2.GaussianBlur(a_error, (overlapping_area_side, overlapping_area_side), 0).astype(np.int)
+            which_min = blur_a_error <= min_error
+            flow[:,:,0] = np.where(which_min, x-search_range//2, flow[:,:,0])
+            flow[:,:,1] = np.where(which_min, y-search_range//2, flow[:,:,1])
+            min_error = np.minimum(min_error, blur_a_error)
+    return flow.astype(np.float)

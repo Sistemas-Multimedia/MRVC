@@ -161,6 +161,7 @@ def encode(video,    # Prefix of the original sequence of PNG images
             #flow = motion.estimate(V_k[...,0], V_k_1[...,0], flow) # (c)
             initial_flow = np.zeros((V_k.shape[0], V_k.shape[1], 2), dtype=np.float32)
             flow = motion.estimate(V_k[...,0], V_k_1[...,0], initial_flow) # (c)
+            #flow = motion.full_search_motion_estimation(V_k[...,0], V_k_1[...,0])
             #flow = np.rint(flow)
             #flow = np.random.randint(-1, 1, flow.shape).astype(np.float32)
             #print("flow.dtype=", flow.dtype, "flow.max()=", flow.max(), "flow.min()=", flow.min())
@@ -247,6 +248,8 @@ def compute_br(prefix, frames_per_second, frame_shape, n_frames):
 
     # Texture.
     command = f"ffmpeg -loglevel fatal -y -f concat -safe 0 -i <(for f in {prefix}texture_*.mp4; do echo \"file '$f'\"; done) -c copy /tmp/image_IPP_texture.mp4"
+    #command = f"ffmpeg -loglevel fatal -y -f concat -safe 0 -i <(for f in {prefix}texture_*.mp4; do echo \"file '$f'\"; done) -crf 0 /tmp/image_IPP_texture.mp4"
+    #command = f"ffmpeg -loglevel fatal -y -i {prefix}texture_%03d.png -crf 0 /tmp/image_IPP_texture.mp4"
     print(command)
     os.system(command)
     texture_bytes = os.path.getsize("/tmp/image_IPP_texture.mp4")
