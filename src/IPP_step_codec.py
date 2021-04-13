@@ -13,7 +13,7 @@ import numpy as np
 
 video = "/tmp/original_"
 n_frames = 30
-q_step = 16
+q_step = 64
 
 print("Computing Spatial Transform")
 for k in range(n_frames):
