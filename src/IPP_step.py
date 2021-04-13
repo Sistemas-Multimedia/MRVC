@@ -1,12 +1,12 @@
 ''' MRVC/IPP_step.py '''
 
 import numpy as np
-import DWT as spatial_transform
-#import LP as spatial_transform
-import L_DWT as L
-#import L_LP as L
-import H_DWT as H
-#import H_LP as H
+#import DWT as spatial_transform
+import LP as spatial_transform
+#import L_DWT as L
+import L_LP as L
+#import H_DWT as H
+import H_LP as H
 import deadzone as Q
 import motion
 import frame
