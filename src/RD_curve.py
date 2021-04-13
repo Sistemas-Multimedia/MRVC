@@ -16,19 +16,19 @@ import image_IPP_adaptive as IPP
 video = "/tmp/original_"
 
 # Number of frames to process.
-number_of_frames = 30
+n_frames = 30
 
 # Frames Per Second.
 FPS = 30
 
 for q_step in range(41, 42, 1):
 
-    IPP.encode(video, number_of_frames, q_step)
+    IPP.encode(video, n_frames, q_step)
 
     kbps, bpp = IPP.compute_br(video, FPS,
-                               frame.get_frame_shape(video), number_of_frames)
+                               frame.get_frame_shape(video), n_frames)
     
     _distortion = distortion.AMSE(video, f"{video}reconstructed_",
-                                  number_of_frames)
+                                  n_frames)
 
     print("Q_step:", q_step, "BPP:", bpp, "KBPS:", kbps, "Average AMSE:", _distortion)

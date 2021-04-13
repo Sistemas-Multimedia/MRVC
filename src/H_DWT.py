@@ -14,14 +14,16 @@ def read(prefix: str, frame_number: int, shape: tuple) -> tuple: # [LH, HL, HH],
     H = []
     sb = 0
     for sbn in subband_names:
-        fn = f"{prefix}_{ASCII_frame_number}_{sbn}.png"
+        fn = f"{prefix}{ASCII_frame_number}{sbn}.png"
+        if __debug__:
+            print(colored.fore.GREEN + f"H.read({fn})", end=' ')
         subband = cv2.imread(fn, cv2.IMREAD_UNCHANGED)
         #try:
         #    subband = cv2.cvtColor(subband, cv2.COLOR_BGR2RGB)
         #except cv2.error:
         #    print(colored.fore.RED + f'H.read: Unable to read "{fn}"')
         if __debug__:
-            print(colored.fore.GREEN + f"H.read({prefix}, {frame_number})", subband.shape, subband.dtype, os.path.getsize(fn), colored.style.RESET)
+            print(subband.shape, subband.dtype, os.path.getsize(fn), colored.style.RESET)
         subband_int32 = np.array(subband, dtype=np.int32)
         subband_int32 -= 32768
         padded_subband = np.zeros(shape)
@@ -59,7 +61,7 @@ def write(H: tuple, prefix: str, frame_number: int) -> None:
         assert (subband > -1).all()
         subband = subband.astype(np.uint16)
         #subband = cv2.cvtColor(subband, cv2.COLOR_RGB2BGR)
-        fn = f"{prefix}_{ASCII_frame_number}_{sbn}.png"
+        fn = f"{prefix}{ASCII_frame_number}{sbn}.png"
         cv2.imwrite(fn, subband)
         sb += 1
         if __debug__:
