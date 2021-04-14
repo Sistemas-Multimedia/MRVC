@@ -60,5 +60,5 @@ def compute_gains(n_levels):
     #gains = [None]*len(_gains)
     for l in range(1,n_levels):
     #    gains[l] = gains[l-1]*gains[l]
-        gains[l] = gains[l-1]*2
+        gains[l] = gains[l-1]*4
     return gains
