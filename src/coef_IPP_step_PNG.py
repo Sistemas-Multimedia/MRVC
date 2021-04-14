@@ -1,4 +1,4 @@
-''' MRVC/IPP_step.py '''
+''' MRVC/coef_IPP_step_PNG.py '''
 
 import numpy as np
 import DWT as spatial_transform
@@ -12,12 +12,7 @@ import motion
 import frame
 import colors
 import cv2
-
-VIDEO_PREFIX = "../sequences/complete_stockholm/"
-CODESTREAM_PREFIX = "/tmp/"
-DECODED_VIDEO_PREFIX = "/tmp/decoder_"
-Q_STEP = 128
-N_FRAMES = 16
+import os
 
 def norm(x):
     return (frame.normalize(x)*255).astype(np.uint8)
@@ -25,18 +20,18 @@ def norm(x):
 def clip(x):
     return(np.clip(x+128, 0 ,255).astype(np.uint8))
 
-#def encode(L_sequence=CODESTREAM_PREFIX + "L", H_sequence=CODESTREAM_PREFIX + "H", codestream=CODESTREAM_PREFIX, n_frames=N_FRAMES, q_step=Q_STEP):
 def encode(video, n_frames, q_step):
     try:
         k = 0
         #V_k = frame.read(video, k)
         #V_k = YCoCg.from_RGB(V_k)
         #V_k_L, V_k_H = DWT.analyze_step(V_k) # (a)
-        V_k_L = L.read(video, k)#V_k_L = L.read(L_sequence, k)
-        V_k_H = H.read(video, k, V_k_L.shape)#V_k_H = H.read(H_sequence, k)
+        V_k_L = L.read(video, k)
+        V_k_H = H.read(video, k, V_k_L.shape)
         #L.write(YCoCg.to_RGB(V_k_L), codestream, k) # (g)
         L.write(V_k_L, video, k) # (g)
         _V_k_L = L.interpolate(V_k_L) # (E.a)
+        initial_flow = np.zeros((_V_k_L.shape[0], _V_k_L.shape[1], 2), dtype=np.float32)
         _V_k_1_L = _V_k_L # (E.b)
         _V_k_H = H.interpolate(V_k_H) # (b)
         _E_k_H = _V_k_H # (c)
@@ -55,7 +50,6 @@ def encode(video, n_frames, q_step):
             V_k_L = L.read(video, k)#V_k_L = L.read(L_sequence, k)
             V_k_H = H.read(video, k, V_k_L.shape)#V_k_H = H.read(H_sequence, k)
             _V_k_L = L.interpolate(V_k_L) # (E.a)
-            initial_flow = np.zeros((_V_k_L.shape[0], _V_k_L.shape[1], 2), dtype=np.float32)
             flow = motion.estimate(_V_k_L[:,:,0], _V_k_1_L[:,:,0], initial_flow) # (E.c)
             prediction__V_k_L = motion.make_prediction(_V_k_1_L, flow) # (E.d)
             frame.debug_write(norm(prediction__V_k_L), f"{video}encoder_prediction_L_", k)
@@ -122,9 +116,7 @@ def encode(video, n_frames, q_step):
         raise
 
 # Unused for now
-def decode(video, n_frames, q_step):
-        
-#def decode(codestream=CODESTREAM_PREFIX, video=DECODED_VIDEO_PREFIX, n_frames=N_FRAMES, q_step=Q_STEP):
+def decode(video, n_frames, q_step):       
     k = 0
     #V_k_L = YCoCg.from_RGB(L.read(codestream, k)) # (h)
     V_k_L = L.read(video, k) # (h)
@@ -174,3 +166,46 @@ def decode(video, n_frames, q_step):
         reconstructed_V_k = np.clip(reconstructed_V_k, 0, 255).astype(np.uint8)
         frame.write(reconstructed_V_k, video, k)
 
+def compute_br(video, FPS, frame_shape, n_frames, n_levels):
+    frame_height = frame_shape[0]
+    frame_width = frame_shape[1]
+    n_channels = frame_shape[2]
+    sequence_time = n_frames/FPS
+    print(f"height={frame_height} width={frame_width} n_channels={n_channels} sequence_time={sequence_time}")
+
+    n_total_bytes = 0
+    for k in range(0, n_frames):
+        for r in range(1, n_levels):
+            fn = f"{video}{r}_{k:03d}LH.png"
+            n_bytes = os.path.getsize(fn)
+            print(fn, n_bytes)
+            n_total_bytes += n_bytes
+            fn = f"{video}{r}_{k:03d}HL.png"
+            n_bytes = os.path.getsize(fn)
+            print(fn, n_bytes)
+            n_total_bytes += n_bytes
+            fn = f"{video}{r}_{k:03d}HH.png"
+            n_bytes = os.path.getsize(fn)
+            print(fn, n_bytes)
+            n_total_bytes += n_bytes
+        fn = f"{video}{n_levels}_{k:03d}LL.png"
+        n_bytes = os.path.getsize(fn)
+        print(fn, n_bytes)
+        n_total_bytes += n_bytes
+        fn = f"{video}{n_levels}_{k:03d}LH.png"
+        n_bytes = os.path.getsize(fn)
+        print(fn, n_bytes)
+        n_total_bytes += n_bytes
+        fn = f"{video}{n_levels}_{k:03d}HL.png"
+        n_bytes = os.path.getsize(fn)
+        print(fn, n_bytes)
+        n_total_bytes += n_bytes
+        fn = f"{video}{n_levels}_{k:03d}HH.png"
+        n_bytes = os.path.getsize(fn)
+        print(fn, n_bytes)
+        n_total_bytes += n_bytes
+
+    KBPS = n_total_bytes*8/sequence_time/1000
+    BPP = n_total_bytes*8/(frame_width*frame_height*n_channels*n_frames)
+
+    return KBPS, BPP, n_total_bytes

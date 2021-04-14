@@ -1,6 +1,6 @@
 ''' MRVC/IPP_compressor.py '''
 
-import IPP_step
+import coef_IPP_step_PNG as IPP_step
 import DWT as spatial_transform
 #import LP as spatial_transform
 import L_DWT as L
@@ -13,16 +13,19 @@ import YCoCg as YUV
 import frame
 import numpy as np
 import deadzone as Q
+import distortion
 
 video = "/tmp/original_"
-n_levels = 3
+n_levels = 4
 n_frames = 30
+FPS = 30
+
 q_step = 64
 
 gains = spatial_transform.compute_gains(n_levels)
 print(gains)
 
-print("Computing Spatial Transform")
+print("Computing spatial transform ...")
 for k in range(n_frames):
     V_k = frame.read(video, k)
     V_k = YUV.from_RGB(V_k)
@@ -32,7 +35,7 @@ for k in range(n_frames):
     for l in range(0, n_levels):
         H.write(decomposition[l+1], f"{video}{n_levels-l}_", k)
 
-print("IPP... encoding")
+print("Performing IPP... encoding")
 
 print(f"Computing SRL {n_levels}")
 delta = q_step*gains[0]
@@ -68,4 +71,9 @@ for l in range(n_levels, -1, -1):
         V_k = np.clip(V_k, 0, 255).astype(np.uint8)
         frame.write(V_k, f"{video}{l}_reconstructed_", k)
 
+KBPS, BPP, N_bytes = IPP_step.compute_br(video, FPS,
+                                         frame.get_frame_shape(video), n_frames, n_levels)
 
+_distortion = distortion.AMSE(video, f"{video}0_reconstructed_", n_frames)
+
+print("Q_step:", q_step, "BPP:", BPP, "KBPS:", KBPS, "Average AMSE:", _distortion, "N_bytes:", N_bytes)
