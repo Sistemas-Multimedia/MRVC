@@ -140,7 +140,7 @@ def synthesize(color_decomposition:list, n_levels:int) -> np.ndarray:
 def compute_gains(n_levels):
     gains = [1.0]*n_levels
     for l in range(1,n_levels):
-        gains[l] = gains[l-1]*1
+        gains[l] = gains[l-1]*2
     return gains
 
 # Write each subband of a decomposition in a different PNG file using

@@ -16,22 +16,45 @@ import cv2
 import os
 
 def norm(x):
-    return (frame.normalize(x)*255).astype(np.uint8)
+    max = x.max()
+    min = x.min()
+    return (x-min)/(max-min), max, min
+    #return (frame.normalize(x)*255).astype(np.uint8)
 
+def denorm(x, max, min):
+    return x*(max-min)+min
+    
 def clip(x):
     return(np.clip(x+128, 0 ,255).astype(np.uint8))
 
-def E_codec(E_k, prefix, k, q_step):
+def E_codec2(E_k, prefix, k, q_step):
     print("Error YUV", E_k.max(), E_k.min())
+    E_k_RGB = YUV.to_RGB(E_k) + 128
+    print("Error RGB", E_k_RGB.max(), E_k_RGB.min())
+    #frame.write(clip(E_k_RGB+128), prefix + "before_", k)
+    #norm_E_k_RGB = norm(E_k_RGB)
+    #print("Error norm RGB", norm_E_k_RGB.max(), norm_E_k_RGB.min())
+    frame.write(E_k_RGB, prefix + "before_", k)
+    os.system(f"ffmpeg -loglevel fatal -y -i {prefix}before_{k:03d}.png -crf {q_step} -flags -loop {prefix}{k:03d}.mp4")
+    os.system(f"ffmpeg -loglevel fatal -y -i {prefix}{k:03d}.mp4 {prefix}{k:03d}.png")
+    dq_E_k = (YUV.from_RGB(frame.read(prefix, k)-128))
+    return dq_E_k
+
+def E_codec(E_k, prefix, k, q_step):
+    print("Error YUV", E_k.max(), E_k.min(), q_step)
     E_k_RGB = YUV.to_RGB(E_k)
     print("Error RGB", E_k_RGB.max(), E_k_RGB.min())
     #frame.write(clip(E_k_RGB+128), prefix + "before_", k)
-    norm_E_k_RGB = norm(E_k_RGB)
+    norm_E_k_RGB, max, min = norm(E_k_RGB)
+    norm_E_k_RGB *= 256
     print("Error norm RGB", norm_E_k_RGB.max(), norm_E_k_RGB.min())
     frame.write(norm_E_k_RGB, prefix + "before_", k)
     os.system(f"ffmpeg -loglevel fatal -y -i {prefix}before_{k:03d}.png -crf {q_step} -flags -loop {prefix}{k:03d}.mp4")
     os.system(f"ffmpeg -loglevel fatal -y -i {prefix}{k:03d}.mp4 {prefix}{k:03d}.png")
-    dq_E_k = (YUV.from_RGB(frame.read(prefix, k)-128))
+    dq_E_k = frame.read(prefix, k)
+    dq_E_k = dq_E_k / 256
+    dq_E_k = denorm(dq_E_k, max, min)
+    dq_E_k = YUV.from_RGB(dq_E_k)
     return dq_E_k
 
 def encode(video, n_frames, q_step):
@@ -59,10 +82,10 @@ def encode(video, n_frames, q_step):
             _V_k_L = L.interpolate(V_k_L) # (E.a)
             flow = motion.estimate(_V_k_L[:,:,0], _V_k_1_L[:,:,0], initial_flow) # (E.c)
             prediction__V_k_L = motion.make_prediction(_V_k_1_L, flow) # (E.d)
-            frame.debug_write(norm(prediction__V_k_L), f"{video}encoder_prediction_L_", k)
+            frame.debug_write(norm(prediction__V_k_L)[0], f"{video}encoder_prediction_L_", k)
             _V_k_1_L = _V_k_L # (E.b)
             _E_k_L = _V_k_L - prediction__V_k_L # (E.e)
-            frame.debug_write(norm(_V_k_L), f"{video}encoder_predicted_L_", k)
+            frame.debug_write(norm(_V_k_L)[0], f"{video}encoder_predicted_L_", k)
             frame.debug_write(clip(_E_k_L), f"{video}encoder_prediction_error_L_", k)
             S_k = abs(_E_k_L[:,:,0]) < abs(_V_k_L[:,:,0] - np.average(_V_k_L[:,:,0])) # (E.f)
             if __debug__:

@@ -21,7 +21,8 @@ n_levels = 4
 n_frames = 30
 FPS = 30
 
-q_step = 21
+q_min = 21
+q_max = 51
 
 gains = spatial_transform.compute_gains(n_levels)
 print(gains)
@@ -39,8 +40,10 @@ for k in range(n_frames):
 print("Performing IPP... encoding")
 
 print(f"Computing SRL {n_levels}")
-delta = q_step*gains[0]
-print("delta =", delta)
+#delta = q_step/gains[0]
+#delta = q_step/gains[n_levels-1]
+delta = q_min
+#print("delta =", delta)
 if delta < 1:
     delta = 1
 IPP_step.encode(f"{video}{n_levels}_", n_frames, delta)
@@ -51,9 +54,11 @@ for k in range(n_frames):
     reconstructed_V_k = spatial_transform.synthesize_step(V_k_L, reconstructed_V_k_H)
     L.write(reconstructed_V_k, f"{video}{n_levels-1}_", k)
 
-for l in range(n_levels-1, 0, -1):
+for l in range(n_levels-2, 0, -1):
     print(f"Computing SRL {l}")
-    delta = q_step*gains[n_levels-l-1]
+    #delta = q_step/gains[n_levels-l-1]
+    #delta = q_step/gains[l]
+    delta = q_min + (q_max-q_min)*n_levels/(l+3)
     print("delta =", delta)
     if delta < 1:
         delta = 1
@@ -77,4 +82,4 @@ KBPS, BPP, N_bytes = IPP_step.compute_br(video, FPS,
 
 _distortion = distortion.AMSE(video, f"{video}0_reconstructed_", n_frames)
 
-print("Q_step:", q_step, "BPP:", BPP, "KBPS:", KBPS, "Average AMSE:", _distortion, "N_bytes:", N_bytes)
+print("Q_step:", q_min, "BPP:", BPP, "KBPS:", KBPS, "Average AMSE:", _distortion, "N_bytes:", N_bytes)
