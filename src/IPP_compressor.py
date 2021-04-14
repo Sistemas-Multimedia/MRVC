@@ -1,12 +1,12 @@
 ''' MRVC/IPP_compressor.py '''
 
 import IPP_step
-import DWT as spatial_transform
-#import LP as spatial_transform
-import L_DWT as L
-#import L_LP as L
-import H_DWT as H
-#import H_LP as H
+#import DWT as spatial_transform
+import LP as spatial_transform
+#import L_DWT as L
+import L_LP as L
+#import H_DWT as H
+import H_LP as H
 import YCoCg as YUV
 #import YCrCb as YUV
 #import RGB as YUV
@@ -17,7 +17,7 @@ import deadzone as Q
 video = "/tmp/original_"
 n_levels = 3
 n_frames = 30
-q_step = 64
+q_step = 16
 
 gains = spatial_transform.compute_gains(n_levels)
 print(gains)

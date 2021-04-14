@@ -1,12 +1,12 @@
 ''' MRVC/IPP_step.py '''
 
 import numpy as np
-import DWT as spatial_transform
-#import LP as spatial_transform
-import L_DWT as L
-#import L_LP as L
-import H_DWT as H
-#import H_LP as H
+#import DWT as spatial_transform
+import LP as spatial_transform
+#import L_DWT as L
+import L_LP as L
+#import H_DWT as H
+import H_LP as H
 import deadzone as Q
 import motion
 import frame
@@ -63,7 +63,7 @@ def encode(video, n_frames, q_step):
             _E_k_L = _V_k_L - prediction__V_k_L # (E.e)
             frame.debug_write(norm(_V_k_L), f"{video}encoder_predicted_L_", k)
             frame.debug_write(clip(_E_k_L), f"{video}encoder_prediction_error_L_", k)
-            S_k = _E_k_L[:,:,0] < (_V_k_L[:,:,0] - np.average(_V_k_L[:,:,0])) # (E.f)
+            S_k = abs(_E_k_L[:,:,0]) < abs(_V_k_L[:,:,0] - np.average(_V_k_L[:,:,0])) # (E.f)
             #S_k.fill(True)
             if __debug__:
                 # If S_k[i,j] is True, then the coef is P-type,
