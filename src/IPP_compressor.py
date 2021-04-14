@@ -1,6 +1,7 @@
 ''' MRVC/IPP_compressor.py '''
 
-import coef_IPP_step_PNG as IPP_step
+#import coef_IPP_step_PNG as IPP_step
+import coef_IPP_step_H264 as IPP_step
 import DWT as spatial_transform
 #import LP as spatial_transform
 import L_DWT as L
@@ -20,7 +21,7 @@ n_levels = 4
 n_frames = 30
 FPS = 30
 
-q_step = 64
+q_step = 21
 
 gains = spatial_transform.compute_gains(n_levels)
 print(gains)

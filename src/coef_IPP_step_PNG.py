@@ -29,7 +29,7 @@ def encode(video, n_frames, q_step):
         V_k_L = L.read(video, k)
         V_k_H = H.read(video, k, V_k_L.shape)
         #L.write(YCoCg.to_RGB(V_k_L), codestream, k) # (g)
-        L.write(V_k_L, video, k) # (g)
+        #L.write(V_k_L, video, k) # (g)
         _V_k_L = L.interpolate(V_k_L) # (E.a)
         initial_flow = np.zeros((_V_k_L.shape[0], _V_k_L.shape[1], 2), dtype=np.float32)
         _V_k_1_L = _V_k_L # (E.b)
@@ -109,7 +109,7 @@ def encode(video, n_frames, q_step):
             reconstructed__V_k_1_H = reconstructed__V_k_H # (E.i)
             quantized_E_k_H = H.reduce(quantized__E_k_H) # (f)
             #L.write(YCoCg.to_RGB(V_k_L), codestream, k) # (g)
-            L.write(V_k_L, video, k) # (g)
+            #L.write(V_k_L, video, k) # (g)
             H.write(quantized_E_k_H, video, k) # (g)
     except:
         print(colors.red(f'IPP_step.encode(video="{video}", n_frames={n_frames}, q_step={q_step})'))

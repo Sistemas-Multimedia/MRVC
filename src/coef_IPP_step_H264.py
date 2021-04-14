@@ -1,4 +1,4 @@
-''' MRVC/IPP_step.py '''
+''' MRVC/coef_IPP_step_H264.py '''
 
 import numpy as np
 import DWT as spatial_transform
@@ -7,7 +7,8 @@ import L_DWT as L
 #import L_LP as L
 import H_DWT as H
 #import H_LP as H
-import deadzone as Q
+#import deadzone as Q
+import YCoCg as YUV
 import motion
 import frame
 import colors
@@ -20,11 +21,17 @@ def norm(x):
 def clip(x):
     return(np.clip(x+128, 0 ,255).astype(np.uint8))
 
-def I_codec(E_k, prefix, k, q_step):
-    frame.write(YUV.to_RGB(E_k), prefix + "before_", k)
-    os.system(f"ffmpeg -loglevel fatal -y -i {prefix}before_{k:03d}.png -crf {q_step} {prefix}{k:03d}.mp4")
+def E_codec(E_k, prefix, k, q_step):
+    print("Error YUV", E_k.max(), E_k.min())
+    E_k_RGB = YUV.to_RGB(E_k)
+    print("Error RGB", E_k_RGB.max(), E_k_RGB.min())
+    #frame.write(clip(E_k_RGB+128), prefix + "before_", k)
+    norm_E_k_RGB = norm(E_k_RGB)
+    print("Error norm RGB", norm_E_k_RGB.max(), norm_E_k_RGB.min())
+    frame.write(norm_E_k_RGB, prefix + "before_", k)
+    os.system(f"ffmpeg -loglevel fatal -y -i {prefix}before_{k:03d}.png -crf {q_step} -flags -loop {prefix}{k:03d}.mp4")
     os.system(f"ffmpeg -loglevel fatal -y -i {prefix}{k:03d}.mp4 {prefix}{k:03d}.png")
-    dq_E_k = (YUV.from_RGB(frame.read(prefix, k)))
+    dq_E_k = (YUV.from_RGB(frame.read(prefix, k)-128))
     return dq_E_k
 
 def encode(video, n_frames, q_step):
@@ -32,7 +39,7 @@ def encode(video, n_frames, q_step):
         k = 0
         V_k_L = L.read(video, k)
         V_k_H = H.read(video, k, V_k_L.shape)
-        L.write(V_k_L, video, k) # (g)
+        #L.write(V_k_L, video, k) # (g)
         _V_k_L = L.interpolate(V_k_L) # (E.a)
         initial_flow = np.zeros((_V_k_L.shape[0], _V_k_L.shape[1], 2), dtype=np.float32)
         _V_k_1_L = _V_k_L # (E.b)
@@ -40,12 +47,12 @@ def encode(video, n_frames, q_step):
         _E_k_H = _V_k_H # (c)
         #quantized__E_k_H = Q.quantize(_E_k_H, step=q_step) # (d)
         #dequantized__E_k_H = Q.dequantize(quantized__E_k_H, step=q_step) # (E.g)
-        dequantized__E_k_H = I_codec(_E_k_H, video, 0, q_step)
+        dequantized__E_k_H = E_codec(_E_k_H, video, 0, q_step)
         reconstructed__V_k_H = dequantized__E_k_H # (E.h)
         L.write(reconstructed__V_k_H, video + "reconstructed_H", k)
         reconstructed__V_k_1_H = reconstructed__V_k_H # (E.i)
-        quantized_E_k_H = H.reduce(quantized__E_k_H) # (f)
-        H.write(quantized_E_k_H, video, k) # (g)
+        #quantized_E_k_H = H.reduce(quantized__E_k_H) # (f)
+        #H.write(quantized_E_k_H, video, k) # (g)
         for k in range(1, n_frames):
             V_k_L = L.read(video, k)#V_k_L = L.read(L_sequence, k)
             V_k_H = H.read(video, k, V_k_L.shape)#V_k_H = H.read(H_sequence, k)
@@ -79,16 +86,42 @@ def encode(video, n_frames, q_step):
             frame.debug_write(clip(IP_prediction__V_k_H), f"{video}encoder_IP_prediction_H_", k)
             _E_k_H = _V_k_H - IP_prediction__V_k_H[:_V_k_H.shape[0], :_V_k_H.shape[1], :] # (c)
             frame.debug_write(clip(_E_k_H), f"{video}encoder_prediction_error_H_", k)
-            quantized__E_k_H = Q.quantize(_E_k_H, step=q_step) # (d)
-            dequantized__E_k_H = Q.dequantize(quantized__E_k_H, step=q_step) # (E.g)
+            #quantized__E_k_H = Q.quantize(_E_k_H, step=q_step) # (d)
+            #dequantized__E_k_H = Q.dequantize(quantized__E_k_H, step=q_step) # (E.g)
+            dequantized__E_k_H = E_codec(_E_k_H, video, k, q_step)
             frame.debug_write(clip(dequantized__E_k_H), f"{video}encoder_dequantized_prediction_error_H_", k)
             reconstructed__V_k_H = dequantized__E_k_H + IP_prediction__V_k_H[:dequantized__E_k_H.shape[0], :dequantized__E_k_H.shape[1], :] # (E.h)
             L.write(reconstructed__V_k_H, video + "reconstructed_H", k)
             frame.debug_write(clip(reconstructed__V_k_H), f"{video}encoder_reconstructed_", k)
             reconstructed__V_k_1_H = reconstructed__V_k_H # (E.i)
-            quantized_E_k_H = H.reduce(quantized__E_k_H) # (f)
-            L.write(V_k_L, video, k) # (g)
-            H.write(quantized_E_k_H, video, k) # (g)
+            #quantized_E_k_H = H.reduce(quantized__E_k_H) # (f)
+            #L.write(V_k_L, video, k) # (g)
+            #H.write(quantized_E_k_H, video, k) # (g)
     except:
         print(colors.red(f'IPP_step.encode(video="{video}", n_frames={n_frames}, q_step={q_step})'))
         raise
+
+def compute_br(video, FPS, frame_shape, n_frames, n_levels):
+    frame_height = frame_shape[0]
+    frame_width = frame_shape[1]
+    n_channels = frame_shape[2]
+    sequence_time = n_frames/FPS
+    print(f"height={frame_height} width={frame_width} n_channels={n_channels} sequence_time={sequence_time}")
+
+    # LL subband
+    command = f"ffmpeg -loglevel fatal -y -i {video}{n_levels}_%03d.png -crf 0 /tmp/coef_IPP_step_{n_levels}_LL.mp4"
+    print(command)
+    os.system(command)
+    n_total_bytes = os.path.getsize(f"/tmp/coef_IPP_step_{n_levels}_LL.mp4")
+    
+    # H subbands
+    for r in range(1, n_levels):
+        command = f"ffmpeg -loglevel fatal -y -f concat -safe 0 -i <(for f in {video}{r}*.mp4; do echo \"file '$f'\"; done) -c copy /tmp/coef_IPP_step_{r}_H.mp4"
+        print(command)
+        os.system(command)
+        n_total_bytes += os.path.getsize(f"/tmp/coef_IPP_step_{r}_H.mp4")
+
+    KBPS = n_total_bytes*8/sequence_time/1000
+    BPP = n_total_bytes*8/(frame_width*frame_height*n_channels*n_frames)
+
+    return KBPS, BPP, n_total_bytes
