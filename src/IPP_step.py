@@ -1,12 +1,12 @@
 ''' MRVC/IPP_step.py '''
 
 import numpy as np
-#import DWT as spatial_transform
-import LP as spatial_transform
-#import L_DWT as L
-import L_LP as L
-#import H_DWT as H
-import H_LP as H
+import DWT as spatial_transform
+#import LP as spatial_transform
+import L_DWT as L
+#import L_LP as L
+import H_DWT as H
+#import H_LP as H
 import deadzone as Q
 import motion
 import frame
@@ -63,13 +63,18 @@ def encode(video, n_frames, q_step):
             _E_k_L = _V_k_L - prediction__V_k_L # (E.e)
             frame.debug_write(norm(_V_k_L), f"{video}encoder_predicted_L_", k)
             frame.debug_write(clip(_E_k_L), f"{video}encoder_prediction_error_L_", k)
-            S_k = _E_k_L[:,:,0] < _V_k_L[:,:,0] # (E.f)
+            S_k = _E_k_L[:,:,0] < (_V_k_L[:,:,0] - np.average(_V_k_L[:,:,0])) # (E.f)
+            #S_k.fill(True)
             if __debug__:
+                # If S_k[i,j] is True, then the coef is P-type,
+                # otherwise I-type.
                 unique, counts = np.unique(S_k, return_counts=True)
-                #print(unique, counts)
-                print("Number of I-type coeffs =", counts[0])
-                if len(unique) > 1:
-                    print("Number of P-type coeffs =", counts[1])
+                histogram = dict(zip(unique, counts))
+                if True in histogram:
+                    histogram['P'] = histogram.pop(True)
+                if False in histogram:
+                    histogram['I'] = histogram.pop(False)
+                print("Coefs type histogram:", histogram)
             frame.debug_write(cv2.merge((S_k.astype(np.uint8),S_k.astype(np.uint8),S_k.astype(np.uint8))), f"{video}encoder_selection_", k)
             _V_k_H = H.interpolate(V_k_H) # (b)
             frame.debug_write(clip(_V_k_H), f"{video}encoder_predicted_H_", k)
@@ -79,7 +84,7 @@ def encode(video, n_frames, q_step):
             IP_prediction__V_k_H = np.empty_like(prediction__V_k_H)
             for c in range(3):
                 #IP_prediction__V_k_H[:,:,c] = np.zeros_like(S_k) # (E.k)
-                IP_prediction__V_k_H[:,:,c] = np.where(S_k, prediction__V_k_H[:,:,c], 0) # (E.k)
+                IP_prediction__V_k_H[:,:,c] = np.where(S_k, 0, prediction__V_k_H[:,:,c]) # (E.k) Remember that we are working with coefs with 0 average.
                 #IP_prediction__V_k_H[:,:,c] = np.where(S_k, 0, prediction__V_k_H[:,:,c]) # (E.k)
             #IP_prediction__V_k_H[:,:,0] = np.where(S_k, prediction__V_k_H[:,:,0], 0) # (E.k)
             #IP_prediction__V_k_H[:,:,1] = np.where(S_k, prediction__V_k_H[:,:,1], 0) # (E.k)
@@ -116,6 +121,7 @@ def encode(video, n_frames, q_step):
         print(colors.red(f'IPP_step.encode(video="{video}", n_frames={n_frames}, q_step={q_step})'))
         raise
 
+# Unused for now
 def decode(video, n_frames, q_step):
         
 #def decode(codestream=CODESTREAM_PREFIX, video=DECODED_VIDEO_PREFIX, n_frames=N_FRAMES, q_step=Q_STEP):
@@ -146,13 +152,13 @@ def decode(video, n_frames, q_step):
         prediction__V_k_L = motion.make_prediction(_V_k_1_L, flow) # (E.d)
         _V_k_1_L = _V_k_L # (E.b)
         _E_k_L = _V_k_L - prediction__V_k_L # (E.e)
-        S_k = _E_k_L[:,:,0] < _V_k_L[:,:,0] # (E.f)
+        S_k = _E_k_L[:,:,0] < (_V_k_L[:,:,0] - np.average(_V_k_L[:,:,0])) # (E.f)
         prediction__V_k_H = motion.make_prediction(reconstructed__V_k_1_H, flow) # (E.j)
         #IP_prediction__V_k_H = np.where(S_k, prediction__V_k_H, 0) # (E.k)
         IP_prediction__V_k_H = np.empty_like(prediction__V_k_H)
-        IP_prediction__V_k_H[:,:,0] = np.where(S_k, prediction__V_k_H[:,:,0], 0) # (E.k)
-        IP_prediction__V_k_H[:,:,1] = np.where(S_k, prediction__V_k_H[:,:,1], 0) # (E.k)
-        IP_prediction__V_k_H[:,:,2] = np.where(S_k, prediction__V_k_H[:,:,2], 0) # (E.k)
+        IP_prediction__V_k_H[:,:,0] = np.where(S_k, 0, prediction__V_k_H[:,:,0]) # (E.k)
+        IP_prediction__V_k_H[:,:,1] = np.where(S_k, 0, prediction__V_k_H[:,:,1]) # (E.k)
+        IP_prediction__V_k_H[:,:,2] = np.where(S_k, 0, prediction__V_k_H[:,:,2]) # (E.k)
         #IP_prediction__V_k_H = np.zeros_like(S_k, dtype=np.float64) # (E.k)
         dequantized__E_k_H = Q.dequantize(quantized__E_k_H, step=q_step) # (E.g)
         #assert (dequantized__E_k_H.shape == _V_k_L.shape).all()
