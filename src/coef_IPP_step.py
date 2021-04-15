@@ -24,6 +24,15 @@ if config.quantizer == "deadzone":
 
 if config.quantizer == "H264":
 
+    if config.color == "YCoCg":
+        import YCoCg as YUV
+
+    if config.color == "YCrCb":
+        import YCrCb as YUV
+
+    if config.color == "RGB":
+        import RGB as YUV
+
     def E_codec2(E_k, prefix, k, q_step):
         print("Error YUV", E_k.max(), E_k.min())
         E_k_RGB = YUV.to_RGB(E_k) + 128
