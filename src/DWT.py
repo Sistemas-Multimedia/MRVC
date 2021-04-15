@@ -137,6 +137,7 @@ def synthesize(color_decomposition:list, n_levels:int) -> np.ndarray:
     #    color_frame[:,:,c] = _color_frame[c][:,:]
     return color_frame
 
+# Ojo, que esto no está terminado
 def compute_gains(n_levels):
     gains = [1.0]*n_levels
     for l in range(1,n_levels):

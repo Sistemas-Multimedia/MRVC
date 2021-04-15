@@ -8,21 +8,21 @@ import L_DWT as L
 #import L_LP as L
 import H_DWT as H
 #import H_LP as H
-import YCoCg as YUV
+#import YCoCg as YUV
 #import YCrCb as YUV
-#import RGB as YUV
+import RGB as YUV
 import frame
 import numpy as np
 import deadzone as Q
 import distortion
 
 video = "/tmp/original_"
-n_levels = 4
+n_levels = 3
 n_frames = 30
 FPS = 30
 
-q_min = 21
-q_max = 51
+q_min = 31
+q_max = 41
 
 gains = spatial_transform.compute_gains(n_levels)
 print(gains)
@@ -54,7 +54,7 @@ for k in range(n_frames):
     reconstructed_V_k = spatial_transform.synthesize_step(V_k_L, reconstructed_V_k_H)
     L.write(reconstructed_V_k, f"{video}{n_levels-1}_", k)
 
-for l in range(n_levels-2, 0, -1):
+for l in range(n_levels-1, 0, -1):
     print(f"Computing SRL {l}")
     #delta = q_step/gains[n_levels-l-1]
     #delta = q_step/gains[l]

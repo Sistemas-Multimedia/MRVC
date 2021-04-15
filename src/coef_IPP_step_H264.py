@@ -8,7 +8,8 @@ import L_DWT as L
 import H_DWT as H
 #import H_LP as H
 #import deadzone as Q
-import YCoCg as YUV
+#import YCoCg as YUV
+import RGB as YUV
 import motion
 import frame
 import colors
@@ -46,7 +47,7 @@ def E_codec(E_k, prefix, k, q_step):
     print("Error RGB", E_k_RGB.max(), E_k_RGB.min())
     #frame.write(clip(E_k_RGB+128), prefix + "before_", k)
     norm_E_k_RGB, max, min = norm(E_k_RGB)
-    norm_E_k_RGB *= 256
+    norm_E_k_RGB *= 255
     print("Error norm RGB", norm_E_k_RGB.max(), norm_E_k_RGB.min())
     frame.write(norm_E_k_RGB, prefix + "before_", k)
     os.system(f"ffmpeg -loglevel fatal -y -i {prefix}before_{k:03d}.png -crf {q_step} -flags -loop {prefix}{k:03d}.mp4")
@@ -60,6 +61,7 @@ def E_codec(E_k, prefix, k, q_step):
 def encode(video, n_frames, q_step):
     try:
         k = 0
+        print(f"Encoding frame {k}")
         V_k_L = L.read(video, k)
         V_k_H = H.read(video, k, V_k_L.shape)
         #L.write(V_k_L, video, k) # (g)
@@ -77,6 +79,7 @@ def encode(video, n_frames, q_step):
         #quantized_E_k_H = H.reduce(quantized__E_k_H) # (f)
         #H.write(quantized_E_k_H, video, k) # (g)
         for k in range(1, n_frames):
+            print(f"Encoding frame {k}")
             V_k_L = L.read(video, k)#V_k_L = L.read(L_sequence, k)
             V_k_H = H.read(video, k, V_k_L.shape)#V_k_H = H.read(H_sequence, k)
             _V_k_L = L.interpolate(V_k_L) # (E.a)
@@ -132,17 +135,30 @@ def compute_br(video, FPS, frame_shape, n_frames, n_levels):
     print(f"height={frame_height} width={frame_width} n_channels={n_channels} sequence_time={sequence_time}")
 
     # LL subband
-    command = f"ffmpeg -loglevel fatal -y -i {video}{n_levels}_%03d.png -crf 0 /tmp/coef_IPP_step_{n_levels}_LL.mp4"
+    for k in range(n_frames):
+        V_k = L.read(f"{video}{n_levels}_", k)
+        V_k_RGB = YUV.to_RGB(V_k)
+        norm_V_k_RGB, max, min = norm(V_k_RGB)
+        norm_V_k_RGB *= 255
+        frame.write(norm_V_k_RGB, f"{video}{n_levels}_LL_8bpp_", k)
+    command = f"ffmpeg -loglevel fatal -y -i {video}{n_levels}_LL_8bpp_%03d.png -crf 0 /tmp/coef_IPP_step_{n_levels}_LL.mp4"
+    #command = f"cat {video}{n_levels}_???LL.png | gzip -9 > /tmp/coef_IPP_step_{n_levels}_LL.gz"
     print(command)
     os.system(command)
     n_total_bytes = os.path.getsize(f"/tmp/coef_IPP_step_{n_levels}_LL.mp4")
+    #n_total_bytes = os.path.getsize(f"/tmp/coef_IPP_step_{n_levels}_LL.gz")
+    print(f"LL{n_levels}: {n_total_bytes}")
     
     # H subbands
-    for r in range(1, n_levels):
-        command = f"ffmpeg -loglevel fatal -y -f concat -safe 0 -i <(for f in {video}{r}*.mp4; do echo \"file '$f'\"; done) -c copy /tmp/coef_IPP_step_{r}_H.mp4"
+    for r in range(1, n_levels+1):
+        #command = f"ffmpeg -loglevel fatal -y -f concat -safe 0 -i <(for f in {video}{r}*.mp4; do echo \"file '$f'\"; done) -c copy /tmp/coef_IPP_step_{r}_H.mp4"
+        command = f"cat {video}{r}*.mp4 | gzip -9 > /tmp/coef_IPP_step_{r}_H.gz"
         print(command)
         os.system(command)
-        n_total_bytes += os.path.getsize(f"/tmp/coef_IPP_step_{r}_H.mp4")
+        #n_bytes = os.path.getsize(f"/tmp/coef_IPP_step_{r}_H.mp4")
+        n_bytes = os.path.getsize(f"/tmp/coef_IPP_step_{r}_H.gz")
+        n_total_bytes += n_bytes
+        print(f"H{r}: {n_bytes}")
 
     KBPS = n_total_bytes*8/sequence_time/1000
     BPP = n_total_bytes*8/(frame_width*frame_height*n_channels*n_frames)
