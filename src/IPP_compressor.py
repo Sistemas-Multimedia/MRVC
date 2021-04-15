@@ -42,7 +42,7 @@ FPS = 30
 
 if config.quantizer == "H264":
     q_min = 21
-    q_max = 31
+    q_max = 51
 
 if config.quantizer == "deadzone":
     q_min = 1
