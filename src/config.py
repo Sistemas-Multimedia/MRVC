@@ -10,5 +10,5 @@ color = "YCoCg"
 #color = "YCrCb"
 #color = "RGB"
 
-quantizer = "H264"
-#quantizer = "deadzone"
+#quantizer = "H264"
+quantizer = "deadzone"

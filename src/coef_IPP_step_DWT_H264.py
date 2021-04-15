@@ -16,18 +16,22 @@ import colors
 import cv2
 import os
 
+# Borrable
 def norm(x):
     max = x.max()
     min = x.min()
     return (x-min)/(max-min), max, min
     #return (frame.normalize(x)*255).astype(np.uint8)
 
+# Borrable
 def denorm(x, max, min):
     return x*(max-min)+min
     
+# Borrable
 def clip(x):
     return(np.clip(x+128, 0 ,255).astype(np.uint8))
 
+# Borrable
 def E_codec2(E_k, prefix, k, q_step):
     print("Error YUV", E_k.max(), E_k.min())
     E_k_RGB = YUV.to_RGB(E_k) + 128
@@ -41,6 +45,7 @@ def E_codec2(E_k, prefix, k, q_step):
     dq_E_k = (YUV.from_RGB(frame.read(prefix, k)-128))
     return dq_E_k
 
+# Borrable
 def E_codec(E_k, prefix, k, q_step):
     print("Error YUV", E_k.max(), E_k.min(), q_step)
     E_k_RGB = YUV.to_RGB(E_k)

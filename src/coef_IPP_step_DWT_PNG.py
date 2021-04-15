@@ -1,4 +1,4 @@
-''' MRVC/coef_IPP_step_PNG.py '''
+''' MRVC/coef_IPP_step_DWT_PNG.py '''
 
 import coef_IPP_step
 import os
