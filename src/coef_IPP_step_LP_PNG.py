@@ -1,12 +1,12 @@
 ''' MRVC/coef_IPP_step_PNG.py '''
 
 import numpy as np
-import DWT as spatial_transform
-#import LP as spatial_transform
-import L_DWT as L
-#import L_LP as L
-import H_DWT as H
-#import H_LP as H
+#import DWT as spatial_transform
+import LP as spatial_transform
+#import L_DWT as L
+import L_LP as L
+#import H_DWT as H
+import H_LP as H
 import deadzone as Q
 import motion
 import frame
@@ -22,7 +22,9 @@ def clip(x):
 
 def encode(video, n_frames, q_step):
     try:
+        print(f"Using Q_step {q_step}")
         k = 0
+        print(f"Encoding frame {k}")
         #V_k = frame.read(video, k)
         #V_k = YCoCg.from_RGB(V_k)
         #V_k_L, V_k_H = DWT.analyze_step(V_k) # (a)
@@ -44,6 +46,7 @@ def encode(video, n_frames, q_step):
         quantized_E_k_H = H.reduce(quantized__E_k_H) # (f)
         H.write(quantized_E_k_H, video, k) # (g)
         for k in range(1, n_frames):
+            print(f"Encoding frame {k}")
             #V_k = frame.read(video, k)
             #V_k = YCoCg.from_RGB(V_k)
             #V_k_L, V_k_H = DWT.analyze_step(V_k) # (a)
@@ -173,18 +176,11 @@ def compute_br(video, FPS, frame_shape, n_frames, n_levels):
     sequence_time = n_frames/FPS
     print(f"height={frame_height} width={frame_width} n_channels={n_channels} sequence_time={sequence_time}")
 
+    '''
     n_total_bytes = 0
     for k in range(0, n_frames):
         for r in range(1, n_levels):
-            fn = f"{video}{r}_{k:03d}LH.png"
-            n_bytes = os.path.getsize(fn)
-            print(fn, n_bytes)
-            n_total_bytes += n_bytes
-            fn = f"{video}{r}_{k:03d}HL.png"
-            n_bytes = os.path.getsize(fn)
-            print(fn, n_bytes)
-            n_total_bytes += n_bytes
-            fn = f"{video}{r}_{k:03d}HH.png"
+            fn = f"{video}{r}_{k:03d}H.png"
             n_bytes = os.path.getsize(fn)
             print(fn, n_bytes)
             n_total_bytes += n_bytes
@@ -192,18 +188,26 @@ def compute_br(video, FPS, frame_shape, n_frames, n_levels):
         n_bytes = os.path.getsize(fn)
         print(fn, n_bytes)
         n_total_bytes += n_bytes
-        fn = f"{video}{n_levels}_{k:03d}LH.png"
+        fn = f"{video}{n_levels}_{k:03d}H.png"
         n_bytes = os.path.getsize(fn)
         print(fn, n_bytes)
         n_total_bytes += n_bytes
-        fn = f"{video}{n_levels}_{k:03d}HL.png"
-        n_bytes = os.path.getsize(fn)
-        print(fn, n_bytes)
+    '''
+
+    command = f"cat {video}{n_levels}_???LL.png | gzip -9 > /tmp/coef_IPP_step_{n_levels}_LL.gz"
+    print(command)
+    os.system(command)
+    n_total_bytes = os.path.getsize(f"/tmp/coef_IPP_step_{n_levels}_LL.gz")
+    #n_total_bytes = os.path.getsize(f"/tmp/coef_IPP_step_{n_levels}_LL.gz")
+    print(f"LL{n_levels}: {n_total_bytes}")
+
+    for r in range(1, n_levels+1):
+        command = f"cat {video}{r}_???H.png | gzip -9 > /tmp/coef_IPP_step_{r}_H.gz"
+        print(command)
+        os.system(command)
+        n_bytes = os.path.getsize(f"/tmp/coef_IPP_step_{r}_H.gz")
         n_total_bytes += n_bytes
-        fn = f"{video}{n_levels}_{k:03d}HH.png"
-        n_bytes = os.path.getsize(fn)
-        print(fn, n_bytes)
-        n_total_bytes += n_bytes
+        print(f"H{r}: {n_bytes}")
 
     KBPS = n_total_bytes*8/sequence_time/1000
     BPP = n_total_bytes*8/(frame_width*frame_height*n_channels*n_frames)

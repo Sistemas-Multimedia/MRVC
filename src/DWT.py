@@ -8,9 +8,9 @@ import frame
 import L_DWT as L
 import H_DWT as H
 
-#WAVELET = pywt.Wavelet("haar")
+WAVELET = pywt.Wavelet("haar")
 #WAVELET = pywt.Wavelet("db1")
-WAVELET = pywt.Wavelet("db5")
+#WAVELET = pywt.Wavelet("db5")
 #WAVELET = pywt.Wavelet("db20")
 #WAVELET = pywt.Wavelet("bior3.5")
 #WAVELET = pywt.Wavelet("bior3.7")

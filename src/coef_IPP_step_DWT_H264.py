@@ -60,6 +60,7 @@ def E_codec(E_k, prefix, k, q_step):
 
 def encode(video, n_frames, q_step):
     try:
+        print(f"Using Q_step {q_step}")
         k = 0
         print(f"Encoding frame {k}")
         V_k_L = L.read(video, k)

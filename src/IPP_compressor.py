@@ -1,13 +1,13 @@
 ''' MRVC/IPP_compressor.py '''
 
-#import coef_IPP_step_PNG as IPP_step
-import coef_IPP_step_H264 as IPP_step
-import DWT as spatial_transform
-#import LP as spatial_transform
-import L_DWT as L
-#import L_LP as L
-import H_DWT as H
-#import H_LP as H
+import coef_IPP_step_LP_PNG as IPP_step
+#import coef_IPP_step_H264 as IPP_step
+#import DWT as spatial_transform
+import LP as spatial_transform
+#import L_DWT as L
+import L_LP as L
+#import H_DWT as H
+import H_LP as H
 #import YCoCg as YUV
 #import YCrCb as YUV
 import RGB as YUV
@@ -21,8 +21,13 @@ n_levels = 3
 n_frames = 30
 FPS = 30
 
-q_min = 31
-q_max = 41
+# Good values for H264
+q_min = 21
+q_max = 31
+
+# Good values for LP
+q_min = 1
+q_max = 512
 
 gains = spatial_transform.compute_gains(n_levels)
 print(gains)
