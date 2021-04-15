@@ -36,7 +36,7 @@ import deadzone as Q
 import distortion
 
 video = "/tmp/original_"
-n_levels = 3
+n_levels = 4
 n_frames = 30
 FPS = 30
 
@@ -56,7 +56,6 @@ for k in range(n_frames):
     V_k = frame.read(video, k)
     V_k = YUV.from_RGB(V_k)
     decomposition = spatial_transform.analyze(V_k, n_levels=n_levels)
-    #print("len =", len(decomposition))
     L.write(decomposition[0], f"{video}{n_levels}_", k)
     for l in range(0, n_levels):
         H.write(decomposition[l+1], f"{video}{n_levels-l}_", k)
@@ -82,7 +81,7 @@ for l in range(n_levels-1, 0, -1):
     print(f"Computing SRL {l}")
     #delta = q_step/gains[n_levels-l-1]
     #delta = q_step/gains[l]
-    delta = q_min + (q_max-q_min)*n_levels/(l+3)
+    delta = q_min + (q_max-q_min)*n_levels/(l+3)/gains[l]
     print("delta =", delta)
     if delta < 1:
         delta = 1
