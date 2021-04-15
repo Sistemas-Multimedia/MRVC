@@ -1,4 +1,4 @@
-''' MRVC/coef_IPP_step_H264.py '''
+''' MRVC/coef_IPP_step_DWT_H264.py '''
 
 import numpy as np
 import DWT as spatial_transform

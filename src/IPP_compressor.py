@@ -1,16 +1,35 @@
 ''' MRVC/IPP_compressor.py '''
 
-import coef_IPP_step_LP_PNG as IPP_step
-#import coef_IPP_step_H264 as IPP_step
-#import DWT as spatial_transform
-import LP as spatial_transform
-#import L_DWT as L
-import L_LP as L
-#import H_DWT as H
-import H_LP as H
-#import YCoCg as YUV
-#import YCrCb as YUV
-import RGB as YUV
+import config
+
+if config.transform == "DWT" and config.codec == "PNG":
+    import coef_IPP_step_DWT_PNG as IPP_step
+
+if config.transform == "LP" and config.codec == "PNG":
+    import coef_IPP_step_LP_PNG as IPP_step
+
+if config.transform == "DWT" and config.codec == "H264":
+    import coef_IPP_step_DWT_H264 as IPP_step
+
+if config.transform == "DWT":
+    import DWT as spatial_transform
+    import L_DWT as L
+    import H_DWT as H
+
+if config.transform == "LP":
+    import LP as spatial_transform
+    import L_LP as L
+    import H_LP as H
+
+if config.color == "YCoCg":
+    import YCoCg as YUV
+
+if config.color == "YCrCb":
+    import YCrCb as YUV
+
+if config.color == "RGB":
+    import RGB as YUV
+
 import frame
 import numpy as np
 import deadzone as Q
@@ -21,13 +40,13 @@ n_levels = 3
 n_frames = 30
 FPS = 30
 
-# Good values for H264
-q_min = 21
-q_max = 31
+if config.quantizer == "H264":
+    q_min = 21
+    q_max = 31
 
-# Good values for LP
-q_min = 1
-q_max = 512
+if config.quantizer == "deadzone":
+    q_min = 1
+    q_max = 512
 
 gains = spatial_transform.compute_gains(n_levels)
 print(gains)
