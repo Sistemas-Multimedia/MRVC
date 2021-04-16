@@ -1,42 +1,20 @@
 ''' MRVC/QDWT.py '''
 
-import Q
-import DWT
-import numpy as np
+import config
+import deadzone as Q
+import debug
 
-N_LEVELS = 5
+if config.transform == "DWT":
+    import H_DWT as H
 
-def encode(frame: np.ndarray, fn:str, step: float=step, n_levels:int =N_LEVELS) -> None:
-    decom_image = np.empty(frame.shape, 'int16')
-    decomposition = DWT.analyze(frame, n_levels=n_levels)
-    cAn = decomposition[0]
-    quantized_cAn = Q.quantize(cAn, step)
-    decom_image[0:decomposition[0].shape[0], 0:decomposition[i][0].shape[1], :] = decomposition[0]
-    #L.write(quantized_cAn, fn+"LL")
-    rest_of_resolutions = decomposition[1:]
-    for resolution in rest_of_resolutions:
-        #quantized_resolution = []
-        # LH
-        decom_image[0:resolution[0].shape[0], resolution[0].shape
-        for subband in resolution:
-            quantized_subband = Q.quantize(subband, step)
-            decom_image[0:coeffs[l.shape[0],
-                                         coeffs[i][l+1][0].shape[1]:coeffs[i][l+1][0].shape[1]*2,
-                                         i] =
-            #quantized_resolution.append(quantized_subband)
-        #H.write(quantized_subband, fn+"LH") 
+if config.transform == "LP":
+    import H_LP as H
 
-def decode(fn:str, step:float=step, n_levels:int=N_LEVELS) -> np.array:
-    dequantized_decomposition = []
-    cAn = L.read(fn+"LL")
-    dequantized_cAn = Q.dequantize(cAn, step)
-    dequantized_decomposition.append(dequantized_cAn)
-    for resolution_index in range(n_levels):
-        dequantized_resolution = []
-        resolution = H.read(fn)
-        for subband in resolution:
-            dequantized_subband = Q.dequantize(subband, step)
-            dequantized_resolution.append(dequantized_subband)
-        dequantized_decomposition.append(tuple(dequantized_resolution))
-    reconstructed_frame = DWT.synthesize(dequantized_decomposition)
-    return reconstructed_frame
+def E(E_k, video, k, q_step):
+    debug.print("Error before Q", E_k.max(), E_k.min(), q_step)
+    q_E_k = Q.quantize(E_k, q_step) # (d)
+    debug.print("Error after Q", q_E_k.max(), q_E_k.min())
+    H.write(q_E_k, video, k)
+    dq_E_k = Q.dequantize(q_E_k, q_step) # (E.g)
+    debug.print("Error after iQ", dq_E_k.max(), dq_E_k.min())
+    return dq_E_k

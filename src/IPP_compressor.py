@@ -2,10 +2,10 @@
 
 import config
 
-if config.transform == "DWT" and config.codec == "PNG":
+if config.transform == "DWT" and config.codec == "Q+PNG":
     import coef_IPP_step_DWT_PNG as IPP_step
 
-if config.transform == "LP" and config.codec == "PNG":
+if config.transform == "LP" and config.codec == "Q+PNG":
     import coef_IPP_step_LP_PNG as IPP_step
 
 if config.transform == "DWT" and config.codec == "H264":
@@ -33,6 +33,7 @@ if config.color == "YCrCb":
 if config.color == "RGB":
     import RGB as YUV
 
+import coef_IPP_step
 import frame
 import numpy as np
 import deadzone as Q
@@ -40,14 +41,14 @@ import distortion
 
 video = "/tmp/original_"
 n_levels = 4
-n_frames = 3
+n_frames = 30
 FPS = 30
 
-if config.quantizer == "H264":
+if config.codec == "H264":
     q_min = 21
     q_max = 51
 
-if config.quantizer == "deadzone":
+if config.codec == "Q+PNG":
     q_min = 1
     q_max = 512
 
@@ -72,7 +73,7 @@ delta = q_min
 #print("delta =", delta)
 if delta < 1:
     delta = 1
-IPP_step.encode(f"{video}{n_levels}_", n_frames, delta)
+coef_IPP_step.encode(f"{video}{n_levels}_", n_frames, delta)
 for k in range(n_frames):
     reconstructed__V_k_H = L.read(f"{video}{n_levels}_reconstructed_H", k)
     V_k_L = L.read(f"{video}{n_levels}_", k)
@@ -88,7 +89,7 @@ for l in range(n_levels-1, 0, -1):
     print("delta =", delta)
     if delta < 1:
         delta = 1
-    IPP_step.encode(f"{video}{l}_", n_frames, delta)
+    coef_IPP_step.encode(f"{video}{l}_", n_frames, delta)
     for k in range(n_frames):
         reconstructed__V_k_H = L.read(f"{video}{l}_reconstructed_H", k)
         V_k_L = L.read(f"{video}{l}_", k)

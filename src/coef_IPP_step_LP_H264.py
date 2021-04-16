@@ -1,5 +1,7 @@
 ''' MRVC/coef_IPP_step_LP_H264.py '''
 
+# Renombrar a br_LP_H264.py
+
 import config
 
 if config.color == "YCoCg":
@@ -16,8 +18,8 @@ import os
 import L_LP as L
 import frame
 
-def encode(video, n_frames, q_step):
-    coef_IPP_step.encode(video, n_frames, q_step)
+#def encode(video, n_frames, q_step):
+#    coef_IPP_step.encode(video, n_frames, q_step)
 
 def compute_br(video, FPS, frame_shape, n_frames, n_levels):
     frame_height = frame_shape[0]

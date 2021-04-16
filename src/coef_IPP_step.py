@@ -8,23 +8,19 @@ if config.transform == "DWT":
     import DWT as spatial_transform
     import L_DWT as L
     import H_DWT as H
+    if config.codec == "H264":
+        import H264_16 as codec
 
 if config.transform == "LP":
     import LP as spatial_transform
     import L_LP as L
     import H_LP as H
+    if config.codec == "H264":
+        import H264_8 as codec
 
 if config.codec == "Q+PNG":
-    import deadzone as Q
-
-    def E_codec(E_k, video, k, q_step):
-        q_E_k = Q.quantize(E_k, q_step) # (d)
-        H.write(q_E_k, video, k)
-        dq_E_k = Q.dequantize(q_E_k, q_step) # (E.g)
-        return dq_E_k
-
-if config.codec == "H264":
-    import H264_16 as codec
+    #import deadzone as Q
+    import QDWT as codec
 
 import motion
 import frame

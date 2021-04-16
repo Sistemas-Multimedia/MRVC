@@ -3,8 +3,8 @@
 import coef_IPP_step
 import os
 
-def encode(video, n_frames, q_step):
-    coef_IPP_step.encode(video, n_frames, q_step)
+#def encode(video, n_frames, q_step):
+#    coef_IPP_step.encode(video, n_frames, q_step)
 
 def compute_br(video, FPS, frame_shape, n_frames, n_levels):
     frame_height = frame_shape[0]
