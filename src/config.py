@@ -3,7 +3,7 @@
 transform = "DWT"
 #transform = "LP"
 
-#codec = "PNG"
+#codec = "Q+PNG"
 codec = "H264"
 
 color = "YCoCg"

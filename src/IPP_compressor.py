@@ -11,6 +11,9 @@ if config.transform == "LP" and config.codec == "PNG":
 if config.transform == "DWT" and config.codec == "H264":
     import coef_IPP_step_DWT_H264 as IPP_step
 
+if config.transform == "LP" and config.codec == "H264":
+    import coef_IPP_step_LP_H264 as IPP_step
+
 if config.transform == "DWT":
     import DWT as spatial_transform
     import L_DWT as L
@@ -37,7 +40,7 @@ import distortion
 
 video = "/tmp/original_"
 n_levels = 4
-n_frames = 30
+n_frames = 3
 FPS = 30
 
 if config.quantizer == "H264":

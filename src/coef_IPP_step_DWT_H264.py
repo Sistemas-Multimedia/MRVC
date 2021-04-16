@@ -32,6 +32,7 @@ import coef_IPP_step
 import os
 import L_DWT as L
 import frame
+import values
 
 def encode(video, n_frames, q_step):
     coef_IPP_step.encode(video, n_frames, q_step)
@@ -166,7 +167,7 @@ def compute_br(video, FPS, frame_shape, n_frames, n_levels):
     for k in range(n_frames):
         V_k = L.read(f"{video}{n_levels}_", k)
         V_k_RGB = YUV.to_RGB(V_k)
-        norm_V_k_RGB, max, min = coef_IPP_step.norm(V_k_RGB)
+        norm_V_k_RGB, max, min = values.norm(V_k_RGB)
         norm_V_k_RGB *= 255
         frame.write(norm_V_k_RGB, f"{video}{n_levels}_LL_8bpp_", k)
     command = f"ffmpeg -loglevel fatal -y -i {video}{n_levels}_LL_8bpp_%03d.png -crf 0 /tmp/coef_IPP_step_{n_levels}_LL.mp4"
