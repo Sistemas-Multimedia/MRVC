@@ -27,6 +27,7 @@ import random
 import math
 import image_IPP
 import distortion
+import values
 
 VIDEO_PREFIX = "../sequences/complete_stockholm/"
 CODESTREAM_PREFIX = "/tmp/"
@@ -133,16 +134,20 @@ def E_codec4(E_k, prefix, k, q_step):
     out = clip(YUV.to_RGB(E_k) + 128)
     # Quantizing
     #out = YUV.to_RGB(E_k)//2 + 128
+    # Normalizing
+    #out, max, min = values.norm(YUV.to_RGB(E_k)); out *= 255
     print("Error out ", out.max(), out.min()) 
     frame.write(out, prefix + "before_", k)
     #frame.write(clip(YUV.to_RGB(E_k)), prefix + "before_", k)
     os.system(f"ffmpeg -loglevel fatal -y -i {prefix}before_{k:03d}.png -crf {q_step} -flags -loop {prefix}{k:03d}.mp4")
     os.system(f"ffmpeg -loglevel fatal -y -i {prefix}{k:03d}.mp4 {prefix}{k:03d}.png")
     #dq_E_k = YUV.from_RGB(frame.read(prefix, k))
-    # Clipping
+    # De-clipping
     dq_E_k = YUV.from_RGB(frame.read(prefix, k) - 128)*1
-    # Quantizing
+    # De-quantizing
     #dq_E_k = YUV.from_RGB(frame.read(prefix, k) - 128)*2
+    # De-normalizing
+    #dq_E_k = YUV.from_RGB(values.denorm(frame.read(prefix, k)/255, max, min))
     #dq_E_k = YUV.from_RGB(frame.read(prefix, k))
     return dq_E_k
 
