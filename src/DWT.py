@@ -137,7 +137,7 @@ def synthesize(color_decomposition:list, n_levels:int) -> np.ndarray:
     #    color_frame[:,:,c] = _color_frame[c][:,:]
     return color_frame
 
-# Ojo, que esto no está terminado
+# Ojo, que esto no está terminado!!!!!!!!!!!!!!!!!!!!!!
 def compute_gains(n_levels):
     gains = [1.0]*n_levels
     for l in range(1,n_levels):
@@ -212,6 +212,26 @@ def read(prefix:str, frame_number:int, n_levels:int) -> np.ndarray:
     #    output.append((LH, HL, HH))
 
     #return output
+
+'''
+def normalize_256(color_decomposition:list, n_levels:int) -> (list, float, float):
+    #Normalize the decomposition to the range [0, 255]. The maximum n
+and the minimum values are also returned.
+    n_channels = color_decomposition[0].shape[2]
+    #_color_frame = [None]*n_channels
+    #n_resolutions = len(color_decomposition)
+    #n_resolutions = n_levels+1
+    max = -100000
+    min = 100000
+    LL = color_decomposition[0]
+    max = 
+    L.write(LL, f"{prefix}_{n_levels}", frame_number)
+    resolution_index = n_levels
+    for resolution in color_decomposition[1:]:
+        H.write(resolution, f"{prefix}_{resolution_index}", frame_number)
+        resolution_index -= 1
+'''
+    
     
 ################
 
@@ -270,4 +290,3 @@ def __synthesize(color_decomposition, wavelet=WAVELET, n_levels=N_LEVELS):
     for i in range(n_levels-1):
         color_frame = synthesize_step(color_frame, color_decomposition[i], wavelet)
     return color_frame
-

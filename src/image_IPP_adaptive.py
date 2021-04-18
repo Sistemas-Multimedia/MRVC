@@ -126,15 +126,23 @@ def I_codec2(E_k, prefix, k, q_step):
     return dq_E_k
 
 def E_codec4(E_k, prefix, k, q_step):
-    print("Error", E_k.max(), E_k.min())
+    print("Error", E_k.max(), E_k.min(), q_step)
     #frame.write(YUV.to_RGB(E_k), prefix + "before_", k)
     #frame.write(YUV.to_RGB(E_k) + 128, prefix + "before_", k)
-    frame.write(clip(YUV.to_RGB(E_k) + 128), prefix + "before_", k)
+    # Clipping ... is more efficient than quantizing.
+    out = clip(YUV.to_RGB(E_k) + 128)
+    # Quantizing
+    #out = YUV.to_RGB(E_k)//2 + 128
+    print("Error out ", out.max(), out.min()) 
+    frame.write(out, prefix + "before_", k)
     #frame.write(clip(YUV.to_RGB(E_k)), prefix + "before_", k)
     os.system(f"ffmpeg -loglevel fatal -y -i {prefix}before_{k:03d}.png -crf {q_step} -flags -loop {prefix}{k:03d}.mp4")
     os.system(f"ffmpeg -loglevel fatal -y -i {prefix}{k:03d}.mp4 {prefix}{k:03d}.png")
     #dq_E_k = YUV.from_RGB(frame.read(prefix, k))
-    dq_E_k = YUV.from_RGB(frame.read(prefix, k) - 128)
+    # Clipping
+    dq_E_k = YUV.from_RGB(frame.read(prefix, k) - 128)*1
+    # Quantizing
+    #dq_E_k = YUV.from_RGB(frame.read(prefix, k) - 128)*2
     #dq_E_k = YUV.from_RGB(frame.read(prefix, k))
     return dq_E_k
 
