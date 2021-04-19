@@ -47,6 +47,7 @@ FPS = 30
 if config.codec == "H264":
     q_min = 21
     q_max = 51
+    #q_min = q_max = 1
 
 if config.codec == "Q+PNG":
     q_min = 1
@@ -58,7 +59,8 @@ print(gains)
 print("Computing spatial transform ...")
 for k in range(n_frames):
     V_k = frame.read(video, k)
-    V_k = YUV.from_RGB(V_k)
+    V_k = YUV.from_RGB(V_k.astype(np.int16))
+    print(V_k.max(), V_k.min(), V_k.dtype)
     decomposition = spatial_transform.analyze(V_k, n_levels=n_levels)
     L.write(decomposition[0], f"{video}{n_levels}_", k)
     for l in range(0, n_levels):

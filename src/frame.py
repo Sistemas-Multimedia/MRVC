@@ -20,7 +20,8 @@ def read(prefix:str, frame_number:int) -> np.ndarray: # [row, column, component]
     #img = np.array(img, dtype=np.float32)
     if __debug__:
         print(img.shape, img.dtype, os.path.getsize(fn), colored.style.RESET)
-    return img.astype(np.int16)
+    #return img.astype(np.int16)
+    return img.astype(np.uint16)
 
 def write(img:np.ndarray, prefix:str, frame_number:int) -> None:
     _write(img, prefix, frame_number)
