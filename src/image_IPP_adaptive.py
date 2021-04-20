@@ -29,6 +29,10 @@ import image_IPP
 import distortion
 import values
 import debug
+import copy
+import sys
+
+image_IPP.self = sys.modules[__name__]
 
 LOG2_BLOCK_SIDE = 4 # BLOCK_SIZE = 1 << LOG2_BLOCK_SIDE
 BLOCK_SIDE = 2**LOG2_BLOCK_SIDE 
@@ -151,7 +155,10 @@ def _V_codec(motion, n_levels, prefix, frame_number):
     frame.write(pyramid[:,:,1], prefix+"_x_", frame_number)
     return pyramid
 
+averages = None
+
 def compute_averages(V_k):
+    global averages
     averages = np.zeros((int(V_k.shape[0]/block_y_side),
                          int(V_k.shape[1]/block_x_side),
                          3),
@@ -163,7 +170,7 @@ def compute_averages(V_k):
                                                    x*block_x_side:(x+1)*block_x_side][..., c])
             print(f"{averages[y, x, 0]:4d}", end='')
         print('')
-    return averages
+#    return averages
 
 def substract_averages(V_k, averages):
     for y in range(int(V_k.shape[0]/block_y_side)):
@@ -181,15 +188,83 @@ def add_averages(V_k, averages):
                     x*block_x_side:(x+1)*block_x_side][..., c] += averages[y, x, c]
     return V_k
 
+block_types = None
+
+def create_structures(W_k):
+    global block_types
+    image_IPP.create_structures(W_k)
+    block_types = np.zeros((int(W_k.shape[0]/block_y_side), int(W_k.shape[1]/block_x_side)), dtype=np.uint8)
+
+def decide_types(video, k, q_step, V_k, reconstructed_V_k, E_k, prediction_V_k):
+    # I/P-type block computation
+    #dequantized_V_k = I_codec(V_k, f"{video}texture_", k, q_step)
+    dequantized_V_k = image_IPP.I_codec(V_k, f"{video}texture_I_", k, q_step)
+    print("--> dequantized_V_k", dequantized_V_k.max(), dequantized_V_k.min())
+    print("--> V_k", V_k.max(), V_k.min())
+    for y in range(int(V_k.shape[0]/block_y_side)):
+        for x in range(int(V_k.shape[1]/block_x_side)):
+            I_block_distortion = \
+                distortion.MSE(V_k[y*block_y_side:(y+1)*block_y_side,
+                                   x*block_x_side:(x+1)*block_x_side][..., 0],
+                               dequantized_V_k[y*block_y_side:(y+1)*block_y_side,
+                                               x*block_x_side:(x+1)*block_x_side][..., 0])
+            P_block_distortion = \
+                distortion.MSE(V_k[y*block_y_side:(y+1)*block_y_side,
+                                   x*block_x_side:(x+1)*block_x_side][..., 0],
+                               reconstructed_V_k[y*block_y_side:(y+1)*block_y_side,
+                                                 x*block_x_side:(x+1)*block_x_side][..., 0])
+            if I_block_distortion > P_block_distortion:
+                debug.print('P', end='')
+                block_types[y, x] = 0
+            else:
+                debug.print('I', end='')
+                E_k[y*block_y_side:(y+1)*block_y_side,
+                    x*block_x_side:(x+1)*block_x_side] = \
+                        V_k[y*block_y_side:(y+1)*block_y_side,
+                            x*block_x_side:(x+1)*block_x_side] - averages[y, x]
+                #prediction_V_k[y*block_y_side:(y+1)*block_y_side,
+                #    x*block_x_side:(x+1)*block_x_side] = 128
+                prediction_V_k[y*block_y_side:(y+1)*block_y_side,
+                               x*block_x_side:(x+1)*block_x_side] = averages[y, x]
+                block_types[y, x] = 1
+        debug.print('')
+    T_codec(block_types, video, k)
+    # Parece que esto ya está arriba!!!!!!!!!!!!!!!!
+    #E_k = np.clip(E_k, -128, 127) # Innecesario si 16bpp
+    #dequantized_E_k = E_codec4(E_k, f"{video}texture_", k, q_step) # (g and h)
+
+    # Regenerate the reconstructed residue using the I-type blocks
+    dequantized_E_k = image_IPP.E_codec5(E_k, f"{video}texture_", k, q_step) # (g and h)
+
+    #print("dequantized_E_k", dequantized_E_k.max(), dequantized_E_k.min())
+    # !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+    reconstructed_V_k = dequantized_E_k + prediction_V_k[:dequantized_E_k.shape[0], :dequantized_E_k.shape[1]] # (i)
+    print("reconstructed_V_k", reconstructed_V_k.max(), reconstructed_V_k.min())
+    #frame.debug_write(clip(add_averages(YUV.to_RGB(reconstructed_V_k), averages)), f"{video}reconstructed_", k) # Decoder's output
+    #for y in range(int(V_k.shape[0]/block_y_side)):
+    #    for x in range(int(V_k.shape[1]/block_x_side)):
+    #        if block_types[y, x] == 1: # I-type
+    #            reconstructed_V_k[y*block_y_side:(y+1)*block_y_side, x*block_x_side:(x+1)*block_x_side] -= averages[y, x]
+    return reconstructed_V_k
+
 def encode(video, n_frames, q_step):
+    try:
+        image_IPP.encode(video, n_frames, q_step)
+    except:
+        print(colors.red(f'image_IPP_adaptive.encode(video="{video}", n_frames={n_frames}, q_step={q_step})'))
+        raise
+
+def _encode(video, n_frames, q_step):
     try:
         k = 0
         W_k = frame.read(video, k).astype(np.int16)
+        create_structures(W_k)
         #averages = compute_averages(W_k)
         #W_k = substract_averages(W_k, averages)
-        flow = np.zeros((W_k.shape[0], W_k.shape[1], 2), dtype=np.float32)
+        #flow = np.zeros((W_k.shape[0], W_k.shape[1], 2), dtype=np.float32)
+        
         V_k = YUV.from_RGB(W_k) # (a)
-        block_types = np.zeros((int(V_k.shape[0]/block_y_side), int(V_k.shape[1]/block_x_side)), dtype=np.uint8)
+        #block_types = np.zeros((int(V_k.shape[0]/block_y_side), int(V_k.shape[1]/block_x_side)), dtype=np.uint8)
         V_k_1 = V_k # (b)
         E_k = V_k # (f)
         dequantized_E_k = image_IPP.I_codec(V_k, f"{video}texture_", 0, q_step) # (g and h) # Mismo que E_codec4!!!!
@@ -202,9 +277,10 @@ def encode(video, n_frames, q_step):
             W_k = frame.read(video, k).astype(np.int16)
             #W_k = substract_averages(W_k, averages)
             V_k = YUV.from_RGB(W_k) # (a)
-            averages = compute_averages(V_k)
-            initial_flow = np.zeros((V_k.shape[0], V_k.shape[1], 2), dtype=np.float32)
-            flow = motion.estimate(V_k[...,0], V_k_1[...,0], initial_flow) # (c)
+            #averages = compute_averages(V_k)
+            compute_averages(V_k)
+            #initial_flow = np.zeros((V_k.shape[0], V_k.shape[1], 2), dtype=np.float32)
+            flow = motion.estimate(V_k[...,0], V_k_1[...,0], image_IPP.initial_flow) # (c)
             print("COMPUTED flow", flow.max(), flow.min())
             V_k_1 = V_k # (b)
             reconstructed_flow = V_codec(flow, LOG2_BLOCK_SIDE, f"{video}motion_", k) # (d and e)
@@ -223,60 +299,11 @@ def encode(video, n_frames, q_step):
             reconstructed_V_k = dequantized_E_k + prediction_V_k[:dequantized_E_k.shape[0], :dequantized_E_k.shape[1]] # (i)
             print("--> reconstructed_V_k", reconstructed_V_k.max(), reconstructed_V_k.min())
             frame.debug_write(clip(YUV.to_RGB(reconstructed_V_k)), f"{video}reconstructed_without_I_", k) # Decoder's output
-            
-            # I/P-type block computation
-            #dequantized_V_k = I_codec(V_k, f"{video}texture_", k, q_step)
-            dequantized_V_k = image_IPP.I_codec(V_k, f"{video}texture_I_", k, q_step)
-            print("--> dequantized_V_k", dequantized_V_k.max(), dequantized_V_k.min())
-            print("--> V_k", V_k.max(), V_k.min())
-            for y in range(int(V_k.shape[0]/block_y_side)):
-                for x in range(int(V_k.shape[1]/block_x_side)):
-                    I_block_distortion = \
-                        distortion.MSE(V_k[y*block_y_side:(y+1)*block_y_side,
-                                           x*block_x_side:(x+1)*block_x_side][..., 0],
-                                       dequantized_V_k[y*block_y_side:(y+1)*block_y_side,
-                                                       x*block_x_side:(x+1)*block_x_side][..., 0])
-                    P_block_distortion = \
-                        distortion.MSE(V_k[y*block_y_side:(y+1)*block_y_side,
-                                           x*block_x_side:(x+1)*block_x_side][..., 0],
-                                       reconstructed_V_k[y*block_y_side:(y+1)*block_y_side,
-                                                         x*block_x_side:(x+1)*block_x_side][..., 0])
-                    if I_block_distortion > P_block_distortion:
-                        debug.print('P', end='')
-                        block_types[y, x] = 0
-                    else:
-                        debug.print('I', end='')
-                        E_k[y*block_y_side:(y+1)*block_y_side,
-                            x*block_x_side:(x+1)*block_x_side] = \
-                                V_k[y*block_y_side:(y+1)*block_y_side,
-                                    x*block_x_side:(x+1)*block_x_side] - averages[y, x]
-                        #prediction_V_k[y*block_y_side:(y+1)*block_y_side,
-                        #    x*block_x_side:(x+1)*block_x_side] = 128
-                        prediction_V_k[y*block_y_side:(y+1)*block_y_side,
-                                       x*block_x_side:(x+1)*block_x_side] = averages[y, x]
-                        block_types[y, x] = 1
-                debug.print('')
-            T_codec(block_types, video, k)
-            # Parece que esto ya está arriba!!!!!!!!!!!!!!!!
-            #E_k = np.clip(E_k, -128, 127) # Innecesario si 16bpp
-            #dequantized_E_k = E_codec4(E_k, f"{video}texture_", k, q_step) # (g and h)
-
-            # Regenerate the reconstructed residue using the I-type blocks
-            dequantized_E_k = image_IPP.E_codec5(E_k, f"{video}texture_", k, q_step) # (g and h)
-
-            #print("dequantized_E_k", dequantized_E_k.max(), dequantized_E_k.min())
-            # !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-            reconstructed_V_k = dequantized_E_k + prediction_V_k[:dequantized_E_k.shape[0], :dequantized_E_k.shape[1]] # (i)
-            print("reconstructed_V_k", reconstructed_V_k.max(), reconstructed_V_k.min())
-            #frame.debug_write(clip(add_averages(YUV.to_RGB(reconstructed_V_k), averages)), f"{video}reconstructed_", k) # Decoder's output
-            #for y in range(int(V_k.shape[0]/block_y_side)):
-            #    for x in range(int(V_k.shape[1]/block_x_side)):
-            #        if block_types[y, x] == 1: # I-type
-            #            reconstructed_V_k[y*block_y_side:(y+1)*block_y_side, x*block_x_side:(x+1)*block_x_side] -= averages[y, x]
+            reconstructed_V_k = decide_types(video, k, q_step, V_k, reconstructed_V_k, E_k, prediction_V_k)
             frame.debug_write(clip(YUV.to_RGB(reconstructed_V_k)), f"{video}reconstructed_", k) # Decoder's output
             reconstructed_V_k_1 = reconstructed_V_k # (j)
     except:
-        print(colors.red(f'image_IPP_step.encode(video="{video}", n_frames={n_frames}, q_step={q_step})'))
+        print(colors.red(f'image_IPP_adaptive.encode(video="{video}", n_frames={n_frames}, q_step={q_step})'))
         raise
 
 def encode5(video, n_frames, q_step):
