@@ -3,6 +3,10 @@
 # Simple IPP block-based video compressor. Only B blocks are allowed
 # in B-type frames.
 
+# https://stackoverflow.com/questions/34123272/ffmpeg-transmux-mpegts-to-mp4-gives-error-muxer-does-not-support-non-seekable: ffmpeg -blocksize 1 -i /tmp/original_000.png -blocksize 1 -flush_packets 1 -movflags frag_keyframe+empty_moov -f mp4 - | ffmpeg -blocksize 1 -i - -blocksize 1 -flush_packets 1 /tmp/decoded_%3d.png
+
+# https://video.stackexchange.com/questions/16958/ffmpeg-encode-in-all-i-mode-h264-and-h265-streams: fmpeg -i input -c:v libx264 -intra output / ffmpeg -i input -c:v libx265 -x265-params frame-threads=4:keyint=1:ref=1:no-open-gop=1:weightp=0:weightb=0:cutree=0:rc-lookahead=0:bframes=0:scenecut=0:b-adapt=0:repeat-headers=1 output
+
 import DWT
 import LP
 import numpy as np
@@ -49,6 +53,42 @@ def I_codec2(E_k, prefix, k, q_step):
     #return dq_E_k.astype(np.float64)
     return dq_E_k
 
+# Versión basada en DWT+Q
+def __E_codec(E_k, n_levels, q_step, prefix, k):
+    decom = DWT.analyze(E_k, n_levels)
+    #print(decom[0])
+    LL = decom[0]
+    decom[0] = Q.quantize(LL, q_step)
+    for resolution in decom[1:]:
+        resolution = list(resolution)
+        LH = resolution[0]
+        resolution[0][:] = Q.quantize(LH, q_step)
+        HL = resolution[1]
+        resolution[1][:] = Q.quantize(HL, q_step)
+        HH = resolution[2]
+        resolution[2][:] = Q.quantize(HH, q_step)
+        resolution = tuple(resolution)
+    DWT.write(decom, prefix, k, n_levels)
+    LL = decom[0]
+    #print(LL)
+    decom[0] = Q.dequantize(LL, q_step)
+    #print(decom[0])
+    for resolution in decom[1:]:
+        resolution = list(resolution)
+        LH = resolution[0]
+        resolution[0][:] = Q.dequantize(LH, q_step)
+        HL = resolution[1]
+        resolution[1][:] = Q.dequantize(HL, q_step)
+        HH = resolution[2]
+        resolution[2][:] = Q.dequantize(HH, q_step)
+        resolution = tuple(resolution)
+    #print("->", decom[1][0])
+    dq_E_k = DWT.synthesize(decom, n_levels)
+    return dq_E_k
+    #return E_k-dq_E_k
+    #return E_k
+
+'''
 def E_codec(E_k, prefix, k, q_step):
     assert q_step > 0
     decom = DWT.analyze(E_k, N_LEVELS)
@@ -83,10 +123,8 @@ def E_codec(E_k, prefix, k, q_step):
     return dq_E_k
     #return E_k-dq_E_k
     #return E_k
+'''
 
-# https://stackoverflow.com/questions/34123272/ffmpeg-transmux-mpegts-to-mp4-gives-error-muxer-does-not-support-non-seekable: ffmpeg -blocksize 1 -i /tmp/original_000.png -blocksize 1 -flush_packets 1 -movflags frag_keyframe+empty_moov -f mp4 - | ffmpeg -blocksize 1 -i - -blocksize 1 -flush_packets 1 /tmp/decoded_%3d.png
-
-# https://video.stackexchange.com/questions/16958/ffmpeg-encode-in-all-i-mode-h264-and-h265-streams: fmpeg -i input -c:v libx264 -intra output / ffmpeg -i input -c:v libx265 -x265-params frame-threads=4:keyint=1:ref=1:no-open-gop=1:weightp=0:weightb=0:cutree=0:rc-lookahead=0:bframes=0:scenecut=0:b-adapt=0:repeat-headers=1 output
 def E_codec2(E_k, prefix, k):
     print("error", E_k.max(), E_k.min())
     L.write(YUV.to_RGB(E_k), prefix + "_to_mp4", k)
@@ -126,8 +164,8 @@ def E_codec5(E_k, prefix, k, q_step):
     
     #os.system(f"ffmpeg -loglevel fatal -y -i {prefix}_to_mp4_{k:03d}.png -crf {q_step} {prefix}_{k:03d}.mp4")
     #os.system(f"ffmpeg -loglevel fatal -y -i {prefix}before_{k:03d}.png -crf {q_step} {prefix}{k:03d}.mp4")
-    #os.system(f"ffmpeg -loglevel fatal -y -i {prefix}before_{k:03d}.png -crf {q_step} -flags -loop {prefix}{k:03d}.mp4")
-    os.system(f"ffmpeg -y -i {prefix}before_{k:03d}.png -crf {q_step} -flags -loop {prefix}{k:03d}.mp4")
+    os.system(f"ffmpeg -loglevel fatal -y -i {prefix}before_{k:03d}.png -crf {q_step} -flags -loop {prefix}{k:03d}.mp4")
+    #os.system(f"ffmpeg -y -i {prefix}before_{k:03d}.png -crf {q_step} -flags -loop {prefix}{k:03d}.mp4")
     #os.system(f"ffmpeg -loglevel fatal -y -i {prefix}_{k:03d}.mp4 {prefix}_from_mp4_{k:03d}.png")
     os.system(f"ffmpeg -loglevel fatal -y -i {prefix}{k:03d}.mp4 {prefix}{k:03d}.png")
     #dq_E_k = (YUV.from_RGB(frame.read(prefix, k).astype(np.int16) - 256))
@@ -136,7 +174,7 @@ def E_codec5(E_k, prefix, k, q_step):
     dq_E_k //= 128
     dq_E_k -= 256
     dq_E_k = np.array(dq_E_k, dtype=np.int16)
-    dq_E_k = YUV.from_RGB(dq_E_k) # Ojo, devuelve valores muy grandes
+    dq_E_k = YUV.from_RGB(dq_E_k)
     
     debug.print("deQ error YUV", dq_E_k.max(), dq_E_k.min(), dq_E_k.dtype)
     #dq_E_k = Q.dequantize(dq_E_k, 4)
@@ -195,14 +233,14 @@ def encode(video,    # Prefix of the original sequence of PNG images
         E_k = V_k # (f)
         #frame.debug_write(YUV.to_RGB(E_k), f"{video}_prediction_error", k)
         #dequantized_E_k = E_codec(E_k, N_LEVELS, q_step, codestream, 0) # (g and h)
-        dequantized_E_k = I_codec(E_k, f"{video}texture_", 0, q_step) # (g and h)
+        dequantized_E_k = I_codec(V_k, f"{video}texture_", 0, q_step) # (g and h)
         reconstructed_V_k = dequantized_E_k # (i)
         frame.debug_write(clip(YUV.to_RGB(reconstructed_V_k)), f"{video}reconstructed_", k) # Decoder's output
         reconstructed_V_k_1 = reconstructed_V_k # (j)
         for k in range(1, n_frames):
             W_k = frame.read(video, k).astype(np.int16)
             V_k = YUV.from_RGB(W_k) # (a)
-            print("V_k", V_k[...,2].max(), V_k[...,2].min())
+            debug.print("V_k", V_k[...,2].max(), V_k[...,2].min())
             #flow = motion.estimate(V_k[...,0], V_k_1[...,0], flow) # (c)
             initial_flow = np.zeros((V_k.shape[0], V_k.shape[1], 2), dtype=np.float32)
             flow = motion.estimate(V_k[...,0], V_k_1[...,0], initial_flow) # (c)
@@ -210,22 +248,16 @@ def encode(video,    # Prefix of the original sequence of PNG images
             #flow = np.rint(flow)
             #flow = np.random.randint(-1, 1, flow.shape).astype(np.float32)
             #print("flow.dtype=", flow.dtype, "flow.max()=", flow.max(), "flow.min()=", flow.min())
-            print("COMPUTED flow", flow.max(), flow.min())
+            debug.print("COMPUTED flow", flow.max(), flow.min())
             V_k_1 = V_k # (b)
             reconstructed_flow = V_codec(flow, log2_block_side, f"{video}motion_", k) # (d and e)
-            print("USED flow", reconstructed_flow.max(), reconstructed_flow.min())
+            debug.print("USED flow", reconstructed_flow.max(), reconstructed_flow.min())
             #frame.debug_write(motion.colorize(flow), f"{codestream}flow", k)
             #frame.debug_write(motion.colorize(reconstructed_flow.astype(np.float32)), f"{codestream}reconstructed_flow", k)
             #prediction_V_k = motion.make_prediction(reconstructed_V_k_1, reconstructed_flow).astype(np.int16) # (j)
-            #print("shape:", reconstructed_V_k_1.dtype, reconstructed_flow.dtype)
-            print("=========", reconstructed_V_k_1.max(), reconstructed_V_k_1.min(), reconstructed_V_k_1.dtype)
             prediction_V_k = motion.make_prediction(reconstructed_V_k_1, reconstructed_flow) # (j)
-            #print("flow.shape =", flow.shape, "reconstructed_flow.shape =", reconstructed_flow.shape)
             frame.debug_write(clip(YUV.to_RGB(prediction_V_k)), f"{video}encoder_prediction", k)
-            print("-------", V_k.max(), V_k.min(), V_k.dtype, prediction_V_k.max(), prediction_V_k.min(), prediction_V_k.dtype)
             E_k = V_k - prediction_V_k[:V_k.shape[0], :V_k.shape[1], :] # (f)
-            #print("E_k.shape=",E_k.shape, "V_k.shape=", V_k.shape, "prediction_V_k.shape=", prediction_V_k.shape)
-            #print(E_k.dtype, E_k.shape)
             frame.debug_write(clip(YUV.to_RGB(E_k)+128), f"{video}encoder_prediction_error", k)
             #dequantized_E_k = E_codec(E_k, 5, q_step, codestream, k) # (g and h)
             dequantized_E_k = E_codec5(E_k, f"{video}texture_", k, q_step) # (g and h)
@@ -233,7 +265,6 @@ def encode(video,    # Prefix of the original sequence of PNG images
             #quantized_E_k = Q.quantize(E_k, step=q_step) # (e)
             #dequantized_E_k = Q.dequantize(quantized_E_k, step=q_step) # (f)
             frame.debug_write(clip(YUV.to_RGB(dequantized_E_k)), f"{video}encoder_dequantized_prediction_error", k)
-            print(">>>>>>>>>>>>>>", dequantized_E_k.max(), dequantized_E_k.min(), dequantized_E_k.dtype)
             reconstructed_V_k = dequantized_E_k + prediction_V_k[:dequantized_E_k.shape[0], :dequantized_E_k.shape[1], :] # (i)
             #print(reconstructed_V_k.dtype, reconstructed_V_k.shape)
             #L.write(reconstructed_V_k, video + "reconstructed", k)
@@ -311,7 +342,7 @@ def compute_br(prefix, frames_per_second, frame_shape, n_frames):
         next_fn = f"{prefix}motion_x_{k:03d}.png"
         diff_comp = next_comp - prev_comp
         L.write(diff_comp, prefix + "motion_x_diff_comp_", k)
-        comp_length += os.path.getsize(f"{prefix}motion_x_diff_comp_{k:03d}.png")
+        #comp_length += os.path.getsize(f"{prefix}motion_x_diff_comp_{k:03d}.png")
         '''
         # Count the number of common bytes starting and the beginning.
         counter = -2

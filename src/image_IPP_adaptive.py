@@ -28,6 +28,7 @@ import math
 import image_IPP
 import distortion
 import values
+import debug
 
 LOG2_BLOCK_SIDE = 4 # BLOCK_SIZE = 1 << LOG2_BLOCK_SIDE
 BLOCK_SIDE = 2**LOG2_BLOCK_SIDE 
@@ -55,56 +56,10 @@ def norm(x):
 def clip(x):
     return(np.clip(x, 0 ,255).astype(np.uint8))
 
-def E_codec(E_k, n_levels, q_step, prefix, k):
-    decom = DWT.analyze(E_k, n_levels)
-    #print(decom[0])
-    LL = decom[0]
-    decom[0] = Q.quantize(LL, q_step)
-    for resolution in decom[1:]:
-        resolution = list(resolution)
-        LH = resolution[0]
-        resolution[0][:] = Q.quantize(LH, q_step)
-        HL = resolution[1]
-        resolution[1][:] = Q.quantize(HL, q_step)
-        HH = resolution[2]
-        resolution[2][:] = Q.quantize(HH, q_step)
-        resolution = tuple(resolution)
-    DWT.write(decom, prefix, k, n_levels)
-    LL = decom[0]
-    #print(LL)
-    decom[0] = Q.dequantize(LL, q_step)
-    #print(decom[0])
-    for resolution in decom[1:]:
-        resolution = list(resolution)
-        LH = resolution[0]
-        resolution[0][:] = Q.dequantize(LH, q_step)
-        HL = resolution[1]
-        resolution[1][:] = Q.dequantize(HL, q_step)
-        HH = resolution[2]
-        resolution[2][:] = Q.dequantize(HH, q_step)
-        resolution = tuple(resolution)
-    #print("->", decom[1][0])
-    dq_E_k = DWT.synthesize(decom, n_levels)
-    return dq_E_k
-    #return E_k-dq_E_k
-    #return E_k
-
-# https://stackoverflow.com/questions/34123272/ffmpeg-transmux-mpegts-to-mp4-gives-error-muxer-does-not-support-non-seekable: ffmpeg -blocksize 1 -i /tmp/original_000.png -blocksize 1 -flush_packets 1 -movflags frag_keyframe+empty_moov -f mp4 - | ffmpeg -blocksize 1 -i - -blocksize 1 -flush_packets 1 /tmp/decoded_%3d.png
-
-# https://video.stackexchange.com/questions/16958/ffmpeg-encode-in-all-i-mode-h264-and-h265-streams: fmpeg -i input -c:v libx264 -intra output / ffmpeg -i input -c:v libx265 -x265-params frame-threads=4:keyint=1:ref=1:no-open-gop=1:weightp=0:weightb=0:cutree=0:rc-lookahead=0:bframes=0:scenecut=0:b-adapt=0:repeat-headers=1 output
-def E_codec2(E_k, prefix, k):
-    print("Error", E_k.max(), E_k.min())
-    L.write(YUV.to_RGB(E_k), prefix + "_to_mp4", k)
-    #frame.write(YUV.to_RGB(E_k), prefix + "_to_mp4", k)
-    os.system(f"ffmpeg -loglevel fatal -y -i {prefix}_to_mp4_{k:03d}_LL.png -crf 1 {prefix}_{k:03d}.mp4")
-    os.system(f"ffmpeg -loglevel fatal -y -i {prefix}_{k:03d}.mp4 {prefix}_from_mp4_{k:03d}_LL.png")
-    dq_E_k = YUV.from_RGB(L.read(prefix + "_from_mp4", k))
-    #dq_E_k = (YUV.from_RGB(frame.read(prefix + "_from_mp4", k)))
-    return dq_E_k.astype(np.float64)
-
 def I_codec(E_k, prefix, k, q_step):
     print("Error", E_k.max(), E_k.min())
     #frame.write(YUV.to_RGB(E_k), prefix + "before_", k)
+    to_write = YUV.to_RGB(V_k).astype(np.uint8)
     frame.write(YUV.to_RGB(E_k) + 128, prefix + "before_", k)
     os.system(f"ffmpeg -loglevel fatal -y -i {prefix}before_{k:03d}.png -crf {q_step} {prefix}{k:03d}.mp4")
     os.system(f"ffmpeg -loglevel fatal -y -i {prefix}{k:03d}.mp4 {prefix}{k:03d}.png")
@@ -145,7 +100,7 @@ def E_codec4(E_k, prefix, k, q_step):
     #dq_E_k = YUV.from_RGB(frame.read(prefix, k))
     return dq_E_k
 
-def E_codec5(E_k, prefix, k, q_step):
+def _E_codec5(E_k, prefix, k, q_step):
     print("Error", E_k.max(), E_k.min())
     frame.write(clip(YUV.to_RGB(E_k) + 128), prefix + "before_", k)
     os.system(f"ffmpeg -loglevel fatal -y -i {prefix}before_{k:03d}.png -b 64k -flags -loop {prefix}{k:03d}.mp4")
@@ -155,6 +110,7 @@ def E_codec5(E_k, prefix, k, q_step):
 
 def T_codec(types, prefix, frame_number):
     frame.write(types, prefix + "types_", frame_number)
+    # Averages of I-type blocks?
 
 def V_codec(motion, n_levels, prefix, frame_number):
     #print(prefix+"_y")
@@ -228,28 +184,29 @@ def add_averages(V_k, averages):
 def encode(video, n_frames, q_step):
     try:
         k = 0
-        W_k = frame.read(video, k)
-        averages = compute_averages(W_k)
-        W_k = substract_averages(W_k, averages)
+        W_k = frame.read(video, k).astype(np.int16)
+        #averages = compute_averages(W_k)
+        #W_k = substract_averages(W_k, averages)
         flow = np.zeros((W_k.shape[0], W_k.shape[1], 2), dtype=np.float32)
         V_k = YUV.from_RGB(W_k) # (a)
         block_types = np.zeros((int(V_k.shape[0]/block_y_side), int(V_k.shape[1]/block_x_side)), dtype=np.uint8)
-        V_k_1 = V_k.copy() # (b)
-        E_k = V_k.copy() # (f)
-        dequantized_E_k = I_codec(E_k, f"{video}texture_", 0, q_step) # (g and h) # Mismo que E_codec4!!!!
+        V_k_1 = V_k # (b)
+        E_k = V_k # (f)
+        dequantized_E_k = image_IPP.I_codec(V_k, f"{video}texture_", 0, q_step) # (g and h) # Mismo que E_codec4!!!!
         reconstructed_V_k = dequantized_E_k # (i)
-        frame.debug_write(clip(add_averages(YUV.to_RGB(reconstructed_V_k), averages)),
-                               f"{video}reconstructed_", k) # Decoder's output
+        #frame.debug_write(clip(add_averages(YUV.to_RGB(reconstructed_V_k), averages)),
+        #                       f"{video}reconstructed_", k) # Decoder's output
+        frame.debug_write(clip(YUV.to_RGB(reconstructed_V_k)), f"{video}reconstructed_", k) # Decoder's output
         reconstructed_V_k_1 = reconstructed_V_k # (j)
         for k in range(1, n_frames):
-            W_k = frame.read(video, k)
-            averages = compute_averages(W_k)
-            W_k = substract_averages(W_k, averages)
+            W_k = frame.read(video, k).astype(np.int16)
+            #W_k = substract_averages(W_k, averages)
             V_k = YUV.from_RGB(W_k) # (a)
+            averages = compute_averages(V_k)
             initial_flow = np.zeros((V_k.shape[0], V_k.shape[1], 2), dtype=np.float32)
             flow = motion.estimate(V_k[...,0], V_k_1[...,0], initial_flow) # (c)
             print("COMPUTED flow", flow.max(), flow.min())
-            V_k_1 = V_k.copy() # (b)
+            V_k_1 = V_k # (b)
             reconstructed_flow = V_codec(flow, LOG2_BLOCK_SIDE, f"{video}motion_", k) # (d and e)
             print("USED flow", reconstructed_flow.max(), reconstructed_flow.min())
             prediction_V_k = motion.make_prediction(reconstructed_V_k_1, reconstructed_flow) # (j)
@@ -257,51 +214,63 @@ def encode(video, n_frames, q_step):
             print("V_k", V_k.max(), V_k.min())
             print("prediction_V_k", prediction_V_k.max(), prediction_V_k.min())
             print("E_k", E_k.max(), E_k.min())
-            E_k = np.clip(E_k, -128, 127)
-            dequantized_E_k = E_codec4(E_k, f"{video}texture_", k, q_step) # (g and h)
+            #E_k = np.clip(E_k, -128, 127) # No necesario si 16bpp
+            #dequantized_E_k = E_codec4(E_k, f"{video}texture_", k, q_step) # (g and h)
+            dequantized_E_k = image_IPP.E_codec5(E_k, f"{video}texture_", k, q_step) # (g and h)
 
             print("dequantized_E_k", dequantized_E_k.max(), dequantized_E_k.min())
             reconstructed_V_k = dequantized_E_k + prediction_V_k[:dequantized_E_k.shape[0], :dequantized_E_k.shape[1]] # (i)
             print("reconstructed_V_k", reconstructed_V_k.max(), reconstructed_V_k.min())
-            frame.debug_write(clip(YUV.to_RGB(reconstructed_V_k) + 128), f"{video}reconstructed_", k) # Decoder's output
-            dequantized_V_k = I_codec(V_k, f"{video}texture_", k, q_step)
+            frame.debug_write(clip(YUV.to_RGB(reconstructed_V_k)), f"{video}reconstructed_without_I_", k) # Decoder's output
+            
+            # I/P-type block computation
+            #dequantized_V_k = I_codec(V_k, f"{video}texture_", k, q_step)
+            dequantized_V_k = image_IPP.I_codec(V_k, f"{video}texture_I_", k, q_step)
             for y in range(int(V_k.shape[0]/block_y_side)):
                 for x in range(int(V_k.shape[1]/block_x_side)):
-                    V_k_block_distortion = \
+                    I_block_distortion = \
                         distortion.MSE(V_k[y*block_y_side:(y+1)*block_y_side,
                                            x*block_x_side:(x+1)*block_x_side][..., 0],
                                        dequantized_V_k[y*block_y_side:(y+1)*block_y_side,
                                                        x*block_x_side:(x+1)*block_x_side][..., 0])
-                    reconstructed_V_k_block_distortion = \
+                    P_block_distortion = \
                         distortion.MSE(V_k[y*block_y_side:(y+1)*block_y_side,
                                            x*block_x_side:(x+1)*block_x_side][..., 0],
                                        reconstructed_V_k[y*block_y_side:(y+1)*block_y_side,
                                                          x*block_x_side:(x+1)*block_x_side][..., 0])
-                    if V_k_block_distortion > reconstructed_V_k_block_distortion:
-                        print('B', end='')
+                    if I_block_distortion > P_block_distortion:
+                        debug.print('P', end='')
                         block_types[y, x] = 0
                     else:
-                        print('I', end='')
+                        debug.print('I', end='')
                         E_k[y*block_y_side:(y+1)*block_y_side,
                             x*block_x_side:(x+1)*block_x_side] = \
                                 V_k[y*block_y_side:(y+1)*block_y_side,
-                                    x*block_x_side:(x+1)*block_x_side]
+                                    x*block_x_side:(x+1)*block_x_side] - averages[y, x]
                         #prediction_V_k[y*block_y_side:(y+1)*block_y_side,
                         #    x*block_x_side:(x+1)*block_x_side] = 128
                         prediction_V_k[y*block_y_side:(y+1)*block_y_side,
-                                       x*block_x_side:(x+1)*block_x_side] = 0
+                                       x*block_x_side:(x+1)*block_x_side] = averages[y, x]
                         block_types[y, x] = 1
-                print('')
+                debug.print('')
             T_codec(block_types, video, k)
-            E_k = np.clip(E_k, -128, 127)
-            dequantized_E_k = E_codec4(E_k, f"{video}texture_", k, q_step) # (g and h)
+            # Parece que esto ya está arriba!!!!!!!!!!!!!!!!
+            #E_k = np.clip(E_k, -128, 127) # Innecesario si 16bpp
+            #dequantized_E_k = E_codec4(E_k, f"{video}texture_", k, q_step) # (g and h)
 
-            print("dequantized_E_k", dequantized_E_k.max(), dequantized_E_k.min())
+            # Regenerate the reconstructed residue using the I-type blocks
+            dequantized_E_k = image_IPP.E_codec5(E_k, f"{video}texture_", k, q_step) # (g and h)
+
+            #print("dequantized_E_k", dequantized_E_k.max(), dequantized_E_k.min())
+            # !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
             reconstructed_V_k = dequantized_E_k + prediction_V_k[:dequantized_E_k.shape[0], :dequantized_E_k.shape[1]] # (i)
             print("reconstructed_V_k", reconstructed_V_k.max(), reconstructed_V_k.min())
-            frame.debug_write(clip(add_averages(YUV.to_RGB(reconstructed_V_k), averages)),
-                              f"{video}reconstructed_", k) # Decoder's output
-
+            #frame.debug_write(clip(add_averages(YUV.to_RGB(reconstructed_V_k), averages)), f"{video}reconstructed_", k) # Decoder's output
+            #for y in range(int(V_k.shape[0]/block_y_side)):
+            #    for x in range(int(V_k.shape[1]/block_x_side)):
+            #        if block_types[y, x] == 1: # I-type
+            #            reconstructed_V_k[y*block_y_side:(y+1)*block_y_side, x*block_x_side:(x+1)*block_x_side] -= averages[y, x]
+            frame.debug_write(clip(YUV.to_RGB(reconstructed_V_k)), f"{video}reconstructed_", k) # Decoder's output
             reconstructed_V_k_1 = reconstructed_V_k # (j)
     except:
         print(colors.red(f'image_IPP_step.encode(video="{video}", n_frames={n_frames}, q_step={q_step})'))
@@ -595,9 +564,13 @@ def compute_br2(prefix, frames_per_second, frame_shape, n_frames):
 
 def compute_br(prefix, frames_per_second, frame_shape, n_frames):
     kbps, bpp = image_IPP.compute_br(prefix, frames_per_second, frame_shape, n_frames)
-    print("desde", kbps, bpp)
 
     # I/B-Types.
+    command = f"cat {prefix}types_???.png | gzip -9 > /tmp/image_IPP_adaptive_types.gz"
+    debug.print(command)
+    os.system(command)
+    types_length = os.path.getsize(f"/tmp/image_IPP_adaptive_types.gz")
+    '''
     prev_fn = f"{prefix}types_001.png"
     types_length = os.path.getsize(prev_fn)
     for k in range(2, n_frames):
@@ -616,6 +589,7 @@ def compute_br(prefix, frames_per_second, frame_shape, n_frames):
                     break
                 counter += 1
         types_length -= counter
+    '''
     frame_height = frame_shape[0]
     frame_width = frame_shape[1]
     n_channels = frame_shape[2]
