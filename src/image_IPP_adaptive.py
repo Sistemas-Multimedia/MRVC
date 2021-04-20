@@ -1,4 +1,4 @@
-''' MRVC/image_IPP_2.py '''
+''' MRVC/image_IPP_adaptive.py '''
 
 # An IPP video compressor, similar to image_IPP.py, but now the blocks
 # can also be I-type in a B-type frame. To decide the type, we compare
@@ -29,14 +29,8 @@ import image_IPP
 import distortion
 import values
 
-VIDEO_PREFIX = "../sequences/complete_stockholm/"
-CODESTREAM_PREFIX = "/tmp/"
-DECODED_VIDEO_PREFIX = "/tmp/decoder_"
-#Q_STEP = 128
-N_FRAMES = 16
 LOG2_BLOCK_SIDE = 4 # BLOCK_SIZE = 1 << LOG2_BLOCK_SIDE
 BLOCK_SIDE = 2**LOG2_BLOCK_SIDE 
-N_LEVELS = 5
 block_x_side = BLOCK_SIDE
 block_y_side = BLOCK_SIDE
 
