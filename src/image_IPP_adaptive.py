@@ -210,6 +210,7 @@ def encode(video, n_frames, q_step):
             reconstructed_flow = V_codec(flow, LOG2_BLOCK_SIDE, f"{video}motion_", k) # (d and e)
             print("USED flow", reconstructed_flow.max(), reconstructed_flow.min())
             prediction_V_k = motion.make_prediction(reconstructed_V_k_1, reconstructed_flow) # (j)
+            frame.debug_write(clip(YUV.to_RGB(prediction_V_k)), f"{video}prediction_", k) # Decoder's output
             E_k = V_k - prediction_V_k[:V_k.shape[0], :V_k.shape[1], :] # (f)
             print("V_k", V_k.max(), V_k.min())
             print("prediction_V_k", prediction_V_k.max(), prediction_V_k.min())
@@ -220,12 +221,14 @@ def encode(video, n_frames, q_step):
 
             print("dequantized_E_k", dequantized_E_k.max(), dequantized_E_k.min())
             reconstructed_V_k = dequantized_E_k + prediction_V_k[:dequantized_E_k.shape[0], :dequantized_E_k.shape[1]] # (i)
-            print("reconstructed_V_k", reconstructed_V_k.max(), reconstructed_V_k.min())
+            print("--> reconstructed_V_k", reconstructed_V_k.max(), reconstructed_V_k.min())
             frame.debug_write(clip(YUV.to_RGB(reconstructed_V_k)), f"{video}reconstructed_without_I_", k) # Decoder's output
             
             # I/P-type block computation
             #dequantized_V_k = I_codec(V_k, f"{video}texture_", k, q_step)
             dequantized_V_k = image_IPP.I_codec(V_k, f"{video}texture_I_", k, q_step)
+            print("--> dequantized_V_k", dequantized_V_k.max(), dequantized_V_k.min())
+            print("--> V_k", V_k.max(), V_k.min())
             for y in range(int(V_k.shape[0]/block_y_side)):
                 for x in range(int(V_k.shape[1]/block_x_side)):
                     I_block_distortion = \

@@ -21,7 +21,7 @@ n_frames = 30
 # Frames Per Second.
 FPS = 30
 
-for q_step in range(41, 42, 1):
+for q_step in range(31, 32, 1):
 #for q_step in range(21, 42, 3):
 
     IPP.encode(video, n_frames, q_step)
