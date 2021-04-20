@@ -22,7 +22,7 @@ def read(prefix: str, frame_number: int) -> np.ndarray: # [row, column, componen
     #subband = subband.astype(np.int32)
     subband = np.array(subband, dtype=np.int32)
     subband -= OFFSET
-    return subband#.astype(np.int16)
+    return subband.astype(np.int16)
 
 def write(subband: np.ndarray, prefix: str, frame_number: int) -> None:
     fn = f"{prefix}{frame_number:03d}LL.png"

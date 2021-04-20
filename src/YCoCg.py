@@ -3,6 +3,8 @@
 import numpy as np
 
 def from_RGB(RGB_frame: np.ndarray) -> np.ndarray:
+    assert RGB_frame.dtype != np.uint8
+    assert RGB_frame.dtype != np.uint16
     #R, G, B = RGB_frame[0], RGB_frame[1], RGB_frame[2]
     R, G, B = RGB_frame[:,:,0], RGB_frame[:,:,1], RGB_frame[:,:,2]
     YCoCg_frame = np.empty_like(RGB_frame)
