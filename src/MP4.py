@@ -31,4 +31,4 @@ def compute_br(prefix, frames_per_second, frame_shape, n_frames):
     total_bytes = os.path.getsize("/tmp/output.mp4")
     kbps = total_bytes*8/sequence_time/1000
     bpp = total_bytes*8/(frame_width*frame_height*n_channels*n_frames)
-    return kbps, bpp
+    return kbps, bpp, total_bytes
