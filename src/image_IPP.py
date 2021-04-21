@@ -29,7 +29,7 @@ import debug
 
 class image_IPP_codec():
 
-    log2_block_side = 3
+    log2_block_side = 4
     block_x_side = 2**log2_block_side
     block_y_side = 2**log2_block_side
     
@@ -75,7 +75,7 @@ class image_IPP_codec():
                 E_k = V_k - prediction_V_k[:V_k.shape[0], :V_k.shape[1], :] # (f)
                 frame.debug_write(self.clip(YUV.to_RGB(E_k)+128), f"{video}prediction_error_", k)
                 #dequantized_E_k = E_codec(E_k, 5, q_step, codestream, k) # (g and h)
-                dequantized_E_k = self.E_codec5(E_k, f"{video}texture_", k, q_step) # (g and h)
+                dequantized_E_k = self.E_codec4(E_k, f"{video}texture_", k, q_step) # (g and h)
                 #print(dequantized_E_k.dtype, dequantized_E_k.shape)
                 #quantized_E_k = Q.quantize(E_k, step=q_step) # (e)
                 #dequantized_E_k = Q.dequantize(quantized_E_k, step=q_step) # (f)
@@ -211,6 +211,24 @@ class image_IPP_codec():
         dq_V_k = YUV.from_RGB(from_read.astype(np.int16))
         #return dq_E_k.astype(np.float64)
         return dq_V_k
+
+    def E_codec4(self, E_k, prefix, k, q_step):
+        debug.print("image_IPP.E_codec: error", E_k.max(), E_k.min(), E_k.dtype)
+        #frame.write(clip(YUV.to_RGB(E_k)), prefix + "_to_mp4", k)
+        #frame.write(clip(YUV.to_RGB(E_k)+128), prefix + "_to_mp4_", k)
+        #E_k = Q.quantize(E_k, 4)
+        frame.write(self.clip(YUV.to_RGB(E_k)+128), prefix + "before_", k)
+        #os.system(f"ffmpeg -loglevel fatal -y -i {prefix}_to_mp4_{k:03d}.png -crf {q_step} {prefix}_{k:03d}.mp4")
+        #os.system(f"ffmpeg -loglevel fatal -y -i {prefix}before_{k:03d}.png -crf {q_step} {prefix}{k:03d}.mp4")
+        os.system(f"ffmpeg -loglevel fatal -y -i {prefix}before_{k:03d}.png -crf {q_step} -flags -loop {prefix}{k:03d}.mp4")
+
+        #os.system(f"ffmpeg -loglevel fatal -y -i {prefix}_{k:03d}.mp4 {prefix}_from_mp4_{k:03d}.png")
+        os.system(f"ffmpeg -loglevel fatal -y -i {prefix}{k:03d}.mp4 {prefix}{k:03d}.png")
+        dq_E_k = (YUV.from_RGB(frame.read(prefix, k).astype(np.int16) - 128))
+        debug.print("image_IPP.E_codec: deQ error YUV", dq_E_k.max(), dq_E_k.min(), dq_E_k.dtype)    
+        #dq_E_k = Q.dequantize(dq_E_k, 4)
+        #return dq_E_k.astype(np.float64)
+        return dq_E_k
 
     def E_codec5(self, E_k, prefix, k, q_step):
         debug.print("image_IPP.E_codec: error YUV", E_k.max(), E_k.min(), E_k.dtype)
@@ -373,29 +391,11 @@ class image_IPP_codec():
         #dq_E_k = (YUV.from_RGB(frame.read(prefix + "_from_mp4", k)))
         return dq_E_k.astype(np.float64)
 
-    def E_codec4(E_k, prefix, k, q_step):
-        print("error", E_k.max(), E_k.min())
-        #frame.write(clip(YUV.to_RGB(E_k)), prefix + "_to_mp4", k)
-        #frame.write(clip(YUV.to_RGB(E_k)+128), prefix + "_to_mp4_", k)
-        #E_k = Q.quantize(E_k, 4)
-        frame.write(self.clip(YUV.to_RGB(E_k)+128), prefix + "before_", k)
-        #os.system(f"ffmpeg -loglevel fatal -y -i {prefix}_to_mp4_{k:03d}.png -crf {q_step} {prefix}_{k:03d}.mp4")
-        #os.system(f"ffmpeg -loglevel fatal -y -i {prefix}before_{k:03d}.png -crf {q_step} {prefix}{k:03d}.mp4")
-        os.system(f"ffmpeg -loglevel fatal -y -i {prefix}before_{k:03d}.png -crf {q_step} -flags -loop {prefix}{k:03d}.mp4")
-
-        #os.system(f"ffmpeg -loglevel fatal -y -i {prefix}_{k:03d}.mp4 {prefix}_from_mp4_{k:03d}.png")
-        os.system(f"ffmpeg -loglevel fatal -y -i {prefix}{k:03d}.mp4 {prefix}{k:03d}.png")
-        dq_E_k = (YUV.from_RGB(frame.read(prefix, k).astype(np.int16) - 128))
-        #dq_E_k = Q.dequantize(dq_E_k, 4)
-        #return dq_E_k.astype(np.float64)
-        return dq_E_k
-
     def _V_codec(motion, n_levels, prefix, frame_number):
         pyramid = np.rint(motion).astype(np.int16)
         frame.write(pyramid[:,:,0], prefix+"_y_", frame_number)
         frame.write(pyramid[:,:,1], prefix+"_x_", frame_number)
         return pyramid
-
 
     def compute_br2(prefix, frames_per_second, frame_shape, n_frames):
         #print("*"*80, prefix)

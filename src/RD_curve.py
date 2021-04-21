@@ -8,8 +8,8 @@ import frame
 
 # --> Select below the codec. <--
 #import image_interpolated_IPP as codec
-import image_IPP as codec
-#import image_IPP_adaptive as codec
+#import image_IPP as codec
+import image_IPP_adaptive as codec
 #import MP4 as codec
 #import IPP_compressor as codec
 
