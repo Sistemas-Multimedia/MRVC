@@ -106,7 +106,7 @@ class image_IPP_adaptive_codec(image_IPP.image_IPP_codec):
         # Averages of I-type blocks?
 
     def compute_br(self, prefix, frames_per_second, frame_shape, n_frames):
-        kbps, bpp = image_IPP.compute_br(prefix, frames_per_second, frame_shape, n_frames)
+        kbps, bpp , n_bytes = image_IPP.compute_br(prefix, frames_per_second, frame_shape, n_frames)
 
         # I/B-Types.
         command = f"cat {prefix}types_???.png | gzip -9 > /tmp/image_IPP_adaptive_types.gz"
@@ -141,7 +141,7 @@ class image_IPP_adaptive_codec(image_IPP.image_IPP_codec):
         types_bpp = types_length*8/(frame_width*frame_height*n_channels*n_frames)
         print(f"height={frame_height} width={frame_width} n_channels={n_channels} sequence_time={sequence_time}")
         print(f"types: {types_length} bytes, {types_kbps} KBPS, {types_bpp} BPP")
-        return kbps + types_kbps, bpp + types_bpp
+        return kbps + types_kbps, bpp + types_bpp, types_length + n_bytes
 
     def entropy(sequence_of_symbols):
         '''In bits/symbol.'''

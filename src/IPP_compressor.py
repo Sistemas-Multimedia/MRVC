@@ -45,70 +45,79 @@ n_frames = 30
 FPS = 30
 
 if config.codec == "H264":
-    q_min = 21
+    q_min = 31
     q_max = 51
+    q_step = q_min
     #q_min = q_max = 1
 
 if config.codec == "Q+PNG":
     q_min = 1
     q_max = 512
 
-gains = spatial_transform.compute_gains(n_levels)
-print(gains)
+def compute_spatial_transform(video, n_frames):
 
-print("Computing spatial transform ...")
-for k in range(n_frames):
-    V_k = frame.read(video, k)
-    V_k = YUV.from_RGB(V_k.astype(np.int16))
-    print(V_k.max(), V_k.min(), V_k.dtype)
-    decomposition = spatial_transform.analyze(V_k, n_levels=n_levels)
-    L.write(decomposition[0], f"{video}{n_levels}_", k)
-    for l in range(0, n_levels):
-        H.write(decomposition[l+1], f"{video}{n_levels-l}_", k)
+    gains = spatial_transform.compute_gains(n_levels)
+    print(gains)
 
-print("Performing IPP... encoding")
-
-print(f"Computing SRL {n_levels}")
-#delta = q_step/gains[0]
-#delta = q_step/gains[n_levels-1]
-delta = q_min
-#print("delta =", delta)
-if delta < 1:
-    delta = 1
-coef_IPP_step.encode(f"{video}{n_levels}_", n_frames, delta)
-for k in range(n_frames):
-    reconstructed__V_k_H = L.read(f"{video}{n_levels}_reconstructed_H", k)
-    V_k_L = L.read(f"{video}{n_levels}_", k)
-    reconstructed_V_k_H = H.reduce(reconstructed__V_k_H)
-    reconstructed_V_k = spatial_transform.synthesize_step(V_k_L, reconstructed_V_k_H)
-    L.write(reconstructed_V_k, f"{video}{n_levels-1}_", k)
-
-for l in range(n_levels-1, 0, -1):
-    print(f"Computing SRL {l}")
-    #delta = q_step/gains[n_levels-l-1]
-    #delta = q_step/gains[l]
-    delta = q_min + (q_max-q_min)*n_levels/(l+3)/gains[l]
-    print("delta =", delta)
-    if delta < 1:
-        delta = 1
-    coef_IPP_step.encode(f"{video}{l}_", n_frames, delta)
+    print("Computing spatial transform ...")
     for k in range(n_frames):
-        reconstructed__V_k_H = L.read(f"{video}{l}_reconstructed_H", k)
-        V_k_L = L.read(f"{video}{l}_", k)
+        V_k = frame.read(video, k)
+        V_k = YUV.from_RGB(V_k.astype(np.int16))
+        print(V_k.max(), V_k.min(), V_k.dtype)
+        decomposition = spatial_transform.analyze(V_k, n_levels=n_levels)
+        L.write(decomposition[0], f"{video}{n_levels}_", k)
+        for l in range(0, n_levels):
+            H.write(decomposition[l+1], f"{video}{n_levels-l}_", k)
+
+def encode(video, n_frames, q_step):
+
+    print("Performing IPP... encoding")
+
+    print(f"Computing SRL {n_levels}")
+    #delta = q_step/gains[0]
+    #delta = q_step/gains[n_levels-1]
+    #delta = q_min
+    #print("delta =", delta)
+    #if delta < 1:
+    #    delta = 1
+    delta = q_step
+    coef_IPP_step.encode(f"{video}{n_levels}_", n_frames, delta)
+    for k in range(n_frames):
+        reconstructed__V_k_H = L.read(f"{video}{n_levels}_reconstructed_H", k)
+        V_k_L = L.read(f"{video}{n_levels}_", k)
         reconstructed_V_k_H = H.reduce(reconstructed__V_k_H)
         reconstructed_V_k = spatial_transform.synthesize_step(V_k_L, reconstructed_V_k_H)
-        L.write(reconstructed_V_k, f"{video}{l-1}_", k)
+        L.write(reconstructed_V_k, f"{video}{n_levels-1}_", k)
 
-for l in range(n_levels, -1, -1):
-    for k in range(n_frames):
-        V_k = L.read(f"{video}{l}_", k)
-        V_k = YUV.to_RGB(V_k)
-        V_k = np.clip(V_k, 0, 255).astype(np.uint8)
-        frame.write(V_k, f"{video}{l}_reconstructed_", k)
+    for l in range(n_levels-1, 0, -1):
+        print(f"Computing SRL {l}")
+        #delta = q_step/gains[n_levels-l-1]
+        #delta = q_step/gains[l]
+        #delta = q_min + (q_max-q_min)*n_levels/(l+3)/gains[l]
+        print("delta =", delta)
+        if delta < 1:
+            delta = 1
+        coef_IPP_step.encode(f"{video}{l}_", n_frames, delta)
+        for k in range(n_frames):
+            reconstructed__V_k_H = L.read(f"{video}{l}_reconstructed_H", k)
+            V_k_L = L.read(f"{video}{l}_", k)
+            reconstructed_V_k_H = H.reduce(reconstructed__V_k_H)
+            reconstructed_V_k = spatial_transform.synthesize_step(V_k_L, reconstructed_V_k_H)
+            L.write(reconstructed_V_k, f"{video}{l-1}_", k)
 
-KBPS, BPP, N_bytes = IPP_step.compute_br(video, FPS,
-                                         frame.get_frame_shape(video), n_frames, n_levels)
+    for l in range(n_levels, -1, -1):
+        for k in range(n_frames):
+            V_k = L.read(f"{video}{l}_", k)
+            V_k = YUV.to_RGB(V_k)
+            V_k = np.clip(V_k, 0, 255).astype(np.uint8)
+            frame.write(V_k, f"{video}{l}_reconstructed_", k)
 
-_distortion = distortion.AMSE(video, f"{video}0_reconstructed_", n_frames)
+def compute_br(video, FPS, frame_shape, n_frames):
+    return IPP_step.compute_br(video, FPS, frame_shape, n_frames, n_levels)
 
-print("Q_step:", q_min, "BPP:", BPP, "KBPS:", KBPS, "Average AMSE:", _distortion, "N_bytes:", N_bytes)
+if __name__ == "__main__":
+    compute_spatial_transform(video, n_frames)
+    encode(video, n_frames, q_step)
+    KBPS, BPP, N_bytes = compute_br(video, FPS, frame.get_frame_shape(video), n_frames)
+    _distortion = distortion.AMSE(video, f"{video}0_reconstructed_", n_frames)
+    print("Q_step:", q_min, "BPP:", BPP, "KBPS:", KBPS, "Average AMSE:", _distortion, "N_bytes:", N_bytes)

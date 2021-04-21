@@ -200,7 +200,7 @@ class image_IPP_codec():
         bpp = total_bytes*8/(frame_width*frame_height*n_channels*n_frames)
         #print(f"total: {kbps} KBPS, {bpp} BPP")
 
-        return kbps, bpp
+        return kbps, bpp, total_bytes
 
     def I_codec(self, V_k, prefix, k, q_step):
         to_write = YUV.to_RGB(V_k).astype(np.uint8)
