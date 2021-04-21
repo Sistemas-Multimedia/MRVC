@@ -121,11 +121,11 @@ class image_IPP_codec():
 
         # Motion. Y component.
         prev_comp = L.read(prefix + "motion_y_", 1).astype(np.int16) # Sobra astype
-        prev_fn = f"{prefix}motion_y_001.png"
+        #prev_fn = f"{prefix}motion_y_001.png"
         #comp_length = os.path.getsize(prev_fn)
         for k in range(2, n_frames):
             next_comp = L.read(prefix + "motion_y_", k).astype(np.int16) # Sobra astype
-            next_fn = f"{prefix}motion_y_{k:03d}.png"
+            #next_fn = f"{prefix}motion_y_{k:03d}.png"
             diff_comp = next_comp - prev_comp
             L.write(diff_comp, prefix + "motion_y_diff_comp_", k)
             #comp_length += os.path.getsize(f"{prefix}motion_y_diff_comp_{k:03d}.png")
@@ -148,7 +148,7 @@ class image_IPP_codec():
             #print("counter =", counter)
             prev_comp = next_comp
             '''
-        command = f"cat {prefix}motion_y_diff_comp_???.png | gzip -9 > /tmp/image_IPP_motion_y.gz"
+        command = f"cat {prefix}motion_y_diff_comp_???LL.png | gzip -9 > /tmp/image_IPP_motion_y.gz"
         debug.print(command)
         os.system(command)
         comp_length = os.path.getsize(f"/tmp/image_IPP_motion_y.gz")
@@ -163,7 +163,7 @@ class image_IPP_codec():
         #comp_length = os.path.getsize(prev_fn)
         for k in range(2, n_frames):
             next_comp = L.read(prefix + "motion_x_", k).astype(np.int16) # Sobra astype
-            next_fn = f"{prefix}motion_x_{k:03d}.png"
+            #next_fn = f"{prefix}motion_x_{k:03d}.png"
             diff_comp = next_comp - prev_comp
             L.write(diff_comp, prefix + "motion_x_diff_comp_", k)
             #comp_length += os.path.getsize(f"{prefix}motion_x_diff_comp_{k:03d}.png")
@@ -186,7 +186,7 @@ class image_IPP_codec():
             print("counter =", counter)
             prev_comp = next_comp
             '''
-        command = f"cat {prefix}motion_x_diff_comp_???.png | gzip -9 > /tmp/image_IPP_motion_y.gz"
+        command = f"cat {prefix}motion_x_diff_comp_???LL.png | gzip -9 > /tmp/image_IPP_motion_y.gz"
         debug.print(command)
         os.system(command)
         comp_length = os.path.getsize(f"/tmp/image_IPP_motion_y.gz")    

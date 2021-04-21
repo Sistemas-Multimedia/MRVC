@@ -10,7 +10,7 @@ def read(prefix:str, frame_number:int) -> np.ndarray: # [row, column, component]
     #fn = name + ".png"
     fn = f"{prefix}{frame_number:03d}.png"
     if __debug__:
-        print(colored.fore.GREEN + f"frame.read: {fn}", end=' ')
+        print(colored.fore.GREEN + f"frame.read: {fn}", end=' ', flush=True)
     img = cv2.imread(fn, cv2.IMREAD_UNCHANGED)
     #try:
     #    img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
