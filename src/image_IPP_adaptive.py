@@ -48,7 +48,41 @@ class image_IPP_adaptive_codec(image_IPP.image_IPP_codec):
         self.block_types = np.zeros((int(W_k.shape[0]/block_y_side), int(W_k.shape[1]/block_x_side)), dtype=np.uint8)
 
     def decide_types(self, video, k, q_step, V_k, reconstructed_V_k, E_k, prediction_V_k, block_y_side, block_x_side, averages):
-        # I/P-type block computation
+        # I/P-type block decission based on the entropy of the block.
+        for y in range(int(V_k.shape[0]/block_y_side)):
+            for x in range(int(V_k.shape[1]/block_x_side)):
+                E_k_block_entropy = \
+                    self.entropy(E_k[y*block_y_side:(y+1)*block_y_side,
+                                     x*block_x_side:(x+1)*block_x_side][..., 0])
+                V_k_block_entropy = \
+                    self.entropy(V_k[y*block_y_side:(y+1)*block_y_side,
+                                     x*block_x_side:(x+1)*block_x_side][..., 0])
+                if E_k_block_entropy < V_k_block_entropy:
+                    debug.print('B', end='')
+                    self.block_types[y, x] = 0
+                else:
+                    debug.print('I', end='')
+                    E_k[y*block_y_side:(y+1)*block_y_side,
+                        x*block_x_side:(x+1)*block_x_side] = \
+                            V_k[y*block_y_side:(y+1)*block_y_side,
+                                x*block_x_side:(x+1)*block_x_side] - averages[y, x]
+                    #prediction_V_k[y*block_y_side:(y+1)*block_y_side,
+                    #    x*block_x_side:(x+1)*block_x_side] = 128
+                    prediction_V_k[y*block_y_side:(y+1)*block_y_side,
+                                   x*block_x_side:(x+1)*block_x_side] = averages[y, x]
+                    self.block_types[y, x] = 1
+            debug.print('')
+        self.T_codec(self.block_types, video, k)
+
+        # Regenerate the reconstructed residue using the I-type blocks
+        dequantized_E_k = super().E_codec5(E_k, f"{video}texture_", k, q_step) # (g and h)
+
+        reconstructed_V_k = dequantized_E_k + prediction_V_k[:dequantized_E_k.shape[0], :dequantized_E_k.shape[1]] # (i)
+        print("reconstructed_V_k", reconstructed_V_k.max(), reconstructed_V_k.min())
+        return reconstructed_V_k
+
+    def decide_types_MSE(self, video, k, q_step, V_k, reconstructed_V_k, E_k, prediction_V_k, block_y_side, block_x_side, averages):
+        # I/P-type block decission based on the MSE of the block
         frame.debug_write(self.clip(YUV.to_RGB(reconstructed_V_k)), f"{video}all_P_", k)
         dequantized_V_k = super().I_codec(V_k, f"{video}all_I_", k, q_step)
         for y in range(int(V_k.shape[0]/block_y_side)):
@@ -143,7 +177,7 @@ class image_IPP_adaptive_codec(image_IPP.image_IPP_codec):
         print(f"types: {types_length} bytes, {types_kbps} KBPS, {types_bpp} BPP")
         return kbps + types_kbps, bpp + types_bpp, types_length + n_bytes
 
-    def entropy(sequence_of_symbols):
+    def entropy(self, sequence_of_symbols):
         '''In bits/symbol.'''
         value, counts = np.unique(sequence_of_symbols, return_counts = True)
         probs = counts / len(sequence_of_symbols)

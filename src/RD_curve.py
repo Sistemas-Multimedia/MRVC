@@ -27,8 +27,8 @@ n_frames = 30
 # Frames Per Second.
 FPS = 30
 
-#for q_step in range(31, 32, 1):
-for q_step in range(21, 42, 3):
+for q_step in range(31, 32, 1):
+#for q_step in range(21, 42, 3):
 
     codec.encode(video, n_frames, q_step)
     kbps, bpp, n_bytes = codec.compute_br(video, FPS, frame.get_frame_shape(video), n_frames)
