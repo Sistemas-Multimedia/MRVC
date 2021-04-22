@@ -66,8 +66,6 @@ class image_IPP_adaptive_codec(image_IPP.image_IPP_codec):
                         x*block_x_side:(x+1)*block_x_side] = \
                             V_k[y*block_y_side:(y+1)*block_y_side,
                                 x*block_x_side:(x+1)*block_x_side] - averages[y, x]
-                    #prediction_V_k[y*block_y_side:(y+1)*block_y_side,
-                    #    x*block_x_side:(x+1)*block_x_side] = 128
                     prediction_V_k[y*block_y_side:(y+1)*block_y_side,
                                    x*block_x_side:(x+1)*block_x_side] = averages[y, x]
                     self.block_types[y, x] = 1
