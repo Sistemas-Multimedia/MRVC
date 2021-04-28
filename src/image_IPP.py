@@ -213,6 +213,7 @@ class image_IPP_codec():
         return dq_V_k
 
     def E_codec4(self, E_k, prefix, k, q_step):
+        debug.print("image_IPP.E_codec: q_step", q_step)
         debug.print("image_IPP.E_codec: error", E_k.max(), E_k.min(), E_k.dtype)
         #frame.write(clip(YUV.to_RGB(E_k)), prefix + "_to_mp4", k)
         #frame.write(clip(YUV.to_RGB(E_k)+128), prefix + "_to_mp4_", k)

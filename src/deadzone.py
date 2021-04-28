@@ -21,3 +21,8 @@ def quantize(x: np.ndarray, step: float) -> np.ndarray:
 def dequantize(k: np.ndarray, step: float) -> np.ndarray:
     y = step * k
     return y
+
+def quan_dequan(x: np.ndarray, step:float) -> np.ndarray:
+    k = (x / step).astype(np.int16)
+    y = step * k
+    return y
