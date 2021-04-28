@@ -3,13 +3,14 @@
 import os
 import colors
 
-# Only I and P blocks are allowed.
+# Only I and P blocks are allowed. Input must be RGB and YUV 4:4:4 is
+# used (no chroma subsampling).
 
 def encode(video,    # Prefix of the original sequence of PNG images 
            n_frames, # Number of frames to process
            q_step):  # Quantization step
     try:
-        command = f"ffmpeg -start_number 0 -y -i {video}%03d.png -crf {q_step} -frames:v {n_frames} -g {n_frames} -bf 0 /tmp/output.mp4"
+        command = f"ffmpeg -start_number 0 -y -i {video}%03d.png -c:v libx264rgb -vf format=yuv444p -crf {q_step} -frames:v {n_frames} -g {n_frames} -bf 0 /tmp/output.mp4"
         print("running:", command)
         os.system(command)
 

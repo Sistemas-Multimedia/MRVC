@@ -1,3 +1,5 @@
+
+
 1. image_IPP_adaptive:
 
 	1. Controlar la distorsión bloque a bloque usando diferentes
