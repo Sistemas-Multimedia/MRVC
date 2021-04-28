@@ -57,7 +57,7 @@ class image_IPP_quantized_prediction_codec(image_IPP.image_IPP_codec):
                                 x*self.block_x_side:(x+1)*self.block_x_side][..., 0] = \
                                     V_k[y*self.block_y_side:(y+1)*self.block_y_side,
                                         x*self.block_x_side:(x+1)*self.block_x_side][..., 0] - \
-                                        Q.quan_dequan(prediction_V_k[y*self.block_y_side:(y+1)*self.block_y_side,
+                                        Q.quantize(prediction_V_k[y*self.block_y_side:(y+1)*self.block_y_side,
                                                                      x*self.block_x_side:(x+1)*self.block_x_side][..., 0], pred_q_step)
                             E_k_block_entropy = self.entropy(E_k[y*self.block_y_side:(y+1)*self.block_y_side,
                                                                  x*self.block_x_side:(x+1)*self.block_x_side][..., 0])
@@ -75,12 +75,13 @@ class image_IPP_quantized_prediction_codec(image_IPP.image_IPP_codec):
                     for x in range(blocks_in_x):
                         prediction_V_k[y*self.block_y_side:(y+1)*self.block_y_side,
                                        x*self.block_x_side:(x+1)*self.block_x_side] = \
-                        Q.quan_dequan(prediction_V_k[y*self.block_y_side:(y+1)*self.block_y_side,
-                                                     x*self.block_x_side:(x+1)*self.block_x_side], predicted_block_Q_step[y][x])
+                        Q.quantize(prediction_V_k[y*self.block_y_side:(y+1)*self.block_y_side,
+                                                  x*self.block_x_side:(x+1)*self.block_x_side], predicted_block_Q_step[y][x])
 
+                frame.debug_write(self.clip(YUV.to_RGB(prediction_V_k)), f"{video}prediction_", k)
                 E_k = V_k - prediction_V_k[:V_k.shape[0], :V_k.shape[1], :] # (f)
                 frame.debug_write(self.clip(YUV.to_RGB(E_k)+128), f"{video}prediction_error_", k)
-                dequantized_E_k = self.E_codec4(E_k, f"{video}texture_", k, q_step) # (g and h)
+                dequantized_E_k = self.E_codec5(E_k, f"{video}texture_", k, q_step) # (g and h)
                 frame.debug_write(self.clip(YUV.to_RGB(dequantized_E_k) + 128), f"{video}dequantized_prediction_error_", k)
                 reconstructed_V_k = dequantized_E_k + prediction_V_k[:dequantized_E_k.shape[0], :dequantized_E_k.shape[1], :] # (i)
                 frame.debug_write(self.clip(YUV.to_RGB(reconstructed_V_k)), f"{video}reconstructed_", k) # Decoder's output
