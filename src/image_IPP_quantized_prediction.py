@@ -38,6 +38,75 @@ class image_IPP_quantized_prediction_codec(image_IPP.image_IPP_codec):
             E_k = V_k # (f)
             dequantized_E_k = self.I_codec(V_k, f"{video}texture_", 0, q_step) # (g and h)
             reconstructed_V_k = dequantized_E_k # (i)
+            frame.write(self.clip(YUV.to_RGB(reconstructed_V_k)), f"{video}reconstructed_", k) # Decoder's output
+            reconstructed_V_k_1 = reconstructed_V_k # (j)
+            for k in range(1, n_frames):
+                W_k = frame.read(video, k).astype(np.int16)
+                V_k = YUV.from_RGB(W_k) # (a)
+                flow = motion.estimate(V_k[...,0], V_k_1[...,0], initial_flow) # (c)
+                V_k_1 = V_k # (b)
+                reconstructed_flow = self.V_codec(flow, self.log2_block_side, f"{video}motion_", k) # (d and e)
+                prediction_V_k = motion.make_prediction(reconstructed_V_k_1, reconstructed_flow) # (j)
+                min_block_MSE = np.full(shape=(blocks_in_y, blocks_in_x), fill_value=999999, dtype=np.float32)
+
+                # Optimize q_step for each block in prediction_V_k by
+                # minimizing the distortion of the residue
+                for y in range(blocks_in_y):
+                    for x in range(blocks_in_x):
+                        for pred_q_step in range(1, 256):
+                            predicted_block = V_k[y*self.block_y_side:(y+1)*self.block_y_side,
+                                                  x*self.block_x_side:(x+1)*self.block_x_side]
+                            prediction_block = prediction_V_k[y*self.block_y_side:(y+1)*self.block_y_side,
+                                                              x*self.block_x_side:(x+1)*self.block_x_side]
+                            quantized_prediction_block = Q.quantize(prediction_block, pred_q_step)
+                            residue_block = predicted_block - quantized_prediction_block
+                            dequantized_block_residue = self.E_codec4(residue_block, f"/tmp/", 0, q_step)
+                            reconstructed_block = dequantized_block_residue + prediction_block
+                            block_MSE = distortion.MSE(predicted_block[..., 0], reconstructed_block[..., 0])
+                            if block_MSE < min_block_MSE[y][x]:
+                                min_block_MSE[y][x] = block_MSE
+                                predicted_block_Q_step[y][x] = pred_q_step
+                            else:
+                                break
+                        print(predicted_block_Q_step[y][x], end=' ')
+                    print()
+                self.T_codec(predicted_block_Q_step, video, k)
+                print("---------------")
+
+                # Build the quantized prediction (for all components)
+                for y in range(blocks_in_y):
+                    for x in range(blocks_in_x):
+                        prediction_V_k[y*self.block_y_side:(y+1)*self.block_y_side,
+                                       x*self.block_x_side:(x+1)*self.block_x_side] = \
+                        Q.quantize(prediction_V_k[y*self.block_y_side:(y+1)*self.block_y_side,
+                                                  x*self.block_x_side:(x+1)*self.block_x_side], predicted_block_Q_step[y][x])
+
+                frame.debug_write(self.clip(YUV.to_RGB(prediction_V_k)), f"{video}prediction_", k)
+                E_k = V_k - prediction_V_k[:V_k.shape[0], :V_k.shape[1], :] # (f)
+                frame.debug_write(self.clip(YUV.to_RGB(E_k)+128), f"{video}prediction_error_", k)
+                dequantized_E_k = self.E_codec4(E_k, f"{video}texture_", k, q_step) # (g and h)
+                frame.debug_write(self.clip(YUV.to_RGB(dequantized_E_k) + 128), f"{video}dequantized_prediction_error_", k)
+                reconstructed_V_k = dequantized_E_k + prediction_V_k[:dequantized_E_k.shape[0], :dequantized_E_k.shape[1], :] # (i)
+                frame.write(self.clip(YUV.to_RGB(reconstructed_V_k)), f"{video}reconstructed_", k) # Decoder's output
+                reconstructed_V_k_1 = reconstructed_V_k # (j)
+                            
+        except:
+            print(colors.red(f'image_IPP_adaptive_codec.encode(video="{video}", n_frames={n_frames}, q_step={q_step})'))
+            raise
+
+    def _encode(self, video, n_frames, q_step):
+        try:
+            k = 0
+            W_k = frame.read(video, k).astype(np.int16)
+            initial_flow = np.zeros((W_k.shape[0], W_k.shape[1], 2), dtype=np.float32)
+            blocks_in_y = int(W_k.shape[0]/self.block_y_side)
+            blocks_in_x = int(W_k.shape[1]/self.block_x_side)
+            predicted_block_Q_step = np.full(shape=(blocks_in_y, blocks_in_x), fill_value=1, dtype=np.uint8)
+            V_k = YUV.from_RGB(W_k) # (a)
+            V_k_1 = V_k # (b)
+            E_k = V_k # (f)
+            dequantized_E_k = self.I_codec(V_k, f"{video}texture_", 0, q_step) # (g and h)
+            reconstructed_V_k = dequantized_E_k # (i)
             frame.debug_write(self.clip(YUV.to_RGB(reconstructed_V_k)), f"{video}reconstructed_", k) # Decoder's output
             reconstructed_V_k_1 = reconstructed_V_k # (j)
             for k in range(1, n_frames):
@@ -49,7 +118,8 @@ class image_IPP_quantized_prediction_codec(image_IPP.image_IPP_codec):
                 prediction_V_k = motion.make_prediction(reconstructed_V_k_1, reconstructed_flow) # (j)
                 min_E_k_block_entropy = np.full(shape=(blocks_in_y, blocks_in_x), fill_value=8, dtype=np.float32)
 
-                # Optimize q_step for each block in prediction_V_k using the luma
+                # Optimize q_step for each block in prediction_V_k by
+                # minimizing the entropy of the residue
                 for y in range(blocks_in_y):
                     for x in range(blocks_in_x):
                         for pred_q_step in range(1, 256):
@@ -69,8 +139,9 @@ class image_IPP_quantized_prediction_codec(image_IPP.image_IPP_codec):
                         print(predicted_block_Q_step[y][x], end=' ')
                     print()
                 self.T_codec(predicted_block_Q_step, video, k)
+                print()
 
-                # Find the quantized prediction (for all components)
+                # Build the quantized prediction (for all components)
                 for y in range(blocks_in_y):
                     for x in range(blocks_in_x):
                         prediction_V_k[y*self.block_y_side:(y+1)*self.block_y_side,
@@ -81,7 +152,7 @@ class image_IPP_quantized_prediction_codec(image_IPP.image_IPP_codec):
                 frame.debug_write(self.clip(YUV.to_RGB(prediction_V_k)), f"{video}prediction_", k)
                 E_k = V_k - prediction_V_k[:V_k.shape[0], :V_k.shape[1], :] # (f)
                 frame.debug_write(self.clip(YUV.to_RGB(E_k)+128), f"{video}prediction_error_", k)
-                dequantized_E_k = self.E_codec5(E_k, f"{video}texture_", k, q_step) # (g and h)
+                dequantized_E_k = self.E_codec4(E_k, f"{video}texture_", k, q_step) # (g and h)
                 frame.debug_write(self.clip(YUV.to_RGB(dequantized_E_k) + 128), f"{video}dequantized_prediction_error_", k)
                 reconstructed_V_k = dequantized_E_k + prediction_V_k[:dequantized_E_k.shape[0], :dequantized_E_k.shape[1], :] # (i)
                 frame.debug_write(self.clip(YUV.to_RGB(reconstructed_V_k)), f"{video}reconstructed_", k) # Decoder's output
