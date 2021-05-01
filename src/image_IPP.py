@@ -234,11 +234,12 @@ class image_IPP_codec():
         return dq_E_k
 
     def E_codec5(self, E_k, prefix, k, q_step):
+        debug.print("image_IPP.E_codec: q_step", q_step)
         debug.print("image_IPP.E_codec: error YUV", E_k.max(), E_k.min(), E_k.dtype)
         #frame.write(np.clip(YUV.to_RGB(E_k)+256, 0, 512).astype(np.uint16), prefix + "before_", k)
         E_k = YUV.to_RGB(E_k)
         E_k += 256
-        E_k *= 128
+        E_k *= 64
         E_k = np.array(E_k, dtype=np.uint16)
         debug.print("image_IPP.E_codec: error RGB", E_k.max(), E_k.min(), E_k.dtype)    
         frame.write(E_k, prefix + "before_", k)
@@ -252,7 +253,7 @@ class image_IPP_codec():
         #dq_E_k = (YUV.from_RGB(frame.read(prefix, k).astype(np.int16) - 256))
         dq_E_k = frame.read(prefix, k)
         debug.print("image_IPP.E_codec: deQ error RGB", dq_E_k.max(), dq_E_k.min(), dq_E_k.dtype)    
-        dq_E_k //= 128
+        dq_E_k //= 64
         dq_E_k -= 256
         dq_E_k = np.array(dq_E_k, dtype=np.int16)
         dq_E_k = YUV.from_RGB(dq_E_k)
