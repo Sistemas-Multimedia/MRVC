@@ -24,6 +24,7 @@ import debug
 import copy
 from scipy.fftpack import dct, idct
 import information
+#np.set_printoptions(linewidth=2000)
 
 class image_IPP_quantized_residue_codec(image_IPP.image_IPP_codec):
 
@@ -34,7 +35,6 @@ class image_IPP_quantized_residue_codec(image_IPP.image_IPP_codec):
             initial_flow = np.zeros((W_k.shape[0], W_k.shape[1], 2), dtype=np.float32)
             blocks_in_y = int(W_k.shape[0]/self.block_y_side)
             blocks_in_x = int(W_k.shape[1]/self.block_x_side)
-            block_Q_step = np.full(shape=(blocks_in_y, blocks_in_x), fill_value=q_step, dtype=np.uint8)
             V_k = YUV.from_RGB(W_k) # (a)
             V_k_1 = V_k # (b)
             E_k = V_k # (f)
@@ -50,49 +50,70 @@ class image_IPP_quantized_residue_codec(image_IPP.image_IPP_codec):
                 reconstructed_flow = self.V_codec(flow, self.log2_block_side, f"{video}motion_", k) # (d and e)
                 prediction_V_k = motion.make_prediction(reconstructed_V_k_1, reconstructed_flow) # (j)
                 block_RD_slope = np.full(shape=(blocks_in_y, blocks_in_x), fill_value=0, dtype=np.float32)
+                block_Q_step = np.full(shape=(blocks_in_y, blocks_in_x), fill_value=q_step, dtype=np.uint8)
 
                 # For each block, find a block_q_step to use the same
                 # RD slope for all blocks after quantization of the
                 # residue.
 
                 def QDCT(block, q_step):
-                    '''Deadzone quantization in the DCT domain. <block> is the data and <Q_step> the quantization step.''' 
-                    DCT_block = dct(block)
-                    dequantized_DCT_block = Q.quan_dequan(block, q_step)
-                    dequantized_block = idct(dequantized_DCT_block)
-                    return dequantized_block
+                    '''Deadzone quantization in the DCT domain. <block> is the data and <Q_step> the quantization step.'''
+                    #print("block =", block)
+                    DCT_block = dct(block, norm='ortho')
+                    #print("DCT_block =", DCT_block)
+                    dequantized_DCT_block = Q.quan_dequan(DCT_block, q_step)
+                    #print("dequantized_DCT_block =", dequantized_DCT_block)
+                    dequantized_block = idct(dequantized_DCT_block, norm='ortho')
+                    #print("dequantized_block =", dequantized_block)
+                    #return dequantized_block
+                    return Q.quan_dequan(block, q_step)
 
                 def compute_block_slope(V_k, prediction_V_k, q_step):
                     '''Compute the RD slope of a block for the quantization step <q_step>.'''
-                    predicted_block = V_k[y*self.block_y_side:(y+1)*self.block_y_side,
-                                          x*self.block_x_side:(x+1)*self.block_x_side]
-                    prediction_block = prediction_V_k[y*self.block_y_side:(y+1)*self.block_y_side,
-                                                      x*self.block_x_side:(x+1)*self.block_x_side]
                     residue_block = predicted_block - prediction_block
-                    RD_point_for_Q_step_one = (information.entropy(residue_block), 0)
+                    RD_point_for_Q_step_one = (information.entropy(residue_block.flatten()), 0)
                     dequantized_residue_block = QDCT(residue_block, q_step)
                     reconstructed_block = dequantized_residue_block + prediction_block
-                    current_RD_point = (information.entropy(dequantized_residue_block), distortion.MSE(predicted_block, reconstructed_block))
-                    block_RD_slope = (RD_point_for_Q_step_one[0] - current_RD_point[0]) / current_RD_point[1]
+                    current_RD_point = (information.entropy(dequantized_residue_block.flatten()), distortion.MSE(predicted_block, reconstructed_block))
+                    block_RD_slope = current_RD_point[1] / (RD_point_for_Q_step_one[0] - current_RD_point[0])
+                    #print("==============", RD_point_for_Q_step_one, current_RD_point, block_RD_slope)
                     return block_RD_slope
 
                 # Compute the current slopes
                 for y in range(blocks_in_y):
                     for x in range(blocks_in_x):
-                        block_RD_slope[y][x] = compute_block_slope(V_k, prediction_V_k, q_step)
+                        predicted_block = V_k[y*self.block_y_side:(y+1)*self.block_y_side,
+                                              x*self.block_x_side:(x+1)*self.block_x_side][..., 0]
+                        prediction_block = prediction_V_k[y*self.block_y_side:(y+1)*self.block_y_side,
+                                                          x*self.block_x_side:(x+1)*self.block_x_side][..., 0]
+                        block_RD_slope[y][x] = compute_block_slope(predicted_block, prediction_block, q_step)
 
                 # Find the lower slope
                 #min_RD_slope = np.unravel_index(np.argmin(block_RD_slope, axis=None), block_RD_slope.shape)
 
+                #for y in range(blocks_in_y):
+                #    print("\n=======antes=====", end=' ')
+                #    for x in range(blocks_in_x):
+                #        print(block_RD_slope[y][x], end=' ')
                 min_RD_slope = np.min(block_RD_slope)
+                #print("========== min_RD_slope =", min_RD_slope)
 
-                # Decrease the slope of those blocks with a slope higher the smaller one(s)
+                # Decrease the slope of those blocks with a slope higher than the smaller one(s)
                 for y in range(blocks_in_y):
                     for x in range(blocks_in_x):
-                        if block_RD_slope[y][x] > min_RD_slope:
+                        while block_RD_slope[y][x] > min_RD_slope:
                             next_Q_step = block_Q_step[y][x] - 1
-                            block_RD_slope[y][x] = compute_block_slope(V_k, prediction_V_k, next_Q_step)
+                            predicted_block = V_k[y*self.block_y_side:(y+1)*self.block_y_side,
+                                                  x*self.block_x_side:(x+1)*self.block_x_side][..., 0]
+                            prediction_block = prediction_V_k[y*self.block_y_side:(y+1)*self.block_y_side,
+                                                              x*self.block_x_side:(x+1)*self.block_x_side][..., 0]
+                            block_RD_slope[y][x] = compute_block_slope(predicted_block, prediction_block, next_Q_step)
                             block_Q_step[y][x] = next_Q_step
+                            #print("%%%%%", y, x, block_RD_slope[y][x], min_RD_slope, block_Q_step[y][x])
+                #for y in range(blocks_in_y):
+                #    print("\n=======despues=====", end=' ')
+                #    for x in range(blocks_in_x):
+                #        print(block_RD_slope[y][x], end=' ')
 
                 # At this point, all residue blocks must have the same slope 
                 self.T_codec(block_Q_step, video, k)
@@ -118,6 +139,10 @@ class image_IPP_quantized_residue_codec(image_IPP.image_IPP_codec):
             raise
 
     def T_codec(self, types, prefix, frame_number):
+        for y in range(types.shape[0]):
+            for x in range(types.shape[1]):
+                debug.print(types[y][x], end=' ')
+            print()
         frame.write(types, prefix + "types_", frame_number)
 
     def compute_br(self, prefix, frames_per_second, frame_shape, n_frames):

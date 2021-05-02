@@ -13,6 +13,7 @@ import numpy as np
 #print("Quantization step =", step)
 
 def quantize(x: np.ndarray, step: float) -> np.ndarray:
+    assert step > 0
     k = (x / step).astype(np.int16)
     #k = (x / step).astype(np.int32)
     #return k.astype(np.float32)

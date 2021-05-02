@@ -29,7 +29,7 @@ n_frames = 60
 # Frames Per Second.
 FPS = 30
 
-for q_step in range(41, 42, 1):
+for q_step in range(42, 43, 1):
 #for q_step in range(21, 42, 3):
 
     codec.encode(video, n_frames, q_step)
