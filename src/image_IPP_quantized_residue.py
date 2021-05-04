@@ -12,8 +12,6 @@ import motion
 import frame
 import colors
 import cv2
-import YCoCg as YUV
-#import RGB as YUV
 import os
 import random
 import math
@@ -25,6 +23,15 @@ import copy
 from scipy.fftpack import dct, idct
 import information
 #np.set_printoptions(linewidth=2000)
+import config
+if config.color == "YCoCg":
+    import YCoCg as YUV
+
+if config.color == "YCrCb":
+    import YCrCb as YUV
+
+if config.color == "RGB":
+    import RGB as YUV
 
 class image_IPP_quantized_residue_codec(image_IPP.image_IPP_codec):
 
@@ -66,18 +73,21 @@ class image_IPP_quantized_residue_codec(image_IPP.image_IPP_codec):
                     #print("DCT_block =", DCT_block)
                     dequantized_DCT_block = Q.quan_dequan(DCT_block, q_step)
                     #print("dequantized_DCT_block =", dequantized_DCT_block)
-                    dequantized_block = idct(dequantized_DCT_block, norm='ortho')
+                    dequantized_block = idct(dequantized_DCT_block, norm='ortho').astype(np.int16)
                     #dequantized_block = idct(dequantized_DCT_block)
                     #print("%%%%% despues", dequantized_block.max(), dequantized_block.min())
                     #print("dequantized_block =", dequantized_block)
-                    return dequantized_block.astype(np.int16)
-                    #return Q.quan_dequan(block, q_step)
+                    #return dequantized_block.astype(np.int16)
+                    #dequantized_block = Q.quan_dequan(block, q_step).astype(np.int16)
+                    #print("%%%", dequantized_block.max(), dequantized_block.min(), q_step)
+                    return dequantized_block
+                    #return block
 
-                def compute_block_slope(V_k, prediction_V_k, q_step):
+                def compute_block_slope(predicted_block, prediction_block, _q_step):
                     '''Compute the RD slope of a block for the quantization step <q_step>.'''
                     residue_block = predicted_block - prediction_block
                     RD_point_for_Q_step_one = (information.entropy(residue_block.flatten()), 0)
-                    dequantized_residue_block = QDCT(residue_block, q_step)
+                    dequantized_residue_block = QDCT(residue_block, _q_step)
                     reconstructed_block = dequantized_residue_block + prediction_block
                     current_RD_point = (information.entropy(dequantized_residue_block.flatten()), distortion.MSE(predicted_block, reconstructed_block))
                     block_RD_slope = current_RD_point[1] / (RD_point_for_Q_step_one[0] - current_RD_point[0])
@@ -93,7 +103,7 @@ class image_IPP_quantized_residue_codec(image_IPP.image_IPP_codec):
                                                           x*self.block_x_side:(x+1)*self.block_x_side][..., 0]
                         block_RD_slope[y][x] = compute_block_slope(predicted_block, prediction_block, q_step)
 
-                # Find the lower slope
+                # Find the median slope
                 #min_RD_slope = np.unravel_index(np.argmin(block_RD_slope, axis=None), block_RD_slope.shape)
 
                 #for y in range(blocks_in_y):

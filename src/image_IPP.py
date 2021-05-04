@@ -17,13 +17,20 @@ import motion
 import frame
 import colors
 import cv2
-#import YCrBc as YUV
-import YCoCg as YUV
-#import RGB as YUV
 import os
 import random
 import debug
 #import sys
+import config
+
+if config.color == "YCoCg":
+    import YCoCg as YUV
+
+if config.color == "YCrCb":
+    import YCrCb as YUV
+
+if config.color == "RGB":
+    import RGB as YUV
 
 #self = sys.modules[__name__]
 #print(self)

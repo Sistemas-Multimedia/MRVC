@@ -11,8 +11,8 @@ import frame
 #import image_IPP as codec
 #import image_IPP_adaptive as codec
 #import image_IPP_quantized_prediction as codec
-#import image_IPP_quantized_residue as codec
-import MP4 as codec
+import image_IPP_quantized_residue as codec
+#import MP4 as codec
 #import IPP_compressor as codec
 
 # Original video frames (PNG format) with file-names
@@ -24,12 +24,12 @@ else:
     reconstructed_video = video + "reconstructed_"
 
 # Number of frames to process.
-n_frames = 60
+n_frames = 6
 
 # Frames Per Second.
 FPS = 30
 
-for q_step in range(31, 32, 1):
+for q_step in range(16, 17, 1):
 #for q_step in range(21, 42, 3):
 
     codec.encode(video, n_frames, q_step)
