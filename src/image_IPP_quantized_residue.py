@@ -74,7 +74,7 @@ class image_IPP_quantized_residue_codec(image_IPP.image_IPP_codec):
                     dequantized_DCT_block = Q.quan_dequan(DCT_block, q_step)
                     #print("dequantized_DCT_block =", dequantized_DCT_block)
                     dequantized_block = idct(dequantized_DCT_block, norm='ortho').astype(np.int16)
-                    #dequantized_block = idct(dequantized_DCT_block)
+                    #dequantized_block = idct(dequantized_DCT_block).astype(np.int16)
                     #print("%%%%% despues", dequantized_block.max(), dequantized_block.min())
                     #print("dequantized_block =", dequantized_block)
                     #return dequantized_block.astype(np.int16)
