@@ -48,6 +48,9 @@ class image_IPP_quantized_residue_codec(image_IPP.image_IPP_codec):
             E_k = V_k # (f)
             dequantized_E_k = self.I_codec(V_k, f"{video}texture_", 0, 25)#q_step) # (g and h)
             reconstructed_V_k = dequantized_E_k # (i)
+            #reconstructed_V_k = self.I_codec(V_k, f"{video}texture_", 0, 25)#q_step) # (g and h)
+            #dequantized_E_k = np.empty_like(reconstructed_V_k, dtype=np.int16)
+            #print("000000000000000", dequantized_E_k.shape)
             frame.write(self.clip(YUV.to_RGB(reconstructed_V_k)), f"{video}reconstructed_", k) # Decoder's output
             reconstructed_V_k_1 = reconstructed_V_k # (j)
             for k in range(1, n_frames):
@@ -58,7 +61,7 @@ class image_IPP_quantized_residue_codec(image_IPP.image_IPP_codec):
                 reconstructed_flow = self.V_codec(flow, self.log2_block_side, f"{video}motion_", k) # (d and e)
                 prediction_V_k = motion.make_prediction(reconstructed_V_k_1, reconstructed_flow) # (j)
                 block_RD_slope = np.full(shape=(blocks_in_y, blocks_in_x), fill_value=0, dtype=np.float32)
-                block_Q_step = np.full(shape=(blocks_in_y, blocks_in_x), fill_value=q_step, dtype=np.uint8)
+                block_Q_step = np.full(shape=(blocks_in_y, blocks_in_x), fill_value=32, dtype=np.uint8)
 
                 # For each block, find a block_q_step to use the same
                 # RD slope for all blocks after quantization of the
@@ -81,6 +84,8 @@ class image_IPP_quantized_residue_codec(image_IPP.image_IPP_codec):
                     #return dequantized_block.astype(np.int16)
                     #dequantized_block = Q.quan_dequan(block, q_step).astype(np.int16)
                     #print("%%%", dequantized_block.max(), dequantized_block.min(), q_step)
+                    #print("ooooooooooooooo", dequantized_block.dtype)
+                    
                     return dequantized_block
                     #return block
 
@@ -165,6 +170,7 @@ class image_IPP_quantized_residue_codec(image_IPP.image_IPP_codec):
                                         x*self.block_x_side:(x+1)*self.block_x_side] = \
                         QDCT(E_k[y*self.block_y_side:(y+1)*self.block_y_side,
                                  x*self.block_x_side:(x+1)*self.block_x_side], block_Q_step[y][x])
+                #print("ooooooooooooooo", dequantized_E_k.dtype)
                 self.E_codec4(dequantized_E_k, f"{video}texture_", k, q_step) # (g and h)
 
                 frame.debug_write(self.clip(YUV.to_RGB(dequantized_E_k) + 128), f"{video}dequantized_prediction_error_", k)

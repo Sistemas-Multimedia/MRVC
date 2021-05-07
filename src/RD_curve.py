@@ -24,7 +24,7 @@ else:
     reconstructed_video = video + "reconstructed_"
 
 # Number of frames to process.
-n_frames = 60
+n_frames = 6
 
 # Frames Per Second.
 FPS = 30

@@ -212,8 +212,9 @@ class image_IPP_codec():
 
     def I_codec(self, V_k, prefix, k, q_step):
         to_write = YUV.to_RGB(V_k).astype(np.uint8)
+        debug.print(f"image_IPP.I_codec: max={to_write.max()} min={to_write.min()} type={to_write.dtype}")
         frame.write(to_write, prefix + "before_", k)
-        os.system(f"ffmpeg -loglevel fatal -y -i {prefix}before_{k:03d}.png -crf {q_step} {prefix}{k:03d}.mp4")
+        os.system(f"ffmpeg -loglevel fatal -y -i {prefix}before_{k:03d}.png -c:v libx264 -vf format=yuv420p -crf {q_step} {prefix}{k:03d}.mp4")
         os.system(f"ffmpeg -loglevel fatal -y -i {prefix}{k:03d}.mp4 {prefix}{k:03d}.png")
         from_read = frame.read(prefix, k)
         dq_V_k = YUV.from_RGB(from_read.astype(np.int16))
@@ -221,13 +222,43 @@ class image_IPP_codec():
         return dq_V_k
 
     def E_codec4(self, E_k, prefix, k, q_step):
+        if config.color == "YCrCb":
+            return self.E_codec_4_YCrCb(E_k, prefix, k, q_step)
+        elif config.color == "YCoCg":
+            return self.E_codec_4_YCoCg(E_k, prefix, k, q_step)
+
+    def E_codec_4_YCoCg(self, E_k, prefix, k, q_step):
         offset = 128
         debug.print("image_IPP.E_codec: q_step", q_step)
         debug.print("image_IPP.E_codec: error", E_k.max(), E_k.min(), E_k.dtype)
         #frame.write(clip(YUV.to_RGB(E_k)), prefix + "_to_mp4", k)
         #frame.write(clip(YUV.to_RGB(E_k)+128), prefix + "_to_mp4_", k)
         #E_k = Q.quantize(E_k, 4)
-        frame.write(self.clip(YUV.to_RGB(E_k)+offset), prefix + "before_", k)
+        to_write = self.clip(YUV.to_RGB(E_k) + offset)
+        debug.print(f"image_IPP.E_codec: max={to_write.max()} min={to_write.min()} type={to_write.dtype}")
+        frame.write(to_write, prefix + "before_", k)
+        #os.system(f"ffmpeg -loglevel fatal -y -i {prefix}_to_mp4_{k:03d}.png -crf {q_step} {prefix}_{k:03d}.mp4")
+        #os.system(f"ffmpeg -loglevel fatal -y -i {prefix}before_{k:03d}.png -crf {q_step} {prefix}{k:03d}.mp4")
+        os.system(f"ffmpeg -loglevel fatal -y -i {prefix}before_{k:03d}.png -c:v libx264 -vf format=yuv420p -crf {q_step} -flags -loop {prefix}{k:03d}.mp4")
+
+        #os.system(f"ffmpeg -loglevel fatal -y -i {prefix}_{k:03d}.mp4 {prefix}_from_mp4_{k:03d}.png")
+        os.system(f"ffmpeg -loglevel fatal -y -i {prefix}{k:03d}.mp4 {prefix}{k:03d}.png")
+        dq_E_k = (YUV.from_RGB(frame.read(prefix, k).astype(np.int16) - offset))
+        debug.print("image_IPP.E_codec: deQ error YUV", dq_E_k.max(), dq_E_k.min(), dq_E_k.dtype)    
+        #dq_E_k = Q.dequantize(dq_E_k, 4)
+        #return dq_E_k.astype(np.float64)
+        return dq_E_k
+
+    def E_codec_Y_4_CrCb(self, E_k, prefix, k, q_step):
+        offset = 0
+        debug.print("image_IPP.E_codec: q_step", q_step)
+        debug.print("image_IPP.E_codec: error", E_k.max(), E_k.min(), E_k.dtype)
+        #frame.write(clip(YUV.to_RGB(E_k)), prefix + "_to_mp4", k)
+        #frame.write(clip(YUV.to_RGB(E_k)+128), prefix + "_to_mp4_", k)
+        #E_k = Q.quantize(E_k, 4)
+        to_write = self.clip(YUV.to_RGB(E_k) + offset)
+        debug.print(f"image_IPP.E_codec: max={to_write.max()} min={to_write.min()} type={to_write.dtype}")
+        frame.write(to_write, prefix + "before_", k)
         #os.system(f"ffmpeg -loglevel fatal -y -i {prefix}_to_mp4_{k:03d}.png -crf {q_step} {prefix}_{k:03d}.mp4")
         #os.system(f"ffmpeg -loglevel fatal -y -i {prefix}before_{k:03d}.png -crf {q_step} {prefix}{k:03d}.mp4")
         os.system(f"ffmpeg -loglevel fatal -y -i {prefix}before_{k:03d}.png -c:v libx264 -vf format=yuv420p -crf {q_step} -flags -loop {prefix}{k:03d}.mp4")
