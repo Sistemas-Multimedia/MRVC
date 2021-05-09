@@ -116,7 +116,7 @@ class image_IPP_quantized_residue_codec(image_IPP.image_IPP_codec):
                 #    print("\n=======antes=====", end=' ')
                 #    for x in range(blocks_in_x):
                 #        print(block_RD_slope[y][x], end=' ')
-                median_RD_slope = np.min(block_RD_slope)
+                median_RD_slope = np.median(block_RD_slope)
                 print("========== median_RD_slope =", median_RD_slope)
 
                 # Decrease the slope of those blocks with a slope higher than the smaller one(s)
@@ -149,7 +149,7 @@ class image_IPP_quantized_residue_codec(image_IPP.image_IPP_codec):
                             if old_slope == block_RD_slope[y][x]:
                                 break
                             block_Q_step[y][x] = next_Q_step
-                        block_Q_step[y][x] = math.log(block_Q_step[y][x])+1
+                        #block_Q_step[y][x] = math.log(block_Q_step[y][x])+1
                         #if block_Q_step[y][x] > 1:
                         #    block_Q_step[y][x] = 64
                             #print("%%%%%", y, x, block_RD_slope[y][x], median_RD_slope, block_Q_step[y][x])
@@ -171,7 +171,7 @@ class image_IPP_quantized_residue_codec(image_IPP.image_IPP_codec):
                         QDCT(E_k[y*self.block_y_side:(y+1)*self.block_y_side,
                                  x*self.block_x_side:(x+1)*self.block_x_side], block_Q_step[y][x])
                 #print("ooooooooooooooo", dequantized_E_k.dtype)
-                self.E_codec4(dequantized_E_k, f"{video}texture_", k, q_step) # (g and h)
+                dequantized_E_k = self.E_codec4(dequantized_E_k, f"{video}texture_", k, q_step) # (g and h)
 
                 frame.debug_write(self.clip(YUV.to_RGB(dequantized_E_k) + 128), f"{video}dequantized_prediction_error_", k)
                 reconstructed_V_k = dequantized_E_k + prediction_V_k[:dequantized_E_k.shape[0], :dequantized_E_k.shape[1], :] # (i)

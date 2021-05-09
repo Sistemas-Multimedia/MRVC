@@ -24,12 +24,12 @@ else:
     reconstructed_video = video + "reconstructed_"
 
 # Number of frames to process.
-n_frames = 6
+n_frames = 30
 
 # Frames Per Second.
 FPS = 30
 
-for q_step in range(51, 52, 1):
+for q_step in range(31, 32, 1):
 #for q_step in range(21, 42, 3):
 
     codec.encode(video, n_frames, q_step)

@@ -249,7 +249,7 @@ class image_IPP_codec():
         #return dq_E_k.astype(np.float64)
         return dq_E_k
 
-    def E_codec_Y_4_CrCb(self, E_k, prefix, k, q_step):
+    def E_codec_4_YCrCb(self, E_k, prefix, k, q_step):
         offset = 0
         debug.print("image_IPP.E_codec: q_step", q_step)
         debug.print("image_IPP.E_codec: error", E_k.max(), E_k.min(), E_k.dtype)
