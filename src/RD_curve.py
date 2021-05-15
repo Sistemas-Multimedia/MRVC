@@ -18,7 +18,7 @@ import image_IPP_quantized_residue as codec
 # Original video frames (PNG format) with file-names
 # f"{video}_{frame_number:03d}.png".
 video = "/tmp/original_"
-if config.transform == "DWT" or config.transform == "LP":
+if config.multiresolution_transform == "DWT" or config.multiresolution_transform == "LP":
     reconstructed_video = video + "0_reconstructed_"
 else:
     reconstructed_video = video + "reconstructed_"

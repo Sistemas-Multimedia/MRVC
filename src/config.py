@@ -1,8 +1,8 @@
 ''' MRVC/config.py '''
 
-#transform = "DWT"
-#transform = "LP"
-transform = None
+#multiresolution_transform = "DWT"
+#multiresolution_transform = "LP"
+multiresolution_transform = None
 
 #codec = "Q+PNG"
 codec = "H264"
