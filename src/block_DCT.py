@@ -1,40 +1,81 @@
 ''' MRCV/block_DCT.py '''
 
 import numpy as np
+import scipy.fftpack
 import deadzone as Q
 import information
 import distortion
 
-def block_transform(block):
+def block_analyze(block):
     '''(Forward) DCT block transform.'''
-    return dct(block, norm="ortho")
+    return scipy.fftpack.dct(scipy.fftpack.dct(block, norm="ortho", axis=0), norm="ortho", axis=1)
 
-def block_inverse_transform(block):
+def block_synthesize(block):
     '''Inverse DCT block transform.'''
-    return idct(block, norm="ortho")
+    return scipy.fftpack.idct(scipy.fftpack.idct(block, norm="ortho", axis=1), norm="ortho", axis=0)
 
-def image_transform(image, blocks_in_y, blocks_in_x):
+def analyze(image, block_y_side, block_x_side):
     '''DCT image transform by blocks.'''
+    blocks_in_y = image.shape[0]//block_y_side
+    blocks_in_x = image.shape[1]//block_x_side
+    image_DCT = np.empty_like(image, dtype=np.float32)
     for y in range(blocks_in_y):
         for x in range(blocks_in_x):
             block = image[y*block_y_side:(y+1)*block_y_side,
                           x*block_x_side:(x+1)*block_x_side]
-            
-            DCT_block = block_transform(block)
+            DCT_block = block_analyze(block)
+            image_DCT[y*block_y_side:(y+1)*block_y_side,
+                      x*block_x_side:(x+1)*block_x_side] = DCT_block
+    return image_DCT
+
+def synthesize(image_DCT, block_y_side, block_x_side):
+    '''Inverse DCT image transform by blocks.'''
+    blocks_in_y = image_DCT.shape[0]//block_y_side
+    blocks_in_x = image_DCT.shape[1]//block_x_side
+    image = np.empty_like(image_DCT, dtype=np.int16)
+    for y in range(blocks_in_y):
+        for x in range(blocks_in_x):
+            DCT_block = image_DCT[y*block_y_side:(y+1)*block_y_side,
+                                  x*block_x_side:(x+1)*block_x_side]
+            block = block_synthesize(DCT_block)
             image[y*block_y_side:(y+1)*block_y_side,
-                          x*block_x_side:(x+1)*block_x_side] = block
+                  x*block_x_side:(x+1)*block_x_side] = block
     return image
 
-def constant_quantization(image, q_step):
+def constant_quantize(image, block_y_side, block_x_side, q_step):
     '''Quantize all blocks of the DCT <image> with the same <q_step>.'''
-    return Q.quantize(image, q_step)
+    blocks_in_y = image.shape[0]//block_y_side
+    blocks_in_x = image.shape[1]//block_x_side    
+    quantized_image_DCT = np.empty_like(image, dtype=np.int16)
+    for y in range(blocks_in_y):
+        for x in range(blocks_in_x):
+            block = image[y*block_y_side:(y+1)*block_y_side,
+                          x*block_x_side:(x+1)*block_x_side]
+            block_DCT = block_analyze(block)
+            quantized_block_DCT = Q.quantize(block_DCT, q_step)
+            quantized_image_DCT[y*block_y_side:(y+1)*block_y_side,
+                                x*block_x_side:(x+1)*block_x_side] = quantized_block_DCT
+    return quantized_image_DCT
 
-def constant_dequantization(image, q_step):
-    '''De-quantize all blocks of the DCT <image> with the same
-<q_step>.'''
-    return Q.quantize(image, q_step)
+def constant_dequantize(quantized_image_DCT, block_y_side, block_x_side, q_step):
+    '''De-quantize all blocks of the DCT <quantized_image_DCT> with the
+same <q_step>.
 
-def optimal_quantization(image, blocks_in_y, blocks_in_x, q_step):
+    '''
+    blocks_in_y = quantized_image_DCT.shape[0]//block_y_side
+    blocks_in_x = quantized_image_DCT.shape[1]//block_x_side    
+    dequantized_image = np.empty_like(quantized_image_DCT, dtype=np.int16)
+    for y in range(blocks_in_y):
+        for x in range(blocks_in_x):
+            quantized_block_DCT = quantized_image_DCT[y*block_y_side:(y+1)*block_y_side,
+                                                      x*block_x_side:(x+1)*block_x_side]
+            dequantized_block_DCT = Q.dequantize(quantized_block_DCT, q_step)
+            dequantized_block = block_synthesize(dequantized_block_DCT)
+            dequantized_image[y*block_y_side:(y+1)*block_y_side,
+                              x*block_x_side:(x+1)*block_x_side] = dequantized_block.astype(np.int16)
+    return dequantized_image
+
+def optimal_quantize(image, block_y_side, block_x_side, q_step):
     '''Quantize the DCT <image> using a quantization step (to compute)
 that generates approximately the same RD-slope for all the
 blocks. First, the "master" <q_step> is used to quantize all the
@@ -43,30 +84,35 @@ with smaller RD-slope increase their quantization step until this
 condition is false, and viceversa.
 
     '''
-    quantized_image = constant_quantization(image, q_step)
-    slopes = np.array(shape=(blocks_in_y, blocks_in_x), dtype=np.float32)
-    Q_steps = np.full(shape=(blocks_in_y, blocks_in_x), fill_value=q_step, dtype=np.uint8)
+    blocks_in_y = image.shape[0]//block_y_side
+    blocks_in_x = image.shape[1]//block_x_side    
+    #quantized_image = constant_quantize(image, block_y_side, block_x_side, q_step)
+    slopes = np.empty(shape=(blocks_in_y, blocks_in_x), dtype=np.float)
+    Q_steps = np.full(shape=(blocks_in_y, blocks_in_x), fill_value=q_step, dtype=np.uint)
+    print()
     for y in range(blocks_in_y):
         for x in range(blocks_in_x):
             block = image[y*block_y_side:(y+1)*block_y_side,
                           x*block_x_side:(x+1)*block_x_side]
-            block_DCT = block_transform(block)
+            print(y,x,block.max())
+            block_DCT = block_analyze(block)
             # The RD-slope is computed considering the RD-point for
             # lossless coding and the RD-point generated by the
             # current cuantization step.
             RD_point_for_Q_step_one = (information.entropy(block_DCT.flatten().astype(np.int16)), 0)
-            quantized_block_DCT = Q.quantize(block, q_step)
+            quantized_block_DCT = Q.quantize(block_DCT, q_step)
             dequantized_block_DCT = Q.dequantize(quantized_block_DCT, q_step)
-            dequantized_block = inverse_block_transform(dequantized_block_DCT)
+            dequantized_block = block_synthesize(dequantized_block_DCT)
             # Notice that if the DCT is orthogonal, the distortion can
-            # be also computed in the transform domain
+            # be also computed in the transform domain.
             current_RD_point = (information.entropy(quantized_block_DCT.flatten()), distortion.MSE(block, dequantized_block))
+            #print(RD_point_for_Q_step_one, current_RD_point)
             slopes[y,x] = current_RD_point[1] / (RD_point_for_Q_step_one[0] - current_RD_point[0])
 
-        median_slope = np.median(block_slopes)
+        median_slope = np.median(slopes)
 
         # Adjust the quantization step of those blocks with a slope
-        # different to <median_slope>
+        # different to <median_slope>.
         for y in range(blocks_in_y):
             for x in range(blocks_in_x):
                 while slopes[y,x] > median_slope:
@@ -75,11 +121,11 @@ condition is false, and viceversa.
                         break
                     block = image[y*block_y_side:(y+1)*block_y_side,
                                   x*block_x_side:(x+1)*block_x_side]
-                    block_DCT = block_transform(block)
+                    block_DCT = block_analyze(block)
                     RD_point_for_Q_step_one = (information.entropy(block_DCT.flatten().astype(np.int16)), 0)
                     quantized_block_DCT = Q.quantize(block_DCT, new_Q_step)
                     dequantized_block_DCT = Q.dequantize(quantized_block_DCT, new_Q_step)
-                    dequantized_block = inverse_block_transform(dequantized_block_DCT)
+                    dequantized_block = block_synthesize(dequantized_block_DCT)
                     current_RD_point = (information.entropy(quantized_block_DCT.flatten()), distortion.MSE(block, dequantized_block))
                     current_slope = slopes[y,x]
                     slopes[y,x] = current_RD_point[1] / (RD_point_for_Q_step_one[0] - current_RD_point[0])
@@ -93,11 +139,11 @@ condition is false, and viceversa.
                         break
                     block = image[y*block_y_side:(y+1)*block_y_side,
                                   x*block_x_side:(x+1)*block_x_side]
-                    block_DCT = block_transform(block)
+                    block_DCT = block_analyze(block)
                     RD_point_for_Q_step_one = (information.entropy(block_DCT.flatten().astype(np.int16)), 0)
                     quantized_block_DCT = Q.quantize(block_DCT, new_Q_step)
                     dequantized_block_DCT = Q.dequantize(quantized_block_DCT, new_Q_step)
-                    dequantized_block = inverse_block_transform(dequantized_block_DCT)
+                    dequantized_block = block_synthesize(dequantized_block_DCT)
                     current_RD_point = (information.entropy(quantized_block_DCT.flatten()), distortion.MSE(block, dequantized_block))
                     current_slope = slopes[y,x]
                     slopes[y,x] = current_RD_point[1] / (RD_point_for_Q_step_one[0] - current_RD_point[0])
@@ -105,20 +151,36 @@ condition is false, and viceversa.
                         break
                     Q_steps[y,x] = new_Q_step
 
-        # Quantize and dequantize the image (in the image domain) and
-        # generated the quantization indexes (in the DCT domain)
+        # Quantize the image (in the DCT domain).
         quantized_image_DCT = np.empty_like(image)
         for y in range(blocks_in_y):
             for x in range(blocks_in_x):
                 block = image[y*block_y_side:(y+1)*block_y_side,
                               x*block_x_side:(x+1)*block_x_side]
-                block_DCT = block_transform(block)
+                block_DCT = block_analyze(block)
                 quantized_block_DCT = Q.quantize(block_DCT, Q_steps[y,x])
                 quantized_image_DCT[y*block_y_side:(y+1)*block_y_side,
                                     x*block_x_side:(x+1)*block_x_side] = quantized_block_DCT
-                dequantized_block_DCT = Q.dequantize(quantized_block_DCT, Q_steps[y,x])
-                dequantized_block = inverse_block_transform(dequantized_block_DCT)
-                image[y*block_y_side:(y+1)*block_y_side,
-                      x*block_x_side:(x+1)*block_x_side] = dequantized_block
+                #dequantized_block_DCT = Q.dequantize(quantized_block_DCT, Q_steps[y,x])
+                #dequantized_block = inverse_block_transform(dequantized_block_DCT)
+                #quantized_image[y*block_y_side:(y+1)*block_y_side,
+                #      x*block_x_side:(x+1)*block_x_side] = dequantized_block
 
-        return image, quantized_image_DCT, Q_steps
+        return quantized_image_DCT, Q_steps
+
+def optimal_dequantize(quantized_image_DCT, block_y_side, block_x_side, Q_steps):
+    '''De-quantize all blocks of the DCT <quantized_image_DCT> using <Q_steps>.
+
+    '''
+    blocks_in_y = quantized_image_DCT.shape[0]//block_y_side
+    blocks_in_x = quantized_image_DCT.shape[1]//block_x_side    
+    dequantized_image = np.empty_like(quantized_image_DCT, dtype=np.int16)
+    for y in range(blocks_in_y):
+        for x in range(blocks_in_x):
+            quantized_block_DCT = quantized_image_DCT[y*block_y_side:(y+1)*block_y_side,
+                                                      x*block_x_side:(x+1)*block_x_side]
+            dequantized_block_DCT = Q.dequantize(quantized_block_DCT, Q_steps[y,x])
+            dequantized_block = block_synthesize(dequantized_block_DCT)
+            dequantized_image[y*block_y_side:(y+1)*block_y_side,
+                              x*block_x_side:(x+1)*block_x_side] = dequantized_block.astype(np.int16)
+    return dequantized_image
