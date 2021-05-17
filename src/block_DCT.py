@@ -165,7 +165,7 @@ condition is false, and viceversa. The <image> is not quantized.
     # Adjust the quantization step of those blocks with a slope
     # different to <median_slope>.
     for y in range(blocks_in_y):
-        print(y, end=' ')
+        print(f"{y}/{blocks_in_y-1}", end=' ')
         for x in range(blocks_in_x):
             while slopes[y,x] > target_slope:
                 new_Q_step = Q_steps[y,x] - 1
