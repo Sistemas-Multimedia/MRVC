@@ -206,7 +206,7 @@ median, the quantization step is increased until this condition is
 false, and viceversa.
 
     '''
-    slopes = get_slopes(decomposition, block_y_side, block_x_side, Q_step)
+    slopes = compute_slopes(decomposition, block_y_side, block_x_side, Q_step)
     #target_slope = np.median(slopes)
     target_slope = slopes[0][0]
     Q_steps = np.full(shape=(block_y_side, block_x_side), fill_value=Q_step, dtype=np.uint)
