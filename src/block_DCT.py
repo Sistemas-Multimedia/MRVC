@@ -42,7 +42,7 @@ def synthesize(image_DCT, block_y_side, block_x_side):
                   x*block_x_side:(x+1)*block_x_side] = block
     return image
 
-def get_decomposition(image_DCT, block_y_side, block_x_side):
+def get_subbands(image_DCT, block_y_side, block_x_side):
     '''Returns the subband form of <image_DCT> (a decomposition). Notice
 that a subband is form by the coefficients that are in the same
 position in each block of <image_DCT>.
@@ -72,6 +72,41 @@ in the same position of each subband of the input decomposition.
                                                                         x*blocks_in_x:(x+1)*blocks_in_x]
     return image_DCT
 
+def _compute_variances(image_DCT, block_y_side, block_x_side):
+    '''Compute the variance of each coefficient of a block, or in other
+words, compute the variance of each subband.'''
+    variances = np.empty(shape=(block_y_side, block_x_side), dtype=np.double)
+    for y in range(block_y_side):
+        for x in range(block_x_side):
+            variances[y, x] = np.var(image_DCT[y::block_y_side, x::block_x_side])
+    return variances
+
+def compute_variances(decomposition, block_y_side, block_x_side):
+    '''Compute the variance of each subband of <decomposition>.'''
+    variances = np.empty(shape=(block_y_side, block_x_side), dtype=np.double)
+    blocks_in_y = decomposition.shape[0]//block_y_side
+    blocks_in_x = decomposition.shape[1]//block_x_side
+    for y in range(block_y_side):
+        for x in range(block_x_side):
+            subband = decomposition[y*blocks_in_y:(y+1)*blocks_in_y,
+                                    x*blocks_in_x:(x+1)*blocks_in_x]
+            variances[y, x] = np.var(subband)
+    return variances
+
+def compute_max_min(decomposition, block_y_side, block_x_side):
+    '''Compute the dynamic range of each subband of <decomposition>.'''
+    max_ = np.empty(shape=(block_y_side, block_x_side), dtype=np.double)
+    min_ = np.empty(shape=(block_y_side, block_x_side), dtype=np.double)
+    blocks_in_y = decomposition.shape[0]//block_y_side
+    blocks_in_x = decomposition.shape[1]//block_x_side
+    for y in range(block_y_side):
+        for x in range(block_x_side):
+            subband = decomposition[y*blocks_in_y:(y+1)*blocks_in_y,
+                                    x*blocks_in_x:(x+1)*blocks_in_x]
+            max_[y, x] = np.max(subband)
+            min_[y, x] = np.min(subband)
+    return max_, min_
+    
 def quantize(decomposition, block_y_side, block_x_side, Q_steps):
     '''Quantize <decomposition> using <Q_steps>, a matrix o
 quantization steps.'''
@@ -138,14 +173,14 @@ def constant_dequantize(quantized_decomposition, block_y_side, block_x_side, Q_s
     dequantized_decomposition = dequantize(quantized_decomposition, block_y_side, block_x_side, Q_steps)
     return dequantized_decomposition
 
-def get_slopes(decomposition, block_y_side, block_x_side, Q_step):
+def compute_slopes(decomposition, block_y_side, block_x_side, Q_step):
     '''Using a constant quantization step <Q_step>, this method quantize
-<decomposition> returns the slope of each subband.
+<decomposition> returns the estimated (using the entropy) slope of
+each subband.
 
     '''
     blocks_in_y = decomposition.shape[0]//block_y_side
     blocks_in_x = decomposition.shape[1]//block_x_side
-    Q_steps = np.full(shape=(block_y_side, block_x_side), fill_value=Q_step, dtype=np.uint)
     slopes = np.empty(shape=(block_y_side, block_x_side), dtype=np.float)
 
     for y in range(block_y_side):
@@ -161,9 +196,68 @@ def get_slopes(decomposition, block_y_side, block_x_side, Q_step):
             else:
                 slopes[y, x] = current_RD_point[1] / (RD_point_for_Q_step_one[0] - current_RD_point[0])
 
-    return slopes, Q_steps
+    return slopes
 
-def find_optimal_Q_steps(image_DCT, block_y_side, block_x_side, Q_steps, current_slopes, target_slope):
+def find_optimal_Q_steps(decomposition, block_y_side, block_x_side, Q_step):
+    '''Find the optimal quantization steps for <decomposition>. Scalar
+<Q_step> is used to find median slope after a constant
+quantization. Then for those subbands with a smaller slope than the
+median, the quantization step is increased until this condition is
+false, and viceversa.
+
+    '''
+    slopes = get_slopes(decomposition, block_y_side, block_x_side, Q_step)
+    #target_slope = np.median(slopes)
+    target_slope = slopes[0][0]
+    Q_steps = np.full(shape=(block_y_side, block_x_side), fill_value=Q_step, dtype=np.uint)
+    blocks_in_y = decomposition.shape[0]//block_y_side
+    blocks_in_x = decomposition.shape[1]//block_x_side
+
+    for y in range(block_y_side):
+        print(f"{y}/{block_y_side-1}", end=' ')
+        for x in range(block_x_side):
+            while slopes[y, x] > target_slope:
+                new_Q_step= Q_steps[y,x] - 1
+                if new_Q_step <= 0:
+                    break
+                subband = decomposition[y*blocks_in_y:(y+1)*blocks_in_y,
+                                        x*blocks_in_x:(x+1)*blocks_in_x]
+                RD_point_for_Q_step_one = (information.entropy(subband.flatten().astype(np.int16)), 0)
+                quantized_subband = Q.quantize(subband, new_Q_step)
+                dequantized_subband = Q.dequantize(quantized_subband, new_Q_step)
+                # Remember that the DCT is orthonormal, i.e., energy
+                # preserving
+                current_RD_point = (information.entropy(quantized_subband.flatten()), distortion.MSE(subband, dequantized_subband))
+                current_slope = slopes[y, x]
+                if (RD_point_for_Q_step_one[0] - current_RD_point[0]) == 0:
+                    slopes[y,x] = 0
+                else:
+                    slopes[y,x] = current_RD_point[1] / (RD_point_for_Q_step_one[0] - current_RD_point[0])
+                if current_slope == slopes[y, x]:
+                    break
+                Q_steps[y, x] = new_Q_step
+
+            while slopes[y, x] < target_slope:
+                new_Q_step = Q_steps[y,x] + 1
+                subband = decomposition[y*blocks_in_y:(y+1)*blocks_in_y,
+                                        x*blocks_in_x:(x+1)*blocks_in_x]
+                RD_point_for_Q_step_one = (information.entropy(subband.flatten().astype(np.int16)), 0)
+                quantized_subband = Q.quantize(subband, new_Q_step)
+                dequantized_subband = Q.dequantize(quantized_subband, new_Q_step)
+                current_RD_point = (information.entropy(quantized_subband.flatten()), distortion.MSE(subband, dequantized_subband))
+                current_slope = slopes[y,x]
+                if (RD_point_for_Q_step_one[0] - current_RD_point[0]) == 0:
+                    slopes[y, x] = 0
+                else:
+                    slopes[y, x] = current_RD_point[1] / (RD_point_for_Q_step_one[0] - current_RD_point[0])
+                if current_slope == slopes[y, x]:
+                    break
+                Q_steps[y,x] = new_Q_step
+    return Q_steps, slopes
+
+##########################33
+
+def _find_optimal_Q_steps(image_DCT, block_y_side, block_x_side, Q_steps, current_slopes, target_slope):
     '''Quantize the DCT <image> using a quantization step (to compute)
 that generates approximately the same RD-slope for all the
 blocks. First, the "master" <Q_step> is used to quantize all the
@@ -241,11 +335,3 @@ condition is false, and viceversa. The <image> is not quantized.
     '''
     return Q_steps, slopes
 
-def compute_variances(image_DCT, block_y_side, block_x_side):
-    '''Compute the variance of each coefficient of a block, or in other
-words, compute the variance of each subband.'''
-    variances = np.empty(shape=(block_y_side, block_x_side), dtype=np.double)
-    for y in range(block_y_side):
-        for x in range(block_x_side):
-            variances[y, x] = np.var(image_DCT[y::block_y_side, x::block_x_side])
-    return variances
