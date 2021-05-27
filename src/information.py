@@ -3,7 +3,7 @@
 import numpy as np
 import math
 import debug
-import frame
+import image
 import os
 
 def entropy(sequence_of_symbols):
@@ -26,7 +26,7 @@ def entropy(sequence_of_symbols):
     return _entropy
 
 def PNG_BPP(image):
-    frame.write(image, "/tmp/PNG_BPP_", 0)
+    image.write(image, "/tmp/PNG_BPP_", 0)
     fn = "/tmp/PNG_BPP_000.png"
     codestream_length = os.path.getsize(fn)
     return codestream_length/np.size(image)*8

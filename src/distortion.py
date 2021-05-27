@@ -1,7 +1,7 @@
 ''' MRVC/distortion.py '''
 
 import numpy as np
-import frame
+import image
 
 def energy(x):
     return np.sum(x.astype(np.double)*x.astype(np.double))
@@ -17,15 +17,15 @@ def RMSE(x, y):
     error_signal = xx.astype(np.float32) - y
     return math.sqrt(MSE(error_signal))
 
-def AMSE(x_prefix, y_prefix, n_frames):
+def AMSE(x_prefix, y_prefix, n_images):
     print(f"AMSE: comparing {x_prefix} and {y_prefix}")
     total_AMSE = 0
-    for k in range(n_frames):
-        x = frame.read(x_prefix, k)
-        y = frame.read(y_prefix, k)
+    for k in range(n_images):
+        x = image.read(x_prefix, k)
+        y = image.read(y_prefix, k)
         _AMSE = MSE(x, y)
-        print(f"AMSE of frame {k} = {_AMSE}")
+        print(f"AMSE of image {k} = {_AMSE}")
         total_AMSE += _AMSE
-    _AMSE = total_AMSE/n_frames
+    _AMSE = total_AMSE/n_images
     print("Average Mean Square Error (entire sequence) =", _AMSE)
     return _AMSE
