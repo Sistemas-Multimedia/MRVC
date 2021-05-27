@@ -3,8 +3,11 @@
 import numpy as np
 import frame
 
+def energy(x):
+    return np.sum(x.astype(np.double)*x.astype(np.double))
+
 def average_energy(x):
-    return np.sum(x.astype(np.double)*x.astype(np.double))/(np.size(x))
+    return energy(x)/np.size(x)
 
 def MSE(x, y):
     error_signal = x.astype(np.float32) - y

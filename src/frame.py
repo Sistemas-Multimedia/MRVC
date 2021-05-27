@@ -5,17 +5,18 @@ import cv2
 import colored
 if __debug__:
     import os
+import matplotlib.pyplot as plt
 
-def read(prefix:str, frame_number:int) -> np.ndarray: # [row, column, component]
+def read(prefix:str, image_number:int) -> np.ndarray: # [row, column, component]
     #fn = name + ".png"
-    fn = f"{prefix}{frame_number:03d}.png"
+    fn = f"{prefix}{image_number:03d}.png"
     if __debug__:
-        print(colored.fore.GREEN + f"frame.read: {fn}", end=' ', flush=True)
+        print(colored.fore.GREEN + f"image.read: {fn}", end=' ', flush=True)
     img = cv2.imread(fn, cv2.IMREAD_UNCHANGED)
     #try:
     #    img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
     #except cv2.error:
-    #    print(colored.fore.RED + f'frame.read: Unable to read "{fn}"')
+    #    print(colored.fore.RED + f'image.read: Unable to read "{fn}"')
     #    raise
     #img = np.array(img, dtype=np.float32)
     if __debug__:
@@ -23,21 +24,21 @@ def read(prefix:str, frame_number:int) -> np.ndarray: # [row, column, component]
     #return img.astype(np.int16)
     return img.astype(np.uint16)
 
-def write(img:np.ndarray, prefix:str, frame_number:int) -> None:
-    _write(img, prefix, frame_number)
+def write(img:np.ndarray, prefix:str, image_number:int) -> None:
+    _write(img, prefix, image_number)
 
-def debug_write(img:np.ndarray, prefix:str, frame_number:int) -> None:
+def debug_write(img:np.ndarray, prefix:str, image_number:int) -> None:
     if __debug__:
         #_write(img.astype(np.uint16), name)
-        _write(img, prefix, frame_number)
+        _write(img, prefix, image_number)
 
-def _write(img:np.ndarray, prefix:str, frame_number:int) -> None:
+def _write(img:np.ndarray, prefix:str, image_number:int) -> None:
     #fn = name + ".png"
-    fn = f"{prefix}{frame_number:03d}.png"
+    fn = f"{prefix}{image_number:03d}.png"
     #img = cv2.cvtColor(img, cv2.COLOR_RGB2BGR)
     cv2.imwrite(fn, img)
     if __debug__:
-        print(colored.fore.GREEN + f"frame.write: {fn}", img.shape, img.dtype, os.path.getsize(fn), colored.style.RESET)
+        print(colored.fore.GREEN + f"image.write: {fn}", img.shape, img.dtype, os.path.getsize(fn), colored.style.RESET)
 
 def normalize(img: np.ndarray) -> np.ndarray: # [row, column, component]
     max_component = np.max(img)
@@ -45,9 +46,25 @@ def normalize(img: np.ndarray) -> np.ndarray: # [row, column, component]
     max_min_component = max_component - min_component
     return (img - min_component) / max_min_component
 
-def get_frame_shape(prefix:str) -> int:
+def get_image_shape(prefix:str) -> int:
     img = read(prefix, 0)
     return img.shape
+
+def print_stats(image):
+    for i in range(image.shape[2]):
+        print("component", i, image[..., i].max(), image[..., i].min(), image[..., i].dtype)
+
+def show_RGB_image(image, title=''):
+    plt.figure(figsize=(16,16))
+    plt.title(title, fontsize=20)
+    plt.imshow(cv2.cvtColor(image.astype(np.uint8), cv2.COLOR_BGR2RGB))
+    print_stats(image)
+
+def show_image(image, title=''):
+    plt.figure(figsize=(16,16))
+    plt.title(title, fontsize=20)
+    plt.imshow(image)
+    print_stats(image)
 
 ##########
 
@@ -57,32 +74,32 @@ def __read(name: str) -> np.ndarray: # [row, column, component]
     try:
         img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
     except cv2.error:
-        print(colors.red(f'frame.read: Unable to read "{fn}"'))
+        print(colors.red(f'image.read: Unable to read "{fn}"'))
         raise
     #img = np.array(img, dtype=np.float32)
     if __debug__:
-        print(f"frame.read({name})", img.shape, img.dtype, os.path.getsize(fn))
+        print(f"image.read({name})", img.shape, img.dtype, os.path.getsize(fn))
     return img.astype(np.int16)
 
 def __load(name: str) -> np.ndarray: # [component, row, column]
     fn = name + ".png"
-    frame = cv2.imread(fn, cv2.IMREAD_UNCHANGED)
+    image = cv2.imread(fn, cv2.IMREAD_UNCHANGED)
     try:
-        B,G,R = cv2.split(frame)
+        B,G,R = cv2.split(image)
     except ValueError:
-        print(colors.red(f'frame.load: Unable to read "{fn}"'))
+        print(colors.red(f'image.load: Unable to read "{fn}"'))
         raise
-    frame = np.array([R, G, B], dtype=np.int16)
+    image = np.array([R, G, B], dtype=np.int16)
     if __debug__:
-        print(f"frame.load({name})", frame.shape)
-    return frame
+        print(f"image.load({name})", image.shape)
+    return image
 
-def __save(frame: np.ndarray, name: str) -> None:
+def __save(image: np.ndarray, name: str) -> None:
     fn = name + ".png"
-    frame = cv2.merge((frame[0], frame[1], frame[2]))
-    cv2.imwrite(fn, frame)
+    image = cv2.merge((image[0], image[1], image[2]))
+    cv2.imwrite(fn, image)
 
-def __debug_save(frame: np.ndarray, name: str) -> None:
+def __debug_save(image: np.ndarray, name: str) -> None:
     if __debug__:
-        save(frame, name)
+        save(image, name)
     

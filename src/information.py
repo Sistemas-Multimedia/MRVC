@@ -3,6 +3,8 @@
 import numpy as np
 import math
 import debug
+import frame
+import os
 
 def entropy(sequence_of_symbols):
     value, counts = np.unique(sequence_of_symbols, return_counts = True)
@@ -23,23 +25,32 @@ def entropy(sequence_of_symbols):
 
     return _entropy
 
+def PNG_BPP(image):
+    frame.write(image, "/tmp/PNG_BPP_", 0)
+    fn = "/tmp/PNG_BPP_000.png"
+    codestream_length = os.path.getsize(fn)
+    return codestream_length/np.size(image)*8
+
 if __name__ == "__main__":
 
+    sequence = np.array([0,1], dtype=np.uint8)
+    print(sequence, entropy(sequence))
+
     sequence = np.array([0,1,2,3], dtype=np.uint8)
-    print(entropy(sequence))
+    print(sequence, entropy(sequence))
 
     sequence = np.array([0,1,1,2,3], dtype=np.uint8)
-    print(entropy(sequence))
+    print(sequence, entropy(sequence))
 
     sequence = np.array([0,-1,1,-2,3], dtype=np.uint8)
-    print(entropy(sequence))
+    print(sequence, entropy(sequence))
+
+    sequence = np.arange(21, dtype=np.uint8)
+    print(sequence, entropy(sequence))    
 
     sequence = np.arange(21, dtype=np.uint8).reshape(3,7)
-    print(entropy(sequence))
-    
-    sequence = np.arange(21, dtype=np.uint8)
-    print(entropy(sequence))
+    print(sequence, entropy(sequence))
     
     sequence = np.arange(21, dtype=np.uint8).reshape(3,7)
-    print(entropy(sequence.flatten()))
+    print(sequence, PNG_BPP(sequence))
     

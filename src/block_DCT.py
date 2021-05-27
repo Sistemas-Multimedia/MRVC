@@ -6,11 +6,11 @@ import deadzone as Q
 import information
 import distortion
 
-def block_analyze(block):
+def analyze_block(block):
     '''(Forward) DCT block transform.'''
     return scipy.fftpack.dct(scipy.fftpack.dct(block, norm="ortho", axis=0), norm="ortho", axis=1)
 
-def block_synthesize(block):
+def synthesize_block(block):
     '''Inverse DCT block transform.'''
     return scipy.fftpack.idct(scipy.fftpack.idct(block, norm="ortho", axis=1), norm="ortho", axis=0)
 
@@ -23,7 +23,7 @@ def analyze(image, block_y_side, block_x_side):
         for x in range(blocks_in_x):
             block = image[y*block_y_side:(y+1)*block_y_side,
                           x*block_x_side:(x+1)*block_x_side]
-            DCT_block = block_analyze(block)
+            DCT_block = analyze_block(block)
             image_DCT[y*block_y_side:(y+1)*block_y_side,
                       x*block_x_side:(x+1)*block_x_side] = DCT_block
     return image_DCT
@@ -37,7 +37,7 @@ def synthesize(image_DCT, block_y_side, block_x_side):
         for x in range(blocks_in_x):
             DCT_block = image_DCT[y*block_y_side:(y+1)*block_y_side,
                                   x*block_x_side:(x+1)*block_x_side]
-            block = block_synthesize(DCT_block)
+            block = synthesize_block(DCT_block)
             image[y*block_y_side:(y+1)*block_y_side,
                   x*block_x_side:(x+1)*block_x_side] = block
     return image
