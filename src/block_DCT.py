@@ -14,7 +14,7 @@ def synthesize_block(block):
     '''Inverse DCT block transform.'''
     return scipy.fftpack.idct(scipy.fftpack.idct(block, norm="ortho", axis=1), norm="ortho", axis=0)
 
-def analyze(image, block_y_side, block_x_side):
+def analyze_image(image, block_y_side, block_x_side):
     '''DCT image transform by blocks.'''
     blocks_in_y = image.shape[0]//block_y_side
     blocks_in_x = image.shape[1]//block_x_side
@@ -28,7 +28,7 @@ def analyze(image, block_y_side, block_x_side):
                       x*block_x_side:(x+1)*block_x_side] = DCT_block
     return image_DCT
 
-def synthesize(image_DCT, block_y_side, block_x_side):
+def synthesize_image(image_DCT, block_y_side, block_x_side):
     '''Inverse DCT image transform by blocks.'''
     blocks_in_y = image_DCT.shape[0]//block_y_side
     blocks_in_x = image_DCT.shape[1]//block_x_side

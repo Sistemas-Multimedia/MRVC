@@ -25,11 +25,16 @@ def entropy(sequence_of_symbols):
 
     return _entropy
 
-def PNG_BPP(image):
-    image.write(image, "/tmp/PNG_BPP_", 0)
-    fn = "/tmp/PNG_BPP_000.png"
+def PNG_BPP(_image, prefix):
+    image.write(_image, prefix, 0)
+    fn = prefix + "000.png"
     codestream_length = os.path.getsize(fn)
-    return codestream_length/np.size(image)*8
+    BPP = (8*codestream_length)/np.size(image)
+    if __debug__:
+        __image = image.read(prefix, 0)
+        return BPP, __image
+    else:
+        return BPP, None
 
 if __name__ == "__main__":
 
