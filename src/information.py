@@ -29,7 +29,7 @@ def PNG_BPP(_image, prefix):
     image.write(_image, prefix, 0)
     fn = prefix + "000.png"
     codestream_length = os.path.getsize(fn)
-    BPP = (8*codestream_length)/np.size(image)
+    BPP = (8*codestream_length)/np.size(_image)
     if __debug__:
         __image = image.read(prefix, 0)
         return BPP, __image
