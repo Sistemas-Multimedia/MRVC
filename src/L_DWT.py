@@ -1,4 +1,8 @@
-''' MRVC/L_DWT.py '''
+''' MRVC/L_DWT.py
+
+Provides:
+
+1. DWT LL I/O. '''
 
 import numpy as np
 import DWT
@@ -11,8 +15,8 @@ MIN = -10000 #-32768
 MAX = 10000 #32767
 OFFSET = 32768
 
-def read(prefix: str, frame_number: int) -> np.ndarray: # [row, column, component]
-    fn = f"{prefix}{frame_number:03d}LL.png"
+def read(prefix: str, image_number: int) -> np.ndarray: # [row, column, component]
+    fn = f"{prefix}{image_number:03d}LL.png"
     if __debug__:
         print(colored.fore.GREEN + f"L.read({fn})", end=' ')
     subband = cv2.imread(fn, cv2.IMREAD_UNCHANGED)
@@ -24,8 +28,8 @@ def read(prefix: str, frame_number: int) -> np.ndarray: # [row, column, componen
     subband -= OFFSET
     return subband.astype(np.int16)
 
-def write(subband: np.ndarray, prefix: str, frame_number: int) -> None:
-    fn = f"{prefix}{frame_number:03d}LL.png"
+def write(subband: np.ndarray, prefix: str, image_number: int) -> None:
+    fn = f"{prefix}{image_number:03d}LL.png"
     if __debug__:
         print(colored.fore.GREEN + f"L.write({fn})", subband.max(), subband.min(), subband.shape, subband.dtype, end='')
     #subband = subband.astype(np.int32)
@@ -60,15 +64,15 @@ def __read(fn:str) -> np.ndarray: # [row, column, component]
     subband = cv2.imread(fn, cv2.IMREAD_UNCHANGED)
     subband = cv2.cvtColor(subband, cv2.COLOR_BGR2RGB)
     if __debug__:
-        print(f"L.read({prefix}, {frame_number})", subband.shape, subband.dtype, os.path.getsize(fn))
+        print(f"L.read({prefix}, {image_number})", subband.shape, subband.dtype, os.path.getsize(fn))
     #subband = subband.astype(np.int32)
     subband = np.array(subband, dtype=np.int32)
     subband -= OFFSET
     return subband#.astype(np.int16)
 
-def __read(prefix: str, frame_number: int) -> np.ndarray: # [row, column, component]
-    #ASCII_frame_number = str(frame_number).zfill(3)
-    fn = f"{prefix}LL{frame_number:03d}.png"
+def __read(prefix: str, image_number: int) -> np.ndarray: # [row, column, component]
+    #ASCII_image_number = str(image_number).zfill(3)
+    fn = f"{prefix}LL{image_number:03d}.png"
     #fn = name + ".png"
     subband = cv2.imread(fn, cv2.IMREAD_UNCHANGED)
     #try:
@@ -77,7 +81,7 @@ def __read(prefix: str, frame_number: int) -> np.ndarray: # [row, column, compon
     #    print(colors.red(f'L.read: Unable to read "{fn}"'))
     #    raise
     if __debug__:
-        print(f"L.read({prefix}, {frame_number})", subband.shape, subband.dtype, os.path.getsize(fn))
+        print(f"L.read({prefix}, {image_number})", subband.shape, subband.dtype, os.path.getsize(fn))
     #L_int32 = np.array(L, dtype=np.int32)
     subband = np.array(subband, dtype=np.float64)
     #tmp = np.array(L.shape, dtype=np.
@@ -88,9 +92,9 @@ def __read(prefix: str, frame_number: int) -> np.ndarray: # [row, column, compon
     #L = L.astype(np.uint16)
     return subband#.astype(np.int16)
 
-def __write(subband: np.ndarray, prefix: str, frame_number: int) -> None:
+def __write(subband: np.ndarray, prefix: str, image_number: int) -> None:
     if __debug__:
-        print(f"L.write({prefix}, {frame_number})", L.shape, L.dtype, end=' ')
+        print(f"L.write({prefix}, {image_number})", L.shape, L.dtype, end=' ')
     #subband = np.array(L, dtype=np.float64)
     assert subband.all() <= MAX
     assert subband.all() >= MIN
@@ -101,10 +105,10 @@ def __write(subband: np.ndarray, prefix: str, frame_number: int) -> None:
     #L += 32768
     #subband += 32768.0
     L = L.astype(np.uint16)
-    #ASCII_frame_number = str(frame_number).zfill(3)
+    #ASCII_image_number = str(image_number).zfill(3)
     #fn = name + ".png"
     #L = cv2.cvtColor(L, cv2.COLOR_RGB2BGR)
-    fn = f"{prefix}LL{frame_number:03d}.png"
+    fn = f"{prefix}LL{image_number:03d}.png"
     cv2.imwrite(fn, L)
     if __debug__:
         print(os.path.getsize(fn))

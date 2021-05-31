@@ -1,4 +1,9 @@
-''' MRVC/H.py '''
+''' MRVC/H.py
+
+Provides:
+
+1. DWT LH, HL and HH I/O.
+2. H <-> {LH, HL, HH} transformation. '''
 
 import numpy as np
 import DWT
@@ -6,15 +11,15 @@ import cv2
 import colored
 if __debug__:
     import os
-    import frame
+    import image
 
-def read(prefix: str, frame_number: int, shape: tuple) -> tuple: # [LH, HL, HH], each one [rows, columns, components]
-    ASCII_frame_number = str(frame_number).zfill(3)
+def read(prefix: str, image_number: int, shape: tuple) -> tuple: # [LH, HL, HH], each one [rows, columns, components]
+    ASCII_image_number = str(image_number).zfill(3)
     subband_names = ["LH", "HL", "HH"]
     H = []
     sb = 0
     for sbn in subband_names:
-        fn = f"{prefix}{ASCII_frame_number}{sbn}.png"
+        fn = f"{prefix}{ASCII_image_number}{sbn}.png"
         if __debug__:
             print(colored.fore.GREEN + f"H.read({fn})", end=' ')
         subband = cv2.imread(fn, cv2.IMREAD_UNCHANGED)
@@ -44,10 +49,10 @@ def read(prefix: str, frame_number: int, shape: tuple) -> tuple: # [LH, HL, HH],
         H.append(padded_subband)
     return tuple(H)
 
-def write(H: tuple, prefix: str, frame_number: int) -> None:
-    ASCII_frame_number = str(frame_number).zfill(3)
+def write(H: tuple, prefix: str, image_number: int) -> None:
+    ASCII_image_number = str(image_number).zfill(3)
     if __debug__:
-        print(colored.fore.GREEN + f"H.write({prefix}, {frame_number})", end=' ')
+        print(colored.fore.GREEN + f"H.write({prefix}, {image_number})", end=' ')
     subband_names = ["LH", "HL", "HH"]
     sb = 0
     for sbn in subband_names:
@@ -61,7 +66,7 @@ def write(H: tuple, prefix: str, frame_number: int) -> None:
         assert (subband > -1).all()
         subband = subband.astype(np.uint16)
         #subband = cv2.cvtColor(subband, cv2.COLOR_RGB2BGR)
-        fn = f"{prefix}{ASCII_frame_number}{sbn}.png"
+        fn = f"{prefix}{ASCII_image_number}{sbn}.png"
         cv2.imwrite(fn, subband)
         sb += 1
         if __debug__:
@@ -83,7 +88,7 @@ def reduce(_H_: np.ndarray) -> tuple:
         global k
         unique, counts = np.unique(_, return_counts=True)
         print(f"H.reduce: unique={unique} counts={counts} ({len(counts)})")
-        #frame.debug_write(frame.normalize(_).astype(np.uint8), f"/tmp/__{k:03d}")
+        #image.debug_write(image.normalize(_).astype(np.uint8), f"/tmp/__{k:03d}")
         #k += 1
     return H
 
@@ -92,19 +97,19 @@ def reduce(_H_: np.ndarray) -> tuple:
 def __read(fn:str, shape: tuple) -> tuple: # [LH, HL, HH], each one [rows, columns, components]
     fn = fn + ".png"
     resolution = cv2.imread(fn, cv2.IMREAD_UNCHANGED)
-    ASCII_frame_number = str(frame_number).zfill(3)
+    ASCII_image_number = str(image_number).zfill(3)
     subband_names = ["LH", "HL", "HH"]
     H = []
     sb = 0
     for sbn in subband_names:
-        fn = f"{prefix}{sbn}{ASCII_frame_number}.png"
+        fn = f"{prefix}{sbn}{ASCII_image_number}.png"
         subband = cv2.imread(fn, cv2.IMREAD_UNCHANGED)
         try:
             subband = cv2.cvtColor(subband, cv2.COLOR_BGR2RGB)
         except cv2.error:
             print(colors.red(f'H.read: Unable to read "{fn}"'))
         if __debug__:
-            print(f"H.read({prefix}, {frame_number})", subband.shape, subband.dtype, os.path.getsize(fn))
+            print(f"H.read({prefix}, {image_number})", subband.shape, subband.dtype, os.path.getsize(fn))
         subband_int32 = np.array(subband, dtype=np.int32)
         subband_int32 -= 32768
         padded_subband = np.zeros(shape)
