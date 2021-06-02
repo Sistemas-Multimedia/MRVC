@@ -10,11 +10,11 @@ def average_energy(x):
     return energy(x)/np.size(x)
 
 def MSE(x, y):
-    error_signal = x.astype(np.float32) - y
+    error_signal = x.astype(np.float64) - y
     return average_energy(error_signal)
 
 def RMSE(x, y):
-    error_signal = xx.astype(np.float32) - y
+    error_signal = xx.astype(np.float64) - y
     return math.sqrt(MSE(error_signal))
 
 def AMSE(x_prefix, y_prefix, n_images):
