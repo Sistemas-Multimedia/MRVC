@@ -6,6 +6,12 @@ import debug
 import image
 import os
 
+def energy(x):
+    return np.sum(x.astype(np.double)*x.astype(np.double))
+
+def average_energy(x):
+    return energy(x)/np.size(x)
+
 def entropy(sequence_of_symbols):
     value, counts = np.unique(sequence_of_symbols, return_counts = True)
     probs = counts / len(sequence_of_symbols)

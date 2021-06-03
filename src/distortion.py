@@ -1,17 +1,12 @@
 ''' MRVC/distortion.py '''
 
+import information
 import numpy as np
 import image
 
-def energy(x):
-    return np.sum(x.astype(np.double)*x.astype(np.double))
-
-def average_energy(x):
-    return energy(x)/np.size(x)
-
 def MSE(x, y):
     error_signal = x.astype(np.float64) - y
-    return average_energy(error_signal)
+    return information.average_energy(error_signal)
 
 def RMSE(x, y):
     error_signal = xx.astype(np.float64) - y
