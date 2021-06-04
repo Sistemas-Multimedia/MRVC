@@ -13,11 +13,12 @@ def read(prefix:str, image_number:int) -> np.ndarray: # [row, column, component]
     if __debug__:
         print(colored.fore.GREEN + f"image.read: {fn}", end=' ', flush=True)
     img = cv2.imread(fn, cv2.IMREAD_UNCHANGED)
-    #try:
-    #    img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
-    #except cv2.error:
-    #    print(colored.fore.RED + f'image.read: Unable to read "{fn}"')
-    #    raise
+    #img = cv2.imread(fn, cv2.COLOR_BGR2RGB)
+    try:
+        img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
+    except cv2.error:
+        print(colored.fore.RED + f'image.read: Unable to read "{fn}"')
+        raise
     #img = np.array(img, dtype=np.float32)
     if __debug__:
         print(img.shape, img.dtype, os.path.getsize(fn), colored.style.RESET)
@@ -35,7 +36,7 @@ def debug_write(img:np.ndarray, prefix:str, image_number:int) -> None:
 def _write(img:np.ndarray, prefix:str, image_number:int) -> None:
     #fn = name + ".png"
     fn = f"{prefix}{image_number:03d}.png"
-    #img = cv2.cvtColor(img, cv2.COLOR_RGB2BGR)
+    img = cv2.cvtColor(img, cv2.COLOR_RGB2BGR)
     cv2.imwrite(fn, img)
     len_output = os.path.getsize(fn)
     if __debug__:
