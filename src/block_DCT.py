@@ -107,20 +107,26 @@ def compute_max_min(decomposition, block_y_side, block_x_side):
             min_[y, x] = np.min(subband)
     return max_, min_
     
-def quantize(decomposition, block_y_side, block_x_side, Q_steps):
+def quantize(decomposition, Q_steps):
     '''Quantize <decomposition> using <Q_steps>, a matrix o
 quantization steps.'''
+    block_y_side = Q_steps.shape[0]
+    block_x_side = Q_steps.shape[1]
+    N_components = Q_steps.shape[2]
     blocks_in_y = decomposition.shape[0]//block_y_side
     blocks_in_x = decomposition.shape[1]//block_x_side    
     quantized_decomposition = np.empty_like(decomposition, dtype=np.int16)
 
     for y in range(block_y_side):
         for x in range(block_x_side):
-            subband = decomposition[y*blocks_in_y:(y+1)*blocks_in_y,
-                                        x*blocks_in_x:(x+1)*blocks_in_x]
-            quantized_subband = Q.quantize(subband, Q_steps[y, x])
-            quantized_decomposition[y*blocks_in_y:(y+1)*blocks_in_y,
-                                        x*blocks_in_x:(x+1)*blocks_in_x] = quantized_subband
+            for c in range(N_components):
+                subband_component = decomposition[y*blocks_in_y:(y+1)*blocks_in_y,
+                                                  x*blocks_in_x:(x+1)*blocks_in_x,
+                                                  c]
+                quantized_subband_component = Q.quantize(subband_component, Q_steps[y, x, c])
+                quantized_decomposition[y*blocks_in_y:(y+1)*blocks_in_y,
+                                        x*blocks_in_x:(x+1)*blocks_in_x,
+                                        c] = quantized_subband_component
     #for y in range(blocks_in_y):
     #    for x in range(blocks_in_x):
     #        block_DCT = image_DCT[y*block_y_side:(y+1)*block_y_side,
@@ -131,22 +137,28 @@ quantization steps.'''
     #return quantized_image_DCT
     return quantized_decomposition
 
-def dequantize(quantized_decomposition, block_y_side, block_x_side, Q_steps):
+def dequantize(quantized_decomposition, Q_steps):
     '''De-quantize <quantized_decomposition> using <Q_steps>, a matrix of
 quantization steps.
 
     '''
+    block_y_side = Q_steps.shape[0]
+    block_x_side = Q_steps.shape[1]
+    N_components = Q_steps.shape[2]
     blocks_in_y = quantized_decomposition.shape[0]//block_y_side
     blocks_in_x = quantized_decomposition.shape[1]//block_x_side    
     dequantized_decomposition = np.empty_like(quantized_decomposition, dtype=np.int16)
 
     for y in range(block_y_side):
         for x in range(block_x_side):
-            quantized_subband = quantized_decomposition[y*blocks_in_y:(y+1)*blocks_in_y,
-                                                        x*blocks_in_x:(x+1)*blocks_in_x]
-            dequantized_subband = Q.dequantize(quantized_subband, Q_steps[y, x])
-            dequantized_decomposition[y*blocks_in_y:(y+1)*blocks_in_y,
-                                      x*blocks_in_x:(x+1)*blocks_in_x] = dequantized_subband
+            for c in range(N_components):
+                quantized_subband_component = quantized_decomposition[y*blocks_in_y:(y+1)*blocks_in_y,
+                                                                      x*blocks_in_x:(x+1)*blocks_in_x,
+                                                                      c]
+                dequantized_subband_component = Q.dequantize(quantized_subband_component, Q_steps[y, x, c])
+                dequantized_decomposition[y*blocks_in_y:(y+1)*blocks_in_y,
+                                          x*blocks_in_x:(x+1)*blocks_in_x,
+                                          c] = dequantized_subband_component
     
     #for y in range(blocks_in_y):
     #    for x in range(blocks_in_x):
@@ -159,18 +171,18 @@ quantization steps.
     #return dequantized_image_DCT
     return dequantized_decomposition
 
-def uniform_quantize(decomposition, block_y_side, block_x_side, Q_step):
+def uniform_quantize(decomposition, block_y_side, block_x_side, N_components, Q_step):
     '''Quantize <decomposition> with the same <Q_step>.'''
-    Q_steps = np.full(shape=(block_y_side, block_x_side), fill_value=Q_step)
-    quantized_decomposition = quantize(decomposition, block_y_side, block_x_side, Q_steps)
+    Q_steps = np.full(shape=(block_y_side, block_x_side, N_components), fill_value=Q_step)
+    quantized_decomposition = quantize(decomposition, Q_steps)
     return quantized_decomposition
 
-def uniform_dequantize(quantized_decomposition, block_y_side, block_x_side, Q_step):
+def uniform_dequantize(quantized_decomposition, block_y_side, block_x_side, N_components, Q_step):
     '''De-quantize <quantized_decomposition> with the same <Q_step>.
 
     '''
-    Q_steps = np.full(shape=(block_y_side, block_x_side), fill_value=Q_step)
-    dequantized_decomposition = dequantize(quantized_decomposition, block_y_side, block_x_side, Q_steps)
+    Q_steps = np.full(shape=(block_y_side, block_x_side, N_components), fill_value=Q_step)
+    dequantized_decomposition = dequantize(quantized_decomposition, Q_steps)
     return dequantized_decomposition
 
 def compute_slopes(decomposition, block_y_side, block_x_side, Q_step):
