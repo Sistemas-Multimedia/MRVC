@@ -2,7 +2,7 @@
 
 import information
 import numpy as np
-import image
+import image_3 as image
 
 def MSE(x, y):
     error_signal = x.astype(np.float64) - y

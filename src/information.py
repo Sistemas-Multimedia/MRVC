@@ -3,7 +3,7 @@
 import numpy as np
 import math
 import debug
-import image
+import image_3 as image
 import os
 
 def energy(x):

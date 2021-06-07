@@ -159,13 +159,13 @@ quantization steps.
     #return dequantized_image_DCT
     return dequantized_decomposition
 
-def constant_quantize(decomposition, block_y_side, block_x_side, Q_step):
+def uniform_quantize(decomposition, block_y_side, block_x_side, Q_step):
     '''Quantize <decomposition> with the same <Q_step>.'''
     Q_steps = np.full(shape=(block_y_side, block_x_side), fill_value=Q_step)
     quantized_decomposition = quantize(decomposition, block_y_side, block_x_side, Q_steps)
     return quantized_decomposition
 
-def constant_dequantize(quantized_decomposition, block_y_side, block_x_side, Q_step):
+def uniform_dequantize(quantized_decomposition, block_y_side, block_x_side, Q_step):
     '''De-quantize <quantized_decomposition> with the same <Q_step>.
 
     '''
@@ -174,7 +174,7 @@ def constant_dequantize(quantized_decomposition, block_y_side, block_x_side, Q_s
     return dequantized_decomposition
 
 def compute_slopes(decomposition, block_y_side, block_x_side, Q_step):
-    '''Using a constant quantization step <Q_step>, this method quantize
+    '''Using a uniform quantization step <Q_step>, this method quantize
 <decomposition> returns the estimated (using the entropy) slope of
 each subband.
 
@@ -200,7 +200,7 @@ each subband.
 
 def find_optimal_Q_steps(decomposition, block_y_side, block_x_side, Q_step):
     '''Find the optimal quantization steps for <decomposition>. Scalar
-<Q_step> is used to find median slope after a constant
+<Q_step> is used to find median slope after a uniform
 quantization. Then for those subbands with a smaller slope than the
 median, the quantization step is increased until this condition is
 false, and viceversa.
