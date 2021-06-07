@@ -13,7 +13,7 @@ import numpy as np
 import pywt
 #import config
 #import distortion
-import image
+import image_3 as image
 import L_DWT as L
 import H_DWT as H
 

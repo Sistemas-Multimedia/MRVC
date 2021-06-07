@@ -11,7 +11,7 @@ import cv2
 import colored
 if __debug__:
     import os
-    import image
+    import image_3 as image
 
 def read(prefix: str, image_number: int, shape: tuple) -> tuple: # [LH, HL, HH], each one [rows, columns, components]
     ASCII_image_number = str(image_number).zfill(3)
