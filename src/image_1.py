@@ -18,7 +18,7 @@ def read(prefix:str, image_number:int) -> np.ndarray: # [row, column, component]
         print(img.shape, img.dtype, os.path.getsize(fn), colored.style.RESET)
     return img
 
-def write(img:np.ndarray, prefix:str, image_number:int) -> None:
+def write(img:np.ndarray, prefix:str, image_number:int=0) -> None:
         return _write(img, prefix, image_number)
 
 def debug_write(img:np.ndarray, prefix:str, image_number:int) -> None:
