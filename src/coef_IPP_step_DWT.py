@@ -7,7 +7,7 @@ import L_DWT as L
 #import L_LP as L
 import H_DWT as H
 #import H_LP as H
-import deadzone as Q
+import deadzone_quantizer as Q
 import motion
 import frame
 import colors
