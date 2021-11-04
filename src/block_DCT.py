@@ -2,7 +2,7 @@
 
 import numpy as np
 import scipy.fftpack
-import deadzone as Q
+import deadzone_quantizer as Q
 import information
 import distortion
 
@@ -108,7 +108,7 @@ def compute_max_min(decomposition, block_y_side, block_x_side):
     return max_, min_
     
 def quantize(decomposition, Q_steps):
-    '''Quantize <decomposition> using <Q_steps>, a matrix o
+    '''Quantize <decomposition> using <Q_steps>, a matrix of
 quantization steps.'''
     block_y_side = Q_steps.shape[0]
     block_x_side = Q_steps.shape[1]

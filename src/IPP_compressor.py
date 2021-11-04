@@ -36,7 +36,7 @@ if config.color == "RGB":
 import coef_IPP_step
 import frame
 import numpy as np
-import deadzone as Q
+import deadzone_quantizer as Q
 import distortion
 
 video = "/tmp/original_"

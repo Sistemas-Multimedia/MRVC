@@ -14,7 +14,7 @@ if config.transform == "LP":
     import H_LP as H
 
 if config.codec == "Q+PNG":
-    import deadzone as Q
+    import deadzone_quantizer as Q
 
     def E_codec(E_k, video, k, q_step):
         q_E_k = Q.quantize(E_k, q_step) # (d)
