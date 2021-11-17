@@ -2,7 +2,11 @@
 
 import numpy as np
 import scipy.fftpack
-import deadzone as Q
+import os
+HOME = os.environ['HOME']
+import sys
+sys.path.insert(1, HOME + "/quantization")
+import deadzone_quantizer as Q
 import information
 import distortion
 
