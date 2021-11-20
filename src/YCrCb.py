@@ -3,6 +3,8 @@
 import cv2
 import numpy as np
 
+name = "YCrCb"
+
 def from_RGB(RGB_frame: np.ndarray) -> np.ndarray:
     # Remember that cv2.cvtColor only works with unsigneds!
     #RGB_frame = cv2.merge((RGB_frame[0], RGB_frame[1], RGB_frame[2]))

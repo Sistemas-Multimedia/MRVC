@@ -2,6 +2,8 @@
 
 import numpy as np
 
+name = "YCoCg"
+
 def from_RGB(RGB_frame: np.ndarray) -> np.ndarray:
     assert RGB_frame.dtype != np.uint8
     assert RGB_frame.dtype != np.uint16

@@ -32,7 +32,8 @@ def synthesize_image(image_DCT, block_y_side, block_x_side):
     '''Inverse DCT image transform by blocks.'''
     blocks_in_y = image_DCT.shape[0]//block_y_side
     blocks_in_x = image_DCT.shape[1]//block_x_side
-    image = np.empty_like(image_DCT, dtype=np.int16)
+    #image = np.empty_like(image_DCT, dtype=np.int16) # Ojo!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+    image = np.empty_like(image_DCT)
     for y in range(blocks_in_y):
         for x in range(blocks_in_x):
             DCT_block = image_DCT[y*block_y_side:(y+1)*block_y_side,
