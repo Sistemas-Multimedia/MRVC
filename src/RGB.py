@@ -2,6 +2,8 @@
 
 import numpy as np
 
+name = "RGB"
+
 def from_RGB(RGB_frame: np.ndarray) -> np.ndarray:
     return RGB_frame
 
