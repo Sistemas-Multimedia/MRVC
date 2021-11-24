@@ -88,7 +88,7 @@ def colorize(flow):
     rgb = cv2.cvtColor(hsv, cv2.COLOR_HSV2BGR)
     return rgb
 
-def full_search_motion_estimation(predicted, reference, search_range=32, overlapping_area_side=17):
+def full_search_dense_ME(predicted, reference, search_range=32, overlapping_area_side=17):
     extended_reference = np.zeros((reference.shape[0] + search_range, reference.shape[1] + search_range))
     extended_reference[search_range//2:reference.shape[0]+search_range//2,
                        search_range//2:reference.shape[1]+search_range//2] = reference
