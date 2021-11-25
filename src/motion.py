@@ -97,8 +97,8 @@ def full_search_dense_ME(predicted, reference, search_range=32, overlapping_area
     for y in range(search_range):
         print(f"{y}/{search_range-1}", end='\r')
         for x in range(search_range):
-            error = extended_reference[y:predicted.shape[0] + y,
-                                       x:predicted.shape[1] + x] - predicted
+            error = extended_reference[y : predicted.shape[0] + y,
+                                       x : predicted.shape[1] + x] - predicted
             a_error = abs(error)
             blur_a_error = cv2.GaussianBlur(a_error, (overlapping_area_side, overlapping_area_side), 0).astype(np.int)
             which_min = blur_a_error <= min_error
