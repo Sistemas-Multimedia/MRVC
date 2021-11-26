@@ -47,17 +47,17 @@ print("OFCA: default poly_sigma", POLY_SIGMA)
 
 def estimate(predicted:np.ndarray,
              reference:np.ndarray,
-             initial_flow:np.ndarray=None,
+             initial_MVs:np.ndarray=None,
              levels:int=OF_LEVELS,
              wside:int=OF_WINDOW_SIDE,
              iters:int=OF_ITERS,
              poly_n:float=POLY_N,
              poly_sigma:float=POLY_SIGMA) -> np.ndarray:
     debug.print(f"estimate: levels={levels} wside={wside} iters={iters} poly_n={poly_n} poly_sigma={poly_sigma}")
-    flow = cv2.calcOpticalFlowFarneback(
+    MVs = cv2.calcOpticalFlowFarneback(
         prev=predicted,
         next=reference,
-        flow=initial_flow,
+        flow=initial_MVs,
         pyr_scale=0.5,
         levels=levels,
         winsize=wside,
@@ -65,24 +65,24 @@ def estimate(predicted:np.ndarray,
         poly_n=5,
         poly_sigma=1.2,
         flags=cv2.OPTFLOW_USE_INITIAL_FLOW | cv2.OPTFLOW_FARNEBACK_GAUSSIAN)
-    return flow
+    return MVs
 
-def make_prediction(reference: np.ndarray, flow: np.ndarray) -> np.ndarray:
-    height, width = flow.shape[:2]
+def make_prediction(reference: np.ndarray, MVs: np.ndarray) -> np.ndarray:
+    height, width = MVs.shape[:2]
     map_x = np.tile(np.arange(width), (height, 1))
     map_y = np.swapaxes(np.tile(np.arange(height), (width, 1)), 0, 1)
-    map_xy = (flow + np.dstack((map_x, map_y))).astype('float32')
-    #map_xy = (np.rint(flow) + np.dstack((map_x, map_y)).astype(np.float32)) # OJO RINT
+    map_xy = (MVs + np.dstack((map_x, map_y))).astype('float32')
+    #map_xy = (np.rint(MVs) + np.dstack((map_x, map_y)).astype(np.float32)) # OJO RINT
     return cv2.remap(reference, map_xy, None, interpolation=cv2.INTER_LINEAR, borderMode=ofca_extension_mode)
     #return cv2.remap(reference, map_xy, None, interpolation=cv2.INTER_NEAREST, borderMode=ofca_extension_mode)
     
     #return cv2.remap(reference, cv2.convertMaps(map_x, map_y, dstmap1type=cv2.CV_16SC2), interpolation=cv2.INTER_LINEAR, borderMode=ofca_extension_mode)
     #return cv2.remap(reference, map_x, map_y, interpolation=cv2.INTER_LINEAR, borderMode=ofca_extension_mode)
 
-def colorize(flow):
-    hsv = np.zeros((flow.shape[0], flow.shape[1], 3), dtype=np.uint8)
+def colorize(MVs):
+    hsv = np.zeros((MVs.shape[0], MVs.shape[1], 3), dtype=np.uint8)
     hsv[...,1] = 255
-    mag, ang = cv2.cartToPolar(flow[...,0], flow[...,1])
+    mag, ang = cv2.cartToPolar(MVs[...,0], MVs[...,1])
     hsv[...,0] = ang*180/np.pi/2
     hsv[...,2] = cv2.normalize(mag, None, 0, 255, cv2.NORM_MINMAX)
     rgb = cv2.cvtColor(hsv, cv2.COLOR_HSV2BGR)
