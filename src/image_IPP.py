@@ -1,7 +1,7 @@
 ''' MRVC/image_IPP.py '''
 
-# Simple IPP block-based video compressor. Only B blocks are allowed
-# in B-type frames. Input is RGB.
+# Simple IPP block-based video compressor. Only P blocks are allowed
+# in P-type frames. Input is RGB. No chroma subsampling.
 
 # https://stackoverflow.com/questions/34123272/ffmpeg-transmux-mpegts-to-mp4-gives-error-muxer-does-not-support-non-seekable: ffmpeg -blocksize 1 -i /tmp/original_000.png -blocksize 1 -flush_packets 1 -movflags frag_keyframe+empty_moov -f mp4 - | ffmpeg -blocksize 1 -i - -blocksize 1 -flush_packets 1 /tmp/decoded_%3d.png
 
@@ -14,7 +14,7 @@ import L_DWT as L
 import H_DWT as H
 import deadzone_quantizer as Q
 import motion
-import frame
+import image_3 as frame
 import colors
 import cv2
 import os
@@ -57,7 +57,8 @@ class image_IPP_codec():
             #dequantized_E_k = E_codec(E_k, N_LEVELS, q_step, codestream, 0) # (g and h)
             dequantized_E_k = self.I_codec(V_k, f"{video}texture_", 0, q_step) # (g and h)
             reconstructed_V_k = dequantized_E_k # (i)
-            frame.debug_write(self.clip(YUV.to_RGB(reconstructed_V_k)), f"{video}reconstructed_", k) # Decoder's output
+            if __debug__:
+                frame.write(self.clip(YUV.to_RGB(reconstructed_V_k)), f"{video}reconstructed_", k) # Decoder's output
             reconstructed_V_k_1 = reconstructed_V_k # (j)
             for k in range(1, n_frames):
                 W_k = frame.read(video, k).astype(np.int16)
@@ -79,20 +80,24 @@ class image_IPP_codec():
                 #frame.debug_write(motion.colorize(reconstructed_flow.astype(np.float32)), f"{codestream}reconstructed_flow", k)
                 #prediction_V_k = motion.make_prediction(reconstructed_V_k_1, reconstructed_flow).astype(np.int16) # (j)
                 prediction_V_k = motion.make_prediction(reconstructed_V_k_1, reconstructed_flow) # (j)
-                frame.debug_write(self.clip(YUV.to_RGB(prediction_V_k)), f"{video}prediction_", k)
+                if __debug__:
+                    frame.write(self.clip(YUV.to_RGB(prediction_V_k)), f"{video}prediction_", k)
                 E_k = V_k - prediction_V_k[:V_k.shape[0], :V_k.shape[1], :] # (f)
-                frame.debug_write(self.clip(YUV.to_RGB(E_k)+128), f"{video}prediction_error_", k)
+                if __debug__:
+                    frame.write(self.clip(YUV.to_RGB(E_k)+128), f"{video}prediction_error_", k)
                 #dequantized_E_k = E_codec(E_k, 5, q_step, codestream, k) # (g and h)
                 dequantized_E_k = self.E_codec4(E_k, f"{video}texture_", k, q_step) # (g and h)
                 #print(dequantized_E_k.dtype, dequantized_E_k.shape)
                 #quantized_E_k = Q.quantize(E_k, step=q_step) # (e)
                 #dequantized_E_k = Q.dequantize(quantized_E_k, step=q_step) # (f)
-                frame.debug_write(self.clip(YUV.to_RGB(dequantized_E_k) + 128), f"{video}dequantized_prediction_error_", k)
+                if __debug__:
+                    frame.write(self.clip(YUV.to_RGB(dequantized_E_k) + 128), f"{video}dequantized_prediction_error_", k)
                 reconstructed_V_k = dequantized_E_k + prediction_V_k[:dequantized_E_k.shape[0], :dequantized_E_k.shape[1], :] # (i)
                 #print(reconstructed_V_k.dtype, reconstructed_V_k.shape)
                 #L.write(reconstructed_V_k, video + "reconstructed", k)
                 reconstructed_V_k = self.decide_types(video, k, q_step, V_k, reconstructed_V_k, E_k, prediction_V_k, image_IPP_codec.block_y_side, image_IPP_codec.block_x_side, averages)
-                frame.debug_write(self.clip(YUV.to_RGB(reconstructed_V_k)), f"{video}reconstructed_", k) # Decoder's output
+                if __debug__:
+                    frame.write(self.clip(YUV.to_RGB(reconstructed_V_k)), f"{video}reconstructed_", k) # Decoder's output
                 reconstructed_V_k_1 = reconstructed_V_k # (j)
         except:
             print(colors.red(f'image_IPP.encode(video="{video}", n_frames={n_frames}, q_step={q_step})'))
