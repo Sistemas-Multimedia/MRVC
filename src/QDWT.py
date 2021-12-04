@@ -1,7 +1,7 @@
 ''' MRVC/QDWT.py '''
 
 import config
-import deadzone as Q
+import deadzone_quantizer as Q
 import debug
 
 if config.transform == "DWT":

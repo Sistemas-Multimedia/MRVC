@@ -182,10 +182,12 @@ def write(color_decomposition:list, prefix:str, image_number:int=0, N_levels:int
 
 #def read(prefix:str, slices:list=None) -> np.ndarray: 
 def read(prefix:str, image_number:int=0, N_levels:int=_N_levels) -> np.ndarray:
-    LL = L.read(f"{prefix}_{N_levels+1}", image_number)
+    #LL = L.read(f"{prefix}_{N_levels+1}", image_number)
+    LL = L.read(f"{prefix}_{N_levels}", image_number)
     color_decomposition = [LL]
     shape = list(LL.shape)
-    for l in range(N_levels+1, 0, -1):
+    #for l in range(N_levels+1, 0, -1):
+    for l in range(N_levels, 0, -1):
         resolution = H.read(f"{prefix}_{l}", image_number, tuple(shape))
         color_decomposition.append(resolution)
         shape[0] *= 2
