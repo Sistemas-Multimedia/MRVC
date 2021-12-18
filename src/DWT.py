@@ -3,8 +3,8 @@
 Provides:
 
 1. Multichannel 1-level DWT and inverse DWT.
-2. Multichannel N-levels DWT and inverser DWT.
-3. Subband gains computation.
+2. Multichannel N-levels DWT and inverse DWT.
+3. Subbands gains computation.
 3. Decomposition I/O.
 
 '''
@@ -162,10 +162,10 @@ def write(color_decomposition:list, prefix:str, image_number:int=0, N_levels:int
     #n_resolutions = len(color_decomposition)
     #n_resolutions = N_levels+1
     LL = color_decomposition[0]
-    L.write(LL, f"{prefix}_{N_levels}", image_number)
+    L.write(LL, f"{prefix}R{N_levels}", image_number)
     resolution_index = N_levels
     for resolution in color_decomposition[1:]:
-        H.write(resolution, f"{prefix}_{resolution_index}", image_number)
+        H.write(resolution, f"{prefix}R{resolution_index}", image_number)
         resolution_index -= 1
         
     #for c in range(n_channels):
@@ -183,12 +183,12 @@ def write(color_decomposition:list, prefix:str, image_number:int=0, N_levels:int
 #def read(prefix:str, slices:list=None) -> np.ndarray: 
 def read(prefix:str, image_number:int=0, N_levels:int=_N_levels) -> np.ndarray:
     #LL = L.read(f"{prefix}_{N_levels+1}", image_number)
-    LL = L.read(f"{prefix}_{N_levels}", image_number)
+    LL = L.read(f"{prefix}R{N_levels}", image_number)
     color_decomposition = [LL]
     shape = list(LL.shape)
     #for l in range(N_levels+1, 0, -1):
     for l in range(N_levels, 0, -1):
-        resolution = H.read(f"{prefix}_{l}", image_number, tuple(shape))
+        resolution = H.read(f"{prefix}R{l}", image_number, tuple(shape))
         color_decomposition.append(resolution)
         shape[0] *= 2
         shape[1] *= 2

@@ -16,22 +16,23 @@ MAX = 10000 #32767
 OFFSET = 32768
 
 def read(prefix: str, image_number: int) -> np.ndarray: # [row, column, component]
-    fn = f"{prefix}{image_number:03d}LL.png"
+    fn = f"{prefix}F{image_number:03d}LL.png"
     if __debug__:
         print(colored.fore.GREEN + f"L.read({fn})", end=' ')
     subband = cv2.imread(fn, cv2.IMREAD_UNCHANGED)
     #subband = cv2.cvtColor(subband, cv2.COLOR_BGR2RGB)
     if __debug__:
-        print(subband.shape, subband.dtype, os.path.getsize(fn), colored.style.RESET)
+        print(f"shape={subband.shape} dtype={subband.dtype} length={os.path.getsize(fn)}{colored.style.RESET}")
     #subband = subband.astype(np.int32)
     subband = np.array(subband, dtype=np.int32)
     subband -= OFFSET
     return subband.astype(np.int16)
 
 def write(subband: np.ndarray, prefix: str, image_number: int) -> None:
-    fn = f"{prefix}{image_number:03d}LL.png"
+    fn = f"{prefix}F{image_number:03d}LL.png"
     if __debug__:
-        print(colored.fore.GREEN + f"L.write({fn})", subband.max(), subband.min(), subband.shape, subband.dtype, end='')
+        print(f"{colored.fore.GREEN}L_DWT.write({prefix}, {image_number})", end=' ')
+        print(f"file={fn} max={subband.max()} min={subband.min()} shape={subband.shape} dtype={subband.dtype}", end=' ')
     #subband = subband.astype(np.int32)
     subband = np.array(subband, dtype=np.int32)
     subband += OFFSET
@@ -41,7 +42,7 @@ def write(subband: np.ndarray, prefix: str, image_number: int) -> None:
     #subband = cv2.cvtColor(subband, cv2.COLOR_RGB2BGR)
     cv2.imwrite(fn, subband)
     if __debug__:
-        print(colored.fore.GREEN, os.path.getsize(fn), colored.style.RESET)
+        print(f"{colored.fore.GREEN}length={os.path.getsize(fn)}{colored.style.RESET}")
 
 ###############
         

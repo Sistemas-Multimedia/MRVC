@@ -1,4 +1,4 @@
-FILE=container_cif.y4m
+FILE=~/MRVC/sequences/container/container_cif.y4m
 if test -f "$FILE"; then
     echo "$FILE exists."
 else
