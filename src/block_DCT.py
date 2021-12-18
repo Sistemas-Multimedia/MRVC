@@ -2,6 +2,10 @@
 
 import numpy as np
 import scipy.fftpack
+import os
+HOME = os.environ['HOME']
+import sys
+sys.path.insert(1, HOME + "/quantization")
 import deadzone_quantizer as Q
 import information
 import distortion
@@ -109,8 +113,9 @@ def compute_max_min(decomposition, block_y_side, block_x_side):
     return max_, min_
     
 def quantize(decomposition, Q_steps):
-    '''Quantize <decomposition> using <Q_steps>, a matrix of
-quantization steps.'''
+    '''Quantize <decomposition> using <Q_steps>, a matrix of quantization
+steps. <decomposition> must be a matrix of subband-components, not a matrix of
+block-components.'''
     block_y_side = Q_steps.shape[0]
     block_x_side = Q_steps.shape[1]
     N_components = Q_steps.shape[2]

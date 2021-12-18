@@ -1,12 +1,6 @@
-<<<<<<< HEAD
 from MC.optical.motion import motion_estimation
 from MC.optical.motion import estimate_frame
 import sys
-=======
-#from MC.optical.motion import motion_estimation
-#from MC.optical.motion import estimate_frame
-#from DWT import DWT
->>>>>>> 997e5f8cb643efdbb339c89c28e501eb04fff808
 
 def generate_prediction(aL, bL, cL, AH, CH):
     flow_AL_BL = motion_estimation(aL, bL)
