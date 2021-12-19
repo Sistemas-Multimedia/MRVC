@@ -7,6 +7,12 @@ Provides:
 3. Subbands gains computation.
 3. Decomposition I/O.
 
+Terminology:
+
+* Color decomposition: a list of spatial color resolution levels.
+* Color resolution level: one color subband (row, column, component) in the case of LL or a tuple of three color subbands.
+* Color subband: a single 3D array indexed by (row, column, component).
+* Component:  
 '''
 
 import numpy as np
@@ -154,9 +160,48 @@ def compute_gains(N_levels):
         gains[l] = gains[l-1]*2
     return gains
 
+def extract_component_decomposition(color_decomposition:list, component_index:int) -> list:
+    '''Extract a component of a color decomposition, i.e., returns a component decomposition.'''
+    component_decomposition = [decomposition[0][..., component_index]]
+    for resolution in color_decomposition[1:]:
+        resolution_decomposition = [] 
+        for subband in resolution:
+            resolution_decomposition.append(subband[..., component_index])
+    component_decomposition.append(tuple(resolution_decomposition))
+    return component_decomposition
+
+def glue_component_decomposition(component_decomposition:list) -> np.ndarray:
+    '''Convert a list of (monocromatic) subbands to a 2D (rows, columns) NumPy array.'''
+    glued_component_decomposition, slices = pywt.coeffs_to_array(component_decomposition))
+    return glued_component_decomposition
+
+def glue_color_decomposition(color_decomposition:list) -> np.ndarray:
+    '''Convert a list of color subbands to a 3D (rows, columns, components) NumPy array.'''
+    components_decomposition = []
+    glued_components = [] 
+    for component_index in range(3):
+        component_decomposition = extract_component(color_decomposition, component_index)
+        components_decomposition.append(component_decomposition)
+        glued_components.append(glue_component_decomposition(component_decomposition))
+    glued_color_decomposition = np.empty(shape=(glued_components[0].shape[0], glued_components[0].shape[0], 3), dtype=np.float64)
+    for component_index in range(3):
+        glued_color_decomposition[..., component_index] = glued_component[component_index][:]
+    return glued_color_decomposition
+
+def detach_color_decomposition(glued_color_decomposition:np.ndarray) -> list:
+
+def write_glued(color_decomposition:list, prefix=str, image_number:int=0) -> None:
+    glued_color_decomposition = glue_color_decomposition(color_decomposition)
+    image_3.write(glued_color_decomposition, prefix, image_number)
+
+def read_glued(prefix:str, image_number:int=0) -> list:
+    glued_color_decomposition = image_3.read(prefix, image_number)
+    color_decomposition = detach_color_decomposition(glued_color_decomposition)
+    return color_decomposition
+
 # Write each subband of a decomposition in a different PNG file using
 # <prefix><image_number><LL|LH|HL|HH><level>.png filename.
-def write(color_decomposition:list, prefix:str, image_number:int=0, N_levels:int=_N_levels) -> None:
+def write_splitted(color_decomposition:list, prefix:str, image_number:int=0, N_levels:int=_N_levels) -> None:
     n_channels = color_decomposition[0].shape[2]
     #_color_image = [None]*n_channels
     #n_resolutions = len(color_decomposition)
@@ -181,7 +226,7 @@ def write(color_decomposition:list, prefix:str, image_number:int=0, N_levels:int
     #return slices
 
 #def read(prefix:str, slices:list=None) -> np.ndarray: 
-def read(prefix:str, image_number:int=0, N_levels:int=_N_levels) -> np.ndarray:
+def read_splitted(prefix:str, image_number:int=0, N_levels:int=_N_levels) -> np.ndarray:
     #LL = L.read(f"{prefix}_{N_levels+1}", image_number)
     LL = L.read(f"{prefix}R{N_levels}", image_number)
     color_decomposition = [LL]
