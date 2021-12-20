@@ -170,33 +170,64 @@ def extract_component_decomposition(color_decomposition:list, component_index:in
     component_decomposition.append(tuple(resolution_decomposition))
     return component_decomposition
 
-def glue_component_decomposition(component_decomposition:list) -> np.ndarray:
+def insert_component_decomposition(color_decomposition:list, component_decomposition:list, component_index:int) -> None:
+    '''Insert a decomposition (a list of tuples of 2D subbands (each one a
+(row, column)-np.ndarray) in a color decomposition (a list of tuples
+of 3D subbands (each one a (row, column, component)-np.ndarray).
+    '''
+    color_decomposition[0][..., component_index] = component_decomposition[0][:]
+    for color_resolution, component_resolution in zip(color_decomposition, component_decomposition):
+        color_resolution[..., component_index] = component_resolution[component_index]
+    
+def glue_component_decomposition(component_decomposition:list) -> (np.ndarray, list):
     '''Convert a list of (monocromatic) subbands to a 2D (rows, columns) NumPy array.'''
     glued_component_decomposition, slices = pywt.coeffs_to_array(component_decomposition))
-    return glued_component_decomposition
+    return glued_component_decomposition, slices
+
+def unglue_component_decomposition(glued_component_decomposition:np.ndarray, slices:list) -> list:
+    '''Convert a 2D color decomposition (a (row, column)-np.array) in a
+list of tuples of 2D subbands (each one a (row,
+column)-np.ndarray).'''
+    unglued_component_decomposition = pywt.array_to_coeffs(glued_component_decomposition, coeff_slices=slices, output_format='wavedec2')
+    return unglued_component_decomposition
 
 def glue_color_decomposition(color_decomposition:list) -> np.ndarray:
     '''Convert a list of color subbands to a 3D (rows, columns, components) NumPy array.'''
     components_decomposition = []
-    glued_components = [] 
+    glued_components = []
+    slices = [None]*3
     for component_index in range(3):
-        component_decomposition = extract_component(color_decomposition, component_index)
+        component_decomposition, slices[component_index] = extract_component_decomposition(color_decomposition, component_index)
         components_decomposition.append(component_decomposition)
         glued_components.append(glue_component_decomposition(component_decomposition))
     glued_color_decomposition = np.empty(shape=(glued_components[0].shape[0], glued_components[0].shape[0], 3), dtype=np.float64)
     for component_index in range(3):
         glued_color_decomposition[..., component_index] = glued_component[component_index][:]
-    return glued_color_decomposition
+    return glued_color_decomposition, slices
 
-def detach_color_decomposition(glued_color_decomposition:np.ndarray) -> list:
+def unglue_color_decomposition(glued_color_decomposition:np.ndarray, slices:list) -> list:
+    '''Convert a 3D color decomposition (a (row, column,
+component)-np.ndarray) in a list of tuples of 3D color subbands (each
+one a (row, column, component)-np.ndarray).'''
+    unglued_component_decompositions = [] # No debería usarse "unglued" para las estructuras "wavedec".
+    for component_index in range(3):
+        unglued_component_decompositions.apppend(unglue_component_decomposition(glued_color_decomposition[..., component_index], slices[component_index]))
+        color_LL = np.empty(shape=(unglued_component_decompositions[0][0].shape[0], unglued_component_decompositions[0][0].shape[1], 3), dtype=np.float64)
+    unglued_color_decomposition = [color_LL]
+    for color_resolution in zip(*unglued_component_decompositions[1:]):
+        color_resolution = np.empty(shape=nose
+        for component_index in range(3):
+            color_resolution =  
+        unglued_color_decomposition.append(color_resolution)
 
-def write_glued(color_decomposition:list, prefix=str, image_number:int=0) -> None:
-    glued_color_decomposition = glue_color_decomposition(color_decomposition)
+def write_glued(color_decomposition:list, prefix=str, image_number:int=0) -> list:
+    glued_color_decomposition, slices = glue_color_decomposition(color_decomposition)
     image_3.write(glued_color_decomposition, prefix, image_number)
+    return slices
 
-def read_glued(prefix:str, image_number:int=0) -> list:
+def read_glued(slices: list, prefix:str, image_number:int=0) -> list:
     glued_color_decomposition = image_3.read(prefix, image_number)
-    color_decomposition = detach_color_decomposition(glued_color_decomposition)
+    color_decomposition = unglue_color_decomposition(glued_color_decomposition, slices)
     return color_decomposition
 
 # Write each subband of a decomposition in a different PNG file using
