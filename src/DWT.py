@@ -1,4 +1,4 @@
-''' MRVC/2D_DWT.py
+'''MRVC/2D_DWT.py
 
 Provides:
 
@@ -9,10 +9,21 @@ Provides:
 
 Terminology:
 
+* Decomposition: a python-list of SRLs (Spatial Resolution Levels)
+  where each level, except for the low-pass one, has 3 subbands. Each
+  SRL is a tuple (except for the low-pass one) where each element of
+  the tuple is a NumPy array.
+
+* Color <structure>: indicates that the <structure> (that can be a
+  subband, an image, a {.|glued} decomposition ...) has more than one
+  component.
+
+
 * Color decomposition: a list of spatial color resolution levels.
 * Color resolution level: one color subband (row, column, component) in the case of LL or a tuple of three color subbands.
 * Color subband: a single 3D array indexed by (row, column, component).
-* Component:  
+* Component:
+
 '''
 
 import numpy as np
@@ -123,7 +134,7 @@ def analyze(color_image, wavelet=_wavelet, N_levels=_N_levels):
 
     Parameters
     ----------
-    color_image : [row, column, component] np.ndarray
+    color_image : [A (row, column, component) np.ndarray
         Color image to be analyzed.
     wavelet : pywt.Wavelet
         Wavelet name.
@@ -177,11 +188,28 @@ def analyze(color_image, wavelet=_wavelet, N_levels=_N_levels):
 
     return color_decomposition # [LL^n, (LH^n, HL^n, HH^n), ..., (LH^1, HL^1, HH^1)], each subband multicomponent.
 
-def synthesize(color_decomposition:list, wavelet:pywt.Wavelet=_wavelet, N_levels:int=_N_levels) -> np.ndarray:
+def synthesize(color_decomposition, wavelet=_wavelet, N_levels=_N_levels):
+    '''Color N-levels backward 2D-DWT.
+
+    Parameters
+    ----------
+    color_decomposition : list
+        A decomposition of color subbands.
+    wavelet : pywt.Wavelet
+        Wavelet name.
+    N_levels : int
+        Number of levels of the transform.
+
+    Returns
+    -------
+        A color image : a [row, column, component] np.ndarray.
+    
+    '''
     _color_image = []
     N_comps = color_decomposition[0].shape[2]
     for c in range(N_comps):
         decomposition = [color_decomposition[0][:,:,c]] # LL^n
+        # A color decomposition-component == decomposition.
         for l in range(1, N_levels+1):
             decomposition.append((color_decomposition[l][0][:,:,c], color_decomposition[l][1][:,:,c], color_decomposition[l][2][:,:,c])) # (LH^l, HL^l, HH^l)
         _color_image.append(pywt.waverec2(decomposition, wavelet=wavelet, mode=_extension_mode))
@@ -209,13 +237,14 @@ def compute_gains(N_levels):
         gains[l] = gains[l-1]*2
     return gains
 
-def extract_component_decomposition(color_decomposition, component_index):
-    '''Extract a component (in form of a decomposition) from a color decomposition.
+def extract_decomposition(color_decomposition, component_I):
+    '''Extract a component (in form of a decomposition) from a color
+decomposition.
 
     Parameters
     ----------
-    color_decomposition : list
-        A list of color resolutions.
+    color_decomposition : Python-list
+        An input list of color SRLs.
     component_index : int
         The component to extract.
 
@@ -224,65 +253,149 @@ def extract_component_decomposition(color_decomposition, component_index):
     A (monochromatic) decomposition: list
 
     '''
-    component_decomposition = [decomposition[0][..., component_index]]
+    decomposition = [color_decomposition[0][..., component_I]]
     for resolution in color_decomposition[1:]:
         resolution_decomposition = [] 
         for subband in resolution:
-            resolution_decomposition.append(subband[..., component_index])
-    component_decomposition.append(tuple(resolution_decomposition))
-    return component_decomposition
+            resolution_decomposition.append(subband[..., component_I])
+    decomposition.append(tuple(resolution_decomposition))
+    return decomposition
 
-def insert_component_decomposition(color_decomposition:list, component_decomposition:list, component_index:int) -> None:
+def insert_decomposition(color_decomposition, decomposition, component_I):
     '''Insert a decomposition (a list of tuples of 2D subbands (each one a
 (row, column)-np.ndarray) in a color decomposition (a list of tuples
 of 3D subbands (each one a (row, column, component)-np.ndarray).
+
+    Parameters
+    ----------
+    color_decomposition : Python-list
+        An output list of color SRLs.
+    decomposition : Python-list.
+        An input list of (monochromatic) SRLs.
+    component_I : int
+        The index of the inserted component.
+
+    Returns
+    -------
+    None.
+
     '''
-    color_decomposition[0][..., component_index] = component_decomposition[0][:]
-    for color_resolution, component_resolution in zip(color_decomposition, component_decomposition):
-        color_resolution[..., component_index] = component_resolution[component_index]
+    color_decomposition[0][..., component_I] = decomposition[0][:] # LL^n subband
+    for color_resolution, resolution in zip(color_decomposition, decomposition):
+        color_resolution[..., component_I] = resolution[component_I]
     
-def glue_component_decomposition(component_decomposition:list) -> (np.ndarray, list):
-    '''Convert a list of (monocromatic) subbands to a 2D (rows, columns) NumPy array.'''
-    glued_component_decomposition, slices = pywt.coeffs_to_array(component_decomposition))
-    return glued_component_decomposition, slices
+def glue_decomposition(decomposition):
+    '''Convert a list of (monocromatic) subbands to a (row, column) NumPy array.
 
-def unglue_component_decomposition(glued_component_decomposition:np.ndarray, slices:list) -> list:
-    '''Convert a 2D color decomposition (a (row, column)-np.array) in a
-list of tuples of 2D subbands (each one a (row,
-column)-np.ndarray).'''
-    component_decomposition = pywt.array_to_coeffs(glued_component_decomposition, coeff_slices=slices, output_format='wavedec2')
-    return component_decomposition
+    Parameters
+    ----------
+    decomposition : Python-list
+        The input decomposition to convert in a np.ndarray.
 
-def glue_color_decomposition(color_decomposition:list) -> np.ndarray:
-    '''Convert a list of color subbands to a 3D (rows, columns, components) NumPy array.'''
-    components_decomposition = []
-    glued_components = []
+    Returns
+    -------
+    The glued decomposition : a (row, column) np.ndarray.
+        A single monochromatic image with all the wavelet coefficients.
+    The generated slices : a Python-list.
+        The data structure in the "wavedec2" format that describes the original decomposition.
+    '''
+    glued_decomposition, slices = pywt.coeffs_to_array(decomposition))
+    return glued_decomposition, slices
+
+def unglue_decomposition(glued_decomposition, slices):
+    '''Convert a glued decomposition (a (row, column) np.array) in a list of tuples
+of subbands (each one a (row, column) np.ndarray).
+
+    Parameters
+    ----------
+    glued_decomposition : np.ndarray
+        The glued decomposition to split.
+    slices : list
+        The structure of the decomposition in "wavdec2" format.
+
+    Returns
+    -------
+    The decomposition : a Python-list of SRLs.
+    '''
+    decomposition = pywt.array_to_coeffs(glued_decomposition, coeff_slices=slices, output_format='wavedec2')
+    return decomposition
+
+def glue_color_decomposition(color_decomposition):
+    '''Convert a list of color SRLs to a (row, column, component) NumPy array.
+
+    Parameters
+    ----------
+    color_decomposition : Python-list
+        The input decomposition to convert in a np.ndarray.
+
+    Returns
+    -------
+    The glued color decomposition : a [row, column, component] np.ndarray.
+        A single color image with all the wavelet coefficients.
+    The list of the generated slices : a Python-list (with one item per component).
+        The description of the data structure in the "wavedec2" format that describes the original decomposition.
+    '''
+    glued_decompositions = []
     slices = [None]*3
-    for component_index in range(3):
-        component_decomposition, slices[component_index] = extract_component_decomposition(color_decomposition, component_index)
-        components_decomposition.append(component_decomposition)
-        glued_components.append(glue_component_decomposition(component_decomposition))
-    glued_color_decomposition = np.empty(shape=(glued_components[0].shape[0], glued_components[0].shape[0], 3), dtype=np.float64)
-    for component_index in range(3):
-        glued_color_decomposition[..., component_index] = glued_component[component_index][:]
+    for component_I in range(3):
+        component_decomposition, slices[component_I] = extract_component_decomposition(color_decomposition, component_I)
+        decomposition.append(component_decomposition)
+        glued_decompositions.append(glue_decomposition(component_decomposition))
+    glued_color_decomposition = np.empty(shape=(glued_decompositions[0].shape[0], glued_decompositions[0].shape[0], 3), dtype=np.float64)
+    for component_I in range(3):
+        glued_color_decomposition[..., component_I] = glued_decomposition[component_I][:]
     return glued_color_decomposition, slices
 
-def unglue_color_decomposition(glued_color_decomposition:np.ndarray, slices:list) -> list:
-    '''Convert a 3D color decomposition (a (row, column,
-component)-np.ndarray) in a list of tuples of 3D color subbands (each
-one a (row, column, component)-np.ndarray).'''
-    decomposition_by_component = []
-    for component_index in range(3):
-        decomposition_by_component.append(unglue_component_decomposition(glued_color_decomposition[..., component_index], slices[component_index]))
-    # "decomposition_by_component" is a list with three decompositions.
+def unglue_color_decomposition(glued_color_decomposition, slices):
+    '''Convert a (row, column, component) NumPy array in a list of color
+SRLs.
+
+    Parameters
+    ----------
+    glued_color_decomposition : a (row, column, component) NumPy array.
+        The glued color decomposition to split.
+    slices : list
+        The description of the structures (one per component)  of the decomposition in "wavdec2" format.
+
+    Returns
+    -------
+    The color decomposition : a Python-list of SRLs.
+       The same structure as analyze().
+    '''
+
+    decompositions = []
+    for component_I in range(3):
+        decompositions.append(unglue_decomposition(glued_color_decomposition[..., component_I], slices[component_I]))
+    # "decompositions" is a list with three decompositions.
     
-        color_LL = np.empty(shape=(unglued_decomposition_by_component[0][0].shape[0], unglued_decomposition_by_component[0][0].shape[1], 3), dtype=np.float64)
-    unglued_color_decomposition = [color_LL]
-    for color_resolution in zip(*unglued_decomposition_by_component[1:]):
-        color_resolution = np.empty(shape=nose
-        for component_index in range(3):
-            color_resolution =  
-        unglued_color_decomposition.append(color_resolution)
+    color_decomposition = []
+    # LL^N_levels and H^N_levels subbands (both have the same resolution)
+    N_rows_subband, N_columns_subband = decompositions[0][0].shape # All subbands in the SRL with the same shape
+    LL = np.empty(shape=(N_rows_subband, N_columns_subband, N_comps), dtype=np.float64)
+    LH = np.zeros(shape=(N_rows_subband, N_columns_subband, N_comps), dtype=np.float64)
+    HL = np.zeros(shape=(N_rows_subband, N_columns_subband, N_comps), dtype=np.float64)
+    HH = np.zeros(shape=(N_rows_subband, N_columns_subband, N_comps), dtype=np.float64)
+    for component_I in range(N_comps):
+        LL[:,:, component_I] = decompositions[component_I][0][:,:]
+        LH[:,:, component_I] = decompositions[component_I][1][0][:,:]
+        HL[:,:, component_I] = decompositions[component_I][1][1][:,:]
+        HH[:,:, component_I] = decompositions[component_I][1][2][:,:]
+    color_decomposition.append(LL)
+    color_decomposition.append((LH, HL, HH))
+    
+    # For the rest of SRLs (have increasing resolutions)
+    for resolution_I in range(2, N_levels+1):
+        N_rows_subband, N_columns_subband = decomposition_by_component[0][resolution_I][0].shape
+        prev_N_columns_subband = N_columns_subband
+        LH = np.zeros(shape=(N_rows_subband, N_columns_subband, N_comps), dtype=np.float64)
+        HL = np.zeros(shape=(N_rows_subband, N_columns_subband, N_comps), dtype=np.float64)
+        HH = np.zeros(shape=(N_rows_subband, N_columns_subband, N_comps), dtype=np.float64)
+        for component_I in range(N_comps):
+            LH[:,:, component_I] = decompositions[component_I][resolution_I][0][:,:]
+            HL[:,:, component_I] = decompositions[component_I][resolution_I][1][:,:]
+            HH[:,:, component_I] = decompositions[component_I][resolution_I][2][:,:]
+        color_decomposition.append((LH, HL, HH))
+    return color_decomposition
 
 def write_glued(color_decomposition:list, prefix=str, image_number:int=0) -> list:
     glued_color_decomposition, slices = glue_color_decomposition(color_decomposition)
@@ -303,10 +416,10 @@ def write_splitted(color_decomposition:list, prefix:str, image_number:int=0, N_l
     #n_resolutions = N_levels+1
     LL = color_decomposition[0]
     L.write(LL, f"{prefix}R{N_levels}", image_number)
-    resolution_index = N_levels
+    resolution_I = N_levels
     for resolution in color_decomposition[1:]:
-        H.write(resolution, f"{prefix}R{resolution_index}", image_number)
-        resolution_index -= 1
+        H.write(resolution, f"{prefix}R{resolution_I}", image_number)
+        resolution_I -= 1
         
     #for c in range(N_comps):
     #    decomposition = [color_decomposition[0][:,:,c]]
@@ -378,10 +491,10 @@ and the minimum values are also returned.
     LL = color_decomposition[0]
     max = 
     L.write(LL, f"{prefix}_{n_levels}", image_number)
-    resolution_index = n_levels
+    resolution_I = n_levels
     for resolution in color_decomposition[1:]:
-        H.write(resolution, f"{prefix}_{resolution_index}", image_number)
-        resolution_index -= 1
+        H.write(resolution, f"{prefix}_{resolution_I}", image_number)
+        resolution_I -= 1
 '''
     
     
