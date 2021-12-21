@@ -1,4 +1,4 @@
-'''MRVC/2D_DWT.py
+'''MRVC/DWT.py
 
 Provides:
 
@@ -17,13 +17,6 @@ Terminology:
 * Color <structure>: indicates that the <structure> (that can be a
   subband, an image, a {.|glued} decomposition ...) has more than one
   component.
-
-
-* Color decomposition: a list of spatial color resolution levels.
-* Color resolution level: one color subband (row, column, component) in the case of LL or a tuple of three color subbands.
-* Color subband: a single 3D array indexed by (row, column, component).
-* Component:
-
 '''
 
 import numpy as np
@@ -299,7 +292,7 @@ def glue_decomposition(decomposition):
     The generated slices : a Python-list.
         The data structure in the "wavedec2" format that describes the original decomposition.
     '''
-    glued_decomposition, slices = pywt.coeffs_to_array(decomposition))
+    glued_decomposition, slices = pywt.coeffs_to_array(decomposition)
     return glued_decomposition, slices
 
 def unglue_decomposition(glued_decomposition, slices):
@@ -399,7 +392,8 @@ SRLs.
     return color_decomposition
 
 def write(color_decomposition, prefix=str, image_number=0):
-    '''Write a color decomposition (as a single color image, in glued format) into disk file.
+    '''Write a color decomposition into disk file, as a single color
+image, in glued format.
 
     Parameters
     ----------
@@ -430,6 +424,10 @@ def read(slices: list, prefix:str, image_number:int=0) -> list:
         The prefix of the inputf¡ file.
     image_number : A signed integer.
         The image number in a possible sequence of images (frames).
+
+    Returns
+    -------
+    A color decomposition : a Python-list of color subbands.
     '''
     glued_color_decomposition = image_3.read(prefix, image_number)
     color_decomposition = unglue_color_decomposition(glued_color_decomposition, slices)
@@ -437,7 +435,19 @@ def read(slices: list, prefix:str, image_number:int=0) -> list:
 
 # Write each subband of a decomposition in a different PNG file using
 # <prefix><image_number><LL|LH|HL|HH><level>.png filename.
-def write_decomposition(color_decomposition:list, prefix:str, image_number:int=0, N_levels:int=_N_levels) -> None:
+def write_decomposition(color_decomposition:, prefix, image_number:=0, N_levels=_N_levels):
+    '''Write a color decomposition into disk file, as a collection of color subbands.
+
+    Parameters
+    ----------
+    color_decomposition : A Python-list of color SRLs.
+        The color decomposition to write in disk.
+    prefix : A Python-string.
+        The prefix of the output file.
+    image_number : A signed integer.
+        The image number in a possible sequence of images (frames).
+
+    '''
     N_comps = color_decomposition[0].shape[2]
     #_color_image = [None]*N_comps
     #n_resolutions = len(color_decomposition)
