@@ -367,7 +367,8 @@ SRLs.
     for component_I in range(3):
         decompositions.append(unglue_decomposition(glued_color_decomposition[..., component_I], slices[component_I]))
     # "decompositions" is a list with three decompositions.
-    
+
+    ########### notice that the following code is used also un analyze() ##############
     color_decomposition = []
     # LL^N_levels and H^N_levels subbands (both have the same resolution)
     N_rows_subband, N_columns_subband = decompositions[0][0].shape # All subbands in the SRL with the same shape
@@ -397,19 +398,46 @@ SRLs.
         color_decomposition.append((LH, HL, HH))
     return color_decomposition
 
-def write_glued(color_decomposition:list, prefix=str, image_number:int=0) -> list:
+def write(color_decomposition, prefix=str, image_number=0):
+    '''Write a color decomposition (as a single color image, in glued format) into disk file.
+
+    Parameters
+    ----------
+    color_decomposition : A Python-list of color SRLs.
+        The color decomposition to write in disk.
+    prefix : A Python-string.
+        The prefix of the output file.
+    image_number : A signed integer.
+        The image number in a possible sequence of images (frames).
+
+    Returns
+    -------
+    The list of slices that describes the structure of the decomposition of each component.
+
+    '''
     glued_color_decomposition, slices = glue_color_decomposition(color_decomposition)
     image_3.write(glued_color_decomposition, prefix, image_number)
     return slices
 
-def read_glued(slices: list, prefix:str, image_number:int=0) -> list:
+def read(slices: list, prefix:str, image_number:int=0) -> list:
+    '''Read a color decomposition from a disk file.
+
+    Parameters
+    ----------
+    slices : a Python-list
+        The structure of the decomposition of each component.
+    prefid: A Python-string
+        The prefix of the inputf¡ file.
+    image_number : A signed integer.
+        The image number in a possible sequence of images (frames).
+    '''
     glued_color_decomposition = image_3.read(prefix, image_number)
     color_decomposition = unglue_color_decomposition(glued_color_decomposition, slices)
     return color_decomposition
 
 # Write each subband of a decomposition in a different PNG file using
 # <prefix><image_number><LL|LH|HL|HH><level>.png filename.
-def write_splitted(color_decomposition:list, prefix:str, image_number:int=0, N_levels:int=_N_levels) -> None:
+def write_decomposition(color_decomposition:list, prefix:str, image_number:int=0, N_levels:int=_N_levels) -> None:
     N_comps = color_decomposition[0].shape[2]
     #_color_image = [None]*N_comps
     #n_resolutions = len(color_decomposition)
@@ -434,7 +462,7 @@ def write_splitted(color_decomposition:list, prefix:str, image_number:int=0, N_l
     #return slices
 
 #def read(prefix:str, slices:list=None) -> np.ndarray: 
-def read_splitted(prefix:str, image_number:int=0, N_levels:int=_N_levels) -> np.ndarray:
+def read_decomposition(prefix:str, image_number:int=0, N_levels:int=_N_levels) -> np.ndarray:
     #LL = L.read(f"{prefix}_{N_levels+1}", image_number)
     LL = L.read(f"{prefix}R{N_levels}", image_number)
     color_decomposition = [LL]
