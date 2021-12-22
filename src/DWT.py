@@ -24,17 +24,17 @@ import pywt
 #import config
 #import distortion
 import image_3
-import L_DWT as L
-import H_DWT as H
+#import L_DWT as L
+#import H_DWT as H
 
-_wavelet = pywt.Wavelet("haar")
-#wavelet = pywt.Wavelet("db1")
-#wavelet = pywt.Wavelet("db5")
-#wavelet = pywt.Wavelet("db20")
-#wavelet = pywt.Wavelet("bior3.5")
-#wavelet = pywt.Wavelet("bior3.7")
-#wavelet = pywt.Wavelet("bior6.8")
-#wavelet = pywt.Wavelet("rbio6.8")
+#_wavelet = pywt.Wavelet("haar")
+#_wavelet = pywt.Wavelet("db1")
+_wavelet = pywt.Wavelet("db5")
+#_wavelet = pywt.Wavelet("db20")
+#_wavelet = pywt.Wavelet("bior3.5")
+#_wavelet = pywt.Wavelet("bior3.7")
+#_wavelet = pywt.Wavelet("bior6.8")
+#_wavelet = pywt.Wavelet("rbio6.8")
 
 # Number of levels of the DWT
 #N_levels = config.n_levels
@@ -471,13 +471,43 @@ def write_decomposition(color_decomposition, prefix, image_number=0, N_levels=_N
         resolution_I -= 1
     return output_length
 
-def add(decomposition, val=32768, dtype=np.uint16):
+def _add(decomposition, val=32768, dtype=np.uint16):
+    '''Add a scalar <val> to the <decomposition>.
+    '''
     new_decomp = [(decomposition[0] + val).astype(dtype)]
     for resolution in decomposition[1:]:
         new_resol = []
         for subband in resolution:
             new_resol.append((subband + val).astype(dtype))
         new_decomp.append(tuple(new_resol))
+    return new_decomp
+
+def add(decomposition, val=32768):
+    '''Add a scalar <val> to the <decomposition>.
+    '''
+    new_decomp = [decomposition[0] + val]
+    for resolution in decomposition[1:]:
+        new_resol = []
+        for subband in resolution:
+            new_resol.append(subband + val)
+        new_decomp.append(tuple(new_resol))
+    return new_decomp
+
+def set_type(decomposition, dtype=np.uint16):
+    new_decomp = [decomposition[0].astype(dtype)]
+    for resolution in decomposition[1:]:
+        new_resol = []
+        for subband in resolution:
+            new_resol.append(subband.astype(dtype))
+        new_decomp.append(tuple(new_resol))
+    return new_decomp
+
+def copy(decomposition):
+    new_decomp = [decomposition[0].copy()]
+    for resolution in decomposition[1:]:
+        new_resol = []
+        for subband in resolution:
+            new_resol.append(subband.copy())
     return new_decomp
 
 # Write each subband of a decomposition in a different PNG file using
@@ -550,7 +580,8 @@ def read_decomposition(prefix, image_number=0, N_levels=_N_levels):
             resolution.append(image_3.read(f"{prefix}{sbn}{resolution_I}", image_number))
             sb += 1
         color_decomposition.append(tuple(resolution))
-        resolution_I -= 1    
+        resolution_I -= 1
+    return color_decomposition
 
     #def read(prefix:str, slices:list=None) -> np.ndarray: 
 def _read_decomposition(prefix:str, image_number:int=0, N_levels:int=_N_levels) -> np.ndarray:
