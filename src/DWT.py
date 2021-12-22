@@ -295,23 +295,21 @@ def glue_decomposition(decomposition):
     glued_decomposition, slices = pywt.coeffs_to_array(decomposition)
     return glued_decomposition, slices
 
-def glue_decomposition(decomposition):
-    '''Convert a list of (monocromatic) subbands to a (row, column) NumPy array.
-
+def unglue_decomposition(glued_decomposition, slices):
+    '''Convert a glued decomposition (a (row, column) np.array) in a list of tuples
+of subbands (each one a (row, column) np.ndarray).
     Parameters
     ----------
-    decomposition : Python-list
-        The input decomposition to convert in a np.ndarray.
-
+    glued_decomposition : np.ndarray
+        The glued decomposition to split.
+    slices : list
+        The structure of the decomposition in "wavdec2" format.
     Returns
     -------
-    The glued decomposition : a (row, column) np.ndarray.
-        A single monochromatic image with all the wavelet coefficients.
-    The generated slices : a Python-list.
-        The data structure in the "wavedec2" format that describes the original decomposition.
+    The decomposition : a Python-list of SRLs.
     '''
-    glued_decomposition, slices = pywt.coeffs_to_array(decomposition)
-    return glued_decomposition, slices
+    decomposition = pywt.array_to_coeffs(glued_decomposition, coeff_slices=slices, output_format='wavedec2')
+    return decomposition
 
 def glue_color_decomposition(color_decomposition):
     '''Convert a list of color SRLs to a (row, column, component) NumPy array.
@@ -360,8 +358,10 @@ SRLs.
        The same structure as analyze().
     '''
 
+    N_levels = len(slices)
+    N_comps = glued_color_decomposition.shape[2]
     decompositions = []
-    for component_I in range(3):
+    for component_I in range(N_comps):
         decompositions.append(unglue_decomposition(glued_color_decomposition[..., component_I], slices[component_I]))
     # "decompositions" is a list with three decompositions.
 
@@ -383,7 +383,7 @@ SRLs.
     
     # For the rest of SRLs (have increasing resolutions)
     for resolution_I in range(2, N_levels+1):
-        N_rows_subband, N_columns_subband = decomposition_by_component[0][resolution_I][0].shape
+        N_rows_subband, N_columns_subband = decompositions[0][resolution_I][0].shape
         prev_N_columns_subband = N_columns_subband
         LH = np.zeros(shape=(N_rows_subband, N_columns_subband, N_comps), dtype=np.float64)
         HL = np.zeros(shape=(N_rows_subband, N_columns_subband, N_comps), dtype=np.float64)
