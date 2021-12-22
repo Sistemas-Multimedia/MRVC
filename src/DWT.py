@@ -23,7 +23,7 @@ import numpy as np
 import pywt
 #import config
 #import distortion
-import image_3 as image
+import image_3
 import L_DWT as L
 import H_DWT as H
 
@@ -247,11 +247,11 @@ decomposition.
 
     '''
     decomposition = [color_decomposition[0][..., component_I]]
-    for resolution in color_decomposition[1:]:
-        resolution_decomposition = [] 
-        for subband in resolution:
-            resolution_decomposition.append(subband[..., component_I])
-    decomposition.append(tuple(resolution_decomposition))
+    for color_resolution in color_decomposition[1:]:
+        resolution = [] 
+        for color_subband in color_resolution:
+            resolution.append(color_subband[..., component_I])
+        decomposition.append(tuple(resolution))
     return decomposition
 
 def insert_decomposition(color_decomposition, decomposition, component_I):
@@ -295,23 +295,23 @@ def glue_decomposition(decomposition):
     glued_decomposition, slices = pywt.coeffs_to_array(decomposition)
     return glued_decomposition, slices
 
-def unglue_decomposition(glued_decomposition, slices):
-    '''Convert a glued decomposition (a (row, column) np.array) in a list of tuples
-of subbands (each one a (row, column) np.ndarray).
+def glue_decomposition(decomposition):
+    '''Convert a list of (monocromatic) subbands to a (row, column) NumPy array.
 
     Parameters
     ----------
-    glued_decomposition : np.ndarray
-        The glued decomposition to split.
-    slices : list
-        The structure of the decomposition in "wavdec2" format.
+    decomposition : Python-list
+        The input decomposition to convert in a np.ndarray.
 
     Returns
     -------
-    The decomposition : a Python-list of SRLs.
+    The glued decomposition : a (row, column) np.ndarray.
+        A single monochromatic image with all the wavelet coefficients.
+    The generated slices : a Python-list.
+        The data structure in the "wavedec2" format that describes the original decomposition.
     '''
-    decomposition = pywt.array_to_coeffs(glued_decomposition, coeff_slices=slices, output_format='wavedec2')
-    return decomposition
+    glued_decomposition, slices = pywt.coeffs_to_array(decomposition)
+    return glued_decomposition, slices
 
 def glue_color_decomposition(color_decomposition):
     '''Convert a list of color SRLs to a (row, column, component) NumPy array.
@@ -328,15 +328,19 @@ def glue_color_decomposition(color_decomposition):
     The list of the generated slices : a Python-list (with one item per component).
         The description of the data structure in the "wavedec2" format that describes the original decomposition.
     '''
+    N_comps = color_decomposition[0].shape[2]
+    dtype = color_decomposition[0].dtype
     glued_decompositions = []
     slices = [None]*3
-    for component_I in range(3):
-        component_decomposition, slices[component_I] = extract_component_decomposition(color_decomposition, component_I)
-        decomposition.append(component_decomposition)
-        glued_decompositions.append(glue_decomposition(component_decomposition))
-    glued_color_decomposition = np.empty(shape=(glued_decompositions[0].shape[0], glued_decompositions[0].shape[0], 3), dtype=np.float64)
-    for component_I in range(3):
-        glued_color_decomposition[..., component_I] = glued_decomposition[component_I][:]
+    for component_I in range(N_comps):
+        decomposition  = extract_decomposition(color_decomposition, component_I)
+        glued_decomposition, slices[component_I] = glue_decomposition(decomposition)
+        glued_decompositions.append(glued_decomposition)
+    N_rows = glued_decompositions[0].shape[0]
+    N_cols = glued_decompositions[0].shape[1]
+    glued_color_decomposition = np.empty(shape=(N_rows, N_cols, N_comps), dtype=dtype)
+    for component_I in range(N_comps):
+        glued_color_decomposition[..., component_I] = glued_decompositions[component_I][:]
     return glued_color_decomposition, slices
 
 def unglue_color_decomposition(glued_color_decomposition, slices):
@@ -410,8 +414,9 @@ image, in glued format.
 
     '''
     glued_color_decomposition, slices = glue_color_decomposition(color_decomposition)
-    image_3.write(glued_color_decomposition, prefix, image_number)
-    return slices
+    output_length = image_3.write(glued_color_decomposition, prefix, image_number)
+    return output_length, slices
+
 
 def read(slices: list, prefix:str, image_number:int=0) -> list:
     '''Read a color decomposition from a disk file.
@@ -434,14 +439,14 @@ def read(slices: list, prefix:str, image_number:int=0) -> list:
     return color_decomposition
 
 def write_decomposition(color_decomposition, prefix, image_number=0, N_levels=_N_levels):
-    '''Write a color decomposition into disk file, as a collection of color subbands.
+    '''Write a color decomposition in several disk files (one per color subband).
 
     Parameters
     ----------
     color_decomposition : A Python-list of color SRLs.
         The color decomposition to write in disk.
     prefix : A Python-string.
-        The prefix of the output file.
+        The prefix of the output files.
     image_number : A signed integer.
         The image number in a possible sequence of images (frames).
 
@@ -455,18 +460,25 @@ def write_decomposition(color_decomposition, prefix, image_number=0, N_levels=_N
     #n_resolutions = len(color_decomposition)
     #n_resolutions = N_levels+1
     LL = color_decomposition[0]
-    output_length = image.write(LL, f"{prefix}LL{N_levels}", image_number)
+    output_length = image_3.write(LL, f"{prefix}LL{N_levels}", image_number)
     resolution_I = N_levels
     for resolution in color_decomposition[1:]:
         subband_names = ["LH", "HL", "HH"]
         sb = 0
         for sbn in subband_names:
-            output_length += image.write(resolution[sb], f"{prefix}{sbn}{resolution_I}", image_number)
+            output_length += image_3.write(resolution[sb], f"{prefix}{sbn}{resolution_I}", image_number)
             sb += 1
         resolution_I -= 1
     return output_length
 
-
+def add(decomposition, val=32768, dtype=np.uint16):
+    new_decomp = [(decomposition[0] + val).astype(dtype)]
+    for resolution in decomposition[1:]:
+        new_resol = []
+        for subband in resolution:
+            new_resol.append((subband + val).astype(dtype))
+        new_decomp.append(tuple(new_resol))
+    return new_decomp
 
 # Write each subband of a decomposition in a different PNG file using
 # <prefix><image_number><LL|LH|HL|HH><level>.png filename.
@@ -511,8 +523,37 @@ def _write_decomposition(color_decomposition, prefix, image_number=0, N_levels=_
     #image.write(color_image.astype(np.int16), fn)
     #return slices
 
-#def read(prefix:str, slices:list=None) -> np.ndarray: 
-def read_decomposition(prefix:str, image_number:int=0, N_levels:int=_N_levels) -> np.ndarray:
+def read_decomposition(prefix, image_number=0, N_levels=_N_levels):
+    '''Read a color decomposition from the disk (one file per color subband).
+
+    Parameters
+    ----------
+    prefix : A Python-string.
+        The prefix of the input files.
+    image_number : A signed integer.
+        The image number in a possible sequence of images (frames).
+
+    Returns
+    -------
+    color_decomposition : A Python-list of color SRLs.
+        The color decomposition read from the disk.
+
+    '''
+    LL = image_3.read(f"{prefix}LL{N_levels}", image_number)
+    color_decomposition = [LL]
+    resolution_I = N_levels
+    for l in range(N_levels, 0, -1):
+        subband_names = ["LH", "HL", "HH"]
+        sb = 0
+        resolution = []
+        for sbn in subband_names:
+            resolution.append(image_3.read(f"{prefix}{sbn}{resolution_I}", image_number))
+            sb += 1
+        color_decomposition.append(tuple(resolution))
+        resolution_I -= 1    
+
+    #def read(prefix:str, slices:list=None) -> np.ndarray: 
+def _read_decomposition(prefix:str, image_number:int=0, N_levels:int=_N_levels) -> np.ndarray:
     #LL = L.read(f"{prefix}_{N_levels+1}", image_number)
     LL = L.read(f"{prefix}R{N_levels}", image_number)
     color_decomposition = [LL]
