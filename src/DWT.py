@@ -433,9 +433,7 @@ def read(slices: list, prefix:str, image_number:int=0) -> list:
     color_decomposition = unglue_color_decomposition(glued_color_decomposition, slices)
     return color_decomposition
 
-# Write each subband of a decomposition in a different PNG file using
-# <prefix><image_number><LL|LH|HL|HH><level>.png filename.
-def write_decomposition(color_decomposition:, prefix, image_number:=0, N_levels=_N_levels):
+def write_decomposition(color_decomposition, prefix, image_number=0, N_levels=_N_levels):
     '''Write a color decomposition into disk file, as a collection of color subbands.
 
     Parameters
@@ -447,17 +445,59 @@ def write_decomposition(color_decomposition:, prefix, image_number:=0, N_levels=
     image_number : A signed integer.
         The image number in a possible sequence of images (frames).
 
+    Returns
+    -------
+    The length (in bytes) of the output.
+
     '''
     N_comps = color_decomposition[0].shape[2]
     #_color_image = [None]*N_comps
     #n_resolutions = len(color_decomposition)
     #n_resolutions = N_levels+1
     LL = color_decomposition[0]
-    L.write(LL, f"{prefix}R{N_levels}", image_number)
+    output_length = image.write(LL, f"{prefix}LL{N_levels}", image_number)
     resolution_I = N_levels
     for resolution in color_decomposition[1:]:
-        H.write(resolution, f"{prefix}R{resolution_I}", image_number)
+        subband_names = ["LH", "HL", "HH"]
+        sb = 0
+        for sbn in subband_names:
+            output_length += image.write(resolution[sb], f"{prefix}{sbn}{resolution_I}", image_number)
+            sb += 1
         resolution_I -= 1
+    return output_length
+
+
+
+# Write each subband of a decomposition in a different PNG file using
+# <prefix><image_number><LL|LH|HL|HH><level>.png filename.
+def _write_decomposition(color_decomposition, prefix, image_number=0, N_levels=_N_levels):
+    '''Write a color decomposition into disk file, as a collection of color subbands.
+
+    Parameters
+    ----------
+    color_decomposition : A Python-list of color SRLs.
+        The color decomposition to write in disk.
+    prefix : A Python-string.
+        The prefix of the output file.
+    image_number : A signed integer.
+        The image number in a possible sequence of images (frames).
+
+    Returns
+    -------
+    The length (in bytes) of the output.
+
+    '''
+    N_comps = color_decomposition[0].shape[2]
+    #_color_image = [None]*N_comps
+    #n_resolutions = len(color_decomposition)
+    #n_resolutions = N_levels+1
+    LL = color_decomposition[0]
+    output_length = L.write(LL, f"{prefix}R{N_levels}", image_number)
+    resolution_I = N_levels
+    for resolution in color_decomposition[1:]:
+        output_length += H.write(resolution, f"{prefix}R{resolution_I}", image_number)
+        resolution_I -= 1
+    return output_length
         
     #for c in range(N_comps):
     #    decomposition = [color_decomposition[0][:,:,c]]
