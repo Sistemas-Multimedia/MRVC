@@ -223,6 +223,14 @@ def synthesize(color_decomposition, wavelet=_wavelet, N_levels=_N_levels):
     #    color_image[:,:,c] = _color_image[c][:,:]
     return color_image
 
+def show(decomposition):
+    '''Show the <decomposition> structure.
+    '''
+    print(decomposition[0].shape)
+    for resolution in decomposition[1:]:
+        for subband in resolution:
+            print(subband.shape)
+
 # Ojo, que esto no está terminado!!!!!!!!!!!!!!!!!!!!!!
 def compute_gains(N_levels):
     gains = [1.0]*N_levels
@@ -358,7 +366,10 @@ SRLs.
        The same structure as analyze().
     '''
 
-    N_levels = len(slices)
+    N_levels = len(slices[0]) - 1
+    #print("---", slices)
+    #print("---", len(slices))
+    #print("---", slices[0])
     N_comps = glued_color_decomposition.shape[2]
     decompositions = []
     for component_I in range(N_comps):
