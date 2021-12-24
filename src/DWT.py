@@ -410,7 +410,8 @@ image, in glued format.
 
     Returns
     -------
-    The list of slices that describes the structure of the decomposition of each component.
+    The length of the output file and the list of slices that
+    describes the structure of the decomposition of each component.
 
     '''
     glued_color_decomposition, slices = glue_color_decomposition(color_decomposition)
