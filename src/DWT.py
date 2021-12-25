@@ -450,7 +450,7 @@ def read(slices: list, prefix:str, image_number:int=0) -> list:
     color_decomposition = unglue_color_decomposition(glued_color_decomposition, slices)
     return color_decomposition
 
-def write_decomposition(color_decomposition, prefix, image_number=0, N_levels=_N_levels):
+def write_decomposition(color_decomposition, prefix, image_number=0): # , N_levels=_N_levels):
     '''Write a color decomposition in several disk files (one per color subband).
 
     Parameters
@@ -472,6 +472,7 @@ def write_decomposition(color_decomposition, prefix, image_number=0, N_levels=_N
     #n_resolutions = len(color_decomposition)
     #n_resolutions = N_levels+1
     LL = color_decomposition[0]
+    N_levels = len(color_decomposition) - 1
     output_length = image_3.write(LL, f"{prefix}LL{N_levels}", image_number)
     resolution_I = N_levels
     for resolution in color_decomposition[1:]:
@@ -506,6 +507,8 @@ def add(decomposition, val=32768):
     return new_decomp
 
 def set_type(decomposition, dtype=np.uint16):
+    '''Change the type of the <decomposition>.
+    '''
     new_decomp = [decomposition[0].astype(dtype)]
     for resolution in decomposition[1:]:
         new_resol = []
