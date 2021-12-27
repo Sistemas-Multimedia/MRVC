@@ -26,6 +26,7 @@ import pywt
 import image_3
 #import L_DWT as L
 #import H_DWT as H
+import debug
 
 #_wavelet = pywt.Wavelet("haar")
 #_wavelet = pywt.Wavelet("db1")
@@ -51,8 +52,8 @@ _N_levels = 5
 _extension_mode = "periodization" # Generates the inimal number of coeffs
 #_extension_mode = config.dwt_extension_mode
 
-print("Wavelet =", _wavelet)
-print("DWT extension mode =", _extension_mode)
+debug.info("Wavelet =", _wavelet)
+debug.info("DWT extension mode =", _extension_mode)
 
 def analyze_step(color_image, wavelet=_wavelet) -> tuple:
     '''Color 1-levels forward 2D-DWT.
@@ -69,6 +70,7 @@ def analyze_step(color_image, wavelet=_wavelet) -> tuple:
     A 1-levels color decomposition : list of spatial resolution levels.
 
     '''
+    debug.info(f"wavelet={wavelet}")
     N_comps = color_image.shape[2]
     decomposition_by_component = [None]*N_comps
     # A color decomposition 
@@ -107,6 +109,7 @@ def synthesize_step(LL, H, wavelet=_wavelet):
     A color image : [row, column, component] np.ndarray 
 
     '''
+    debug.info(f"wavelet={wavelet}")
     LH, HL, HH = H
     N_comps = LL.shape[2] #len(LL)
     _color_image = []
@@ -139,6 +142,8 @@ def analyze(color_image, wavelet=_wavelet, N_levels=_N_levels):
         A color decomposition : list
 
     '''
+    debug.info(f"wavelet={wavelet}")
+    debug.info(f"N_levels={N_levels}")
     N_comps = color_image.shape[2]
     decomposition_by_component = [None]*N_comps
     for c in range(N_comps):
@@ -198,6 +203,8 @@ def synthesize(color_decomposition, wavelet=_wavelet, N_levels=_N_levels):
         A color image : a [row, column, component] np.ndarray.
     
     '''
+    debug.info(f"wavelet={wavelet}")
+    debug.info(f"N_levels={N_levels}")
     _color_image = []
     N_comps = color_decomposition[0].shape[2]
     for c in range(N_comps):
@@ -223,7 +230,7 @@ def synthesize(color_decomposition, wavelet=_wavelet, N_levels=_N_levels):
     #    color_image[:,:,c] = _color_image[c][:,:]
     return color_image
 
-def show(decomposition):
+def print_shapes(decomposition):
     '''Show the <decomposition> structure.
     '''
     print(decomposition[0].shape)
@@ -406,7 +413,7 @@ SRLs.
         color_decomposition.append((LH, HL, HH))
     return color_decomposition
 
-def write(color_decomposition, prefix=str, image_number=0):
+def write_glued(color_decomposition, prefix=str, image_number=0):
     '''Write a color decomposition into disk file, as a single color
 image, in glued format.
 
@@ -421,8 +428,10 @@ image, in glued format.
 
     Returns
     -------
-    The length of the output file and the list of slices that
-    describes the structure of the decomposition of each component.
+    output_length : int
+        The length (in bytes) of the output file.
+    slces : list
+        Structure of the decomposition of each component.
 
     '''
     glued_color_decomposition, slices = glue_color_decomposition(color_decomposition)
@@ -430,27 +439,28 @@ image, in glued format.
     return output_length, slices
 
 
-def read(slices: list, prefix:str, image_number:int=0) -> list:
-    '''Read a color decomposition from a disk file.
+def read_glued(slices, prefix, image_number=0):
+    '''Read a color decomposition from a (single) disk file.
 
     Parameters
     ----------
     slices : a Python-list
         The structure of the decomposition of each component.
-    prefid: A Python-string
+    prefid : a Python-string
         The prefix of the inputf¡ file.
     image_number : A signed integer.
         The image number in a possible sequence of images (frames).
 
     Returns
     -------
-    A color decomposition : a Python-list of color subbands.
+    A color decomposition : a Python-list of color SRLs.
+        The color decomposition read from the disk.
     '''
     glued_color_decomposition = image_3.read(prefix, image_number)
     color_decomposition = unglue_color_decomposition(glued_color_decomposition, slices)
     return color_decomposition
 
-def write_decomposition(color_decomposition, prefix, image_number=0): # , N_levels=_N_levels):
+def write_unglued(color_decomposition, prefix, image_number=0):
     '''Write a color decomposition in several disk files (one per color subband).
 
     Parameters
@@ -464,7 +474,10 @@ def write_decomposition(color_decomposition, prefix, image_number=0): # , N_leve
 
     Returns
     -------
-    The length (in bytes) of the output.
+    output_length : int
+        The total length (in bytes) of the output files.
+    slces : list
+        Structure of the decomposition of each component.
 
     '''
     N_comps = color_decomposition[0].shape[2]
@@ -475,14 +488,19 @@ def write_decomposition(color_decomposition, prefix, image_number=0): # , N_leve
     N_levels = len(color_decomposition) - 1
     output_length = image_3.write(LL, f"{prefix}LL{N_levels}", image_number)
     resolution_I = N_levels
+    aux_decom = [color_decomposition[0][..., 0]]
     for resolution in color_decomposition[1:]:
         subband_names = ["LH", "HL", "HH"]
         sb = 0
+        aux_resol = []
         for sbn in subband_names:
             output_length += image_3.write(resolution[sb], f"{prefix}{sbn}{resolution_I}", image_number)
+            aux_resol.append(resolution[sb][..., 0])
             sb += 1
         resolution_I -= 1
-    return output_length
+        aux_decom.append(tuple(aux_resol))
+    slices = pywt.coeffs_to_array(aux_decom)[1]
+    return output_length, slices
 
 def _add(decomposition, val=32768, dtype=np.uint16):
     '''Add a scalar <val> to the <decomposition>.
@@ -568,22 +586,25 @@ def _write_decomposition(color_decomposition, prefix, image_number=0, N_levels=_
     #image.write(color_image.astype(np.int16), fn)
     #return slices
 
-def read_decomposition(prefix, image_number=0, N_levels=_N_levels):
+def read_unglued(slices, prefix, image_number=0):
     '''Read a color decomposition from the disk (one file per color subband).
 
     Parameters
     ----------
-    prefix : A Python-string.
+    slices : a Python-list
+        The structure of the decomposition of each component.
+    prefix : a Python-string.
         The prefix of the input files.
-    image_number : A signed integer.
+    image_number : a signed integer.
         The image number in a possible sequence of images (frames).
 
     Returns
     -------
-    color_decomposition : A Python-list of color SRLs.
+    color_decomposition : a Python-list of color SRLs.
         The color decomposition read from the disk.
 
     '''
+    N_levels = len(slices[0]) - 1
     LL = image_3.read(f"{prefix}LL{N_levels}", image_number)
     color_decomposition = [LL]
     resolution_I = N_levels
