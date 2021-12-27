@@ -52,8 +52,8 @@ _N_levels = 5
 _extension_mode = "periodization" # Generates the inimal number of coeffs
 #_extension_mode = config.dwt_extension_mode
 
-debug.info("Wavelet =", _wavelet)
-debug.info("DWT extension mode =", _extension_mode)
+debug.info(f"Wavelet={_wavelet}")
+debug.info(f"DWT extension mode={_extension_mode}")
 
 def analyze_step(color_image, wavelet=_wavelet) -> tuple:
     '''Color 1-levels forward 2D-DWT.
@@ -373,7 +373,9 @@ SRLs.
        The same structure as analyze().
     '''
 
-    N_levels = len(slices[0]) - 1
+    #N_levels = len(slices[0]) - 1
+    N_levels = len(slices[1]) - 1
+    debug.info(f"N_levels={N_levels}")
     #print("---", slices)
     #print("---", len(slices))
     #print("---", slices[0])
@@ -604,7 +606,7 @@ def read_unglued(slices, prefix, image_number=0):
         The color decomposition read from the disk.
 
     '''
-    N_levels = len(slices[0]) - 1
+    N_levels = len(slices[1])
     LL = image_3.read(f"{prefix}LL{N_levels}", image_number)
     color_decomposition = [LL]
     resolution_I = N_levels

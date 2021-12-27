@@ -1,8 +1,8 @@
 #import builtins
 import logging
 logger = logging.getLogger()
-#logger.setLevel(logging.DEBUG)
-logger.setLevel(logging.ERROR)
+logger.setLevel(logging.DEBUG)
+#logger.setLevel(logging.ERROR)
 
 def debug(*args, **kwargs):
     logging.debug(*args, **kwargs)
