@@ -261,11 +261,39 @@ def print_shapes(decomposition):
         for subband in resolution:
             print(subband.shape, subband.dtype)
 
-# Ojo, que esto no está terminado!!!!!!!!!!!!!!!!!!!!!!
-def compute_gains(N_levels):
-    gains = [1.0]*N_levels
-    for l in range(1,N_levels):
-        gains[l] = gains[l-1]*2
+def compute_gains(wavelet=_wavelet, N_levels=_N_levels, pixels_in_y=512, pixels_in_x=512):
+    '''Compute the subband gains (that should be 1.0 for orthonormal filters).
+    
+    Parameters
+    ----------
+    wavelet : pywt.Wavelet
+        Wavelet name.
+    N_levels : int.
+        Number of levels of the transform.
+    pixels_in_y, pixels_in_x: int, int
+        Size of the inverse transform.
+        
+    Returns
+    -------
+    A list of tuples with the gain of each subband. 
+    
+    '''
+    zero = np.zeros((pixels_in_y, pixels_in_x))
+    DWT_zero = pywt.wavedec2(data=zero, wavelet=wavelet, mode=_extension_mode, level=N_levels)
+    DWT_zero[0][DWT_zero[0].shape[1]//2, DWT_zero[0].shape[0]//2] = 1
+    img_delta = pywt.waverec2(DWT_zero, wavelet=wavelet, mode=_extension_mode)
+    DWT_zero[0][DWT_zero[0].shape[1]//2, DWT_zero[0].shape[0]//2] = 0
+    energy = information.energy(img_delta)
+    gains = [energy]
+    for sr in DWT_zero[1:]:
+        sr_gains = []
+        for sb in sr:
+            sb[sb.shape[1]//2, sb.shape[0]//2] = 1
+            img_delta = pywt.waverec2(DWT_zero, wavelet=wavelet, mode=_extension_mode)
+            sb[sb.shape[1]//2, sb.shape[0]//2] = 0
+            energy = information.energy(img_delta)
+            sr_gains.append(energy)
+        gains.append(tuple(sr_gains))
     return gains
 
 def extract_decomposition(color_decomposition, component_I):
