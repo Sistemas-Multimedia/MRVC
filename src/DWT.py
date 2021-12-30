@@ -27,6 +27,7 @@ import image_3
 #import L_DWT as L
 #import H_DWT as H
 #import debug
+import information
 
 #import logging
 #logging.basicConfig(

@@ -3,17 +3,19 @@ I/O routines for 1-component (grayscale) images.
  '''
 
 import numpy as np
-import cv2
+import cv2 as cv
 import colored
 if __debug__:
     import os
 import matplotlib.pyplot as plt
 
+_compression_level = 9 # 0=min, 9=max
+
 def read(prefix:str, image_number:int) -> np.ndarray: # [row, column, component]
     fn = f"{prefix}{image_number:03d}.png"
     if __debug__:
         print(colored.fore.GREEN + f"image_1.read: {fn}", end=' ', flush=True)
-    img = cv2.imread(fn, cv2.IMREAD_UNCHANGED)
+    img = cv.imread(fn, cv.IMREAD_UNCHANGED)
     if __debug__:
         print(img.shape, img.dtype, os.path.getsize(fn), colored.style.RESET)
     return img
@@ -28,7 +30,7 @@ def debug_write(img:np.ndarray, prefix:str, image_number:int) -> None:
 
 def _write(img:np.ndarray, prefix:str, image_number:int) -> None:
     fn = f"{prefix}{image_number:03d}.png"
-    cv2.imwrite(fn, img)
+    cv.imwrite(fn, img, [cv.IMWRITE_PNG_COMPRESSION, _compression_level])
     len_output = os.path.getsize(fn)
     if __debug__:
         print(colored.fore.GREEN + f"image_1.write: {fn}", img.shape, img.dtype, len_output, colored.style.RESET)

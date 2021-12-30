@@ -3,24 +3,26 @@ I/O routines for 3-component (color) images.
  '''
 
 import numpy as np
-import cv2
+import cv2 as cv
 import colored
 if __debug__:
     import os
 import matplotlib.pyplot as plt
+
+_compression_level = 9 # 0=min, 9=max
 
 def read(prefix:str, image_number:int=0) -> np.ndarray: # [row, column, component]
     #fn = name + ".png"
     fn = f"{prefix}{image_number:03d}.png"
     if __debug__:
         print(colored.fore.GREEN + f"image_3.read: {fn}", end=' ', flush=True)
-    img = cv2.imread(fn, cv2.IMREAD_UNCHANGED)
+    img = cv.imread(fn, cv.IMREAD_UNCHANGED)
     #print("--------", img.shape)
-    #img = cv2.imread(fn, cv2.COLOR_BGR2RGB)
-    #img = cv2.imread(fn)
+    #img = cv.imread(fn, cv.COLOR_BGR2RGB)
+    #img = cv.imread(fn)
     try:
-        img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
-    except cv2.error:
+        img = cv.cvtColor(img, cv.COLOR_BGR2RGB)
+    except cv.error:
         print(colored.fore.RED + f'image_3.read: Unable to read "{fn}"')
         raise
     #print("=========", img.shape)
@@ -37,8 +39,8 @@ def write(img:np.ndarray, prefix:str, image_number:int=0) -> None:
 def _write(img:np.ndarray, prefix:str, image_number:int) -> None:
     #fn = name + ".png"
     fn = f"{prefix}{image_number:03d}.png"
-    img = cv2.cvtColor(img, cv2.COLOR_RGB2BGR)
-    cv2.imwrite(fn, img)
+    img = cv.cvtColor(img, cv.COLOR_RGB2BGR)
+    cv.imwrite(fn, img, [cv.IMWRITE_PNG_COMPRESSION, _compression_level])
     len_output = os.path.getsize(fn)
     if __debug__:
         print(colored.fore.GREEN + f"image_3.write: {fn}", img.shape, img.dtype, len_output, colored.style.RESET)
@@ -61,7 +63,7 @@ def print_stats(image):
 def show(image, title='', size=(10, 10), fontsize=20):
     plt.figure(figsize=size)
     plt.title(title, fontsize=fontsize)
-    #plt.imshow(cv2.cvtColor(image.astype(np.uint8), cv2.COLOR_BGR2RGB))
+    #plt.imshow(cv.cvtColor(image.astype(np.uint8), cv.COLOR_BGR2RGB))
     plt.imshow(image)
     print_stats(image)
 
@@ -69,10 +71,10 @@ def show(image, title='', size=(10, 10), fontsize=20):
 
 def __read(name: str) -> np.ndarray: # [row, column, component]
     fn = name + ".png"
-    img = cv2.imread(fn, cv2.IMREAD_UNCHANGED)
+    img = cv.imread(fn, cv.IMREAD_UNCHANGED)
     try:
-        img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
-    except cv2.error:
+        img = cv.cvtColor(img, cv.COLOR_BGR2RGB)
+    except cv.error:
         print(colors.red(f'image.read: Unable to read "{fn}"'))
         raise
     #img = np.array(img, dtype=np.float32)
@@ -82,9 +84,9 @@ def __read(name: str) -> np.ndarray: # [row, column, component]
 
 def __load(name: str) -> np.ndarray: # [component, row, column]
     fn = name + ".png"
-    image = cv2.imread(fn, cv2.IMREAD_UNCHANGED)
+    image = cv.imread(fn, cv.IMREAD_UNCHANGED)
     try:
-        B,G,R = cv2.split(image)
+        B,G,R = cv.split(image)
     except ValueError:
         print(colors.red(f'image.load: Unable to read "{fn}"'))
         raise
@@ -95,8 +97,8 @@ def __load(name: str) -> np.ndarray: # [component, row, column]
 
 def __save(image: np.ndarray, name: str) -> None:
     fn = name + ".png"
-    image = cv2.merge((image[0], image[1], image[2]))
-    cv2.imwrite(fn, image)
+    image = cv.merge((image[0], image[1], image[2]))
+    cv.imwrite(fn, image)
 
 def __debug_save(image: np.ndarray, name: str) -> None:
     if __debug__:
