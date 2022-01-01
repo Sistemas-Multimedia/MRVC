@@ -437,7 +437,7 @@ SRLs.
         decompositions.append(unglue_decomposition(glued_color_decomposition[..., component_I], slices[component_I]))
     # "decompositions" is a list with three decompositions.
 
-    ########### notice that the following code is used also un analyze() ##############
+    ########### notice that the following code is used also in analyze() ##############
     color_decomposition = []
     # LL^N_levels and H^N_levels subbands (both have the same resolution)
     N_rows_subband, N_columns_subband = decompositions[0][0].shape # All subbands in the SRL with the same shape
