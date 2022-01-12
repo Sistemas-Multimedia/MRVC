@@ -3,7 +3,16 @@
 import cv2
 import numpy as np
 import config
-import debug
+#import debug
+
+import logging
+logger = logging.getLogger(__name__)
+logging.basicConfig(format="[%(filename)s:%(lineno)s %(funcName)s()] %(message)s")
+#logger.setLevel(logging.CRITICAL)
+#logger.setLevel(logging.ERROR)
+logger.setLevel(logging.WARNING)
+#logger.setLevel(logging.INFO)
+#logger.setLevel(logging.DEBUG)
 
 ###########################################################################
 # OF section. See:                                                        #
@@ -53,7 +62,7 @@ def estimate(predicted:np.ndarray,
              iters:int=OF_ITERS,
              poly_n:float=POLY_N,
              poly_sigma:float=POLY_SIGMA) -> np.ndarray:
-    debug.print(f"estimate: levels={levels} wside={wside} iters={iters} poly_n={poly_n} poly_sigma={poly_sigma}")
+    logger.info(f"estimate: levels={levels} wside={wside} iters={iters} poly_n={poly_n} poly_sigma={poly_sigma}")
     MVs = cv2.calcOpticalFlowFarneback(
         prev=predicted,
         next=reference,
