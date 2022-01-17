@@ -229,7 +229,7 @@ class image_IPP_codec():
         median_slope = np.median(block_slopes)
 
         # Move the quantization steps of the slopes with higher or
-        # sloer median_slope
+        # slower median_slope
         for y in range(blocks_in_y):
             for x in range(blocks_in_x):
                 while block_slopes[y,x] > median_slope:

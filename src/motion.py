@@ -4,6 +4,8 @@ import cv2
 import numpy as np
 import config
 import debug
+import matplotlib
+import matplotlib.pyplot as plt
 
 ###########################################################################
 # OF section. See:                                                        #
@@ -106,3 +108,10 @@ def full_search_dense_ME(predicted, reference, search_range=32, overlapping_area
             flow[:,:,1] = np.where(which_min, y-search_range//2, flow[:,:,1])
             min_error = np.minimum(min_error, blur_a_error)
     return flow.astype(np.float)
+
+def show_vectors(flow, dpi=150, title=None):
+    #plt.figure.set_dpi(200)
+    plt.figure(dpi=dpi)
+    plt.quiver(flow[..., 0][::-1], flow[..., 1])
+    plt.title(title, fontsize=10)
+    plt.show()

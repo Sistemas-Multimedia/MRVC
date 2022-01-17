@@ -1,4 +1,4 @@
-''' MRVC/image_IPP_RD.py '''
+''' MRVC/RD_curve.py '''
 
 # Generate a RD curve.
 
