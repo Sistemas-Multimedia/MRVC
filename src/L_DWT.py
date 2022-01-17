@@ -1,3 +1,7 @@
+# Este módulo está en desuso. Básicamente gestiona el desplazamiento
+# de las componentes al rango de números naturales y obliga a usar 16
+# bits/componente, cuando esto en realidad depende del contexto.
+
 ''' MRVC/L_DWT.py
 
 Provides:
