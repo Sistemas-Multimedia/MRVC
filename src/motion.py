@@ -54,7 +54,7 @@ POLY_SIGMA = 1.5
 print("OFCA: default poly_n", POLY_N)
 print("OFCA: default poly_sigma", POLY_SIGMA)
 
-def estimate(predicted:np.ndarray,
+def Farneback_ME(predicted:np.ndarray,
              reference:np.ndarray,
              initial_MVs:np.ndarray=None,
              levels:int=OF_LEVELS,
@@ -99,6 +99,7 @@ def colorize(MVs):
 
 def full_search_dense_ME(predicted, reference, search_range=32, overlapping_area_side=17):
     extended_reference = np.zeros((reference.shape[0] + search_range, reference.shape[1] + search_range))
+    assert overlapping_area_side % 2 != 0 # This a requirement of cv.GaussianBLur
     extended_reference[search_range//2:reference.shape[0]+search_range//2,
                        search_range//2:reference.shape[1]+search_range//2] = reference
     flow = np.zeros((predicted.shape[0], predicted.shape[1], 2), dtype=np.int8)
@@ -108,7 +109,7 @@ def full_search_dense_ME(predicted, reference, search_range=32, overlapping_area
         for x in range(search_range):
             error = extended_reference[y : predicted.shape[0] + y,
                                        x : predicted.shape[1] + x] - predicted
-            a_error = abs(error)
+            a_error = abs(error) # Ojo probar MSE
             blur_a_error = cv2.GaussianBlur(a_error, (overlapping_area_side, overlapping_area_side), 0).astype(np.int)
             which_min = blur_a_error <= min_error
             flow[:,:,0] = np.where(which_min, x-search_range//2, flow[:,:,0])
