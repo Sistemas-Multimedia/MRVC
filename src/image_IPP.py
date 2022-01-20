@@ -15,13 +15,22 @@ import H_DWT as H
 import deadzone_quantizer as Q
 import motion
 import image_3 as frame
-import colors
+import colored
 import cv2
 import os
 import random
-import debug
+#import debug
 #import sys
 import config
+
+import logging
+logger = logging.getLogger(__name__)
+logging.basicConfig(format="[%(filename)s:%(lineno)s %(funcName)s()] %(message)s")
+#logger.setLevel(logging.CRITICAL)
+#logger.setLevel(logging.ERROR)
+logger.setLevel(logging.WARNING)
+#logger.setLevel(logging.INFO)
+#logger.setLevel(logging.DEBUG)
 
 if config.color == "YCoCg":
     import YCoCg as YUV
@@ -64,7 +73,7 @@ class image_IPP_codec():
                 W_k = frame.read(video, k).astype(np.int16)
                 V_k = YUV.from_RGB(W_k) # (a)
                 averages = self.compute_averages(V_k, image_IPP_codec.block_y_side, image_IPP_codec.block_x_side)
-                debug.print("V_k", V_k[...,2].max(), V_k[...,2].min())
+                logger.info("V_k", V_k[...,2].max(), V_k[...,2].min())
                 #flow = motion.estimate(V_k[...,0], V_k_1[...,0], flow) # (c)
                 #initial_flow = np.zeros((V_k.shape[0], V_k.shape[1], 2), dtype=np.float32)
                 flow = motion.estimate(V_k[...,0], V_k_1[...,0], self.initial_flow) # (c)
@@ -72,10 +81,10 @@ class image_IPP_codec():
                 #flow = np.rint(flow)
                 #flow = np.random.randint(-1, 1, flow.shape).astype(np.float32)
                 #print("flow.dtype=", flow.dtype, "flow.max()=", flow.max(), "flow.min()=", flow.min())
-                debug.print("COMPUTED flow", flow.max(), flow.min())
+                logger.info("COMPUTED flow", flow.max(), flow.min())
                 V_k_1 = V_k # (b)
                 reconstructed_flow = self.V_codec(flow, self.log2_block_side, f"{video}motion_", k) # (d and e)
-                debug.print("USED flow", reconstructed_flow.max(), reconstructed_flow.min())
+                logger.info("USED flow", reconstructed_flow.max(), reconstructed_flow.min())
                 #frame.debug_write(motion.colorize(flow), f"{codestream}flow", k)
                 #frame.debug_write(motion.colorize(reconstructed_flow.astype(np.float32)), f"{codestream}reconstructed_flow", k)
                 #prediction_V_k = motion.make_prediction(reconstructed_V_k_1, reconstructed_flow).astype(np.int16) # (j)
@@ -100,9 +109,9 @@ class image_IPP_codec():
                     frame.write(self.clip(YUV.to_RGB(reconstructed_V_k)), f"{video}reconstructed_", k) # Decoder's output
                 reconstructed_V_k_1 = reconstructed_V_k # (j)
         except:
-            print(colors.red(f'image_IPP.encode(video="{video}", n_frames={n_frames}, q_step={q_step})'))
+            print(colored.fore.RED + f'image_IPP.encode(video="{video}", n_frames={n_frames}, q_step={q_step})')
             raise
-        
+
     def create_structures(self, W_k, block_y_side, block_x_side):
         self.initial_flow = np.zeros((W_k.shape[0], W_k.shape[1], 2), dtype=np.float32)
 
@@ -162,7 +171,7 @@ class image_IPP_codec():
             prev_comp = next_comp
             '''
         command = f"cat {prefix}motion_y_diff_comp_???LL.png | gzip -9 > /tmp/image_IPP_motion_y.gz"
-        debug.print(command)
+        logger.info(command)
         os.system(command)
         comp_length = os.path.getsize(f"/tmp/image_IPP_motion_y.gz")
         kbps = comp_length*8/sequence_time/1000
@@ -200,7 +209,7 @@ class image_IPP_codec():
             prev_comp = next_comp
             '''
         command = f"cat {prefix}motion_x_diff_comp_???LL.png | gzip -9 > /tmp/image_IPP_motion_y.gz"
-        debug.print(command)
+        logger.info(command)
         os.system(command)
         comp_length = os.path.getsize(f"/tmp/image_IPP_motion_y.gz")    
         kbps = comp_length*8/sequence_time/1000
@@ -217,7 +226,7 @@ class image_IPP_codec():
 
     def I_codec(self, V_k, prefix, k, q_step):
         to_write = YUV.to_RGB(V_k).astype(np.uint8)
-        debug.print(f"image_IPP.I_codec: max={to_write.max()} min={to_write.min()} type={to_write.dtype}")
+        logger.info(f"image_IPP.I_codec: max={to_write.max()} min={to_write.min()} type={to_write.dtype}")
         frame.write(to_write, prefix + "before_", k)
         os.system(f"ffmpeg -loglevel fatal -y -i {prefix}before_{k:03d}.png -c:v libx264 -vf format=yuv420p -crf {q_step} {prefix}{k:03d}.mp4")
         os.system(f"ffmpeg -loglevel fatal -y -i {prefix}{k:03d}.mp4 {prefix}{k:03d}.png")
@@ -234,13 +243,13 @@ class image_IPP_codec():
 
     def E_codec_4_YCoCg(self, E_k, prefix, k, q_step):
         offset = 128
-        debug.print("image_IPP.E_codec: q_step", q_step)
-        debug.print("image_IPP.E_codec: error", E_k.max(), E_k.min(), E_k.dtype)
+        logger.info("image_IPP.E_codec: q_step", q_step)
+        logger.info("image_IPP.E_codec: error", E_k.max(), E_k.min(), E_k.dtype)
         #frame.write(clip(YUV.to_RGB(E_k)), prefix + "_to_mp4", k)
         #frame.write(clip(YUV.to_RGB(E_k)+128), prefix + "_to_mp4_", k)
         #E_k = Q.quantize(E_k, 4)
         to_write = self.clip(YUV.to_RGB(E_k) + offset)
-        debug.print(f"image_IPP.E_codec: max={to_write.max()} min={to_write.min()} type={to_write.dtype}")
+        logger.info(f"image_IPP.E_codec: max={to_write.max()} min={to_write.min()} type={to_write.dtype}")
         frame.write(to_write, prefix + "before_", k)
         #os.system(f"ffmpeg -loglevel fatal -y -i {prefix}_to_mp4_{k:03d}.png -crf {q_step} {prefix}_{k:03d}.mp4")
         #os.system(f"ffmpeg -loglevel fatal -y -i {prefix}before_{k:03d}.png -crf {q_step} {prefix}{k:03d}.mp4")
@@ -249,20 +258,20 @@ class image_IPP_codec():
         #os.system(f"ffmpeg -loglevel fatal -y -i {prefix}_{k:03d}.mp4 {prefix}_from_mp4_{k:03d}.png")
         os.system(f"ffmpeg -loglevel fatal -y -i {prefix}{k:03d}.mp4 {prefix}{k:03d}.png")
         dq_E_k = (YUV.from_RGB(frame.read(prefix, k).astype(np.int16) - offset))
-        debug.print("image_IPP.E_codec: deQ error YUV", dq_E_k.max(), dq_E_k.min(), dq_E_k.dtype)    
+        logger.info("image_IPP.E_codec: deQ error YUV", dq_E_k.max(), dq_E_k.min(), dq_E_k.dtype)    
         #dq_E_k = Q.dequantize(dq_E_k, 4)
         #return dq_E_k.astype(np.float64)
         return dq_E_k
 
     def E_codec_4_YCrCb(self, E_k, prefix, k, q_step):
         offset = 0
-        debug.print("image_IPP.E_codec: q_step", q_step)
-        debug.print("image_IPP.E_codec: error", E_k.max(), E_k.min(), E_k.dtype)
+        logger.info("image_IPP.E_codec: q_step", q_step)
+        logger.info("image_IPP.E_codec: error", E_k.max(), E_k.min(), E_k.dtype)
         #frame.write(clip(YUV.to_RGB(E_k)), prefix + "_to_mp4", k)
         #frame.write(clip(YUV.to_RGB(E_k)+128), prefix + "_to_mp4_", k)
         #E_k = Q.quantize(E_k, 4)
         to_write = self.clip(YUV.to_RGB(E_k) + offset)
-        debug.print(f"image_IPP.E_codec: max={to_write.max()} min={to_write.min()} type={to_write.dtype}")
+        logger.info(f"image_IPP.E_codec: max={to_write.max()} min={to_write.min()} type={to_write.dtype}")
         frame.write(to_write, prefix + "before_", k)
         #os.system(f"ffmpeg -loglevel fatal -y -i {prefix}_to_mp4_{k:03d}.png -crf {q_step} {prefix}_{k:03d}.mp4")
         #os.system(f"ffmpeg -loglevel fatal -y -i {prefix}before_{k:03d}.png -crf {q_step} {prefix}{k:03d}.mp4")
