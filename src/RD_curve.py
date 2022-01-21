@@ -25,6 +25,11 @@ logger.setLevel(logging.WARNING)
 #logger.setLevel(logging.INFO)
 #logger.setLevel(logging.DEBUG)
 
+import argparse
+parser = argparse.ArgumentParser()
+parser.add_argument("--N_frames", type=int, help="Number of frames", default=8)
+args = parser.parse_args()
+
 # Original video frames (PNG format) with file-names
 # f"{video}_{frame_number:03d}.png".
 video = "/tmp/original_"
@@ -34,7 +39,8 @@ else:
     reconstructed_video = video + "reconstructed_"
 
 # Number of frames to process.
-n_frames = 30
+n_frames = args.N_frames
+logger.info(f"N_frames={n_frames}")
 
 # Frames Per Second.
 FPS = 30

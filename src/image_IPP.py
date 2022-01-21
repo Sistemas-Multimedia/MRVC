@@ -19,8 +19,6 @@ import colored
 import cv2
 import os
 import random
-#import debug
-#import sys
 import config
 
 import logging
