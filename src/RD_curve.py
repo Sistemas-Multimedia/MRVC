@@ -2,19 +2,28 @@
 
 # Generate a RD curve.
 
-import debug
+#import debug
 import config
 import distortion
 import image_3 as frame
 
 # --> Select below the codec. <--
 #import image_interpolated_IPP as codec
-import image_IPP as codec
+#import image_IPP as codec
 #import image_IPP_adaptive as codec
 #import image_IPP_quantized_prediction as codec
 #import image_IPP_quantized_residue as codec
-#import MP4 as codec
+import MP4 as codec
 #import IPP_compressor as codec
+
+import logging
+logger = logging.getLogger(__name__)
+logging.basicConfig(format="[%(filename)s:%(lineno)s %(funcName)s()] %(message)s")
+#logger.setLevel(logging.CRITICAL)
+#logger.setLevel(logging.ERROR)
+logger.setLevel(logging.WARNING)
+#logger.setLevel(logging.INFO)
+#logger.setLevel(logging.DEBUG)
 
 # Original video frames (PNG format) with file-names
 # f"{video}_{frame_number:03d}.png".
@@ -37,10 +46,10 @@ def AMSE(x_prefix, y_prefix, n_images):
         x = frame.read(x_prefix, k)
         y = frame.read(y_prefix, k)
         _AMSE = distortion.MSE(x, y)
-        debug.print(f"AMSE of image {k} = {_AMSE}")
+        logger.info(f"AMSE of image {k} = {_AMSE}")
         total_AMSE += _AMSE
     _AMSE = total_AMSE/n_images
-    debug.print("Average Mean Square Error (entire sequence) =", _AMSE)
+    logger.info("Average Mean Square Error (entire sequence) =", _AMSE)
     return _AMSE
 
 #for q_step in range(41, 42, 1):

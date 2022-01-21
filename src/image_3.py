@@ -33,9 +33,6 @@ def read(prefix:str, image_number:int=0) -> np.ndarray: # [row, column, componen
     #return img.astype(np.uint16)
     return img
 
-def write(img:np.ndarray, prefix:str, image_number:int=0) -> None:
-    return _write(img, prefix, image_number)
-
 def _write(img:np.ndarray, prefix:str, image_number:int) -> None:
     #fn = name + ".png"
     fn = f"{prefix}{image_number:03d}.png"
@@ -45,6 +42,14 @@ def _write(img:np.ndarray, prefix:str, image_number:int) -> None:
     if __debug__:
         print(colored.fore.GREEN + f"image_3.write: {fn}", img.shape, img.dtype, len_output, colored.style.RESET)
     return len_output
+
+def write(img:np.ndarray, prefix:str, image_number:int=0) -> None:
+    return _write(img, prefix, image_number)
+
+def debug_write(img:np.ndarray, prefix:str, image_number:int) -> None:
+    if __debug__:
+        #_write(img.astype(np.uint16), name)
+        return _write(img, prefix, image_number)
 
 def normalize(img: np.ndarray) -> np.ndarray: # [row, column, component]
     max_component = np.max(img)

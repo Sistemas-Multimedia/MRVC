@@ -1,7 +1,7 @@
 ''' MRVC/MP4.py '''
 
 import os
-import colors
+import colorama
 
 # Only I and P blocks are allowed.
 
@@ -20,7 +20,7 @@ def encode(video,    # Prefix of the original sequence of PNG images
         os.system(command)
         
     except:
-        print(colors.red(f'MP4.encode(video="{video}", n_frames={n_frames}, q_step={q_step})'))
+        print(colored.fore.RED + f'MP4.encode(video="{video}", n_frames={n_frames}, q_step={q_step})')
         raise
 
 def compute_br(prefix, frames_per_second, frame_shape, n_frames):
