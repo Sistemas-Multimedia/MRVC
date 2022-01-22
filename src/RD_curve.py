@@ -28,6 +28,7 @@ logger.setLevel(logging.WARNING)
 import argparse
 parser = argparse.ArgumentParser()
 parser.add_argument("--N_frames", type=int, help="Number of frames", default=8)
+parser.add_argument("--first_frame", type=int, help="First frame to compress", default=0)
 args = parser.parse_args()
 
 # Original video frames (PNG format) with file-names
@@ -38,6 +39,9 @@ if config.multiresolution_transform == "DWT" or config.multiresolution_transform
 else:
     reconstructed_video = video + "reconstructed_"
 
+first_frame = args.first_frame
+logger.info(f"first_frame={first_frame}")
+    
 # Number of frames to process.
 n_frames = args.N_frames
 logger.info(f"N_frames={n_frames}")
@@ -45,10 +49,10 @@ logger.info(f"N_frames={n_frames}")
 # Frames Per Second.
 FPS = 30
 
-def AMSE(x_prefix, y_prefix, n_images):
+def AMSE(x_prefix, y_prefix, first_frame, n_images):
     print(f"AMSE: comparing {x_prefix} and {y_prefix}")
     total_AMSE = 0
-    for k in range(n_images):
+    for k in range(first_frame + n_images):
         x = frame.read(x_prefix, k)
         y = frame.read(y_prefix, k)
         _AMSE = distortion.MSE(x, y)
@@ -61,7 +65,7 @@ def AMSE(x_prefix, y_prefix, n_images):
 #for q_step in range(41, 42, 1):
 for q_step in range(21, 42, 3):
 
-    codec.encode(video, n_frames, q_step)
-    kbps, bpp, n_bytes = codec.compute_br(video, FPS, frame.get_shape(video), n_frames)
-    _distortion = AMSE(video, reconstructed_video, n_frames)
+    codec.encode(video, first_frame, n_frames, q_step)
+    kbps, bpp, n_bytes = codec.compute_br(video, FPS, frame.get_shape(video), first_frame, n_frames)
+    _distortion = AMSE(video, reconstructed_video, first_frame, n_frames)
     print("Q_step:", q_step, "BPP:", bpp, "KBPS:", kbps, "Average AMSE:", _distortion)

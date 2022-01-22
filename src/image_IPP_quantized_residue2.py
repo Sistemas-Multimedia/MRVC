@@ -40,9 +40,9 @@ if config.color == "RGB":
 
 class image_IPP_quantized_residue_codec(image_IPP.image_IPP_codec):
 
-    def encode(self, video, n_frames, q_step):
+    def encode(self, video, first_frame, n_frames, q_step):
         try:
-            k = 0
+            k = first_frame
             W_k = frame.read(video, k).astype(np.int16)
             initial_flow = np.zeros((W_k.shape[0], W_k.shape[1], 2), dtype=np.float32)
             blocks_in_y = int(W_k.shape[0]/self.block_y_side)
@@ -67,7 +67,7 @@ class image_IPP_quantized_residue_codec(image_IPP.image_IPP_codec):
                     block_delta[y,x] = 8 - int(math.log(block_distortion)/math.log(2.0))
             
             reconstructed_V_k_1 = reconstructed_V_k # (j)
-            for k in range(1, n_frames):
+            for k in range(first_frame + 1, first_frame + n_frames):
                 W_k = frame.read(video, k).astype(np.int16)
                 V_k = YUV.from_RGB(W_k) # (a)
                 flow = motion.estimate(V_k[...,0], V_k_1[...,0], initial_flow) # (c)
@@ -183,8 +183,8 @@ class image_IPP_quantized_residue_codec(image_IPP.image_IPP_codec):
         return kbps + types_kbps, bpp + types_bpp, types_length + n_bytes
 
 codec = image_IPP_quantized_residue_codec()
-def encode(video, n_frames, q_step):
-    codec.encode(video, n_frames, q_step)
+def encode(video, first_frame, n_frames, q_step):
+    codec.encode(video, first_frame, n_frames, q_step)
 
-def compute_br(prefix, frames_per_second, frame_shape, n_frames):
-    return codec.compute_br(prefix, frames_per_second, frame_shape, n_frames)
+def compute_br(prefix, frames_per_second, frame_shape, first_frame, n_frames):
+    return codec.compute_br(prefix, frames_per_second, frame_shape, first_frame, n_frames)

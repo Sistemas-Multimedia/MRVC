@@ -5,13 +5,14 @@ import colorama
 
 # Only I and P blocks are allowed.
 
-def encode(video,    # Prefix of the original sequence of PNG images 
+def encode(video,    # Prefix of the original sequence of PNG images
+           first_frame, 
            n_frames, # Number of frames to process
            q_step):  # Quantization step
     try:
         #command = f"ffmpeg -start_number 0 -y -i {video}%03d.png -c:v libx264rgb -vf format=yuv444p -crf {q_step} -frames:v {n_frames} -g {n_frames} -bf 0 /tmp/output.mp4" # No color transform is used
         #command = f"ffmpeg -start_number 0 -y -i {video}%03d.png -c:v libx264 -vf format=yuv444p -crf {q_step} -frames:v {n_frames} -g {n_frames} -bf 0 /tmp/output.mp4" # Color transform is used but without chroma subsampling
-        command = f"ffmpeg -start_number 0 -y -i {video}%03d.png -c:v libx264 -vf format=yuv420p -crf {q_step} -frames:v {n_frames} -g {n_frames} -bf 0 /tmp/output.mp4" # Color transform and chroma subsampling
+        command = f"ffmpeg -start_number {first_frame} -y -i {video}%03d.png -c:v libx264 -vf format=yuv420p -crf {q_step} -frames:v {n_frames} -g {n_frames} -bf 0 /tmp/output.mp4" # Color transform and chroma subsampling
         print("running:", command)
         os.system(command)
 
@@ -23,7 +24,7 @@ def encode(video,    # Prefix of the original sequence of PNG images
         print(colored.fore.RED + f'MP4.encode(video="{video}", n_frames={n_frames}, q_step={q_step})')
         raise
 
-def compute_br(prefix, frames_per_second, frame_shape, n_frames):
+def compute_br(prefix, frames_per_second, frame_shape, first_frame, n_frames):
     frame_height = frame_shape[0]
     frame_width = frame_shape[1]
     n_channels = frame_shape[2]

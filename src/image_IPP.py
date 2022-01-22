@@ -49,7 +49,8 @@ class image_IPP_codec():
     block_y_side = 2**log2_block_side
     
     def encode(self,
-               video,    # Prefix of the original sequence of PNG images 
+               video,    # Prefix of the original sequence of PNG images
+               first_frame,
                n_frames, # Number of frames to process
                q_step):  # Quantization step
         try:
@@ -62,12 +63,12 @@ class image_IPP_codec():
             E_k = V_k # (f)
             #frame.debug_write(YUV.to_RGB(E_k), f"{video}_prediction_error", k)
             #dequantized_E_k = E_codec(E_k, N_LEVELS, q_step, codestream, 0) # (g and h)
-            dequantized_E_k = self.I_codec(V_k, f"{video}texture_", 0, q_step) # (g and h)
+            dequantized_E_k = self.I_codec(V_k, f"{video}texture_", first_frame, q_step) # (g and h)
             reconstructed_V_k = dequantized_E_k # (i)
             if __debug__:
                 frame.write(self.clip(YUV.to_RGB(reconstructed_V_k)), f"{video}reconstructed_", k) # Decoder's output
             reconstructed_V_k_1 = reconstructed_V_k # (j)
-            for k in range(1, n_frames):
+            for k in range(first_frame + 1, first_frame + n_frames):
                 W_k = frame.read(video, k).astype(np.int16)
                 V_k = YUV.from_RGB(W_k) # (a)
                 averages = self.compute_averages(V_k, image_IPP_codec.block_y_side, image_IPP_codec.block_x_side)
@@ -107,7 +108,7 @@ class image_IPP_codec():
                     frame.write(self.clip(YUV.to_RGB(reconstructed_V_k)), f"{video}reconstructed_", k) # Decoder's output
                 reconstructed_V_k_1 = reconstructed_V_k # (j)
         except:
-            print(colored.fore.RED + f'image_IPP.encode(video="{video}", n_frames={n_frames}, q_step={q_step})')
+            print(colored.fore.RED + f'image_IPP.encode(video="{video}", first_frame={first_frame}, n_frames={n_frames}, q_step={q_step})')
             raise
 
     def create_structures(self, W_k, block_y_side, block_x_side):
@@ -119,7 +120,7 @@ class image_IPP_codec():
     def decide_types(self, video, k, q_step, V_k, reconstructed_V_k, E_k, prediction_V_k, block_y_side, block_x_side, averages):
         return reconstructed_V_k
 
-    def compute_br(self, prefix, frames_per_second, frame_shape, n_frames):
+    def compute_br(self, prefix, frames_per_second, frame_shape, first_frame, n_frames):
 
         frame_height = frame_shape[0]
         frame_width = frame_shape[1]
@@ -143,7 +144,7 @@ class image_IPP_codec():
         prev_comp = L.read(prefix + "motion_y_", 1).astype(np.int16) # Sobra astype
         #prev_fn = f"{prefix}motion_y_001.png"
         #comp_length = os.path.getsize(prev_fn)
-        for k in range(2, n_frames):
+        for k in range(first_frame + 2, first_frame + n_frames):
             next_comp = L.read(prefix + "motion_y_", k).astype(np.int16) # Sobra astype
             #next_fn = f"{prefix}motion_y_{k:03d}.png"
             diff_comp = next_comp - prev_comp
@@ -181,7 +182,7 @@ class image_IPP_codec():
         prev_comp = L.read(prefix + "motion_x_", 1).astype(np.int16) # Sobra astype
         prev_fn = f"{prefix}motion_x_001.png"
         #comp_length = os.path.getsize(prev_fn)
-        for k in range(2, n_frames):
+        for k in range(first_frame + 2, first_frame + n_frames):
             next_comp = L.read(prefix + "motion_x_", k).astype(np.int16) # Sobra astype
             #next_fn = f"{prefix}motion_x_{k:03d}.png"
             diff_comp = next_comp - prev_comp
@@ -451,7 +452,7 @@ class image_IPP_codec():
         frame.write(pyramid[:,:,1], prefix+"_x_", frame_number)
         return pyramid
 
-    def compute_br2(prefix, frames_per_second, frame_shape, n_frames):
+    def compute_br2(prefix, frames_per_second, frame_shape, first_frame, n_frames):
         #print("*"*80, prefix)
         #os.system(f"ffmpeg -y -i {prefix}_from_mp4_%03d.png -c:v libx264 -x264-params keyint=1 -crf 0 /tmp/image_IPP_texture.mp4")
         #os.system(f"ffmpeg -f concat -safe 0 -i <(for f in {prefix}_*.mp4; do echo \"file '$PWD/$f'\"; done) -c copy /tmp/image_IPP_texture.mp4")
@@ -496,8 +497,8 @@ class image_IPP_codec():
         return kbps, bpp
 
 codec = image_IPP_codec()
-def encode(video, n_frames, q_step):
-    codec.encode(video, n_frames, q_step)
+def encode(video, first_frame, n_frames, q_step):
+    codec.encode(video, first_frame, n_frames, q_step)
 
-def compute_br(prefix, frames_per_second, frame_shape, n_frames):
-    return codec.compute_br(prefix, frames_per_second, frame_shape, n_frames)
+def compute_br(prefix, frames_per_second, frame_shape, first_frame, n_frames):
+    return codec.compute_br(prefix, frames_per_second, frame_shape, first_frame, n_frames)
