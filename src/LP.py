@@ -1,5 +1,7 @@
 ''' MRVC/LP.py '''
 
+# Laplacian Pyramid computation and tools.
+
 import numpy as np
 import cv2 as cv
 import config
@@ -40,6 +42,7 @@ def synthesize(P: list, n_levels:int) -> np.ndarray:
         frame = synthesize_step(frame, P[l+1])
     return frame
 
+# Gains should be computed throught synthesize(delta)!!
 def compute_gains(n_levels):
     gains = [1.0]*n_levels
     #dims = (8192, 8, 3)
