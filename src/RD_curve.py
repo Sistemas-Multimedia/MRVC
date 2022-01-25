@@ -10,10 +10,10 @@ import image_3 as frame
 # --> Select below the codec. <--
 #import image_interpolated_IPP as codec
 #import image_IPP as codec
-import image_IPP_adaptive as codec
+#import image_IPP_adaptive as codec
 #import image_IPP_quantized_prediction as codec
 #import image_IPP_quantized_residue as codec
-#import MP4 as codec
+import MP4 as codec
 #import IPP_compressor as codec
 
 import logging
@@ -62,8 +62,10 @@ def AMSE(x_prefix, y_prefix, first_frame, n_images):
     logger.info("Average Mean Square Error (entire sequence) =", _AMSE)
     return _AMSE
 
+Q_steps = range(21, 42, 3)
+
 #for q_step in range(41, 42, 1):
-for q_step in range(21, 42, 3):
+for q_step in Q_steps:
 
     codec.encode(video, first_frame, n_frames, q_step)
     kbps, bpp, n_bytes = codec.compute_br(video, FPS, frame.get_shape(video), first_frame, n_frames)

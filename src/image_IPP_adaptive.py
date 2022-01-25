@@ -1,7 +1,7 @@
 ''' MRVC/image_IPP_adaptive.py '''
 
 # An IPP video compressor, similar to image_IPP.py, but now the blocks
-# can also be I-type in a B-type frame. To decide the type, we compare
+# can also be I-type in a P-type frame. To decide the type, we compare
 # the entropy of the blocks of the residue image resulting from the
 # substraction of the current frame and the current prediction frame,
 # with the entropy of the blocks of the current frame. If for a given
@@ -36,8 +36,8 @@ logger = logging.getLogger(__name__)
 logging.basicConfig(format="[%(filename)s:%(lineno)s %(funcName)s()] %(message)s")
 #logger.setLevel(logging.CRITICAL)
 #logger.setLevel(logging.ERROR)
-#logger.setLevel(logging.WARNING)
-logger.setLevel(logging.INFO)
+logger.setLevel(logging.WARNING)
+#logger.setLevel(logging.INFO)
 #logger.setLevel(logging.DEBUG)
 
 #image_IPP.self = sys.modules[__name__]
@@ -69,7 +69,7 @@ class image_IPP_adaptive_codec(image_IPP.image_IPP_codec):
                 V_k_block_entropy = \
                     self.entropy(V_k[y*block_y_side:(y+1)*block_y_side,
                                      x*block_x_side:(x+1)*block_x_side][..., 0])
-                print(E_k_block_entropy)
+                #print(E_k_block_entropy)
                 if E_k_block_entropy < 1:#106:
                     print('.', end='')
                     self.block_types[y, x] = 2
@@ -77,10 +77,11 @@ class image_IPP_adaptive_codec(image_IPP.image_IPP_codec):
                         x*block_x_side:(x+1)*block_x_side] = 0
                 else:
                     if E_k_block_entropy < V_k_block_entropy:
-                        print('B', end='')
+                        print('P', end='')
                         self.block_types[y, x] = 0
                     else:
                         print('I', end='')
+                        # Replace the block
                         E_k[y*block_y_side:(y+1)*block_y_side,
                             x*block_x_side:(x+1)*block_x_side] = \
                                 V_k[y*block_y_side:(y+1)*block_y_side,
@@ -92,7 +93,7 @@ class image_IPP_adaptive_codec(image_IPP.image_IPP_codec):
         self.T_codec(self.block_types, video, k)
 
         # Regenerate the reconstructed residue using the I-type blocks
-        dequantized_E_k = super().E_codec5(E_k, f"{video}texture_", k, q_step) # (g and h)
+        dequantized_E_k = super().E_codec4(E_k, f"{video}texture_", k, q_step) # (g and h)
 
         reconstructed_V_k = dequantized_E_k + prediction_V_k[:dequantized_E_k.shape[0], :dequantized_E_k.shape[1]] # (i)
         logger.info(f"reconstructed_V_k {reconstructed_V_k.max()} {reconstructed_V_k.min()}")
@@ -109,7 +110,7 @@ class image_IPP_adaptive_codec(image_IPP.image_IPP_codec):
                     self.entropy(V_k[y*block_y_side:(y+1)*block_y_side,
                                      x*block_x_side:(x+1)*block_x_side][..., 0])
                 if E_k_block_entropy < V_k_block_entropy:
-                    print('B', end='')
+                    print('P', end='')
                     self.block_types[y, x] = 0
                 else:
                     print('I', end='')
@@ -120,7 +121,7 @@ class image_IPP_adaptive_codec(image_IPP.image_IPP_codec):
                     prediction_V_k[y*block_y_side:(y+1)*block_y_side,
                                    x*block_x_side:(x+1)*block_x_side] = averages[y, x]
                     self.block_types[y, x] = 1
-            logger.info('')
+            print('')
         self.T_codec(self.block_types, video, k)
 
         # Regenerate the reconstructed residue using the I-type blocks
@@ -159,7 +160,7 @@ class image_IPP_adaptive_codec(image_IPP.image_IPP_codec):
                     prediction_V_k[y*block_y_side:(y+1)*block_y_side,
                                    x*block_x_side:(x+1)*block_x_side] = averages[y, x]
                     self.block_types[y, x] = 1
-            logger.info('')
+            print('')
 
         self.T_codec(self.block_types, video, k)
 
@@ -191,7 +192,7 @@ class image_IPP_adaptive_codec(image_IPP.image_IPP_codec):
     def compute_br(self, prefix, frames_per_second, frame_shape, first_frame, n_frames):
         kbps, bpp , n_bytes = image_IPP.compute_br(prefix, frames_per_second, frame_shape, first_frame, n_frames)
 
-        # I/B-Types.
+        # I/P-Types.
         command = f"cat {prefix}types_???.png | gzip -9 > /tmp/image_IPP_adaptive_types.gz"
         logger.info(command)
         os.system(command)
@@ -459,7 +460,7 @@ class image_IPP_adaptive_codec(image_IPP.image_IPP_codec):
                                            reconstructed_V_k[y*block_y_side:(y+1)*block_y_side,
                                                              x*block_x_side:(x+1)*block_x_side][..., 0])
                         if V_k_block_distortion > reconstructed_V_k_block_distortion:
-                            print('B', end='')
+                            print('P', end='')
                             block_types[y, x] = 0
                         else:
                             print('I', end='')
@@ -533,7 +534,7 @@ class image_IPP_adaptive_codec(image_IPP.image_IPP_codec):
                             entropy(V_k[y*block_y_side:(y+1)*block_y_side,
                                         x*block_x_side:(x+1)*block_x_side][..., 0])
                         if E_k_block_entropy < V_k_block_entropy:
-                            print('B', end='')
+                            print('P', end='')
                             block_types[y, x] = 0
                         else:
                             print('I', end='')
@@ -614,7 +615,7 @@ class image_IPP_adaptive_codec(image_IPP.image_IPP_codec):
                                            reconstructed_V_k[y*block_y_side:(y+1)*block_y_side,
                                                              x*block_x_side:(x+1)*block_x_side][..., 0])
                         if V_k_block_distortion > reconstructed_V_k_block_distortion:
-                            print('B', end='')
+                            print('P', end='')
                             block_types[y, x] = 0
                         else:
                             print('I', end='')
