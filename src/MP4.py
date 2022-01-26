@@ -11,8 +11,8 @@ def encode(video,    # Prefix of the original sequence of PNG images
            q_step):  # Quantization step
     try:
         #command = f"ffmpeg -start_number 0 -y -i {video}%03d.png -c:v libx264rgb -vf format=yuv444p -crf {q_step} -frames:v {n_frames} -g {n_frames} -bf 0 /tmp/output.mp4" # No color transform is used
-        #command = f"ffmpeg -start_number 0 -y -i {video}%03d.png -c:v libx264 -vf format=yuv444p -crf {q_step} -frames:v {n_frames} -g {n_frames} -bf 0 /tmp/output.mp4" # Color transform is used but without chroma subsampling
-        command = f"ffmpeg -start_number {first_frame} -y -i {video}%03d.png -c:v libx264 -vf format=yuv420p -crf {q_step} -frames:v {n_frames} -g {n_frames} -bf 0 /tmp/output.mp4" # Color transform and chroma subsampling
+        command = f"ffmpeg -start_number 0 -y -i {video}%03d.png -c:v libx264 -vf format=yuv444p -crf {q_step} -frames:v {n_frames} -g {n_frames} -bf 0 /tmp/output.mp4" # Color transform is used but without chroma subsampling
+        #command = f"ffmpeg -start_number {first_frame} -y -i {video}%03d.png -c:v libx264 -vf format=yuv420p -crf {q_step} -frames:v {n_frames} -g {n_frames} -bf 0 /tmp/output.mp4" # Color transform and chroma subsampling
         print("running:", command)
         os.system(command)
 
