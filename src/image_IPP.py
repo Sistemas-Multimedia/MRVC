@@ -19,6 +19,7 @@ import image_1
 import colored
 import cv2
 import os
+import subprocess
 import random
 import config
 
@@ -134,7 +135,8 @@ class image_IPP_codec():
         #command = f"ffmpeg -loglevel fatal -y -f concat -safe 0 -i <(for f in {prefix}texture_*.mp4; do echo \"file '$f'\"; done) -crf 0 /tmp/image_IPP_texture.mp4"
         #command = f"ffmpeg -loglevel fatal -y -i {prefix}texture_%03d.png -crf 0 /tmp/image_IPP_texture.mp4"
         print(command)
-        os.system(command)
+        #os.system(command)
+        subprocess.call(["bash", "-c", command])
         texture_bytes = os.path.getsize("/tmp/image_IPP_texture.mp4")
         total_bytes = texture_bytes
         kbps = texture_bytes*8/sequence_time/1000
@@ -172,7 +174,8 @@ class image_IPP_codec():
             '''
         command = f"cat {prefix}motion_y_diff_comp_???.png | gzip -9 > /tmp/image_IPP_motion_y.gz"
         logger.info(command)
-        os.system(command)
+        #os.system(command)
+        subprocess.call(["bash", "-c", command])
         comp_length = os.path.getsize(f"/tmp/image_IPP_motion_y.gz")
         kbps = comp_length*8/sequence_time/1000
         bpp = comp_length*8/(frame_width*frame_height*n_channels*n_frames)
@@ -210,7 +213,8 @@ class image_IPP_codec():
             '''
         command = f"cat {prefix}motion_x_diff_comp_???.png | gzip -9 > /tmp/image_IPP_motion_y.gz"
         logger.info(command)
-        os.system(command)
+        #os.system(command)
+        subprocess.call(["bash", "-c", command])
         comp_length = os.path.getsize(f"/tmp/image_IPP_motion_y.gz")    
         kbps = comp_length*8/sequence_time/1000
         bpp = comp_length*8/(frame_width*frame_height*n_channels*n_frames)
@@ -228,8 +232,14 @@ class image_IPP_codec():
         to_write = YUV.to_RGB(V_k).astype(np.uint8)
         logger.info(f"image_IPP.I_codec: max={to_write.max()} min={to_write.min()} type={to_write.dtype}")
         frame_3.write(to_write, prefix + "before_", k)
-        os.system(f"ffmpeg -loglevel fatal -y -i {prefix}before_{k:03d}.png -c:v libx264 -vf format=yuv420p -crf {q_step} {prefix}{k:03d}.mp4")
-        os.system(f"ffmpeg -loglevel fatal -y -i {prefix}{k:03d}.mp4 {prefix}{k:03d}.png")
+        #os.system(f"ffmpeg -loglevel fatal -y -i {prefix}before_{k:03d}.png -c:v libx264 -vf format=yuv420p -crf {q_step} {prefix}{k:03d}.mp4")
+        command = f"ffmpeg -loglevel fatal -y -i {prefix}before_{k:03d}.png -c:v libx264 -vf format=yuv420p -crf {q_step} {prefix}{k:03d}.mp4"
+        print(command)
+        subprocess.call(["bash", "-c", command])
+        #os.system(f"ffmpeg -loglevel fatal -y -i {prefix}{k:03d}.mp4 {prefix}{k:03d}.png")
+        command = f"ffmpeg -loglevel fatal -y -i {prefix}{k:03d}.mp4 {prefix}{k:03d}.png"
+        print(command)
+        subprocess.call(["bash", "-c", command])
         from_read = frame_3.read(prefix, k)
         dq_V_k = YUV.from_RGB(from_read.astype(np.int16))
         #return dq_E_k.astype(np.float64)
@@ -253,10 +263,16 @@ class image_IPP_codec():
         frame_3.write(to_write, prefix + "before_", k)
         #os.system(f"ffmpeg -loglevel fatal -y -i {prefix}_to_mp4_{k:03d}.png -crf {q_step} {prefix}_{k:03d}.mp4")
         #os.system(f"ffmpeg -loglevel fatal -y -i {prefix}before_{k:03d}.png -crf {q_step} {prefix}{k:03d}.mp4")
-        os.system(f"ffmpeg -loglevel fatal -y -i {prefix}before_{k:03d}.png -c:v libx264 -vf format=yuv420p -crf {q_step} -flags -loop {prefix}{k:03d}.mp4")
-
+        #os.system(f"ffmpeg -loglevel fatal -y -i {prefix}before_{k:03d}.png -c:v libx264 -vf format=yuv420p -crf {q_step} -flags -loop {prefix}{k:03d}.mp4")
+        command = f"ffmpeg -loglevel fatal -y -i {prefix}before_{k:03d}.png -c:v libx264 -vf format=yuv420p -crf {q_step} -flags -loop {prefix}{k:03d}.mp4"
+        print(command)
+        subprocess.call(["bash", "-c", command])
         #os.system(f"ffmpeg -loglevel fatal -y -i {prefix}_{k:03d}.mp4 {prefix}_from_mp4_{k:03d}.png")
-        os.system(f"ffmpeg -loglevel fatal -y -i {prefix}{k:03d}.mp4 {prefix}{k:03d}.png")
+        #os.system(f"ffmpeg -loglevel fatal -y -i {prefix}{k:03d}.mp4 {prefix}{k:03d}.png")
+        command = f"ffmpeg -loglevel fatal -y -i {prefix}{k:03d}.mp4 {prefix}{k:03d}.png"
+        print(command)
+        subprocess.call(["bash", "-c", command])
+        
         dq_E_k = (YUV.from_RGB(frame_3.read(prefix, k).astype(np.int16) - offset))
         logger.info("image_IPP.E_codec: deQ error YUV", dq_E_k.max(), dq_E_k.min(), dq_E_k.dtype)    
         #dq_E_k = Q.dequantize(dq_E_k, 4)
@@ -275,10 +291,17 @@ class image_IPP_codec():
         frame_3.write(to_write, prefix + "before_", k)
         #os.system(f"ffmpeg -loglevel fatal -y -i {prefix}_to_mp4_{k:03d}.png -crf {q_step} {prefix}_{k:03d}.mp4")
         #os.system(f"ffmpeg -loglevel fatal -y -i {prefix}before_{k:03d}.png -crf {q_step} {prefix}{k:03d}.mp4")
-        os.system(f"ffmpeg -loglevel fatal -y -i {prefix}before_{k:03d}.png -c:v libx264 -vf format=yuv420p -crf {q_step} -flags -loop {prefix}{k:03d}.mp4")
+        #os.system(f"ffmpeg -loglevel fatal -y -i {prefix}before_{k:03d}.png -c:v libx264 -vf format=yuv420p -crf {q_step} -flags -loop {prefix}{k:03d}.mp4")
+        command = f"ffmpeg -loglevel fatal -y -i {prefix}before_{k:03d}.png -c:v libx264 -vf format=yuv420p -crf {q_step} -flags -loop {prefix}{k:03d}.mp4"
+        print(command)
+        subprocess.call(["bash", "-c", command])
 
         #os.system(f"ffmpeg -loglevel fatal -y -i {prefix}_{k:03d}.mp4 {prefix}_from_mp4_{k:03d}.png")
-        os.system(f"ffmpeg -loglevel fatal -y -i {prefix}{k:03d}.mp4 {prefix}{k:03d}.png")
+        #os.system(f"ffmpeg -loglevel fatal -y -i {prefix}{k:03d}.mp4 {prefix}{k:03d}.png")
+        command = f"ffmpeg -loglevel fatal -y -i {prefix}{k:03d}.mp4 {prefix}{k:03d}.png"
+        print(command)
+        subprocess.call(["bash", "-c", command])
+        
         dq_E_k = (YUV.from_RGB(frame_3.read(prefix, k).astype(np.int16) - offset))
         logger.info("image_IPP.E_codec: deQ error YUV", dq_E_k.max(), dq_E_k.min(), dq_E_k.dtype)    
         #dq_E_k = Q.dequantize(dq_E_k, 4)
@@ -298,10 +321,17 @@ class image_IPP_codec():
 
         #os.system(f"ffmpeg -loglevel fatal -y -i {prefix}_to_mp4_{k:03d}.png -crf {q_step} {prefix}_{k:03d}.mp4")
         #os.system(f"ffmpeg -loglevel fatal -y -i {prefix}before_{k:03d}.png -crf {q_step} {prefix}{k:03d}.mp4")
-        os.system(f"ffmpeg -loglevel fatal -y -i {prefix}before_{k:03d}.png -c:v libx264rgb -vf format=yuv444p -crf {q_step} -flags -loop {prefix}{k:03d}.mp4")
+        #os.system(f"ffmpeg -loglevel fatal -y -i {prefix}before_{k:03d}.png -c:v libx264rgb -vf format=yuv444p -crf {q_step} -flags -loop {prefix}{k:03d}.mp4")
+        command = f"ffmpeg -loglevel fatal -y -i {prefix}before_{k:03d}.png -c:v libx264rgb -vf format=yuv444p -crf {q_step} -flags -loop {prefix}{k:03d}.mp4"
+        print(command)
+        subprocess.call(["bash", "-c", command])
         #os.system(f"ffmpeg -y -i {prefix}before_{k:03d}.png -crf {q_step} -flags -loop {prefix}{k:03d}.mp4")
         #os.system(f"ffmpeg -loglevel fatal -y -i {prefix}_{k:03d}.mp4 {prefix}_from_mp4_{k:03d}.png")
-        os.system(f"ffmpeg -loglevel fatal -y -i {prefix}{k:03d}.mp4 {prefix}{k:03d}.png")
+        #os.system(f"ffmpeg -loglevel fatal -y -i {prefix}{k:03d}.mp4 {prefix}{k:03d}.png")
+        command = f"ffmpeg -loglevel fatal -y -i {prefix}{k:03d}.mp4 {prefix}{k:03d}.png"
+        print(command)
+        subprocess.call(["bash", "-c", command])
+        
         #dq_E_k = (YUV.from_RGB(frame_3.read(prefix, k).astype(np.int16) - 256))
         dq_E_k = frame_3.read(prefix, k)
         logger.info("image_IPP.E_codec: deQ error RGB", dq_E_k.max(), dq_E_k.min(), dq_E_k.dtype)    
@@ -359,8 +389,16 @@ class image_IPP_codec():
         #print("error", E_k.max(), E_k.min())
         #frame_3.write(clip(YUV.to_RGB(E_k)), prefix + "_to_mp4", k)
         frame_3.write(YUV.to_RGB(E_k), prefix + "before_", k)
-        os.system(f"ffmpeg -loglevel fatal -y -i {prefix}before_{k:03d}.png -crf {q_step} {prefix}{k:03d}.mp4")
-        os.system(f"ffmpeg -loglevel fatal -y -i {prefix}{k:03d}.mp4 {prefix}{k:03d}.png")
+        #os.system(f"ffmpeg -loglevel fatal -y -i {prefix}before_{k:03d}.png -crf {q_step} {prefix}{k:03d}.mp4")
+        command = f"ffmpeg -loglevel fatal -y -i {prefix}before_{k:03d}.png -crf {q_step} {prefix}{k:03d}.mp4"
+        print(command)
+        subprocess.call(["bash", "-c", command])
+        
+        #os.system(f"ffmpeg -loglevel fatal -y -i {prefix}{k:03d}.mp4 {prefix}{k:03d}.png")
+        command = f"ffmpeg -loglevel fatal -y -i {prefix}{k:03d}.mp4 {prefix}{k:03d}.png"
+        print(command)
+        subprocess.call(["bash", "-c", command])
+        
         dq_E_k = (YUV.from_RGB(frame_3.read(prefix, k)))
         #return dq_E_k.astype(np.float64)
         return dq_E_k
@@ -441,8 +479,16 @@ class image_IPP_codec():
         print("error", E_k.max(), E_k.min())
         image_3.write(YUV.to_RGB(E_k), prefix + "_to_mp4", k)
         #frame_3.write(YUV.to_RGB(E_k), prefix + "_to_mp4", k)
-        os.system(f"ffmpeg -loglevel fatal -y -i {prefix}_to_mp4_{k:03d}.png -crf 1 {prefix}_{k:03d}.mp4")
-        os.system(f"ffmpeg -loglevel fatal -y -i {prefix}_{k:03d}.mp4 {prefix}_from_mp4_{k:03d}.png")
+        #os.system(f"ffmpeg -loglevel fatal -y -i {prefix}_to_mp4_{k:03d}.png -crf 1 {prefix}_{k:03d}.mp4")
+        command = f"ffmpeg -loglevel fatal -y -i {prefix}_to_mp4_{k:03d}.png -crf 1 {prefix}_{k:03d}.mp4"
+        print(command)
+        subprocess.call(["bash", "-c", command])
+        
+        #os.system(f"ffmpeg -loglevel fatal -y -i {prefix}_{k:03d}.mp4 {prefix}_from_mp4_{k:03d}.png")
+        command = f"ffmpeg -loglevel fatal -y -i {prefix}_{k:03d}.mp4 {prefix}_from_mp4_{k:03d}.png"
+        print(command)
+        subprocess.call(["bash", "-c", command])
+        
         dq_E_k = YUV.from_RGB(image_3.read(prefix + "_from_mp4", k))
         #dq_E_k = (YUV.from_RGB(frame_3.read(prefix + "_from_mp4", k)))
         return dq_E_k.astype(np.float64)
@@ -459,14 +505,14 @@ class image_IPP_codec():
         #os.system(f"ffmpeg -f concat -safe 0 -i <(for f in {prefix}_*.mp4; do echo \"file '$PWD/$f'\"; done) -c copy /tmp/image_IPP_texture.mp4")
         command = f"ffmpeg -loglevel fatal -y -f concat -safe 0 -i <(for f in {prefix}texture_*.mp4; do echo \"file '$f'\"; done) -c copy /tmp/image_IPP_texture.mp4"
         print(command)
-        os.system(command)
+        subprocess.call(["bash", "-c", command])
         #print(f"ffmpeg -loglevel fatal -y -i {prefix}motion_y_%03d.png -c:v libx264 -x264-params keyint=1 -crf 0 /tmp/image_IPP_motion_y.mp4")
         command = f"ffmpeg -loglevel fatal -y -i {prefix}motion_y_%03d.png -c:v libx264 -x264-params keyint=1 -crf 0 /tmp/image_IPP_motion_y.mp4"
         print(command)
-        os.system(command)
+        subprocess.call(["bash", "-c", command])
         command = f"ffmpeg -loglevel fatal -y -i {prefix}motion_x_%03d.png -c:v libx264 -x264-params keyint=1 -crf 0 /tmp/image_IPP_motion_x.mp4"
         print(command)
-        os.system(command)
+        subprocess.call(["bash", "-c", command])
 
         frame_height = frame_shape[0]
         frame_width = frame_shape[1]
