@@ -71,7 +71,7 @@ class image_IPP_adaptive_codec(image_IPP.image_IPP_codec):
                                      x*block_x_side:(x+1)*block_x_side][..., 0])
                 #print(E_k_block_entropy)
                 if E_k_block_entropy < 5:#106:
-                    print('.', end='')
+                    print('.', end='') # Skipped
                     self.block_types[y, x] = 2
                     E_k[y*block_y_side:(y+1)*block_y_side,
                         x*block_x_side:(x+1)*block_x_side] = 0
