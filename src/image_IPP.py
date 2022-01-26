@@ -52,69 +52,52 @@ class image_IPP_codec():
     
     def encode(self,
                video,    # Prefix of the original sequence of PNG images
-               first_frame,
-               n_frames, # Number of frames to process
-               q_step):  # Quantization step
+               first_frame = 0,
+               n_frames = 16, # Number of frames to process
+               q_step = 1):  # Quantization step
         try:
             k = 0
-            W_k = frame_3.read(video, k).astype(np.int16)
+            V_k = frame_3.read(video, k).astype(np.int16)
             #flow = np.zeros((W_k.shape[0], W_k.shape[1], 2), dtype=np.float32)
-            self.create_structures(W_k, image_IPP_codec.block_y_side, image_IPP_codec.block_x_side)
-            V_k = YUV.from_RGB(W_k) # (a)
-            V_k_1 = V_k # (b)
-            E_k = V_k # (f)
-            #frame_3.debug_write(YUV.to_RGB(E_k), f"{video}_prediction_error", k)
-            #dequantized_E_k = E_codec(E_k, N_LEVELS, q_step, codestream, 0) # (g and h)
-            dequantized_E_k = self.I_codec(V_k, f"{video}texture_", first_frame, q_step) # (g and h)
-            reconstructed_V_k = dequantized_E_k # (i)
+            self.create_structures(V_k, image_IPP_codec.block_y_side, image_IPP_codec.block_x_side)
+            W_k = YUV.from_RGB(V_k) # (a)
+            W_k_1 = W_k # (b)
+            E_k = W_k # (f)
+            dequantized_E_k = self.I_codec(E_k, f"{video}texture_", first_frame, q_step) # (g and h)
+            reconstructed_W_k = dequantized_E_k # (i)
             if __debug__:
-                frame_3.write(self.clip(YUV.to_RGB(reconstructed_V_k)), f"{video}reconstructed_", k) # Decoder's output
-            reconstructed_V_k_1 = reconstructed_V_k # (j)
+                frame_3.write(self.clip(YUV.to_RGB(dequantized_E_k)), f"{video}reconstructed_", k) # Decoder's output
+            reconstructed_W_k_1 = reconstructed_W_k # (j)
             for k in range(first_frame + 1, first_frame + n_frames):
-                W_k = frame_3.read(video, k).astype(np.int16)
-                V_k = YUV.from_RGB(W_k) # (a)
-                averages = self.compute_averages(V_k, image_IPP_codec.block_y_side, image_IPP_codec.block_x_side)
-                logger.info("V_k", V_k[...,2].max(), V_k[...,2].min())
-                #flow = motion.estimate(V_k[...,0], V_k_1[...,0], flow) # (c)
-                #initial_flow = np.zeros((V_k.shape[0], V_k.shape[1], 2), dtype=np.float32)
-                flow = motion.Farneback_ME(V_k[...,0], V_k_1[...,0], self.initial_flow) # (c)
-                #flow = motion.full_search_motion_estimation(V_k[...,0], V_k_1[...,0])
-                #flow = np.rint(flow)
-                #flow = np.random.randint(-1, 1, flow.shape).astype(np.float32)
-                #print("flow.dtype=", flow.dtype, "flow.max()=", flow.max(), "flow.min()=", flow.min())
+                V_k = frame_3.read(video, k).astype(np.int16)
+                W_k = YUV.from_RGB(V_k) # (a)
+                averages = self.compute_averages(W_k, image_IPP_codec.block_y_side, image_IPP_codec.block_x_side)
+                logger.info("W_k", W_k[...,2].max(), W_k[...,2].min())
+                flow = motion.Farneback_ME(W_k[...,0], W_k_1[...,0], self.initial_flow) # (c)
                 logger.info("COMPUTED flow", flow.max(), flow.min())
-                V_k_1 = V_k # (b)
+                W_k_1 = W_k # (b)
                 reconstructed_flow = self.V_codec(flow, self.log2_block_side, f"{video}motion_", k) # (d and e)
                 logger.info("USED flow", reconstructed_flow.max(), reconstructed_flow.min())
-                #frame_3.debug_write(motion.colorize(flow), f"{codestream}flow", k)
-                #frame_3.debug_write(motion.colorize(reconstructed_flow.astype(np.float32)), f"{codestream}reconstructed_flow", k)
-                #prediction_V_k = motion.make_prediction(reconstructed_V_k_1, reconstructed_flow).astype(np.int16) # (j)
-                prediction_V_k = motion.make_prediction(reconstructed_V_k_1, reconstructed_flow) # (j)
+                prediction_W_k = motion.make_prediction(reconstructed_W_k_1, reconstructed_flow) # (j)
                 if __debug__:
-                    frame_3.write(self.clip(YUV.to_RGB(prediction_V_k)), f"{video}prediction_", k)
-                E_k = V_k - prediction_V_k[:V_k.shape[0], :V_k.shape[1], :] # (f)
+                    frame_3.write(self.clip(YUV.to_RGB(prediction_W_k)), f"{video}prediction_", k)
+                E_k = W_k - prediction_W_k[:W_k.shape[0], :W_k.shape[1], :] # (f)
                 if __debug__:
                     frame_3.write(self.clip(YUV.to_RGB(E_k)+128), f"{video}prediction_error_", k)
-                #dequantized_E_k = E_codec(E_k, 5, q_step, codestream, k) # (g and h)
                 dequantized_E_k = self.E_codec4(E_k, f"{video}texture_", k, q_step) # (g and h)
-                #print(dequantized_E_k.dtype, dequantized_E_k.shape)
-                #quantized_E_k = Q.quantize(E_k, step=q_step) # (e)
-                #dequantized_E_k = Q.dequantize(quantized_E_k, step=q_step) # (f)
                 if __debug__:
                     frame_3.write(self.clip(YUV.to_RGB(dequantized_E_k) + 128), f"{video}dequantized_prediction_error_", k)
-                reconstructed_V_k = dequantized_E_k + prediction_V_k[:dequantized_E_k.shape[0], :dequantized_E_k.shape[1], :] # (i)
-                #print(reconstructed_V_k.dtype, reconstructed_V_k.shape)
-                #frame_3.write(reconstructed_V_k, video + "reconstructed", k)
-                reconstructed_V_k = self.decide_types(video, k, q_step, V_k, reconstructed_V_k, E_k, prediction_V_k, image_IPP_codec.block_y_side, image_IPP_codec.block_x_side, averages)
+                reconstructed_V_k = dequantized_E_k + prediction_W_k[:dequantized_E_k.shape[0], :dequantized_E_k.shape[1], :] # (i)
+                reconstructed_V_k = self.decide_types(video, k, q_step, W_k, reconstructed_W_k, E_k, prediction_W_k, image_IPP_codec.block_y_side, image_IPP_codec.block_x_side, averages)
                 if __debug__:
-                    frame_3.write(self.clip(YUV.to_RGB(reconstructed_V_k)), f"{video}reconstructed_", k) # Decoder's output
-                reconstructed_V_k_1 = reconstructed_V_k # (j)
+                    frame_3.write(self.clip(YUV.to_RGB(reconstructed_W_k)), f"{video}reconstructed_", k) # Decoder's output
+                reconstructed_W_k_1 = reconstructed_W_k # (k)
         except:
             print(colored.fore.RED + f'image_IPP.encode(video="{video}", first_frame={first_frame}, n_frames={n_frames}, q_step={q_step})')
             raise
 
-    def create_structures(self, W_k, block_y_side, block_x_side):
-        self.initial_flow = np.zeros((W_k.shape[0], W_k.shape[1], 2), dtype=np.float32)
+    def create_structures(self, V_k, block_y_side, block_x_side):
+        self.initial_flow = np.zeros((V_k.shape[0], V_k.shape[1], 2), dtype=np.float32)
 
     def compute_averages(self, V_k, block_y_side, block_x_side):
         pass
@@ -228,8 +211,8 @@ class image_IPP_codec():
 
         return kbps, bpp, total_bytes
 
-    def I_codec(self, V_k, prefix, k, q_step):
-        to_write = YUV.to_RGB(V_k).astype(np.uint8)
+    def I_codec(self, W_k, prefix, k, q_step):
+        to_write = YUV.to_RGB(W_k).astype(np.uint8)
         logger.info(f"image_IPP.I_codec: max={to_write.max()} min={to_write.min()} type={to_write.dtype}")
         frame_3.write(to_write, prefix + "before_", k)
         #os.system(f"ffmpeg -loglevel fatal -y -i {prefix}before_{k:03d}.png -c:v libx264 -vf format=yuv420p -crf {q_step} {prefix}{k:03d}.mp4")
@@ -255,15 +238,9 @@ class image_IPP_codec():
         offset = 128
         logger.info("image_IPP.E_codec: q_step", q_step)
         logger.info("image_IPP.E_codec: error", E_k.max(), E_k.min(), E_k.dtype)
-        #frame_3.write(clip(YUV.to_RGB(E_k)), prefix + "_to_mp4", k)
-        #frame_3.write(clip(YUV.to_RGB(E_k)+128), prefix + "_to_mp4_", k)
-        #E_k = Q.quantize(E_k, 4)
         to_write = self.clip(YUV.to_RGB(E_k) + offset)
         logger.info(f"image_IPP.E_codec: max={to_write.max()} min={to_write.min()} type={to_write.dtype}")
         frame_3.write(to_write, prefix + "before_", k)
-        #os.system(f"ffmpeg -loglevel fatal -y -i {prefix}_to_mp4_{k:03d}.png -crf {q_step} {prefix}_{k:03d}.mp4")
-        #os.system(f"ffmpeg -loglevel fatal -y -i {prefix}before_{k:03d}.png -crf {q_step} {prefix}{k:03d}.mp4")
-        #os.system(f"ffmpeg -loglevel fatal -y -i {prefix}before_{k:03d}.png -c:v libx264 -vf format=yuv420p -crf {q_step} -flags -loop {prefix}{k:03d}.mp4")
         command = f"ffmpeg -loglevel fatal -y -i {prefix}before_{k:03d}.png -c:v libx264 -vf format=yuv420p -crf {q_step} -flags -loop {prefix}{k:03d}.mp4"
         print(command)
         subprocess.call(["bash", "-c", command])
@@ -346,9 +323,7 @@ class image_IPP_codec():
         return dq_E_k
 
     def V_codec(self, motion, n_levels, prefix, frame_number):
-        #print(prefix+"_y")
         pyramid = LP.analyze(motion, n_levels)
-        #pyramid[0][:,:,:] = 0
         image_1.write((pyramid[0][...,0].astype(np.int16) + 128).astype(np.uint16), prefix + "y_", frame_number)
         image_1.write((pyramid[0][...,1].astype(np.int16) + 128).astype(np.uint16), prefix + "x_", frame_number)
         for resolution in pyramid[1:]:
