@@ -208,7 +208,7 @@ class image_IPP_codec():
         return kbps, bpp, total_bytes
 
     def I_codec(self, V_k, prefix, k, q_step, blocks_in_y, blocks_in_x):
-        '''Encode a I-frame. Blocks are DCT-ed and quantized using <q_step>. Because the DCT is orthogonal, we can compute the distortion of the dequantized block directly in the DCT domain. However, because the block need to be detransformed in order to generate the reconstructed frame, the distortion is computed in the image domain. The rate is the entropy of the quantized block in the DCT domain.'''
+        '''Encode a I-frame. Blocks are DCT-ed and quantized using <q_step>. Because the DCT is orthogonal, we can compute the distortion of the dequantized block directly in the DCT domain. However, because the blocks need to be detransformed in order to generate the reconstructed frame, the distortion is computed in the image domain. The rate is the entropy of the quantized block in the DCT domain.'''
         block_slopes = np.array(shape=(blocks_in_y, blocks_in_x), dtype=np.float32)
         block_Q_step = np.full(shape=(blocks_in_y, blocks_in_x), fill_value=32, dtype=np.uint8)
 

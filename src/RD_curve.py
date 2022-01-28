@@ -7,9 +7,16 @@ import config
 import distortion
 import image_3 as frame
 
+if config.temporal_codec == "image_IPP":
+    import image_IPP as codec
+if config.temporal_codec == "image_IPP_adaptive":
+    import image_IPP_adaptive as codec
+if config.temporal_codec == "MP4":
+    import MP4 as codec
+
 # --> Select below the codec. <--
 #import image_interpolated_IPP as codec
-import image_IPP as codec
+#import image_IPP as codec
 #import image_IPP_adaptive as codec
 #import image_IPP_quantized_prediction as codec
 #import image_IPP_quantized_residue as codec
@@ -62,7 +69,7 @@ def AMSE(x_prefix, y_prefix, first_frame, n_images):
     logger.info("Average Mean Square Error (entire sequence) =", _AMSE)
     return _AMSE
 
-Q_steps = range(21, 42, 3)
+Q_steps = range(config.lowest_Q_step, config.highest_Q_step, config.step_Q_step)
 
 #for q_step in range(41, 42, 1):
 for q_step in Q_steps:
