@@ -103,6 +103,114 @@ class image_IPP_codec():
         return reconstructed_V_k
 
     def compute_br(self, prefix, frames_per_second, frame_shape, first_frame, n_frames):
+        if config.spatial_codec == "MP4":
+            return self.compute_br_MP4(prefix, frames_per_second, frame_shape, first_frame, n_frames)
+        elif config.spatial_codec == "DCT":
+            return self.compute_br_DCT(prefix, frames_per_second, frame_shape, first_frame, n_frames)
+
+    def compute_br_DCT(self, prefix, frames_per_second, frame_shape, first_frame, n_frames):
+
+        frame_height = frame_shape[0]
+        frame_width = frame_shape[1]
+        n_channels = frame_shape[2]
+        sequence_time = n_frames/frames_per_second
+        logger.info(f"height={frame_height} width={frame_width} n_channels={n_channels} sequence_time={sequence_time}")
+
+        # Texture.
+        texture_bytes = 0
+        for k in range(first_frame, first_frame + n_frames):
+            texture_bytes += os.path.getsize(f"{prefix}texture_{k:03d}.png")
+        total_bytes = texture_bytes
+        kbps = texture_bytes*8/sequence_time/1000
+        bpp = texture_bytes*8/(frame_width*frame_height*n_channels*n_frames)
+        logger.info(f"texture: {texture_bytes} bytes, {kbps} KBPS, {bpp} BPP")
+
+        # Motion. Y component.
+        prev_comp = image_1.read(prefix + "motion_y_", 1).astype(np.int16) - 128
+        #prev_fn = f"{prefix}motion_y_001.png"
+        #comp_length = os.path.getsize(prev_fn)
+        for k in range(first_frame + 2, first_frame + n_frames):
+            next_comp = image_1.read(prefix + "motion_y_", k).astype(np.int16) + 128 # Sobra astype
+            #next_fn = f"{prefix}motion_y_{k:03d}.png"
+            diff_comp = next_comp - prev_comp
+            image_1.write((diff_comp.astype(np.int16) + 128).astype(np.uint16), prefix + "motion_y_diff_comp_", k)
+            #comp_length += os.path.getsize(f"{prefix}motion_y_diff_comp_{k:03d}.png")
+            '''
+            # Count the number of common bytes starting and the beginning.
+            counter = -2 # 2 bytes for representing the header size.
+            with open(prev_fn, "rb") as prev_f, open(next_fn, "rb") as next_f:
+                while True:
+                    prev_byte = prev_f.read(1)
+                    next_byte = next_f.read(1)
+                    if prev_byte != next_byte:
+                        break
+                    if prev_byte == b'':
+                        break
+                    if next_byte == b'':
+                        break
+                    #print(".", end='')
+                    counter += 1
+            comp_length -= counter
+            #print("counter =", counter)
+            prev_comp = next_comp
+            '''
+        command = f"cat {prefix}motion_y_diff_comp_???.png | gzip -9 > /tmp/image_IPP_motion_y.gz"
+        logger.debug(command)
+        #os.system(command)
+        subprocess.call(["bash", "-c", command])
+        comp_length = os.path.getsize(f"/tmp/image_IPP_motion_y.gz")
+        kbps = comp_length*8/sequence_time/1000
+        bpp = comp_length*8/(frame_width*frame_height*n_channels*n_frames)
+        logger.info(f"motion (Y direction): {comp_length} bytes, {kbps} KBPS, {bpp} BPP")
+        total_bytes += comp_length
+
+        # Motion. X component.
+        prev_comp = image_1.read(prefix + "motion_x_", 1).astype(np.int16) - 128
+        prev_fn = f"{prefix}motion_x_001.png"
+        #comp_length = os.path.getsize(prev_fn)
+        for k in range(first_frame + 2, first_frame + n_frames):
+            next_comp = image_1.read(prefix + "motion_x_", k).astype(np.int16) - 128
+            #next_fn = f"{prefix}motion_x_{k:03d}.png"
+            diff_comp = next_comp - prev_comp
+            image_1.write((diff_comp.astype(np.int16) + 128).astype(np.uint16), prefix + "motion_x_diff_comp_", k)
+            #comp_length += os.path.getsize(f"{prefix}motion_x_diff_comp_{k:03d}.png")
+            '''
+            # Count the number of common bytes starting and the beginning.
+            counter = -2
+            with open(prev_fn, 'rb') as prev_f, open(next_fn, 'rb') as next_f:
+                while True:
+                    prev_byte = prev_f.read(1)
+                    next_byte = next_f.read(1)
+                    #print(prev_byte, next_byte)
+                    if prev_byte != next_byte:
+                        break
+                    if prev_byte == b'':
+                        break
+                    if next_byte == b'':
+                        break
+                    counter += 1
+            comp_length -= counter
+            print("counter =", counter)
+            prev_comp = next_comp
+            '''
+        command = f"cat {prefix}motion_x_diff_comp_???.png | gzip -9 > /tmp/image_IPP_motion_y.gz"
+        logger.debug(command)
+        #os.system(command)
+        subprocess.call(["bash", "-c", command])
+        comp_length = os.path.getsize(f"/tmp/image_IPP_motion_y.gz")    
+        kbps = comp_length*8/sequence_time/1000
+        bpp = comp_length*8/(frame_width*frame_height*n_channels*n_frames)
+        logger.info(f"motion (X direction): {comp_length} bytes, {kbps} KBPS, {bpp} BPP")
+        total_bytes += comp_length
+
+        # Totals.
+        kbps = total_bytes*8/sequence_time/1000
+        bpp = total_bytes*8/(frame_width*frame_height*n_channels*n_frames)
+        #print(f"total: {kbps} KBPS, {bpp} BPP")
+
+        return kbps, bpp, total_bytes
+
+    def compute_br_MP4(self, prefix, frames_per_second, frame_shape, first_frame, n_frames):
 
         frame_height = frame_shape[0]
         frame_width = frame_shape[1]
