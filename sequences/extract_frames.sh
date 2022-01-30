@@ -55,11 +55,11 @@ done
 
 #source $sequence/runme.sh
 
-if test -f "$sequence/$sequence"; then
-    echo "$FILE exists. Only extracting ..."
+if test -f "$HOME/MRVC/sequences/$sequence"; then
+    echo "$HOME/MRVC/sequences/$sequence exists. Only extracting ..."
 else
-    echo "Extracting ..."
-    wget $input_prefix/$sequence --directory-prefix=~/MRVC/sequences/
+    echo "Downloading ..."
+    wget $input_prefix/$sequence --directory-prefix=$HOME/MRVC/sequences
 fi
 
-ffmpeg -i ~/MRVC/sequences/$sequence -start_number 0 -frames:v $number_of_frames ${output_prefix}%03d.png
+ffmpeg -i $HOME/MRVC/sequences/$sequence -start_number 0 -frames:v $number_of_frames ${output_prefix}%03d.png
