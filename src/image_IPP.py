@@ -82,7 +82,7 @@ class image_IPP_codec():
                 E_k = W_k - prediction_W_k[:W_k.shape[0], :W_k.shape[1], :] # (f)
                 if __debug__:
                     frame_3.write(self.clip(YUV.to_RGB(E_k) + 128), f"{video}prediction_error_", k)
-                dequantized_E_k = self.E_codec4(E_k, f"{video}texture_", k, 128) # (g and h)
+                dequantized_E_k = self.E_codec4(E_k, f"{video}texture_", k, q_step) # (g and h)
                 if __debug__:
                     frame_3.write(self.clip(YUV.to_RGB(dequantized_E_k) + 128), f"{video}dequantized_prediction_error_", k)
                 reconstructed_W_k = dequantized_E_k + prediction_W_k[:dequantized_E_k.shape[0], :dequantized_E_k.shape[1], :] # (i)

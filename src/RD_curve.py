@@ -14,15 +14,6 @@ if config.temporal_codec == "image_IPP_adaptive":
 if config.temporal_codec == "MP4":
     import MP4 as codec
 
-# --> Select below the codec. <--
-#import image_interpolated_IPP as codec
-#import image_IPP as codec
-#import image_IPP_adaptive as codec
-#import image_IPP_quantized_prediction as codec
-#import image_IPP_quantized_residue as codec
-#import MP4 as codec
-#import IPP_compressor as codec
-
 import logging
 logger = logging.getLogger(__name__)
 logging.basicConfig(format="[%(filename)s:%(lineno)s %(funcName)s() %(levelname)s] %(message)s")
