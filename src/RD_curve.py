@@ -19,18 +19,19 @@ if config.temporal_codec == "MP4":
 #import image_IPP as codec
 #import image_IPP_adaptive as codec
 #import image_IPP_quantized_prediction as codec
-import image_IPP_quantized_residue as codec
+#import image_IPP_quantized_residue as codec
 #import MP4 as codec
 #import IPP_compressor as codec
 
 import logging
 logger = logging.getLogger(__name__)
-logging.basicConfig(format="[%(filename)s:%(lineno)s %(funcName)s()] %(message)s")
-#logger.setLevel(logging.CRITICAL)
-#logger.setLevel(logging.ERROR)
-logger.setLevel(logging.WARNING)
-#logger.setLevel(logging.INFO)
-#logger.setLevel(logging.DEBUG)
+logging.basicConfig(format="[%(filename)s:%(lineno)s %(funcName)s() %(levelname)s] %(message)s")
+##logger.setLevel(logging.CRITICAL)
+##logger.setLevel(logging.ERROR)
+#logger.setLevel(logging.WARNING)
+logger.setLevel(logging.INFO)
+##logger.setLevel(logging.DEBUG)
+#logging.basicConfig(format="[%(filename)s:%(lineno)s %(levelname)s %(funcName)s()] %(message)s", level=logging.INFO)
 
 import argparse
 parser = argparse.ArgumentParser()
@@ -47,11 +48,11 @@ else:
     reconstructed_video = video + "reconstructed_"
 
 first_frame = args.first_frame
-logger.info(f"first_frame={first_frame}")
+logging.info(f"first_frame={first_frame}")
     
 # Number of frames to process.
 n_frames = args.N_frames
-logger.info(f"N_frames={n_frames}")
+logging.info(f"N_frames={n_frames}")
 
 # Frames Per Second.
 FPS = 30
@@ -63,18 +64,16 @@ def AMSE(x_prefix, y_prefix, first_frame, n_images):
         x = frame.read(x_prefix, k)
         y = frame.read(y_prefix, k)
         _AMSE = distortion.MSE(x, y)
-        logger.info(f"AMSE of image {k} = {_AMSE}")
+        logging.info(f"AMSE of image {k} = {_AMSE}")
         total_AMSE += _AMSE
     _AMSE = total_AMSE/n_images
-    logger.info("Average Mean Square Error (entire sequence) =", _AMSE)
+    logging.info("Average Mean Square Error (entire sequence) =", _AMSE)
     return _AMSE
 
-Q_steps = range(config.lowest_Q_step, config.highest_Q_step, config.step_Q_step)
-
-#for q_step in range(41, 42, 1):
-for q_step in Q_steps:
+for q_step in config.Q_steps:
 
     codec.encode(video, first_frame, n_frames, q_step)
     kbps, bpp, n_bytes = codec.compute_br(video, FPS, frame.get_shape(video), first_frame, n_frames)
     _distortion = AMSE(video, reconstructed_video, first_frame, n_frames)
+    # Don't use logging here!
     print("Q_step:", q_step, "BPP:", bpp, "KBPS:", kbps, "Average AMSE:", _distortion)

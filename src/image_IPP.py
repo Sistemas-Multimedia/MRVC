@@ -31,12 +31,12 @@ if config.spatial_codec == "DCT":
 
 import logging
 logger = logging.getLogger(__name__)
-logging.basicConfig(format="[%(filename)s:%(lineno)s %(funcName)s()] %(message)s")
-#logger.setLevel(logging.CRITICAL)
-#logger.setLevel(logging.ERROR)
-#logger.setLevel(logging.WARNING)
-logger.setLevel(logging.INFO)
-#logger.setLevel(logging.DEBUG)
+#logging.basicConfig(format="[%(filename)s:%(lineno)s %(levelname)s probando %(funcName)s()] %(message)s")
+##logger.setLevel(logging.CRITICAL)
+##logger.setLevel(logging.ERROR)
+##logger.setLevel(logging.WARNING)
+#logger.setLevel(logging.INFO)
+logger.setLevel(logging.DEBUG)
 
 #self = sys.modules[__name__]
 #print(self)
@@ -53,6 +53,7 @@ class image_IPP_codec():
                first_frame = 0,
                n_frames = 16, # Number of frames to process
                q_step = 1):  # Quantization step
+        logger.info("Running ...")
         try:
             k = first_frame
             V_k = frame_3.read(video, k).astype(np.int16) - 128
@@ -81,7 +82,7 @@ class image_IPP_codec():
                 E_k = W_k - prediction_W_k[:W_k.shape[0], :W_k.shape[1], :] # (f)
                 if __debug__:
                     frame_3.write(self.clip(YUV.to_RGB(E_k) + 128), f"{video}prediction_error_", k)
-                dequantized_E_k = self.E_codec4(E_k, f"{video}texture_", k, q_step) # (g and h)
+                dequantized_E_k = self.E_codec4(E_k, f"{video}texture_", k, 128) # (g and h)
                 if __debug__:
                     frame_3.write(self.clip(YUV.to_RGB(dequantized_E_k) + 128), f"{video}dequantized_prediction_error_", k)
                 reconstructed_W_k = dequantized_E_k + prediction_W_k[:dequantized_E_k.shape[0], :dequantized_E_k.shape[1], :] # (i)
@@ -119,7 +120,9 @@ class image_IPP_codec():
         # Texture.
         texture_bytes = 0
         for k in range(first_frame, first_frame + n_frames):
-            texture_bytes += os.path.getsize(f"{prefix}texture_{k:03d}.png")
+            _bytes = os.path.getsize(f"{prefix}texture_{k:03d}.png")
+            texture_bytes += _bytes
+            logger.debug(f"{prefix}texture_{k:03d}.png {_bytes} bytes")
         total_bytes = texture_bytes
         kbps = texture_bytes*8/sequence_time/1000
         bpp = texture_bytes*8/(frame_width*frame_height*n_channels*n_frames)
@@ -322,6 +325,16 @@ class image_IPP_codec():
         if config.spatial_codec == "DCT":
             return self.I_codec_DCT(W_k, prefix, k, q_step)
 
+    def I_codec_DCT(self, W_k, prefix, k, Q_step):
+        ''' Compress and decompress W_k using the NxN-DCT.'''
+        coefs = block_DCT.analyze_image(W_k, self.block_y_side, self.block_x_side)
+        Q_indexes_in_blocks = block_DCT.uniform_quantize(coefs, self.block_y_side, self.block_x_side, image_IPP_codec.N_components, Q_step)
+        Q_coefs_in_blocks = block_DCT.uniform_dequantize(Q_indexes_in_blocks, self.block_y_side, self.block_x_side, image_IPP_codec.N_components, Q_step)
+        Q_indexes_in_subbands = block_DCT.get_subbands(Q_indexes_in_blocks, self.block_y_side, self.block_x_side)
+        _bytes = frame_3.write((Q_indexes_in_subbands + 128).astype(np.uint8), prefix, k)
+        dq_W_k = block_DCT.synthesize_image(Q_coefs_in_blocks, self.block_y_side, self.block_x_side)
+        return dq_W_k
+
     def I_codec_MP4(self, W_k, prefix, k, q_step):
         to_write = YUV.to_RGB(W_k)
         to_write += 128
@@ -355,16 +368,6 @@ class image_IPP_codec():
         dq_E_k = YUV.from_RGB(frame_3.read(prefix, k))
         #return dq_E_k.astype(np.float64)
         return dq_E_k
-
-    def I_codec_DCT(self, W_k, prefix, k, Q_step):
-        ''' Compress and decompress W_k using the NxN-DCT.'''
-        coefs = block_DCT.analyze_image(W_k, self.block_y_side, self.block_x_side)
-        Q_indexes_in_blocks = block_DCT.uniform_quantize(coefs, self.block_y_side, self.block_x_side, image_IPP_codec.N_components, Q_step)
-        Q_coefs_in_blocks = block_DCT.uniform_dequantize(Q_indexes_in_blocks, self.block_y_side, self.block_x_side, image_IPP_codec.N_components, Q_step)
-        Q_indexes_in_subbands = block_DCT.get_subbands(Q_indexes_in_blocks, self.block_y_side, self.block_x_side)
-        _bytes = frame_3.write((Q_indexes_in_subbands + 128).astype(np.uint8), prefix, k)
-        dq_W_k = block_DCT.synthesize_image(Q_coefs_in_blocks, self.block_y_side, self.block_x_side)
-        return dq_W_k
 
     def E_codec4(self, E_k, prefix, k, Q_step):
         if config.spatial_codec == "H264":

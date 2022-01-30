@@ -2,6 +2,7 @@
 
 input_prefix="https://media.xiph.org/video/derf/y4m/"
 sequence="container_cif.y4m"
+#sequence=~/MRVC/sequences/akiyo_cif.y4m/runme.sh
 output_prefix="/tmp/original_"
 number_of_frames=16
 
@@ -52,11 +53,13 @@ while getopts "i:s:o:n:?" opt; do
     esac
 done
 
-if test -f "$sequence"; then
+#source $sequence/runme.sh
+
+if test -f "$sequence/$sequence"; then
     echo "$FILE exists. Only extracting ..."
 else
     echo "Extracting ..."
-    wget $input_prefix/$sequence
+    wget $input_prefix/$sequence --directory-prefix=~/MRVC/sequences/
 fi
 
-ffmpeg -i $sequence -start_number 0 -frames:v $number_of_frames ${output_prefix}%03d.png
+ffmpeg -i ~/MRVC/sequences/$sequence -start_number 0 -frames:v $number_of_frames ${output_prefix}%03d.png

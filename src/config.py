@@ -19,15 +19,11 @@ color = "YCoCg"
 #quantizer = "deadzone"
 
 # H264
-#lowest_Q_step = 21
-#highest_Q_step = 42
-#step_Q_step = 3
+#Q_steps = range(42, 21, -3)
 
 # DCT
-lowest_Q_step = 4
-highest_Q_step = 32
-step_Q_step = 4
+Q_steps = [128, 64, 32, 16, 8]
 
-#temporal_codec = "image_IPP"
+temporal_codec = "image_IPP"
 #temporal_codec = "image_IPP_adaptive"
-temporal_codec = "MP4"
+#temporal_codec = "MP4"
