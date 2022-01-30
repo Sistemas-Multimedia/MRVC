@@ -5,9 +5,18 @@ I/O routines for 1-component (grayscale) images.
 import numpy as np
 import cv2 as cv
 import colored
-if __debug__:
-    import os
+import os
+import subprocess
 import matplotlib.pyplot as plt
+
+import logging
+logger = logging.getLogger(__name__)
+#logging.basicConfig(format="[%(filename)s:%(lineno)s %(levelname)s probando %(funcName)s()] %(message)s")
+##logger.setLevel(logging.CRITICAL)
+##logger.setLevel(logging.ERROR)
+##logger.setLevel(logging.WARNING)
+#logger.setLevel(logging.INFO)
+logger.setLevel(logging.DEBUG)
 
 _compression_level = 9 # 0=min, 9=max
 
@@ -31,6 +40,9 @@ def debug_write(img:np.ndarray, prefix:str, image_number:int) -> None:
 def _write(img:np.ndarray, prefix:str, image_number:int) -> None:
     fn = f"{prefix}{image_number:03d}.png"
     cv.imwrite(fn, img, [cv.IMWRITE_PNG_COMPRESSION, _compression_level])
+    command = f"optipng {fn}"
+    logger.debug(command)
+    subprocess.call(["bash", "-c", command])
     len_output = os.path.getsize(fn)
     if __debug__:
         print(colored.fore.GREEN + f"image_1.write: {fn}", img.shape, img.dtype, len_output, colored.style.RESET)

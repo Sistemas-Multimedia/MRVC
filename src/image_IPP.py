@@ -118,11 +118,15 @@ class image_IPP_codec():
         logger.info(f"height={frame_height} width={frame_width} n_channels={n_channels} sequence_time={sequence_time}")
 
         # Texture.
-        texture_bytes = 0
-        for k in range(first_frame, first_frame + n_frames):
-            _bytes = os.path.getsize(f"{prefix}texture_{k:03d}.png")
-            texture_bytes += _bytes
-            logger.debug(f"{prefix}texture_{k:03d}.png {_bytes} bytes")
+        #texture_bytes = 0
+        #for k in range(first_frame, first_frame + n_frames):
+        #    _bytes = os.path.getsize(f"{prefix}texture_{k:03d}.png")
+        #    texture_bytes += _bytes
+        #    logger.debug(f"{prefix}texture_{k:03d}.png {_bytes} bytes")
+        command = f"cat {prefix}texture_???.png | gzip -9 > /tmp/image_IPP_texture.gz"
+        logger.debug(command)
+        subprocess.call(["bash", "-c", command])
+        texture_bytes = os.path.getsize(f"/tmp/image_IPP_texture.gz")
         total_bytes = texture_bytes
         kbps = texture_bytes*8/sequence_time/1000
         bpp = texture_bytes*8/(frame_width*frame_height*n_channels*n_frames)
@@ -302,11 +306,11 @@ class image_IPP_codec():
             print("counter =", counter)
             prev_comp = next_comp
             '''
-        command = f"cat {prefix}motion_x_diff_comp_???.png | gzip -9 > /tmp/image_IPP_motion_y.gz"
+        command = f"cat {prefix}motion_x_diff_comp_???.png | gzip -9 > /tmp/image_IPP_motion_x.gz"
         logger.debug(command)
         #os.system(command)
         subprocess.call(["bash", "-c", command])
-        comp_length = os.path.getsize(f"/tmp/image_IPP_motion_y.gz")    
+        comp_length = os.path.getsize(f"/tmp/image_IPP_motion_x.gz")    
         kbps = comp_length*8/sequence_time/1000
         bpp = comp_length*8/(frame_width*frame_height*n_channels*n_frames)
         logger.info(f"motion (X direction): {comp_length} bytes, {kbps} KBPS, {bpp} BPP")
