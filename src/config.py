@@ -22,6 +22,7 @@ color = "YCoCg"
 Q_steps = range(42, 21, -3)
 
 # DCT
+#Q_steps = [128]
 #Q_steps = [128, 64, 32, 16, 8]
 
 #temporal_codec = "image_IPP"

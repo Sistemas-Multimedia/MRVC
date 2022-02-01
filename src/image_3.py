@@ -37,7 +37,7 @@ def read(prefix:str, image_number:int=0) -> np.ndarray: # [row, column, componen
     #print("=========", img.shape)
     #img = np.array(img, dtype=np.float32)
     if __debug__:
-        print(img.shape, img.dtype, os.path.getsize(fn), colored.style.RESET)
+        print(img.shape, img.dtype, os.path.getsize(fn), img.max(), img.min(), colored.style.RESET)
     #return img.astype(np.int16)
     #return img.astype(np.uint16)
     return img
@@ -52,7 +52,17 @@ def _write(img:np.ndarray, prefix:str, image_number:int) -> None:
     subprocess.call(["bash", "-c", command])
     len_output = os.path.getsize(fn)
     if __debug__:
-        print(colored.fore.GREEN + f"image_3.write: {fn}", img.shape, img.dtype, len_output, colored.style.RESET)
+        print(colored.fore.GREEN + f"image_3.write: {fn}", img.shape, img.dtype, len_output, img.max(), img.min(), colored.style.RESET)
+    return len_output
+
+def _debug_write(img:np.ndarray, prefix:str, image_number:int) -> None:
+    #fn = name + ".png"
+    fn = f"{prefix}{image_number:03d}.png"
+    img = cv.cvtColor(img, cv.COLOR_RGB2BGR)
+    cv.imwrite(fn, img, [cv.IMWRITE_PNG_COMPRESSION, _compression_level])
+    len_output = os.path.getsize(fn)
+    if __debug__:
+        print(colored.fore.GREEN + f"image_3.write: {fn}", img.shape, img.dtype, len_output, img.max(), img.min(), colored.style.RESET)
     return len_output
 
 def write(img:np.ndarray, prefix:str, image_number:int=0) -> None:
@@ -61,7 +71,7 @@ def write(img:np.ndarray, prefix:str, image_number:int=0) -> None:
 def debug_write(img:np.ndarray, prefix:str, image_number:int) -> None:
     if __debug__:
         #_write(img.astype(np.uint16), name)
-        return _write(img, prefix, image_number)
+        return _debug_write(img, prefix, image_number)
 
 def normalize(img: np.ndarray) -> np.ndarray: # [row, column, component]
     max_component = np.max(img)
