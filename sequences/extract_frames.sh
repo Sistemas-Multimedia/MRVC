@@ -59,6 +59,7 @@ if test -f "$HOME/MRVC/sequences/$sequence"; then
     echo "$HOME/MRVC/sequences/$sequence exists. Only extracting ..."
 else
     echo "Downloading ..."
+    # (ulimit -f 112400; wget ...)
     wget $input_prefix/$sequence --directory-prefix=$HOME/MRVC/sequences
 fi
 

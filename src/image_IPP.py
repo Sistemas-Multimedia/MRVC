@@ -82,7 +82,7 @@ class image_IPP_codec():
                 E_k = W_k - prediction_W_k[:W_k.shape[0], :W_k.shape[1], :] # (f)
                 if __debug__:
                     frame_3.debug_write(self.clip(YUV.to_RGB(E_k) + 128), f"{video}prediction_error_", k)
-                dequantized_E_k = self.E_codec4(E_k, f"{video}texture_", k, q_step) # (g and h)
+                dequantized_E_k = self.E_codec4(E_k, f"{video}texture_", k, q_step * 2) # (g and h)
                 if __debug__:
                     frame_3.debug_write(self.clip(YUV.to_RGB(dequantized_E_k) + 128), f"{video}dequantized_prediction_error_", k)
                 reconstructed_W_k = dequantized_E_k + prediction_W_k[:dequantized_E_k.shape[0], :dequantized_E_k.shape[1], :] # (i)
@@ -133,11 +133,12 @@ class image_IPP_codec():
         logger.info(f"texture: {texture_bytes} bytes, {kbps} KBPS, {bpp} BPP")
 
         # Motion. Y component.
-        prev_comp = image_1.read(prefix + "motion_y_", 1).astype(np.int16) - 128
+        prev_comp = image_1.read(prefix + "motion_y_", first_frame + 1).astype(np.int16) - 128
         #prev_fn = f"{prefix}motion_y_001.png"
         #comp_length = os.path.getsize(prev_fn)
         for k in range(first_frame + 2, first_frame + n_frames):
             next_comp = image_1.read(prefix + "motion_y_", k).astype(np.int16) - 128 # Sobra astype
+            #logger.debug(f"shapes {prev_comp.shape} {next_comp.shape}")
             #next_fn = f"{prefix}motion_y_{k:03d}.png"
             diff_comp = next_comp - prev_comp
             image_1.write((diff_comp.astype(np.int16) + 128).astype(np.uint8), prefix + "motion_y_diff_comp_", k)
@@ -172,8 +173,8 @@ class image_IPP_codec():
         total_bytes += comp_length
 
         # Motion. X component.
-        prev_comp = image_1.read(prefix + "motion_x_", 1).astype(np.int16) - 128
-        prev_fn = f"{prefix}motion_x_001.png"
+        prev_comp = image_1.read(prefix + "motion_x_", first_frame + 1).astype(np.int16) - 128
+        #prev_fn = f"{prefix}motion_x_001.png"
         #comp_length = os.path.getsize(prev_fn)
         for k in range(first_frame + 2, first_frame + n_frames):
             next_comp = image_1.read(prefix + "motion_x_", k).astype(np.int16) - 128
@@ -246,7 +247,7 @@ class image_IPP_codec():
             next_comp = image_1.read(prefix + "motion_y_", k).astype(np.int16) + 128 # Sobra astype
             #next_fn = f"{prefix}motion_y_{k:03d}.png"
             diff_comp = next_comp - prev_comp
-            image_1.write((diff_comp.astype(np.int16) + 128).astype(np.uint16), prefix + "motion_y_diff_comp_", k)
+            image_1.write((diff_comp.astype(np.int16) + 128).astype(np.uint8), prefix + "motion_y_diff_comp_", k)
             #comp_length += os.path.getsize(f"{prefix}motion_y_diff_comp_{k:03d}.png")
             '''
             # Count the number of common bytes starting and the beginning.
@@ -285,7 +286,7 @@ class image_IPP_codec():
             next_comp = image_1.read(prefix + "motion_x_", k).astype(np.int16) - 128
             #next_fn = f"{prefix}motion_x_{k:03d}.png"
             diff_comp = next_comp - prev_comp
-            image_1.write((diff_comp.astype(np.int16) + 128).astype(np.uint16), prefix + "motion_x_diff_comp_", k)
+            image_1.write((diff_comp.astype(np.int16) + 128).astype(np.uint8), prefix + "motion_x_diff_comp_", k)
             #comp_length += os.path.getsize(f"{prefix}motion_x_diff_comp_{k:03d}.png")
             '''
             # Count the number of common bytes starting and the beginning.
@@ -381,7 +382,7 @@ class image_IPP_codec():
                 return self.E_codec4_YCoCg_MP4(E_k, prefix, k, Q_step)
         elif config.spatial_codec == "DCT":
             return self.E_codec4_DCT(E_k, prefix, k, Q_step)
-            #return self.E_codec4_DCT(E_k, prefix, k, Q_step * 2)
+            #return self.E_codec4_DCT(E_k, prefix, k, Q_step * 2000)
 
     def E_codec4_DCT(self, E_k, prefix, k, Q_step):
         logger.info(f"prefix={prefix} k={k} Q_step={Q_step}")
@@ -479,8 +480,8 @@ class image_IPP_codec():
     def V_codec(self, motion, n_levels, prefix, frame_number):
         #return motion
         pyramid = LP.analyze(motion, n_levels)
-        image_1.write((pyramid[0][...,0].astype(np.int16) + 128).astype(np.uint16), prefix + "x_", frame_number)
-        image_1.write((pyramid[0][...,1].astype(np.int16) + 128).astype(np.uint16), prefix + "y_", frame_number)
+        image_1.debug_write((pyramid[0][...,0].astype(np.int16) + 128).astype(np.uint8), prefix + "x_", frame_number)
+        image_1.debug_write((pyramid[0][...,1].astype(np.int16) + 128).astype(np.uint8), prefix + "y_", frame_number)
         for resolution in pyramid[1:]:
             resolution[...] = 0
         reconstructed_motion = LP.synthesize(pyramid, n_levels)

@@ -20,17 +20,17 @@ def encode(video,    # Prefix of the original sequence of PNG images
            q_step):  # Quantization step
     try:
         #command = f"ffmpeg -start_number 0 -y -i {video}%03d.png -c:v libx264rgb -vf format=yuv444p -crf {q_step} -frames:v {n_frames} -g {n_frames} -bf 0 /tmp/output.mp4" # No color transform is used
-        command = f"ffmpeg -start_number 0 -y -i {video}%03d.png -c:v libx264 -vf format=yuv444p -crf {q_step} -frames:v {n_frames} -g {n_frames} -bf 0 /tmp/output.mp4" # Color transform is used but without chroma subsampling
+        command = f"ffmpeg -start_number {first_frame} -y -i {video}%03d.png -c:v libx264 -vf format=yuv444p -crf {q_step} -frames:v {n_frames} -g {n_frames} -bf 0 /tmp/output.mp4" # Color transform is used but without chroma subsampling
         #command = f"ffmpeg -start_number {first_frame} -y -i {video}%03d.png -c:v libx264 -vf format=yuv420p -crf {q_step} -frames:v {n_frames} -g {n_frames} -bf 0 /tmp/output.mp4" # Color transform and chroma subsampling
         logger.info(command)
         os.system(command)
 
-        command = f"ffmpeg -y -i /tmp/output.mp4 -start_number 0 {video}reconstructed_%03d.png"
+        command = f"ffmpeg -y -i /tmp/output.mp4 -start_number {first_frame} {video}reconstructed_%03d.png"
         logger.info(command)
         os.system(command)
         
     except:
-        print(colored.fore.RED + f'MP4.encode(video="{video}", n_frames={n_frames}, q_step={q_step})')
+        print(colored.fore.RED + f'MP4.encode(video="{video}", first_frame={first_frame}, n_frames={n_frames}, q_step={q_step})')
         raise
 
 def compute_br(prefix, frames_per_second, frame_shape, first_frame, n_frames):

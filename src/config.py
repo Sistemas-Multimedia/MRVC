@@ -19,6 +19,7 @@ color = "YCoCg"
 #quantizer = "deadzone"
 
 # H264
+#Q_steps = range(42, 41, -3)
 Q_steps = range(42, 21, -3)
 
 # DCT

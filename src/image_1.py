@@ -22,38 +22,29 @@ _compression_level = 9 # 0=min, 9=max
 
 def read(prefix:str, image_number:int) -> np.ndarray: # [row, column, component]
     fn = f"{prefix}{image_number:03d}.png"
-    if __debug__:
-        print(colored.fore.GREEN + f"image_1.read: {fn}", end=' ', flush=True)
+    #if __debug__:
+        #print(colored.fore.GREEN + f"image_1.read: {fn}", end=' ', flush=True)
     img = cv.imread(fn, cv.IMREAD_UNCHANGED)
-    if __debug__:
-        print(img.shape, img.dtype, os.path.getsize(fn), img.max(), img.min(), colored.style.RESET)
+    logger.debug(f"{fn} {img.shape} {img.dtype} {os.path.getsize(fn)} {img.max()} {img.min()}")
     return img
 
-def write(img:np.ndarray, prefix:str, image_number:int=0) -> None:
-        return _write(img, prefix, image_number)
+def debug_write(img:np.ndarray, prefix:str, image_number:int=0):
+    fn = f"{prefix}{image_number:03d}.png"
+    cv.imwrite(fn, img, [cv.IMWRITE_PNG_COMPRESSION, _compression_level])
+    len_output = os.path.getsize(fn)
+    logger.info(f"image_1.write: {fn} {img.shape} {img.dtype} {len_output} {img.max()} {img.min()}")
+    return len_output
 
-def debug_write(img:np.ndarray, prefix:str, image_number:int) -> None:
-    if __debug__:
-        #_write(img.astype(np.uint16), name)
-        return _debug_write(img, prefix, image_number)
-
-def _write(img:np.ndarray, prefix:str, image_number:int) -> None:
+def write(img:np.ndarray, prefix:str, image_number:int=0):
     fn = f"{prefix}{image_number:03d}.png"
     cv.imwrite(fn, img, [cv.IMWRITE_PNG_COMPRESSION, _compression_level])
     command = f"optipng {fn}"
     logger.debug(command)
     subprocess.call(["bash", "-c", command])
     len_output = os.path.getsize(fn)
-    if __debug__:
-        print(colored.fore.GREEN + f"image_1.write: {fn}", img.shape, img.dtype, len_output, img.max(), img.min(), colored.style.RESET)
-    return len_output
-
-def _debug_write(img:np.ndarray, prefix:str, image_number:int) -> None:
-    fn = f"{prefix}{image_number:03d}.png"
-    cv.imwrite(fn, img, [cv.IMWRITE_PNG_COMPRESSION, _compression_level])
-    len_output = os.path.getsize(fn)
-    if __debug__:
-        print(colored.fore.GREEN + f"image_1.write: {fn}", img.shape, img.dtype, len_output, img.max(), img.min(), colored.style.RESET)
+    #if __debug__:
+    #    print(colored.fore.GREEN + f"image_1.write: {fn}", img.shape, img.dtype, len_output, img.max(), img.min(), colored.style.RESET)
+    logger.info(f"image_1.write: {fn} {img.shape} {img.dtype} {len_output} {img.max()} {img.min()}")
     return len_output
 
 def normalize(img: np.ndarray) -> np.ndarray: # [row, column, component]

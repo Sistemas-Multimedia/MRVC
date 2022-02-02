@@ -51,9 +51,9 @@ FPS = 30
 def AMSE(x_prefix, y_prefix, first_frame, n_images):
     print(f"AMSE: comparing {x_prefix} and {y_prefix}")
     total_AMSE = 0
-    for k in range(first_frame + n_images):
-        x = frame.read(x_prefix, k)
-        y = frame.read(y_prefix, k)
+    for k in range(n_images):
+        x = frame.read(x_prefix, first_frame + k)
+        y = frame.read(y_prefix, first_frame + k)
         _AMSE = distortion.MSE(x, y)
         logging.info(f"AMSE of image {k} = {_AMSE}")
         total_AMSE += _AMSE
