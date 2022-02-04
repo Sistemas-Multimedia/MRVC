@@ -61,7 +61,7 @@ class image_IPP_codec():
             W_k = YUV.from_RGB(V_k) # (a)
             W_k_1 = W_k # (b)
             E_k = W_k # (f)
-            dequantized_E_k = self.I_codec(E_k, f"{video}texture_", first_frame, q_step) # (g and h)
+            dequantized_E_k, QE_k = self.I_codec(E_k, f"{video}texture_", first_frame, q_step) # (g and h)
             reconstructed_W_k = dequantized_E_k # (i)
             if __debug__:
                 frame_3.debug_write(self.clip(YUV.to_RGB(dequantized_E_k) + 128), f"{video}reconstructed_", k) # Decoder's output
@@ -69,7 +69,7 @@ class image_IPP_codec():
             for k in range(first_frame + 1, first_frame + n_frames):
                 V_k = frame_3.read(video, k).astype(np.int16) - 128
                 W_k = YUV.from_RGB(V_k) # (a)
-                averages = self.compute_averages(W_k, image_IPP_codec.block_y_side, image_IPP_codec.block_x_side)
+                averages = self.compute_averages(reconstructed_W_k, image_IPP_codec.block_y_side, image_IPP_codec.block_x_side)
                 logger.debug(f"W_k {W_k[...,2].max()} {W_k[...,2].min()}")
                 flow = motion.Farneback_ME(W_k[...,0], W_k_1[...,0], self.initial_flow) # (c)
                 logger.debug(f"COMPUTED flow {flow.max()} {flow.min()}")
@@ -82,11 +82,11 @@ class image_IPP_codec():
                 E_k = W_k - prediction_W_k[:W_k.shape[0], :W_k.shape[1], :] # (f)
                 if __debug__:
                     frame_3.debug_write(self.clip(YUV.to_RGB(E_k) + 128), f"{video}prediction_error_", k)
-                dequantized_E_k = self.E_codec4(E_k, f"{video}texture_", k, q_step * 2) # (g and h)
+                dequantized_E_k, QE_k = self.E_codec4(E_k, f"{video}texture_", k, q_step * 2) # (g and h)
                 if __debug__:
                     frame_3.debug_write(self.clip(YUV.to_RGB(dequantized_E_k) + 128), f"{video}dequantized_prediction_error_", k)
                 reconstructed_W_k = dequantized_E_k + prediction_W_k[:dequantized_E_k.shape[0], :dequantized_E_k.shape[1], :] # (i)
-                reconstructed_W_k = self.decide_types(video, k, q_step, W_k, reconstructed_W_k, E_k, prediction_W_k, image_IPP_codec.block_y_side, image_IPP_codec.block_x_side, averages)
+                reconstructed_W_k = self.decide_types(video, k, q_step, W_k, reconstructed_W_k, E_k, prediction_W_k, QE_k, image_IPP_codec.block_y_side, image_IPP_codec.block_x_side, averages)
                 if __debug__:
                     frame_3.debug_write(self.clip(YUV.to_RGB(reconstructed_W_k) + 128), f"{video}reconstructed_", k) # Decoder's output
                 reconstructed_W_k_1 = reconstructed_W_k # (k)
@@ -100,7 +100,7 @@ class image_IPP_codec():
     def compute_averages(self, V_k, block_y_side, block_x_side):
         pass
 
-    def decide_types(self, video, k, q_step, V_k, reconstructed_V_k, E_k, prediction_V_k, block_y_side, block_x_side, averages):
+    def decide_types(self, video, k, q_step, V_k, reconstructed_V_k, E_k, prediction_V_k, QE_k, block_y_side, block_x_side, averages):
         return reconstructed_V_k
 
     def compute_br(self, prefix, frames_per_second, frame_shape, first_frame, n_frames):
@@ -337,8 +337,9 @@ class image_IPP_codec():
         Q_coefs_in_blocks = block_DCT.uniform_dequantize(Q_indexes_in_blocks, self.block_y_side, self.block_x_side, image_IPP_codec.N_components, Q_step)
         Q_indexes_in_subbands = block_DCT.get_subbands(Q_indexes_in_blocks, self.block_y_side, self.block_x_side)
         _bytes = frame_3.write((Q_indexes_in_subbands + 128).astype(np.uint8), prefix, k)
-        dq_W_k = block_DCT.synthesize_image(Q_coefs_in_blocks, self.block_y_side, self.block_x_side)
-        return dq_W_k
+        #_bytes = frame_3.write((Q_indexes_in_blocks + 128).astype(np.uint8), prefix, k)
+        dQ_W_k = block_DCT.synthesize_image(Q_coefs_in_blocks, self.block_y_side, self.block_x_side)
+        return dQ_W_k, Q_indexes_in_blocks
 
     def I_codec_MP4(self, W_k, prefix, k, q_step):
         to_write = YUV.to_RGB(W_k)
@@ -386,8 +387,7 @@ class image_IPP_codec():
 
     def E_codec4_DCT(self, E_k, prefix, k, Q_step):
         logger.info(f"prefix={prefix} k={k} Q_step={Q_step}")
-        dq_E_k = self.I_codec(E_k, prefix, k, Q_step)
-        return dq_E_k
+        return self.I_codec(E_k, prefix, k, Q_step)
 
     def E_codec4_YCoCg_MP4(self, E_k, prefix, k, q_step):
         offset = 128
@@ -409,7 +409,7 @@ class image_IPP_codec():
         logger.debug(f"deQ error YUV {dq_E_k.max()} {dq_E_k.min()} {dq_E_k.dtype}")    
         #dq_E_k = Q.dequantize(dq_E_k, 4)
         #return dq_E_k.astype(np.float64)
-        return dq_E_k
+        return dq_E_k, None
 
     def E_codec4_YCrCb_MP4(self, E_k, prefix, k, q_step):
         offset = 0
@@ -438,7 +438,7 @@ class image_IPP_codec():
         logger.debug(f"deQ error YUV {dq_E_k.max()} {dq_E_k.min()} {dq_E_k.dtype}")    
         #dq_E_k = Q.dequantize(dq_E_k, 4)
         #return dq_E_k.astype(np.float64)
-        return dq_E_k
+        return dq_E_k, None
 
     def E_codec5(self, E_k, prefix, k, q_step):
         logger.debug(f"q_step {q_step}")
