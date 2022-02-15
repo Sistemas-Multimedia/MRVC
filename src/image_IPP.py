@@ -59,6 +59,9 @@ class image_IPP_codec():
             V_k = frame_3.read(video, k).astype(np.int16) - 128
             self.create_structures(V_k, image_IPP_codec.block_y_side, image_IPP_codec.block_x_side)
             W_k = YUV.from_RGB(V_k) # (a)
+            #avgs = [np.average(W_k[..., c]) for c in range(3)]
+            #for c in range(self.N_components):
+            #    W_k[..., c] -= int(avgs[c])
             W_k_1 = W_k # (b)
             E_k = W_k # (f)
             dequantized_E_k, QE_k = self.I_codec(E_k, f"{video}texture_", first_frame, q_step) # (g and h)
@@ -69,14 +72,16 @@ class image_IPP_codec():
             for k in range(first_frame + 1, first_frame + n_frames):
                 V_k = frame_3.read(video, k).astype(np.int16) - 128
                 W_k = YUV.from_RGB(V_k) # (a)
-                averages = self.compute_averages(reconstructed_W_k, image_IPP_codec.block_y_side, image_IPP_codec.block_x_side)
+                #avgs = [np.average(W_k[..., c]) for c in range(3)]
+                #for c in range(self.N_components):
+                #    W_k[..., c] -= int(avgs[c])
                 logger.debug(f"W_k {W_k[...,2].max()} {W_k[...,2].min()}")
                 flow = motion.Farneback_ME(W_k[...,0], W_k_1[...,0], self.initial_flow) # (c)
                 logger.debug(f"COMPUTED flow {flow.max()} {flow.min()}")
                 W_k_1 = W_k # (b)
-                reconstructed_flow = self.V_codec(flow, self.log2_block_side, f"{video}motion_", k) # (d and e)
-                logger.debug(f"USED flow {reconstructed_flow.max()} {reconstructed_flow.min()}")
-                prediction_W_k = motion.make_prediction(reconstructed_W_k_1, reconstructed_flow) # (j)
+                used_flow = self.V_codec(flow, self.log2_block_side, f"{video}motion_", k) # (d and e)
+                logger.debug(f"USED flow {used_flow.max()} {used_flow.min()}")
+                prediction_W_k = motion.make_prediction(reconstructed_W_k_1, used_flow) # (j)
                 if __debug__:
                     frame_3.debug_write(self.clip(YUV.to_RGB(prediction_W_k) + 128), f"{video}prediction_", k)
                 E_k = W_k - prediction_W_k[:W_k.shape[0], :W_k.shape[1], :] # (f)
@@ -85,6 +90,7 @@ class image_IPP_codec():
                 dequantized_E_k, QE_k = self.E_codec4(E_k, f"{video}texture_", k, q_step * 2) # (g and h)
                 if __debug__:
                     frame_3.debug_write(self.clip(YUV.to_RGB(dequantized_E_k) + 128), f"{video}dequantized_prediction_error_", k)
+                averages = self.compute_averages(reconstructed_W_k, used_flow, image_IPP_codec.block_y_side, image_IPP_codec.block_x_side)
                 reconstructed_W_k = dequantized_E_k + prediction_W_k[:dequantized_E_k.shape[0], :dequantized_E_k.shape[1], :] # (i)
                 reconstructed_W_k = self.decide_types(video, k, q_step, W_k, reconstructed_W_k, E_k, prediction_W_k, QE_k, image_IPP_codec.block_y_side, image_IPP_codec.block_x_side, averages)
                 if __debug__:
@@ -97,7 +103,7 @@ class image_IPP_codec():
     def create_structures(self, V_k, block_y_side, block_x_side):
         self.initial_flow = np.zeros((V_k.shape[0], V_k.shape[1], 2), dtype=np.float32)
 
-    def compute_averages(self, V_k, block_y_side, block_x_side):
+    def compute_averages(self, W_k, flow, block_y_side, block_x_side):
         pass
 
     def decide_types(self, video, k, q_step, V_k, reconstructed_V_k, E_k, prediction_V_k, QE_k, block_y_side, block_x_side, averages):
@@ -330,16 +336,15 @@ class image_IPP_codec():
         if config.spatial_codec == "DCT":
             return self.I_codec_DCT(W_k, prefix, k, q_step)
 
-    def I_codec_DCT(self, W_k, prefix, k, Q_step):
+    def I_codec_DCT(self, W_k, prefix, k, Qstep):
         ''' Compress and decompress W_k using the NxN-DCT.'''
-        coefs = block_DCT.analyze_image(W_k, self.block_y_side, self.block_x_side)
-        Q_indexes_in_blocks = block_DCT.uniform_quantize(coefs, self.block_y_side, self.block_x_side, image_IPP_codec.N_components, Q_step)
-        Q_coefs_in_blocks = block_DCT.uniform_dequantize(Q_indexes_in_blocks, self.block_y_side, self.block_x_side, image_IPP_codec.N_components, Q_step)
-        Q_indexes_in_subbands = block_DCT.get_subbands(Q_indexes_in_blocks, self.block_y_side, self.block_x_side)
-        _bytes = frame_3.write((Q_indexes_in_subbands + 128).astype(np.uint8), prefix, k)
-        #_bytes = frame_3.write((Q_indexes_in_blocks + 128).astype(np.uint8), prefix, k)
-        dQ_W_k = block_DCT.synthesize_image(Q_coefs_in_blocks, self.block_y_side, self.block_x_side)
-        return dQ_W_k, Q_indexes_in_blocks
+        coefs_in_blocks = block_DCT.analyze_image(W_k, self.block_y_side, self.block_x_side)
+        Qcoefs_in_blocks = block_DCT.uniform_quantize(coefs_in_blocks, self.block_y_side, self.block_x_side, image_IPP_codec.N_components, Qstep)
+        DQcoefs_in_blocks = block_DCT.uniform_dequantize(Qcoefs_in_blocks, self.block_y_side, self.block_x_side, image_IPP_codec.N_components, Qstep)
+        Qcoefs_in_subbands = block_DCT.get_subbands(Qcoefs_in_blocks, self.block_y_side, self.block_x_side)
+        _bytes = frame_3.write((Qcoefs_in_subbands + 128).astype(np.uint8), prefix, k) # Notice that we use uint8 because Qstep >= 2
+        DQ_W_k = block_DCT.synthesize_image(DQcoefs_in_blocks, self.block_y_side, self.block_x_side)
+        return DQ_W_k, Qcoefs_in_blocks
 
     def I_codec_MP4(self, W_k, prefix, k, q_step):
         to_write = YUV.to_RGB(W_k)

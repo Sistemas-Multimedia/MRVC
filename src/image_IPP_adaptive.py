@@ -10,7 +10,7 @@ import LP
 import numpy as np
 import deadzone_quantizer as Q
 import motion
-import image_3 as frame
+import image_3
 import image_1
 import colored
 import cv2
@@ -99,11 +99,28 @@ class image_IPP_adaptive_codec(image_IPP.image_IPP_codec):
         self.T_codec(self.block_types, video, k)
 
         # Regenerate the reconstructed residue using the I-type blocks
-        dequantized_E_k, QE_k = super().E_codec4(E_k, f"{video}texture_", k, q_step*2) # (g and h)
+        #dequantized_E_k, QE_k = super().E_codec4(E_k, f"{video}texture_", k, q_step) # (g and h)
+        dequantized_E_k, QE_k = self.E_codec(E_k, f"{video}texture_", k, q_step) # (g and h)
 
         reconstructed_W_k = dequantized_E_k + prediction_W_k[:dequantized_E_k.shape[0], :dequantized_E_k.shape[1]] # (i)
         logger.info(f"reconstructed_W_k {reconstructed_W_k.max()} {reconstructed_W_k.min()}")
         return reconstructed_W_k
+
+    def E_codec(self, E_k, prefix, k, Qstep):
+        ''' Compress and decompress E_k.'''
+        coefs_in_blocks = block_DCT.analyze_image(E_k, self.block_y_side, self.block_x_side)
+        for y in range(int(E_k.shape[0]/self.block_y_side)):
+            for x in range(int(E_k.shape[1]/self.block_x_side)):
+                if self.block_types[y, x] == 1: # Intra
+                    Qcoefs_in_blocks = Q.quantize(coefs_in_blocks, Qstep)
+                    DQcoefs_in_blocks = Q.dequantize(Qcoefs_in_blocks, Qstep).astype(np.int16)
+                else: # Predicted
+                    Qcoefs_in_blocks = Q.quantize(coefs_in_blocks, Qstep*2)
+                    DQcoefs_in_blocks = Q.dequantize(Qcoefs_in_blocks, Qstep*2).astype(np.int16)
+        Qcoefs_in_subbands = block_DCT.get_subbands(Qcoefs_in_blocks, self.block_y_side, self.block_x_side)
+        _bytes = image_3.write((Qcoefs_in_subbands + 128).astype(np.uint8), prefix, k)
+        DQ_W_k = block_DCT.synthesize_image(DQcoefs_in_blocks, self.block_y_side, self.block_x_side)
+        return DQ_W_k, Qcoefs_in_blocks
     
     def decide_types_0(self, video, k, q_step, W_k, reconstructed_W_k, E_k, prediction_W_k, block_y_side, block_x_side, averages):
         # I/P/S-type block decision based on the entropy of the block.
@@ -217,15 +234,16 @@ class image_IPP_adaptive_codec(image_IPP.image_IPP_codec):
         logger.info(f"reconstructed_W_k {reconstructed_W_k.max()} {reconstructed_W_k.min()}")
         return reconstructed_W_k
 
-    def compute_averages(self, W_k, block_y_side, block_x_side):
-        averages = np.zeros((int(W_k.shape[0]/block_y_side),
-                             int(W_k.shape[1]/block_x_side),
+    def compute_averages(self, W_k, flow, block_y_side, block_x_side):
+        MCW_k=motion.make_prediction(W_k, -flow)
+        averages = np.zeros((int(MCW_k.shape[0]/block_y_side),
+                             int(MCW_k.shape[1]/block_x_side),
                              3),
                             dtype=np.int16)
-        for y in range(int(W_k.shape[0]/block_y_side)):
-            for x in range(int(W_k.shape[1]/block_x_side)):
+        for y in range(int(MCW_k.shape[0]/block_y_side)):
+            for x in range(int(MCW_k.shape[1]/block_x_side)):
                 for c in range(3):
-                    averages[y, x, c] = np.average(W_k[y*block_y_side:(y+1)*block_y_side,
+                    averages[y, x, c] = np.average(MCW_k[y*block_y_side:(y+1)*block_y_side,
                                                        x*block_x_side:(x+1)*block_x_side][..., c])
                 if __debug__:
                     print(f"{averages[y, x]}", end='')
