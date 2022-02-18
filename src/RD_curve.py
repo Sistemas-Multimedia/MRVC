@@ -15,8 +15,9 @@ if config.temporal_codec == "MP4":
     import MP4 as codec
 
 import logging
+import logging_config
 logger = logging.getLogger(__name__)
-logging.basicConfig(format="[%(filename)s:%(lineno)s %(funcName)s() %(levelname)s] %(message)s")
+#logging.basicConfig(format="[%(filename)s:%(lineno)s %(funcName)s() %(levelname)s] %(message)s")
 ##logger.setLevel(logging.CRITICAL)
 ##logger.setLevel(logging.ERROR)
 #logger.setLevel(logging.WARNING)

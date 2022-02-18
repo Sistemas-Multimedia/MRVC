@@ -2,7 +2,6 @@
 
 import cv2
 import numpy as np
-import config
 import matplotlib
 import matplotlib.pyplot as plt
 import logging

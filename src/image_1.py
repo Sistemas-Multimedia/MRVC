@@ -10,6 +10,7 @@ import subprocess
 import matplotlib.pyplot as plt
 
 import logging
+import logging_config
 logger = logging.getLogger(__name__)
 #logging.basicConfig(format="[%(filename)s:%(lineno)s %(levelname)s probando %(funcName)s()] %(message)s")
 ##logger.setLevel(logging.CRITICAL)
@@ -57,11 +58,21 @@ def get_image_shape(prefix:str) -> int:
     img = read(prefix, 0)
     return img.shape
 
-def print_stats(img):
-    print(img.max(), img.min(), img.dtype)
+def print_stats(image):
+    logger.info(f"max={image.max()} min={image.min()} avg={np.average(image)}")
 
 def show(image, title='', size=(10, 10), fontsize=20):
     plt.figure(figsize=size)
     plt.title(title, fontsize=fontsize)
-    plt.imshow(image)
+    plt.imshow(image, cmap='gray')
     print_stats(image)
+
+def show_normalized(image, title='', size=(10, 10), fontsize=20):
+    plt.figure(figsize=size)
+    plt.title(f"{title} max={_max} min={_min} avg={_avg}", fontsize=fontsize)
+    #plt.imshow(cv.cvtColor(image.astype(np.uint8), cv.COLOR_BGR2RGB))
+    _max, _min, _avg = np.max(img), np.min(img), np.average(img)
+    image = normalize(image)
+    plt.imshow(image, cmap='gray')
+    print_stats(image)
+

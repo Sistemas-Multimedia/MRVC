@@ -5,6 +5,7 @@ sequence="container_cif.y4m"
 #sequence=~/MRVC/sequences/akiyo_cif.y4m/runme.sh
 output_prefix="/tmp/original_"
 number_of_frames=16
+first_frame=0
 
 usage() {
     #echo $0
@@ -13,12 +14,13 @@ usage() {
     echo "  [-s sequence file name ($sequence)"
     echo "  [-o output prefix ($output_prefix)]"
     echo "  [-n number of frames to extract ($number_of_frames)]"
+    echo "  [-f first frame to extract ($first_frame)]"
     echo "  [-? help]"
 }
 
 #echo $0: parsing: $@
 
-while getopts "i:s:o:n:?" opt; do
+while getopts "i:s:o:n:f:?" opt; do
     case ${opt} in
         i)
             input_prefix="${OPTARG}"
@@ -30,11 +32,15 @@ while getopts "i:s:o:n:?" opt; do
             ;;
         o)
             output_prefix="${OPTARG}"
-            echo "output prefix =" $output_refix
+            echo "output prefix =" $output_prefix
             ;;
         n)
             number_of_frames="${OPTARG}"
             echo "number of frames to extract =" $number_of_frames
+            ;;
+        f)
+            first_frame="${OPTARG}"
+            echo "first frame to extract =" $first_frame
             ;;
         ?)
             usage
@@ -62,5 +68,5 @@ else
     # (ulimit -f 112400; wget ...)
     wget $input_prefix/$sequence --directory-prefix=$HOME/MRVC/sequences
 fi
-
-ffmpeg -i $HOME/MRVC/sequences/$sequence -start_number 0 -frames:v $number_of_frames ${output_prefix}%03d.png
+last_frame=$(echo $first_frame + $number_of_frames | bc)
+ffmpeg -i $HOME/MRVC/sequences/$sequence -vf select="between(n\,"$first_frame"\,"$last_frame"),setpts=PTS-STARTPTS" -start_number $first_frame -frames:v $number_of_frames ${output_prefix}%03d.png
