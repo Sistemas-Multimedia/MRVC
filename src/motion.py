@@ -2,12 +2,11 @@
 
 import cv2
 import numpy as np
-import config
 import matplotlib
 import matplotlib.pyplot as plt
 import logging
 logger = logging.getLogger(__name__)
-logging.basicConfig(format="[%(filename)s:%(lineno)s %(funcName)s()] %(message)s")
+#logging.basicConfig(format="[%(filename)s:%(lineno)s %(funcName)s()] %(message)s")
 #logger.setLevel(logging.CRITICAL)
 #logger.setLevel(logging.ERROR)
 logger.setLevel(logging.WARNING)
@@ -155,12 +154,12 @@ def full_search_dense_ME(predicted, reference, search_range=32, overlapping_area
         for x in range(search_range):
             error = extended_reference[y : predicted.shape[0] + y,
                                        x : predicted.shape[1] + x] - predicted
-            a_error = abs(error) # Ojo probar MSE
-            blur_a_error = cv2.GaussianBlur(a_error, (overlapping_area_side, overlapping_area_side), 0).astype(np.int)
-            which_min = blur_a_error <= min_error
-            flow[:,:,0] = np.where(which_min, x-search_range//2, flow[:,:,0])
-            flow[:,:,1] = np.where(which_min, y-search_range//2, flow[:,:,1])
-            min_error = np.minimum(min_error, blur_a_error)
+            A_error = abs(error) # Ojo probar MSE
+            blur_A_error = cv2.GaussianBlur(a_error, (overlapping_area_side, overlapping_area_side), 0).astype(np.int)
+            which_min = blur_A_error <= min_error
+            flow[:,:,0] = np.where(which_min, x - search_range//2, flow[:,:,0])
+            flow[:,:,1] = np.where(which_min, y - search_range//2, flow[:,:,1])
+            min_error = np.minimum(min_error, blur_A_error)
     return flow.astype(np.float)
 
 def show_vectors(flow, dpi=150, title=None):

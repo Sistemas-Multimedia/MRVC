@@ -1,9 +1,18 @@
 ''' MRVC/MP4.py '''
 
+# Only I and P frames are allowed.
+
 import os
 import colorama
 
-# Only I and P blocks are allowed.
+import logging
+logger = logging.getLogger(__name__)
+#logging.basicConfig(format="[%(filename)s:%(lineno)s %(funcName)s()] %(message)s")
+#logger.setLevel(logging.CRITICAL)
+#logger.setLevel(logging.ERROR)
+#logger.setLevel(logging.WARNING)
+logger.setLevel(logging.INFO)
+#logger.setLevel(logging.DEBUG)
 
 def encode(video,    # Prefix of the original sequence of PNG images
            first_frame, 
@@ -11,17 +20,17 @@ def encode(video,    # Prefix of the original sequence of PNG images
            q_step):  # Quantization step
     try:
         #command = f"ffmpeg -start_number 0 -y -i {video}%03d.png -c:v libx264rgb -vf format=yuv444p -crf {q_step} -frames:v {n_frames} -g {n_frames} -bf 0 /tmp/output.mp4" # No color transform is used
-        command = f"ffmpeg -start_number 0 -y -i {video}%03d.png -c:v libx264 -vf format=yuv444p -crf {q_step} -frames:v {n_frames} -g {n_frames} -bf 0 /tmp/output.mp4" # Color transform is used but without chroma subsampling
+        command = f"ffmpeg -start_number {first_frame} -y -i {video}%03d.png -c:v libx264 -vf format=yuv444p -crf {q_step} -frames:v {n_frames} -g {n_frames} -bf 0 /tmp/output.mp4" # Color transform is used but without chroma subsampling
         #command = f"ffmpeg -start_number {first_frame} -y -i {video}%03d.png -c:v libx264 -vf format=yuv420p -crf {q_step} -frames:v {n_frames} -g {n_frames} -bf 0 /tmp/output.mp4" # Color transform and chroma subsampling
-        print("running:", command)
+        logger.info(command)
         os.system(command)
 
-        command = f"ffmpeg -y -i /tmp/output.mp4 -start_number 0 {video}reconstructed_%03d.png"
-        print("running:", command)
+        command = f"ffmpeg -y -i /tmp/output.mp4 -start_number {first_frame} {video}reconstructed_%03d.png"
+        logger.info(command)
         os.system(command)
         
     except:
-        print(colored.fore.RED + f'MP4.encode(video="{video}", n_frames={n_frames}, q_step={q_step})')
+        print(colored.fore.RED + f'MP4.encode(video="{video}", first_frame={first_frame}, n_frames={n_frames}, q_step={q_step})')
         raise
 
 def compute_br(prefix, frames_per_second, frame_shape, first_frame, n_frames):
@@ -29,7 +38,7 @@ def compute_br(prefix, frames_per_second, frame_shape, first_frame, n_frames):
     frame_width = frame_shape[1]
     n_channels = frame_shape[2]
     sequence_time = n_frames/frames_per_second
-    print(f"height={frame_height} width={frame_width} n_channels={n_channels} sequence_time={sequence_time}")
+    logger.info(f"height={frame_height} width={frame_width} n_channels={n_channels} sequence_time={sequence_time}")
     
     total_bytes = os.path.getsize("/tmp/output.mp4")
     kbps = total_bytes*8/sequence_time/1000
