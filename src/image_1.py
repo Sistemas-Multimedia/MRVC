@@ -69,9 +69,9 @@ def show(image, title='', size=(10, 10), fontsize=20):
 
 def show_normalized(image, title='', size=(10, 10), fontsize=20):
     plt.figure(figsize=size)
-    plt.title(f"{title} max={_max} min={_min} avg={_avg}", fontsize=fontsize)
     #plt.imshow(cv.cvtColor(image.astype(np.uint8), cv.COLOR_BGR2RGB))
-    _max, _min, _avg = np.max(img), np.min(img), np.average(img)
+    _max, _min, _avg = np.max(image), np.min(image), np.average(image)
+    plt.title(f"{title} max={_max} min={_min} avg={_avg}", fontsize=fontsize)
     image = normalize(image)
     plt.imshow(image, cmap='gray')
     print_stats(image)
