@@ -39,7 +39,7 @@ def read(prefix:str, image_number:int=0) -> np.ndarray: # [row, column, componen
     #img = np.array(img, dtype=np.float32)
     #if __debug__:
     #    print(img.shape, img.dtype, os.path.getsize(fn), img.max(), img.min(), colored.style.RESET)
-    logger.info(f"{fn} {img.shape} {img.dtype} {os.path.getsize(fn)} {img.max()} {img.min()}")
+    logger.info(f"{fn} {img.shape} {img.dtype} len={os.path.getsize(fn)} max={img.max()} min={img.min()}")
     #return img.astype(np.int16)
     #return img.astype(np.uint16)
     return img
@@ -55,7 +55,7 @@ def write(img:np.ndarray, prefix:str, image_number:int):
     len_output = os.path.getsize(fn)
     #if __debug__:
     #    print(colored.fore.GREEN + f"image_3.write: {fn}", img.shape, img.dtype, len_output, img.max(), img.min(), colored.style.RESET)
-    logger.info(f"{fn} {img.shape} {img.dtype} {len_output} {img.max()} {img.min()}")
+    logger.info(f"{fn} {img.shape} {img.dtype} len={len_output} max={img.max()} min={img.min()}")
     return len_output
 
 def debug_write(img:np.ndarray, prefix:str, image_number:int):
@@ -66,7 +66,7 @@ def debug_write(img:np.ndarray, prefix:str, image_number:int):
     len_output = os.path.getsize(fn)
     #if __debug__:
     #    print(colored.fore.GREEN + f"image_3.write: {fn}", img.shape, img.dtype, len_output, img.max(), img.min(), colored.style.RESET)
-    logger.info(f"{fn} {img.shape} {img.dtype} {len_output} {img.max()} {img.min()}")
+    logger.info(f"{fn} {img.shape} {img.dtype} len={len_output} max={img.max()} min={img.min()}")
     return len_output
 
 def normalize(img: np.ndarray) -> np.ndarray: # [row, column, component]
