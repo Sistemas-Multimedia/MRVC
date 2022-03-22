@@ -26,7 +26,7 @@ def read(prefix:str, image_number:int) -> np.ndarray: # [row, column, component]
     #if __debug__:
         #print(colored.fore.GREEN + f"image_1.read: {fn}", end=' ', flush=True)
     img = cv.imread(fn, cv.IMREAD_UNCHANGED)
-    logger.debug(f"{fn} {img.shape} {img.dtype} {os.path.getsize(fn)} max={img.max()} min={img.min()}")
+    logger.debug(f"{fn} {img.shape} {img.dtype} len={os.path.getsize(fn)} max={img.max()} min={img.min()}")
     return img
 
 def debug_write(img:np.ndarray, prefix:str, image_number:int=0):
