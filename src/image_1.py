@@ -16,8 +16,8 @@ logger = logging.getLogger(__name__)
 ##logger.setLevel(logging.CRITICAL)
 ##logger.setLevel(logging.ERROR)
 ##logger.setLevel(logging.WARNING)
-#logger.setLevel(logging.INFO)
-logger.setLevel(logging.DEBUG)
+logger.setLevel(logging.INFO)
+#logger.setLevel(logging.DEBUG)
 
 _compression_level = 9 # 0=min, 9=max
 
@@ -64,7 +64,7 @@ def print_stats(image):
 def show(image, title='', size=(10, 10), fontsize=20):
     plt.figure(figsize=size)
     plt.title(title, fontsize=fontsize)
-    plt.imshow(image, cmap='gray')
+    plt.imshow(image, cmap=plt.cm.gray, vmin=0, vmax=255)
     print_stats(image)
 
 def show_normalized(image, title='', size=(10, 10), fontsize=20):
@@ -72,7 +72,7 @@ def show_normalized(image, title='', size=(10, 10), fontsize=20):
     #plt.imshow(cv.cvtColor(image.astype(np.uint8), cv.COLOR_BGR2RGB))
     _max, _min, _avg = np.max(image), np.min(image), np.average(image)
     plt.title(f"{title} max={_max} min={_min} avg={_avg}", fontsize=fontsize)
-    image = normalize(image)
-    plt.imshow(image, cmap='gray')
+    _image = normalize(image)
+    plt.imshow(_image, cmap='gray')
     print_stats(image)
 
