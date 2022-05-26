@@ -1,3 +1,5 @@
+# Obsolete (see ~/repos/image_IO)
+
 ''' MRVC/image_1.py
 I/O routines for 1-component (grayscale) images.
  '''

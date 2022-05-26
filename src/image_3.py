@@ -1,3 +1,5 @@
+# Obsolete (see ~/repos/image_IO)
+
 ''' MRVC/image_3.py
 I/O routines for 3-component (color) images.
  '''
