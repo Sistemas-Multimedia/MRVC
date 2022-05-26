@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-input_prefix="https://media.xiph.org/video/derf/y4m/"
+URL="https://media.xiph.org/video/derf/y4m/"
 sequence="container_cif.y4m"
 #sequence=~/MRVC/sequences/akiyo_cif.y4m/runme.sh
 output_prefix="/tmp/original_"
@@ -10,7 +10,7 @@ first_frame=0
 usage() {
     #echo $0
     echo "Extracts the frames of a video sequence"
-    echo "  [-i input prefix ($input_prefix)"
+    echo "  [-u URL ($URL)"
     echo "  [-s sequence file name ($sequence)"
     echo "  [-o output prefix ($output_prefix)]"
     echo "  [-n number of frames to extract ($number_of_frames)]"
@@ -20,11 +20,11 @@ usage() {
 
 #echo $0: parsing: $@
 
-while getopts "i:s:o:n:f:?" opt; do
+while getopts "u:s:o:n:f:?" opt; do
     case ${opt} in
-        i)
-            input_prefix="${OPTARG}"
-            echo "input prefix =" $input_prefix
+        u)
+            URL="${OPTARG}"
+            echo "URL =" $URL
             ;;
         s)
             sequence="${OPTARG}"
@@ -66,7 +66,7 @@ if test -f "$HOME/MRVC/sequences/$sequence"; then
 else
     echo "Downloading ..."
     # (ulimit -f 112400; wget ...)
-    wget $input_prefix/$sequence --directory-prefix=$HOME/MRVC/sequences
+    wget $URL/$sequence --directory-prefix=$HOME/MRVC/sequences
 fi
 last_frame=$(echo $first_frame + $number_of_frames | bc)
 ffmpeg -i $HOME/MRVC/sequences/$sequence -vf select="between(n\,"$first_frame"\,"$last_frame"),setpts=PTS-STARTPTS" -start_number $first_frame -frames:v $number_of_frames ${output_prefix}%03d.png
