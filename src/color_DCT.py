@@ -1,3 +1,5 @@
+# Deprecated: use ~/repos/color-DCT/color-DCT.py
+
 ''' MRVC/color-DCT.py '''
 
 import numpy as np
